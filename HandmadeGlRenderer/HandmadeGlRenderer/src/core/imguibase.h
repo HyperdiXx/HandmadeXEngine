@@ -15,6 +15,8 @@ namespace XEngine
             float locTime;
         };
 
+        
+
         void InitGui();
         void UpdateGui(GraphicInterface *gui);
         bool onMouseButtonPressed();

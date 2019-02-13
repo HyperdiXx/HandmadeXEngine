@@ -84,8 +84,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
+    <ClCompile Include="src\core\camera.cpp" />
     <ClCompile Include="src\core\events\events.cpp" />
     <ClCompile Include="src\core\imguibase.cpp" />
+    <ClCompile Include="src\core\input.cpp" />
     <ClCompile Include="src\core\model.cpp" />
     <ClCompile Include="src\core\openglgui.cpp" />
     <ClCompile Include="src\core\shader.cpp" />
@@ -115,12 +117,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
+    <ClInclude Include="src\core\camera.h" />
     <ClInclude Include="src\core\events\events.h" />
     <ClInclude Include="src\core\events\joystick.h" />
     <ClInclude Include="src\core\events\keyboard.h" />
     <ClInclude Include="src\core\events\mouseEvent.h" />
     <ClInclude Include="src\core\generator.h" />
     <ClInclude Include="src\core\imguibase.h" />
+    <ClInclude Include="src\core\input.h" />
     <ClInclude Include="src\core\model.h" />
     <ClInclude Include="src\core\openglgui.h" />
     <ClInclude Include="src\core\shader.h" />
@@ -136,6 +140,7 @@
     <ClInclude Include="src\imguit\imstb_rectpack.h" />
     <ClInclude Include="src\imguit\imstb_textedit.h" />
     <ClInclude Include="src\imguit\imstb_truetype.h" />
+    <ClInclude Include="src\xenpch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

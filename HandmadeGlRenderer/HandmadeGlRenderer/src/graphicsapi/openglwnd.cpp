@@ -1,5 +1,13 @@
 #include "openglwnd.h"
 
+void setVSYNC(bool set)
+{
+    if (set)
+        glfwSwapInterval(1);
+    else
+        glfwSwapInterval(0);
+}
+
 void InitOpenglWindow(WindowBuffer *buffer)
 {
     glfwInit();
@@ -17,7 +25,7 @@ void InitOpenglWindow(WindowBuffer *buffer)
     glfwMakeContextCurrent(buffer->window);
     glfwSetFramebufferSizeCallback(buffer->window, framebufferSizeCallback);
     //glfwSetCursorPosCallback(buffer->window, mousecallback);
-
+    setVSYNC(true);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -25,19 +33,7 @@ void InitOpenglWindow(WindowBuffer *buffer)
     }
 }
 
-void processInput(GLFWwindow *window, Camera *cam)
-{  
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cam->camPos += cam->speed * cam->camTarget;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cam->camPos -= cam->speed * cam->camTarget;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cam->camPos -= glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cam->camPos += glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
-}
+
 #if 0
 void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos)
 {

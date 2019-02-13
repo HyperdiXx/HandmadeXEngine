@@ -11,6 +11,7 @@
 #include "../core/texture.h"
 #include "../core/model.h"
 #include "../core/imguibase.h"
+#include "../core/camera.h"
 
 
 #include <iostream>
@@ -18,3 +19,4 @@
 
 void InitEngineWin32();
 void UpdateLoopWin32();
+void InitStats();

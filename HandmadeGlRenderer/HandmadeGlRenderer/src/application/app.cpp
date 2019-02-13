@@ -18,6 +18,11 @@
         std::cout << "UpdateEngine\n";
     }
 
+    void InitStats()
+    {
+
+    }
+
 #endif
 
 

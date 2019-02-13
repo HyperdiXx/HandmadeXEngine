@@ -166,7 +166,7 @@ int main(int argc, char** argv)
     real32 deltaTime = 0.0f;
     real32 lastFrame = 0.0f;
 
-    Camera cam;
+    XEngine::Camera cam;
 
     cam.camPos = glm::vec3(0.0f, 0.0f, 3.0f);
     cam.camTarget = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
         deltaTime = currFrame - lastFrame;
         lastFrame = currFrame;
 
-        processInput(wb.window, &cam);
+        XEngine::processInput(wb.window, &cam);
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

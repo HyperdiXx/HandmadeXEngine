@@ -18,7 +18,17 @@ namespace XEngine
     };
 
 
+    struct WindowResized
+    {
+
+    };
+
+    struct WindowClosed
+    {
+
+    };
     
+
 
 }
 #endif // !EVENTS

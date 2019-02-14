@@ -148,8 +148,21 @@ int main(int argc, char** argv)
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    unsigned int diffuseMap = loadTexture("src/textures/container2.png");
-    unsigned int specularMap = loadTexture("src/textures/container2_specular.png");
+    XEngine::Cubemap cub;
+    std::vector<std::string> textures;
+    textures[0] = "src/textures/lakes_rt.tga";
+    textures[1] = "src/textures/lakes_lf.tga";
+    textures[2] = "src/textures/lakes_up.tga";
+    textures[3] = "src/textures/lakes_dn.tga";
+    textures[4] = "src/textures/lakes_ft.tga";
+    textures[5] = "src/textures/lakes_bk.tga";
+
+    cub.textures = std::move(textures);
+
+    unsigned int cubemap = XEngine::loadCubemap(&cub);
+
+    unsigned int diffuseMap = XEngine::loadTexture("src/textures/container2.png");
+    unsigned int specularMap = XEngine::loadTexture("src/textures/container2_specular.png");
 
     Win32UseShader(&basicShader);
     setInt(&basicShader, "material.diffuse", 0);

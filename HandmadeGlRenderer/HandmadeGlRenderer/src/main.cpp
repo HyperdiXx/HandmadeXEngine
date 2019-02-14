@@ -150,12 +150,12 @@ int main(int argc, char** argv)
 
     XEngine::Cubemap cub;
     std::vector<std::string> textures;
-    textures[0] = "src/textures/lakes_rt.tga";
-    textures[1] = "src/textures/lakes_lf.tga";
-    textures[2] = "src/textures/lakes_up.tga";
-    textures[3] = "src/textures/lakes_dn.tga";
-    textures[4] = "src/textures/lakes_ft.tga";
-    textures[5] = "src/textures/lakes_bk.tga";
+    textures.push_back("src/textures/lakes_rt.tga");
+    textures.push_back("src/textures/lakes_lf.tga");
+    textures.push_back("src/textures/lakes_up.tga");
+    textures.push_back("src/textures/lakes_dn.tga");
+    textures.push_back("src/textures/lakes_ft.tga");
+    textures.push_back("src/textures/lakes_bk.tga");
 
     cub.textures = std::move(textures);
 

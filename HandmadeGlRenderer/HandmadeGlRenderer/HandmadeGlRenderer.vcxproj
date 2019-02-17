@@ -108,6 +108,8 @@
     <None Include="src\models\barrels.fbx" />
     <None Include="src\shaders\basicShader.fs" />
     <None Include="src\shaders\basicShader.vs" />
+    <None Include="src\shaders\cubeMap.fs" />
+    <None Include="src\shaders\cubeMap.vs" />
     <None Include="src\shaders\light.fs" />
     <None Include="src\shaders\light.vs" />
     <None Include="src\textures\container.jpg" />

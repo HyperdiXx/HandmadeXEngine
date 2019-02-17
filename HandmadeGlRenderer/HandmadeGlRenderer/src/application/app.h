@@ -20,3 +20,4 @@
 void InitEngineWin32();
 void UpdateLoopWin32();
 void InitStats();
+void RenderLoop();

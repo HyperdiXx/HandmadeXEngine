@@ -44,17 +44,21 @@ namespace XEngine
 
     uint32 loadCubemap(Cubemap *c)
     {
+
         glGenTextures(1, &c->ID);
         glBindTexture(GL_TEXTURE_CUBE_MAP, c->ID);
 
+        int width, height, nrChannels;
+        
+
         for (GLuint i = 0; i < c->textures.size(); ++i)
         {
-            if (c->data)
-            {
-                c->data = stbi_load((const char*)&c->textures[i], (int*)c->w, (int*)c->h, (int*)c->channels, 0);
+            unsigned char* info = stbi_load(c->textures[i].c_str(), &width, &height, &nrChannels, 0);
+            if (info)
+            {             
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    0, GL_RGB, c->w, c->h, 0, GL_RGB, GL_UNSIGNED_BYTE, c->data);
-                stbi_image_free(c->data);
+                    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, info);
+                stbi_image_free(info);
             }
             else
             {

@@ -17,6 +17,7 @@
 
 #include <thread>
 #include <future>
+#include <thread>
 
 #include "application/app.h"
 
@@ -35,6 +36,10 @@ int main(int argc, char** argv)
 
     Shader basicShader = {};
     Shader lightShader = {};
+    Shader cubeMap = {};
+
+    cubeMap.vs = "src/shaders/cubeMap.vs";
+    cubeMap.fs = "src/shaders/cubeMap.fs";
 
     basicShader.vs = "src/shaders/basicShader.vs";
     basicShader.fs = "src/shaders/basicShader.fs";
@@ -42,12 +47,57 @@ int main(int argc, char** argv)
     lightShader.vs = "src/shaders/light.vs";
     lightShader.fs = "src/shaders/light.fs";
 
+    Win32SetShaderName(&cubeMap);
     Win32SetShaderName(&basicShader);
     Win32SetShaderName(&lightShader);
     
+    float skyboxVertices[] = {
+                 
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };
 
     float vertices[] = {
-        // positions          // normals           // texture coords
+                         
          -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
          0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
@@ -111,6 +161,15 @@ int main(int argc, char** argv)
         glm::vec3(0.0f,  0.0f, -3.0f)
     };
 
+    unsigned int skyboxVAO, skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -120,7 +179,6 @@ int main(int argc, char** argv)
 
     glBindVertexArray(VAO);
 
-    // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -137,15 +195,7 @@ int main(int argc, char** argv)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    //glBindVertexArray(0);
-
-
-    // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     XEngine::Cubemap cub;
@@ -168,6 +218,8 @@ int main(int argc, char** argv)
     setInt(&basicShader, "material.diffuse", 0);
     setInt(&basicShader, "material.specular", 1);
 
+    Win32UseShader(&cubeMap);
+    setInt(&cubeMap, "cubemap", 0);
   
     /*Model barrel = {};
 
@@ -198,6 +250,9 @@ int main(int argc, char** argv)
 
     gui.locTime = 0.0f;
 
+
+
+   
     while (!glfwWindowShouldClose(wb.window))
     {
        
@@ -209,6 +264,8 @@ int main(int argc, char** argv)
         lastFrame = currFrame;
 
         XEngine::processInput(wb.window, &cam);
+        //std::thread inp(XEngine::processInput, wb.window, &cam);
+        //inp.join();
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -218,7 +275,7 @@ int main(int argc, char** argv)
         //lightPos.z = sin(glfwGetTime() / 2.0f) * 2.0f;
     
         projection = glm::perspective(glm::radians(45.0f), (real32)WIDTH / (real32)HEIGHT, 0.1f, 100.0f);
-        view = glm::lookAt(cam.camPos, cam.camPos + cam.camTarget, cam.camUp);
+        view = XEngine::getViewMatrix(&cam);
                 
         Win32UseShader(&basicShader);
         setVec3(&basicShader, "viewPos", cam.camPos);
@@ -258,18 +315,15 @@ int main(int argc, char** argv)
         glm::mat4 model = glm::mat4(1.0f);
         setMat4(&basicShader, "model", model);
 
-        // bind diffuse map
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
-        // bind specular map
+
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, specularMap);
 
-        // render containers
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
         {
-            // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
@@ -279,21 +333,34 @@ int main(int argc, char** argv)
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        // also draw the lamp object(s)
+
         Win32UseShader(&lightShader);
         setMat4(&lightShader, "projection", projection);
         setMat4(&lightShader, "view", view);
 
-        // we now draw as many light bulbs as we have point lights.
         glBindVertexArray(lightVAO);
         for (unsigned int i = 0; i < 4; i++)
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
+            model = glm::scale(model, glm::vec3(0.2f)); 
             setMat4(&lightShader, "model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        glDepthFunc(GL_FALSE);
+        Win32UseShader(&cubeMap);
+        view = glm::mat4(glm::mat3(XEngine::getViewMatrix(&cam))); 
+        setMat4(&cubeMap, "projection", projection);
+        setMat4(&cubeMap, "view", view);
+
+        glBindVertexArray(skyboxVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glBindVertexArray(0);
+        glDepthFunc(GL_TRUE);
 
         XEngine::EngineGUI::UpdateGui(&gui);
 

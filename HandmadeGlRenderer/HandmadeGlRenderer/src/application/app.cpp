@@ -23,6 +23,11 @@
 
     }
 
+    void RenderLoop()
+    {
+
+    }
+
 #endif
 
 

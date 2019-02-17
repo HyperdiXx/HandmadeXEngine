@@ -92,6 +92,8 @@
     <None Include="src\shaders\light.vs" />
     <None Include="src\models\barrels.fbx" />
     <None Include="src\imguit\imgui.ini" />
+    <None Include="src\shaders\cubeMap.fs" />
+    <None Include="src\shaders\cubeMap.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

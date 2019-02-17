@@ -4,6 +4,7 @@
 #define CAMERA
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "types.h"
 
 namespace XEngine
@@ -15,6 +16,8 @@ namespace XEngine
         glm::vec3 camUp;
         real32 speed;
     };
+
+    glm::mat4 getViewMatrix(Camera *cam);
 
 }
 #endif // !CAMERA

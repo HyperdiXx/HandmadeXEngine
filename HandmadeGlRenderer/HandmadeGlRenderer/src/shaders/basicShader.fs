@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 out vec4 FragColor;
 
 struct Material {
@@ -58,6 +58,8 @@ uniform Material material;
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+//for debug reasons: 
+// gl_FragCoord.x < some value on screen to draw different effect
 
 void main()
 {    
@@ -71,7 +73,9 @@ void main()
 
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     
-    FragColor = vec4(result, 1.0);
+
+	FragColor = vec4(result, 1.0);
+    
 }
 
 // calculates the color when using a directional light.

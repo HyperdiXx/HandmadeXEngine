@@ -11,6 +11,7 @@
     {
         std::cout << "InitEngine\n";
         
+
     }
 
     void UpdateLoopWin32()

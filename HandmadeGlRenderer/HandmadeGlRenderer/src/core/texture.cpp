@@ -24,14 +24,13 @@ namespace XEngine
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, TypeTexture::REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, TypeTexture::REPEAT);
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             stbi_image_free(data);
-
         }
         else
         {
@@ -42,18 +41,18 @@ namespace XEngine
     }
 
 
-    uint32 loadCubemap(Cubemap *c)
+    uint32 loadCubemap(std::vector<std::string> textures)
     {
+        unsigned int textureid;
+        glGenTextures(1, &textureid);
 
-        glGenTextures(1, &c->ID);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, c->ID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureid);
 
         int width, height, nrChannels;
-        
 
-        for (GLuint i = 0; i < c->textures.size(); ++i)
+        for (uint32 i = 0; i < textures.size(); ++i)
         {
-            unsigned char* info = stbi_load(c->textures[i].c_str(), &width, &height, &nrChannels, 0);
+            unsigned char* info = stbi_load(textures[i].c_str(), &width, &height, &nrChannels, 0);
             if (info)
             {             
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -72,7 +71,7 @@ namespace XEngine
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        return (c->ID);       
+        return textureid;       
     }
 
 }

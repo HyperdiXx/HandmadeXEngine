@@ -35,7 +35,7 @@ namespace XEngine
 
 
    
-    uint32 loadCubemap(Cubemap *c);
+    uint32 loadCubemap(std::vector<std::string> textures);
     int loadTexture(const char* filename);
 
 

@@ -3,10 +3,10 @@
     The Rendering Engine as Part of XEngine.
     OpenGL API 4.5 
 
-    Features: Camera, Textures, MultiTextures, Lighting 
+    Features: Camera, Textures, MultiTextures, Lighting, Redering Interfaces, FrameBuffers, Cubemap 
 
-    TODO(vlad): Assimp, Logger, Redering Interfaces, ImGUI, Stencil, Blending,
-        FaceCulling, FrameBuffers, Cubemap, Instancing, 
+    TODO(vlad): Assimp, Logger, ImGUI, Stencil, Blending,
+        FaceCulling, Instancing, 
         Antialiasing, ShadowMapping, PointShadow, NormalMapping,
         ParallaxMapping, Bloom,
         Deffered rendering,
@@ -46,10 +46,10 @@ int main(int argc, char** argv)
 
     lightShader.vs = "src/shaders/light.vs";
     lightShader.fs = "src/shaders/light.fs";
-
-    Win32SetShaderName(&cubeMap);
+    
     Win32SetShaderName(&basicShader);
     Win32SetShaderName(&lightShader);
+    Win32SetShaderName(&cubeMap);
     
     float skyboxVertices[] = {
                  
@@ -161,15 +161,6 @@ int main(int argc, char** argv)
         glm::vec3(0.0f,  0.0f, -3.0f)
     };
 
-    unsigned int skyboxVAO, skyboxVBO;
-    glGenVertexArrays(1, &skyboxVAO);
-    glGenBuffers(1, &skyboxVBO);
-    glBindVertexArray(skyboxVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -195,6 +186,16 @@ int main(int argc, char** argv)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    unsigned int skyboxVAO, skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glBindVertexArray(skyboxVAO);
+
+    glGenBuffers(1, &skyboxVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+    
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -208,18 +209,17 @@ int main(int argc, char** argv)
     textures.push_back("src/textures/lakes_bk.tga");
 
     cub.textures = std::move(textures);
-
-    unsigned int cubemap = XEngine::loadCubemap(&cub);
-
-    unsigned int diffuseMap = XEngine::loadTexture("src/textures/container2.png");
+    
+    unsigned int diffuseMap = XEngine::loadTexture("src/textures/desertsky_bk.tga");
     unsigned int specularMap = XEngine::loadTexture("src/textures/container2_specular.png");
+    unsigned int cubemaptexture = XEngine::loadCubemap(cub.textures);
 
     Win32UseShader(&basicShader);
     setInt(&basicShader, "material.diffuse", 0);
     setInt(&basicShader, "material.specular", 1);
 
     Win32UseShader(&cubeMap);
-    setInt(&cubeMap, "cubemap", 0);
+    setInt(&cubeMap, "skybox", 0);
   
     /*Model barrel = {};
 
@@ -250,9 +250,7 @@ int main(int argc, char** argv)
 
     gui.locTime = 0.0f;
 
-
-
-   
+       
     while (!glfwWindowShouldClose(wb.window))
     {
        
@@ -290,7 +288,7 @@ int main(int argc, char** argv)
         {
             setVec3(&basicShader, "pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
             setVec3(&basicShader, "pointLights[" + std::to_string(i) +"].ambient", 0.05f, 0.05f, 0.05f);
-            setVec3(&basicShader, "pointLights[" + std::to_string(i) + "].diffuse", 1.0f, 0.0f, 0.0f);
+            setVec3(&basicShader, "pointLights[" + std::to_string(i) + "].diffuse", 1.0f, 1.0f, 1.0f);
             setVec3(&basicShader, "pointLights[" + std::to_string(i) + "].specular", 1.0f, 1.0f, 1.0f);
             setFloat(&basicShader, "pointLights[" + std::to_string(i) + "].c", 1.0f);
             setFloat(&basicShader, "pointLights[" + std::to_string(i) + "].linear", 0.09);
@@ -348,7 +346,7 @@ int main(int argc, char** argv)
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        glDepthFunc(GL_FALSE);
+        glDepthFunc(GL_LEQUAL);
         Win32UseShader(&cubeMap);
         view = glm::mat4(glm::mat3(XEngine::getViewMatrix(&cam))); 
         setMat4(&cubeMap, "projection", projection);
@@ -356,11 +354,12 @@ int main(int argc, char** argv)
 
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemaptexture);
+        
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glBindVertexArray(0);
-        glDepthFunc(GL_TRUE);
+        glDepthFunc(GL_LESS);
 
         XEngine::EngineGUI::UpdateGui(&gui);
 
@@ -371,8 +370,9 @@ int main(int argc, char** argv)
    
     glDeleteVertexArrays(1, &VAO);
     glDeleteVertexArrays(1, &lightVAO);
+    glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &VBO);
-
+    glDeleteBuffers(1, &skyboxVBO);
 
     glfwTerminate();
     return (0);

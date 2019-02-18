@@ -115,6 +115,8 @@
     <None Include="src\shaders\light.vs" />
     <None Include="src\shaders\lightPhongnew.fs" />
     <None Include="src\shaders\lightPhongnew.vs" />
+    <None Include="src\shaders\text.fs" />
+    <None Include="src\shaders\text.vs" />
     <None Include="src\textures\container.jpg" />
     <None Include="src\textures\container2.png" />
     <None Include="src\textures\container2_specular.png" />

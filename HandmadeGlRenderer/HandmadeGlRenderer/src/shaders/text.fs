@@ -1,8 +1,13 @@
 #version 330 core
 out vec4 FragColor;
 
+in vec2 UV;
+
+uniform sampler2D texture;
+uniform vec3 color;
+
 void main()
 {
-   vec3 colortest = vec3(1.0, 0.0, 0.0);
-   FragColor = vec4(1.0);
+   color = vec3(1.0, 0.0, 0.0);
+   FragColor = texture(uv, UV).r * color;
 };

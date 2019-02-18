@@ -18,7 +18,7 @@
 
 struct Shader
 {
-    UINT32 ID;
+    uint32 ID;
 
     const GLchar* vs;
     const GLchar* fs;

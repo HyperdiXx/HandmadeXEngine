@@ -50,6 +50,31 @@ namespace XEngine
             Characters.insert(std::pair<GLchar, Letter>(ch, l));
         }
 
+        glBindTexture(GL_TEXTURE_2D, 0);
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+
+        glGenVertexArrays(1, &textVAO);
+        glGenBuffers(1, &textVBO);
+        
+    }
+
+    void RenderSmth(Shader &shader, uint32 &VAO, std::string text, glm::vec3 color, uint32 x, uint32 y, uint32 scale)
+    {
+        Win32UseShader(&shader);
+        setVec3(&shader, "color", color);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(VAO);
+
+        for(std::string::iterator i = text.begin(); i != text.end(); ++i)
+        {
+           
+
+        }
+
 
     }
+
+
 }

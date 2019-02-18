@@ -6,8 +6,8 @@
 
 #include <glm/glm.hpp>
 
-#include "texture.h"
 #include "../xenpch.h"
+#include "texture.h"
 #include "shader.h"
 
 namespace XEngine
@@ -23,9 +23,9 @@ namespace XEngine
 
     
     std::map<GLchar, Letter> Characters;
-    GLuint textVAO, textVBO;
+    
 
-    void InitSnt();
-    void RenderSmth(Shader &shader, uint32 &VAO, std::string text, glm::vec3 color, uint32 x, uint32 y, uint32 scale);
+    void InitSnt(uint32 &VAO, uint32 &VBO);
+    void RenderSmth(Shader &shader, uint32 &VAO, uint32 &VBO, std::string text, glm::vec3 color, uint32 x, uint32 y, uint32 scale);
     
 }

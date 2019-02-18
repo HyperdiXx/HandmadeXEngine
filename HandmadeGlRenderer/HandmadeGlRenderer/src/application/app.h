@@ -13,7 +13,7 @@
 #include "../core/imguibase.h"
 #include "../core/camera.h"
 
-
+#include "../core/text.h"
 
 #include <iostream>
 

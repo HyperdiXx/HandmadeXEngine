@@ -3,7 +3,7 @@
 
 namespace XEngine
 {
-    void InitSnt()
+    void InitSnt(uint32 &VAO, uint32 &VBO)
     {
         FT_Library ft;
         FT_Face face;
@@ -45,8 +45,8 @@ namespace XEngine
             glTexParameteri(TEXTURE2D, MAG_FILTER, LINEAR);
 
             Letter l = { texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                                 glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                                 face->glyph->advance.x };
+                                  glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                                  face->glyph->advance.x };
             Characters.insert(std::pair<GLchar, Letter>(ch, l));
         }
 
@@ -54,12 +54,10 @@ namespace XEngine
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
 
-        glGenVertexArrays(1, &textVAO);
-        glGenBuffers(1, &textVBO);
         
     }
 
-    void RenderSmth(Shader &shader, uint32 &VAO, std::string text, glm::vec3 color, uint32 x, uint32 y, uint32 scale)
+    void RenderSmth(Shader &shader, uint32 &VAO, uint32 &VBO, std::string text, glm::vec3 color, uint32 x, uint32 y, uint32 scale)
     {
         Win32UseShader(&shader);
         setVec3(&shader, "color", color);
@@ -69,11 +67,37 @@ namespace XEngine
 
         for(std::string::iterator i = text.begin(); i != text.end(); ++i)
         {
-           
+            Letter l = Characters[*i];
+
+            real32 xpos = x + l.Bearing.x * scale;
+            real32 ypos = y - (l.Size.y - l.Bearing.y) * scale;
+            
+            real32 w = l.Size.x * scale;
+            real32 h = l.Size.y * scale;
+
+            real32 vertices[6][4] = {
+                {xpos,      ypos + h,   0.0, 0.0},
+                {xpos,      ypos,       0.0, 1.0},
+                {xpos + w,  ypos,       1.0, 1.0},
+                {xpos,      ypos + h,   0.0, 0.0},
+                {xpos + w,  ypos,       1.0, 1.0},
+                {xpos + w,  ypos + h,   1.0, 0.0}
+            };
+
+            glBindTexture(TEXTURE2D, l.id);
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            x += (l.Advance >> 6) * scale;
+
 
         }
 
-
+        glBindVertexArray(0);
+        glBindTexture(TEXTURE2D, 0);
     }
 
 

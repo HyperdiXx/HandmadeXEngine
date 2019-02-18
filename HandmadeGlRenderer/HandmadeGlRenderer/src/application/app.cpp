@@ -25,6 +25,7 @@
         Shader lightShader = {};
         Shader cubeMap = {};
         Shader floorShader = {};
+        Shader textShader = {};
 
         cubeMap.vs = "src/shaders/cubeMap.vs";
         cubeMap.fs = "src/shaders/cubeMap.fs";
@@ -38,11 +39,14 @@
         floorShader.vs = "src/shaders/lightPhongnew.vs";
         floorShader.fs = "src/shaders/lightPhongnew.fs";
 
+        textShader.vs = "src/shaders/text.vs";
+        textShader.fs = "src/shaders/text.fs";
 
         Win32SetShaderName(&basicShader);
         Win32SetShaderName(&lightShader);
         Win32SetShaderName(&cubeMap);
         Win32SetShaderName(&floorShader);
+        Win32SetShaderName(&textShader);
 
         float planeVertices[] = {
 
@@ -251,8 +255,8 @@
         loadModelopengl(&barrel);
 
         */
-        real32 deltaTime = 0.0f;
-        real32 lastFrame = 0.0f;
+        real64 deltaTime = 0.0f;
+        real64 lastFrame = 0.0f;
 
         XEngine::Camera cam;
 
@@ -275,14 +279,30 @@
 
         glm::vec3 point = glm::vec3(rand() % 20, 0.0, rand() % 20);
 
-        bool blinn = false;;
+        bool blinn = false;
+
+        uint32 textVAO, textVBO;
+
+        XEngine::InitSnt(textVAO, textVBO);
+        glGenVertexArrays(1, &textVAO);
+        glGenBuffers(1, &textVBO);
+        glBindVertexArray(textVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        //glGenVertexArrays(1, &textVAO);
+        //glGenBuffers(1, &textVBO);
 
         while (!glfwWindowShouldClose(wb.window))
         {
 
             std::cout << "UpdateEngine\n";
             cam.speed = 2.5f * deltaTime;
-            real32 currFrame = glfwGetTime();
+            real64 currFrame = glfwGetTime();
 
             deltaTime = currFrame - lastFrame;
             lastFrame = currFrame;
@@ -318,8 +338,8 @@
                 setVec3(&basicShader, "pointLights[" + std::to_string(i) + "].diffuse", 1.0f, 1.0f, 1.0f);
                 setVec3(&basicShader, "pointLights[" + std::to_string(i) + "].specular", 1.0f, 1.0f, 1.0f);
                 setFloat(&basicShader, "pointLights[" + std::to_string(i) + "].c", 1.0f);
-                setFloat(&basicShader, "pointLights[" + std::to_string(i) + "].linear", 0.09);
-                setFloat(&basicShader, "pointLights[" + std::to_string(i) + "].quadratic", 0.032);
+                setFloat(&basicShader, "pointLights[" + std::to_string(i) + "].linear", 0.09f);
+                setFloat(&basicShader, "pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
             }
 
             setVec3(&basicShader, "spotLight.position", cam.camPos);
@@ -328,8 +348,8 @@
             setVec3(&basicShader, "spotLight.diffuse", 0.0f, 0.0f, 1.0f);
             setVec3(&basicShader, "spotLight.specular", 1.0f, 1.0f, 1.0f);
             setFloat(&basicShader, "spotLight.constant", 1.0f);
-            setFloat(&basicShader, "spotLight.linear", 0.09);
-            setFloat(&basicShader, "spotLight.quadratic", 0.032);
+            setFloat(&basicShader, "spotLight.linear", 0.09f);
+            setFloat(&basicShader, "spotLight.quadratic", 0.032f);
             setFloat(&basicShader, "spotLight.cutOff", glm::cos(glm::radians(12.5f)));
             setFloat(&basicShader, "spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 

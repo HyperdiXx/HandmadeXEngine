@@ -132,6 +132,13 @@
     <ClInclude Include="src\core\generator.h" />
     <ClInclude Include="src\core\imguibase.h" />
     <ClInclude Include="src\core\input.h" />
+    <ClInclude Include="src\core\math\mat3.h" />
+    <ClInclude Include="src\core\math\mat4.h" />
+    <ClInclude Include="src\core\math\math.h" />
+    <ClInclude Include="src\core\math\quaternion.h" />
+    <ClInclude Include="src\core\math\vec2.h" />
+    <ClInclude Include="src\core\math\vec3.h" />
+    <ClInclude Include="src\core\math\vec4.h" />
     <ClInclude Include="src\core\model.h" />
     <ClInclude Include="src\core\openglgui.h" />
     <ClInclude Include="src\core\shader.h" />

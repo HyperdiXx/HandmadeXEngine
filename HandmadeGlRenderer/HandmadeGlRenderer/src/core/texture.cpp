@@ -14,21 +14,21 @@ namespace XEngine
         {
             GLenum format;
             if (nrChannels == 1)
-                format = GL_RED;
+                format = RED;
             else if (nrChannels == 3)
-                format = GL_RGB;
+                format = RGB;
             else if (nrChannels == 4)
-                format = GL_RGBA;
+                format = RGBA;
 
-            glBindTexture(GL_TEXTURE_2D, textureid);
-            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
+            glBindTexture(TEXTURE2D, textureid);
+            glTexImage2D(TEXTURE2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(TEXTURE2D);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, TypeTexture::REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, TypeTexture::REPEAT);
+            glTexParameteri(TEXTURE2D, WRAP_S, REPEAT);
+            glTexParameteri(TEXTURE2D, WRAP_T, REPEAT);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(TEXTURE2D, MIN_FILTER, MIMAP_LINEAR);
+            glTexParameteri(TEXTURE2D, MAG_FILTER, LINEAR);
 
             stbi_image_free(data);
         }
@@ -46,7 +46,7 @@ namespace XEngine
         unsigned int textureid;
         glGenTextures(1, &textureid);
 
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureid);
+        glBindTexture(CUBETEXTURE, textureid);
 
         int width, height, nrChannels;
 
@@ -56,7 +56,7 @@ namespace XEngine
             if (info)
             {             
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, info);
+                    0, RGB, width, height, 0, RGB, GL_UNSIGNED_BYTE, info);
                 stbi_image_free(info);
             }
             else
@@ -65,11 +65,11 @@ namespace XEngine
             }
         }
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(CUBETEXTURE, MIN_FILTER, LINEAR);
+        glTexParameteri(CUBETEXTURE, MAG_FILTER, LINEAR);
+        glTexParameteri(CUBETEXTURE, WRAP_S, CLAMP_EDGE);
+        glTexParameteri(CUBETEXTURE, WRAP_T, CLAMP_EDGE);
+        glTexParameteri(CUBETEXTURE, WRAP_R, CLAMP_EDGE);
 
         return textureid;       
     }

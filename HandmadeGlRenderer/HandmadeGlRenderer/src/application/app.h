@@ -14,10 +14,21 @@
 #include "../core/camera.h"
 
 
+
 #include <iostream>
 
 
-void InitEngineWin32();
-void UpdateLoopWin32();
+struct Loop
+{
+    Shader basicShader;
+    Shader lightShader;
+    Shader cubeMap;
+    Shader floorShader;
+    real32 deltaTime = 0.0f;
+    real32 lastFrame = 0.0f;
+};
+
+void RunEngineWin32();
+void UpdateLoopWin32(WindowBuffer *wb, XEngine::Camera *cam, Loop *lp);
 void InitStats();
-void RenderLoop();
+void RenderQ();

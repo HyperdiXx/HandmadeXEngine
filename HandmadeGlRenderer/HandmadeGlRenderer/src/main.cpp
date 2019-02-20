@@ -27,7 +27,7 @@
 
 int main(int argc, char** argv)
 {
-    RunEngineWin32();
+    XEngine::RunEngineWin32();
           
     return (0);
 }

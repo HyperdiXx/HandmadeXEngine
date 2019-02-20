@@ -15,6 +15,9 @@ namespace XEngine
         glm::vec3 camTarget;
         glm::vec3 camUp;
         real32 speed;
+
+
+
     };
 
     glm::mat4 getViewMatrix(Camera *cam);

@@ -10,6 +10,12 @@
 
 namespace XEngine
 {
+    enum Maps
+    {
+        FRAMEBUFFER = GL_FRAMEBUFFER,
+        DEPTHATTACHMENT = GL_DEPTH_ATTACHMENT
+    };
+
     enum Channels
     {
         GREEN = GL_GREEN,
@@ -33,7 +39,9 @@ namespace XEngine
         WRAP_R = GL_TEXTURE_WRAP_R,
         MIN_FILTER = GL_TEXTURE_MIN_FILTER,
         MAG_FILTER = GL_TEXTURE_MAG_FILTER, 
-        MIMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR
+        MIMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR,
+        NEAREST = GL_NEAREST,
+        DEPTHTEX = GL_DEPTH_COMPONENT
     };
 
     struct Cubemap

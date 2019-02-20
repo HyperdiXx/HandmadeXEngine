@@ -3,7 +3,7 @@
 
 namespace XEngine
 {
-    void InitSnt(uint32 &VAO, uint32 &VBO)
+    /*void InitSnt(uint32 &VAO, uint32 &VBO)
     {
         FT_Library ft;
         FT_Face face;
@@ -100,5 +100,5 @@ namespace XEngine
         glBindTexture(TEXTURE2D, 0);
     }
 
-
+    */
 }

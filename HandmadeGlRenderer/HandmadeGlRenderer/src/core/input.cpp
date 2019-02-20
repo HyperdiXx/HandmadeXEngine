@@ -33,7 +33,7 @@ namespace XEngine
         auto state = glfwGetMouseButton(window, key);
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
-
+    
     bool onKeyboardPressed(GLFWwindow *window, int key)
     {
         auto state = glfwGetKey(window, key);
@@ -52,5 +52,6 @@ namespace XEngine
             cam->camPos -= glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
         if (onKeyboardPressed(window, GLFW_KEY_D))
             cam->camPos += glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
+        
     }
 }

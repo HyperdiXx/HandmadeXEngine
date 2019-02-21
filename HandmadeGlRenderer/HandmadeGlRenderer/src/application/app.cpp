@@ -61,6 +61,10 @@ namespace XEngine
         Shader lightMapShader = {};
         Shader depthMapQuad = {};
         Shader shadowShader = {};
+        Shader normalMappingShader = {};
+
+        normalMappingShader.vs = "src/shaders/normalShader.vs";
+        normalMappingShader.fs = "src/shaders/normalShader.fs";
 
         cubeMap.vs = "src/shaders/cubeMap.vs";
         cubeMap.fs = "src/shaders/cubeMap.fs";
@@ -93,6 +97,7 @@ namespace XEngine
         Win32SetShaderName(&lightMapShader);
         Win32SetShaderName(&depthMapQuad);
         Win32SetShaderName(&shadowShader);
+        Win32SetShaderName(&normalMappingShader);
 
 
         float planeVertices[] = {
@@ -292,6 +297,29 @@ namespace XEngine
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         
+        unsigned int hdrFBO;
+        glGenFramebuffers(1, &hdrFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+        unsigned int colorBuffers[2];
+        glGenTextures(2, colorBuffers);
+
+        for (uint32 i = 0; i < 2; ++i)
+        {
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+
+        }
+        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, attachments);
+
+
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         XEngine::Cubemap cub;
@@ -310,8 +338,12 @@ namespace XEngine
         unsigned int cubemaptexture = XEngine::loadCubemap(cub.textures);
         unsigned int floorTexture = XEngine::loadTexture("src/textures/get.png");
 
+        unsigned int diffuseMapForNormals = loadTexture("src/textures/brickwall.jpg");
+        unsigned int normalMap = loadTexture("src/textures/brickwall_normal.jpg");
 
-
+        Win32UseShader(&normalMappingShader);
+        setInt(&normalMappingShader, "diffuseMap", 0);
+        setInt(&normalMappingShader, "normalMap", 1);
 
         Win32UseShader(&basicShader);
         setInt(&basicShader, "material.diffuse", 0);
@@ -349,8 +381,8 @@ namespace XEngine
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
 
-        glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
-        glm::vec3 lightposfloor(0.0f, 1.0f, 0.0f);
+        glm::vec3 lightPos(0.5f, 1.0f, 0.3f);
+        glm::vec3 lightposfloor(0.0f, 4.0f, 0.0f);
 
         bool show_demo_window = true;
         bool show_another_window = false;
@@ -389,55 +421,33 @@ namespace XEngine
             //lightPos.y = 5.0 + cos(glfwGetTime()) * 1.0f;
            
             
+            projection = glm::perspective(glm::radians(45.0f), float(WIDTH) / float(HEIGHT), 0.1f, 100.0f);
+            view = glm::mat4(XEngine::getViewMatrix(&cam));
+            Win32UseShader(&normalMappingShader);
+            setMat4(&normalMappingShader, "projection", projection);
+            setMat4(&normalMappingShader, "view", view);
 
-            Win32UseShader(&lightMapShader);
-            setMat4(&lightMapShader, "lightmatrix", lightspaceMatrix);
-
-            glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-            glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-
-            glClear(GL_DEPTH_BUFFER_BIT);
+            model = glm::mat4(1.0f);
+            model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+            setMat4(&normalMappingShader, "model", model);
+            setVec3(&normalMappingShader, "viewPos", cam.camPos);
+            setVec3(&normalMappingShader, "lightPos", lightPos);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, floorTexture);
-            
-            //render
-           
-            renderScene(&lightMapShader, planeVAO);
-           
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-            glViewport(0, 0, WIDTH, HEIGHT);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            glViewport(0, 0, WIDTH, HEIGHT);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            Win32UseShader(&shadowShader);
-            projection = glm::perspective(glm::radians(45.0f), (real32)WIDTH / (real32)HEIGHT, 0.1f, 100.0f);
-            view = XEngine::getViewMatrix(&cam);
-
-            setMat4(&shadowShader, "projection", projection);
-            setMat4(&shadowShader, "view", view);
-
-            setVec3(&shadowShader, "viewPos", cam.camPos);
-            setVec3(&shadowShader, "lightPos", lightPos);
-            setMat4(&shadowShader, "lightSpaceMatrix", lightspaceMatrix);
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(TEXTURE2D, floorTexture);
+            glBindTexture(GL_TEXTURE_2D, diffuseMapForNormals);
             glActiveTexture(GL_TEXTURE1);
-            glBindTexture(TEXTURE2D, depthMap);
+            glBindTexture(GL_TEXTURE_2D, normalMap);
+            renderQuad();
 
-            renderScene(&shadowShader, planeVAO);
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, lightPos);
+            model = glm::scale(model, glm::vec3(0.1f));
+            setMat4(&normalMappingShader, "model", model);
+            renderQuad();
 
-            Win32UseShader(&depthMapQuad);
-            setFloat(&depthMapQuad, "near_plane", nearp);
-            setFloat(&depthMapQuad, "far_plane", farp);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, depthMap);
+            
 
             //plane
-            /*Win32UseShader(&floorShader);
+            Win32UseShader(&floorShader);
 
             setMat4(&floorShader, "projection", projection);
             setMat4(&floorShader, "view", view);
@@ -449,13 +459,13 @@ namespace XEngine
             glBindTexture(GL_TEXTURE_2D, floorTexture);
 
             glBindVertexArray(planeVAO);
-            glDrawArrays(GL_TRIANGLES, 0, 6);*/
+            glDrawArrays(GL_TRIANGLES, 0, 6);
            
             
             
           
             //skybox
-            glDepthFunc(GL_LEQUAL);
+            /*glDepthFunc(GL_LEQUAL);
             Win32UseShader(&cubeMap);
             view = glm::mat4(glm::mat3(XEngine::getViewMatrix(&cam)));
             setMat4(&cubeMap, "projection", projection);
@@ -468,7 +478,7 @@ namespace XEngine
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             glBindVertexArray(0);
-            glDepthFunc(GL_LESS);
+            glDepthFunc(GL_LESS);*/
 
             /*
             lights
@@ -604,6 +614,56 @@ namespace XEngine
 }
    
 
+#endif
+
+
+
+#if 0
+Win32UseShader(&lightMapShader);
+setMat4(&lightMapShader, "lightmatrix", lightspaceMatrix);
+
+glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+
+glClear(GL_DEPTH_BUFFER_BIT);
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_2D, floorTexture);
+
+//render
+
+renderScene(&lightMapShader, planeVAO);
+
+glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+glViewport(0, 0, WIDTH, HEIGHT);
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+glViewport(0, 0, WIDTH, HEIGHT);
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+Win32UseShader(&shadowShader);
+projection = glm::perspective(glm::radians(45.0f), (real32)WIDTH / (real32)HEIGHT, 0.1f, 100.0f);
+view = XEngine::getViewMatrix(&cam);
+
+setMat4(&shadowShader, "projection", projection);
+setMat4(&shadowShader, "view", view);
+
+setVec3(&shadowShader, "viewPos", cam.camPos);
+setVec3(&shadowShader, "lightPos", lightPos);
+setMat4(&shadowShader, "lightSpaceMatrix", lightspaceMatrix);
+
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(TEXTURE2D, floorTexture);
+glActiveTexture(GL_TEXTURE1);
+glBindTexture(TEXTURE2D, depthMap);
+
+renderScene(&shadowShader, planeVAO);
+
+Win32UseShader(&depthMapQuad);
+setFloat(&depthMapQuad, "near_plane", nearp);
+setFloat(&depthMapQuad, "far_plane", farp);
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_2D, depthMap);
 #endif
 
 

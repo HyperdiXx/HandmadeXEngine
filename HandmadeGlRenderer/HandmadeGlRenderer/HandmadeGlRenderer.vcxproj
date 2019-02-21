@@ -122,6 +122,8 @@
     <None Include="src\shaders\lightPhongnew.vs" />
     <None Include="src\shaders\lightrender.fs" />
     <None Include="src\shaders\lightrender.vs" />
+    <None Include="src\shaders\normalShader.fs" />
+    <None Include="src\shaders\normalShader.vs" />
     <None Include="src\shaders\text.fs" />
     <None Include="src\shaders\text.vs" />
     <None Include="src\textures\container.jpg" />

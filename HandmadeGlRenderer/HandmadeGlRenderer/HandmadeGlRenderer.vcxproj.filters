@@ -110,6 +110,8 @@
     <None Include="src\shaders\lightrender.vs" />
     <None Include="src\shaders\basicshadows.fs" />
     <None Include="src\shaders\basicshadows.vs" />
+    <None Include="src\shaders\normalShader.vs" />
+    <None Include="src\shaders\normalShader.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

@@ -24,6 +24,6 @@ struct WindowBuffer
 
 void InitOpenglWindow(WindowBuffer *buffer);
 void setVSYNC(bool set);
-//void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos);
+void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos);
 void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height);
 #endif

@@ -13,12 +13,14 @@ namespace XEngine
         float mouseX, mouseY;
     };
 
+
     static WINInput *Instance;
 
     static bool IsKeyPressed(int keycode) { return Instance->IskeyPressed; };
     inline glm::vec2 getMousePos(GLFWwindow* window);
     inline float getMouseX(GLFWwindow* window);
     inline float getMouseY(GLFWwindow* window);
+
     WINInput setMouseButton();
     WINInput setkeyboardButton();
 

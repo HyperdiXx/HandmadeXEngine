@@ -27,6 +27,16 @@ namespace XEngine
         glfwGetCursorPos(window, &xpos, &ypos);
         return (float)ypos;
     }
+
+    WINInput setMouseButton()
+    {
+        return WINInput();
+    }
+
+    WINInput setkeyboardButton()
+    {
+        return WINInput();
+    }
     
     bool onMouseButtonPressed(GLFWwindow* window, int key)
     {
@@ -54,4 +64,6 @@ namespace XEngine
             cam->camPos += glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
         
     }
+
+  
 }

@@ -98,6 +98,7 @@
     <ClCompile Include="src\core\texture.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\graphicsapi\openglwnd.cpp" />
+    <ClCompile Include="src\graphicsapi\windowabstraction.cpp" />
     <ClCompile Include="src\imguit\imgui.cpp" />
     <ClCompile Include="src\imguit\imgui_demo.cpp" />
     <ClCompile Include="src\imguit\imgui_draw.cpp" />
@@ -112,6 +113,12 @@
     <None Include="src\shaders\basicShader.vs" />
     <None Include="src\shaders\basicshadows.fs" />
     <None Include="src\shaders\basicshadows.vs" />
+    <None Include="src\shaders\blendingshader.fs" />
+    <None Include="src\shaders\blendingshader.vs" />
+    <None Include="src\shaders\bloom.fs" />
+    <None Include="src\shaders\bloom.vs" />
+    <None Include="src\shaders\blur.fs" />
+    <None Include="src\shaders\blur.vs" />
     <None Include="src\shaders\cubeMap.fs" />
     <None Include="src\shaders\cubeMap.vs" />
     <None Include="src\shaders\depth.fs" />
@@ -156,7 +163,10 @@
     <ClInclude Include="src\core\text.h" />
     <ClInclude Include="src\core\texture.h" />
     <ClInclude Include="src\core\types.h" />
+    <ClInclude Include="src\graphicsapi\dx11.h" />
+    <ClInclude Include="src\graphicsapi\dx12.h" />
     <ClInclude Include="src\graphicsapi\openglwnd.h" />
+    <ClInclude Include="src\graphicsapi\windowabstaraction.h" />
     <ClInclude Include="src\imguit\imconfig.h" />
     <ClInclude Include="src\imguit\imgui.h" />
     <ClInclude Include="src\imguit\imgui_impl_glfw.h" />

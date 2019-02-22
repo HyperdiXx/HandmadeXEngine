@@ -45,7 +45,7 @@ namespace XEngine
    
 
     void RunEngineWin32();
-    void UpdateLoopWin32(WindowBuffer *wb, XEngine::Camera *cam, Loop *lp);
+    void UpdateLoopWin32();
     void InitStats();
     void RenderQ(Shader *shader);
 }

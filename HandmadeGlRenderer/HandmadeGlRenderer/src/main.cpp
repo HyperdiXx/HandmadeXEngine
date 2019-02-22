@@ -13,10 +13,13 @@
         Deffered rendering,
         Gamma Correctiom, HDR, SSAO, PBR
 
-        D3D11 ...
+        DX11 ...
+        DX12 ...
 */
 
-
+#ifndef UNICODE
+#define UNICODE
+#endif 
 
 #include <thread>
 #include <future>
@@ -25,9 +28,10 @@
 #include "application/app.h"
 
 
+
 int main(int argc, char** argv)
 {
-    XEngine::RunEngineWin32();
+    //XEngine::RunEngineWin32();
           
     return (0);
 }

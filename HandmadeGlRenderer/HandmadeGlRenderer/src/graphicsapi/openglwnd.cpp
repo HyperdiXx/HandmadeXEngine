@@ -8,7 +8,7 @@ void setVSYNC(bool set)
         glfwSwapInterval(0);
 }
 
-void InitOpenglWindow(WindowBuffer *buffer)
+void InitOpenglWindow(OpenGLWindowBuffer *buffer)
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

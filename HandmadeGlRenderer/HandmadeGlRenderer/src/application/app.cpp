@@ -46,7 +46,7 @@ namespace XEngine
         
         std::cout << "InitEngine\n";
 
-        WindowBuffer wb = {};
+        OpenGLWindowBuffer wb = {};
         InitOpenglWindow(&wb);
 
         XEngine::EngineGUI::InitGui();
@@ -63,6 +63,19 @@ namespace XEngine
         Shader shadowShader = {};
         Shader normalMappingShader = {};
 
+        Shader blurShader = {};
+        Shader bloomShader = {};
+        Shader mixedShader = {};
+
+        blurShader.vs = "src/shaders/blur.vs";
+        blurShader.fs = "src/shaders/blur.fs";
+
+        bloomShader.vs = "src/shaders/bloom.vs";
+        bloomShader.fs = "src/shaders/bloom.fs";
+
+        mixedShader.vs = "src/shaders/blendingshader.vs";
+        mixedShader.fs = "src/shaders/blendingshader.fs";
+
         normalMappingShader.vs = "src/shaders/normalShader.vs";
         normalMappingShader.fs = "src/shaders/normalShader.fs";
 
@@ -72,7 +85,7 @@ namespace XEngine
         basicShader.vs = "src/shaders/basicShader.vs";
         basicShader.fs = "src/shaders/basicShader.fs";
 
-        lightShader.vs = "src/shaders/light.vs";
+        lightShader.vs = "src/shaders/bloom.vs";
         lightShader.fs = "src/shaders/light.fs";
 
         floorShader.vs = "src/shaders/lightPhongnew.vs";
@@ -98,6 +111,9 @@ namespace XEngine
         Win32SetShaderName(&depthMapQuad);
         Win32SetShaderName(&shadowShader);
         Win32SetShaderName(&normalMappingShader);
+        Win32SetShaderName(&blurShader);
+        Win32SetShaderName(&bloomShader);
+        Win32SetShaderName(&mixedShader);
 
 
         float planeVertices[] = {
@@ -214,12 +230,17 @@ namespace XEngine
             glm::vec3(15.3f,  1.0f, -1.5f)
         };
 
-        glm::vec3 pointLightPositions[] = {
-            glm::vec3(0.7f,  0.2f,  2.0f),
-            glm::vec3(2.3f, -3.3f, -4.0f),
-            glm::vec3(-4.0f,  2.0f, -12.0f),
-            glm::vec3(0.0f,  0.0f, -3.0f)
-        };
+        std::vector<glm::vec3> lightPositions;
+        lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
+        lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
+        lightPositions.push_back(glm::vec3(3.0f, 0.5f, 1.0f));
+        lightPositions.push_back(glm::vec3(-0.8f, 2.4f, -1.0f));
+
+        std::vector<glm::vec3> lightColors;
+        lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
+        lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
+        lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
+        lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
 
         unsigned int planeVAO, planeVBO;
         glGenVertexArrays(1, &planeVAO);
@@ -271,9 +292,8 @@ namespace XEngine
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        //generating depth map
-
-
+        //generating depth map for shadows
+        
         const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
         unsigned int depthMapFBO;
         glGenFramebuffers(1, &depthMapFBO);
@@ -316,9 +336,38 @@ namespace XEngine
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
 
         }
+        unsigned int rboDepth;
+        glGenRenderbuffers(1, &rboDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+        // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
         unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
         glDrawBuffers(2, attachments);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "Framebuffer not complete!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        unsigned int pingphongFBO[2];
+        unsigned int pingcolorBuffer[2];
+
+        glGenFramebuffers(2, pingphongFBO);
+        glGenTextures(2, pingcolorBuffer);
+
+        for (uint16 i = 0; i < 2; ++i)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[i]);
+            glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingcolorBuffer[i], 0);
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                std::cout << "Framebuffer not complete\n";
+        }
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -333,7 +382,7 @@ namespace XEngine
 
         cub.textures = std::move(textures);
 
-        unsigned int diffuseMap = XEngine::loadTexture("src/textures/desertsky_bk.tga");
+        unsigned int diffuseMapTexture = XEngine::loadTexture("src/textures/desertsky_bk.tga");
         unsigned int specularMap = XEngine::loadTexture("src/textures/container2_specular.png");
         unsigned int cubemaptexture = XEngine::loadCubemap(cub.textures);
         unsigned int floorTexture = XEngine::loadTexture("src/textures/get.png");
@@ -361,6 +410,14 @@ namespace XEngine
 
         Win32UseShader(&depthMapQuad);
         setInt(&depthMapQuad, "depthMap", 0);
+
+        Win32UseShader(&bloomShader);
+        setInt(&bloomShader, "diffuseMap", 0);
+        Win32UseShader(&blurShader);
+        setInt(&blurShader, "diffuseTexture", 0);
+        Win32UseShader(&mixedShader);
+        setInt(&mixedShader, "scene", 0);
+        setInt(&mixedShader, "bloomBlur", 1);
 
 
         /*Model barrel = {};
@@ -399,6 +456,10 @@ namespace XEngine
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightspaceMatrix = lightProjection * lightView;
 
+        bool bloom = true;
+        bool bloomKeyPressed = false;
+        float exposure = 1.0f;
+
         while (!glfwWindowShouldClose(wb.window))
         {
 
@@ -420,33 +481,118 @@ namespace XEngine
             //lightPos.z = cos(glfwGetTime()) * 2.0f;
             //lightPos.y = 5.0 + cos(glfwGetTime()) * 1.0f;
            
-            
+
+            glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             projection = glm::perspective(glm::radians(45.0f), float(WIDTH) / float(HEIGHT), 0.1f, 100.0f);
             view = glm::mat4(XEngine::getViewMatrix(&cam));
-            Win32UseShader(&normalMappingShader);
-            setMat4(&normalMappingShader, "projection", projection);
-            setMat4(&normalMappingShader, "view", view);
-
             model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-            setMat4(&normalMappingShader, "model", model);
-            setVec3(&normalMappingShader, "viewPos", cam.camPos);
-            setVec3(&normalMappingShader, "lightPos", lightPos);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, diffuseMapForNormals);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, normalMap);
-            renderQuad();
-
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, lightPos);
-            model = glm::scale(model, glm::vec3(0.1f));
-            setMat4(&normalMappingShader, "model", model);
-            renderQuad();
-
             
+            Win32UseShader(&bloomShader);
+            setMat4(&bloomShader, "projection", projection);
+            setMat4(&bloomShader, "view", view);
 
-            //plane
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, diffuseMapTexture);
+
+            for (uint16 i = 0; i < lightPositions.size(); ++i)
+            {
+                setVec3(&bloomShader, "light[" + std::to_string(i) + "].Pos", lightPositions[i]);
+                setVec3(&bloomShader, "light[" + std::to_string(i) + "].Color", lightColors[i]);
+            }
+
+            setVec3(&bloomShader, "viewPos", cam.camPos);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0));
+            model = glm::scale(model, glm::vec3(12.5f, 0.5f, 12.5f));
+            setMat4(&bloomShader, "model", model);
+            setMat4(&bloomShader, "model", model);
+            renderCube();
+
+            glBindTexture(GL_TEXTURE_2D, specularMap);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+            model = glm::scale(model, glm::vec3(0.5f));
+            setMat4(&bloomShader, "model", model);
+            renderCube();
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+            model = glm::scale(model, glm::vec3(0.5f));
+            setMat4(&bloomShader, "model", model);
+            renderCube();
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-1.0f, -1.0f, 2.0));
+            model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+            setMat4(&bloomShader, "model", model);
+            renderCube();
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 2.7f, 4.0));
+            model = glm::rotate(model, glm::radians(23.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+            model = glm::scale(model, glm::vec3(1.25));
+            setMat4(&bloomShader, "model", model);
+            renderCube();
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -3.0));
+            model = glm::rotate(model, glm::radians(124.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+            setMat4(&bloomShader, "model", model);
+            renderCube();
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(-3.0f, 0.0f, 0.0));
+            model = glm::scale(model, glm::vec3(0.5f));
+            setMat4(&bloomShader, "model", model);
+            renderCube();
+
+            // finally show all the light sources as bright cubes
+            Win32UseShader(&lightShader);
+            setMat4(&lightShader, "projection", projection);
+            setMat4(&lightShader, "view", view);
+
+            for (unsigned int i = 0; i < lightPositions.size(); i++)
+            {
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(lightPositions[i]));
+                model = glm::scale(model, glm::vec3(0.25f));
+                setMat4(&lightShader, "model", model);
+                setVec3(&lightShader, "lightColor", lightColors[i]);
+                renderCube();
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            bool hor = true, first_i = true;
+            unsigned int amount = 10;
+
+            Win32UseShader(&blurShader);
+            for (unsigned int i = 0; i < amount; i++)
+            {
+                glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[hor]);
+                setInt(&blurShader, "hor", hor);
+                glBindTexture(GL_TEXTURE_2D, first_i ? colorBuffers[1] : pingcolorBuffer[!hor]);  // bind texture of other framebuffer (or scene if first iteration)
+                renderQuad();
+                hor = !hor;
+                if (first_i)
+                    first_i = false;
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            Win32UseShader(&mixedShader);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[!hor]);
+            setInt(&mixedShader, "bloom", bloom);
+            setFloat(&mixedShader, "exposure", exposure);
+            renderQuad();
+
+           /* //plane
             Win32UseShader(&floorShader);
 
             setMat4(&floorShader, "projection", projection);
@@ -459,7 +605,7 @@ namespace XEngine
             glBindTexture(GL_TEXTURE_2D, floorTexture);
 
             glBindVertexArray(planeVAO);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawArrays(GL_TRIANGLES, 0, 6);*/
            
             
             
@@ -590,7 +736,7 @@ namespace XEngine
 
     }
 
-    void UpdateLoopWin32(WindowBuffer* wb, XEngine::Camera *cam, Loop *lp)
+    void UpdateLoopWin32(OpenGLWindowBuffer* wb, XEngine::Camera *cam, Loop *lp)
     {
 
 

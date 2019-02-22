@@ -12,16 +12,22 @@ namespace XEngine
         unsigned char* data = stbi_load(filename, &width, &height, &nrChannels, 0);
         if (data)
         {
-            GLenum format;
+            GLenum dataformat, internalF;
             if (nrChannels == 1)
-                format = RED;
+                dataformat = internalF = RED;
             else if (nrChannels == 3)
-                format = RGB;
+            {
+                internalF = GL_SRGB;
+                dataformat = RGB;
+            } 
             else if (nrChannels == 4)
-                format = RGBA;
-
+            {
+                internalF = GL_SRGB_ALPHA;
+                dataformat = RGBA;
+            }
+                
             glBindTexture(TEXTURE2D, textureid);
-            glTexImage2D(TEXTURE2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(TEXTURE2D, 0, internalF, width, height, 0, dataformat, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(TEXTURE2D);
 
             glTexParameteri(TEXTURE2D, WRAP_S, REPEAT);

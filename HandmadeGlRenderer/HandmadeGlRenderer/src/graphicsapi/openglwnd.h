@@ -15,14 +15,14 @@
 const uint32 WIDTH = 1280;
 const uint32 HEIGHT = 720;
 
-struct WindowBuffer
+struct OpenGLWindowBuffer
 {
     GLFWwindow* window;
     int32 w, h;
 };
 
 
-void InitOpenglWindow(WindowBuffer *buffer);
+void InitOpenglWindow(OpenGLWindowBuffer *buffer);
 void setVSYNC(bool set);
 void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos);
 void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height);

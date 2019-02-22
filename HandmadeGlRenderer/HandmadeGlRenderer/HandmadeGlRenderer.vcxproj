@@ -91,6 +91,8 @@
     <ClCompile Include="src\core\input.cpp" />
     <ClCompile Include="src\core\model.cpp" />
     <ClCompile Include="src\core\openglgui.cpp" />
+    <ClCompile Include="src\core\OpenGL\indexbuffer.cpp" />
+    <ClCompile Include="src\core\OpenGL\vao.cpp" />
     <ClCompile Include="src\core\shader.cpp" />
     <ClCompile Include="src\core\shadertype.cpp" />
     <ClCompile Include="src\core\stb_image.cpp" />
@@ -142,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\core\camera.h" />
+    <ClInclude Include="src\core\Entity.h" />
     <ClInclude Include="src\core\events\events.h" />
     <ClInclude Include="src\core\events\joystick.h" />
     <ClInclude Include="src\core\events\keyboard.h" />
@@ -158,6 +161,8 @@
     <ClInclude Include="src\core\math\vec4.h" />
     <ClInclude Include="src\core\model.h" />
     <ClInclude Include="src\core\openglgui.h" />
+    <ClInclude Include="src\core\OpenGL\indexbuffer.h" />
+    <ClInclude Include="src\core\OpenGL\vao.h" />
     <ClInclude Include="src\core\shader.h" />
     <ClInclude Include="src\core\shadertype.h" />
     <ClInclude Include="src\core\stb_image.h" />
@@ -176,6 +181,7 @@
     <ClInclude Include="src\imguit\imstb_rectpack.h" />
     <ClInclude Include="src\imguit\imstb_textedit.h" />
     <ClInclude Include="src\imguit\imstb_truetype.h" />
+    <ClInclude Include="src\material.h" />
     <ClInclude Include="src\xenpch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

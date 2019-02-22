@@ -7,6 +7,11 @@
 
 #include <windows.h>
 
+#include "dx12.h"
+
+
+static bool Running = true;
+
 namespace XEngine
 {
     struct Win32Window
@@ -17,11 +22,11 @@ namespace XEngine
         LPARAM lParam;
         HINSTANCE hInstance;
         HINSTANCE hPrevInstance;
-        PWSTR CmdLine;
-        int CMDN;
+        PWSTR cmd_line;
+        int cmd_show;
     };
 
-
+    void DXInitEngineWindow(Win32Window *window);
+    IDXGISwapChain1* getSwapChain1(IDXGISwapChain1 *sc);
     LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow);
 }

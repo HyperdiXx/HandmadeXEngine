@@ -44,8 +44,8 @@ namespace XEngine
 
    
 
-    void RunEngineWin32();
-    void UpdateLoopWin32();
+    void OpenGLRunEngineWin32();
+    void OpenGLUpdateLoopWin32();
     void InitStats();
     void RenderQ(Shader *shader);
 }

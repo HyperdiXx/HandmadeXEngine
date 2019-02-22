@@ -9,12 +9,8 @@
 namespace XEngine
 {
 
-
     XEngine::Camera cam;
-
-    
-
-
+ 
     void renderScene(Shader *shader, unsigned int &vao)
     {
         glm::mat4 model = glm::mat4(1.0f);
@@ -41,10 +37,10 @@ namespace XEngine
     }
 
     
-    void RunEngineWin32()
+    void OpenGLRunEngineWin32()
     {
         
-        std::cout << "InitEngine\n";
+        std::cout << "OpenGLInitEngine\n";
 
         OpenGLWindowBuffer wb = {};
         InitOpenglWindow(&wb);

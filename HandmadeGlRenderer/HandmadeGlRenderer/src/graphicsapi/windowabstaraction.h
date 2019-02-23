@@ -5,8 +5,6 @@
 #endif 
 
 
-#include <windows.h>
-
 #include "dx12.h"
 
 

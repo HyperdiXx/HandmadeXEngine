@@ -5,6 +5,10 @@
 
 #include <vector>
 
+#include <glad/glad.h>
+#include <gl/GL.h>
+
+
 #include "IndexBuffer.h"
 
 struct VertexAO

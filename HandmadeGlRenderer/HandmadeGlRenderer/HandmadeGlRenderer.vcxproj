@@ -65,6 +65,12 @@
       <AdditionalDependencies>freetype.lib;assimp-vc140-mt.lib;glfw643.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <EntryPointName>vs_main</EntryPointName>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -81,6 +87,12 @@
       <AdditionalDependencies>freetype.lib;assimp-vc140-mt.lib;glfw643.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <EntryPointName>vs_main</EntryPointName>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
@@ -91,6 +103,7 @@
     <ClCompile Include="src\core\input.cpp" />
     <ClCompile Include="src\core\model.cpp" />
     <ClCompile Include="src\core\openglgui.cpp" />
+    <ClCompile Include="src\core\OpenGL\framebuffero.cpp" />
     <ClCompile Include="src\core\OpenGL\indexbuffer.cpp" />
     <ClCompile Include="src\core\OpenGL\vao.cpp" />
     <ClCompile Include="src\core\shader.cpp" />
@@ -161,6 +174,7 @@
     <ClInclude Include="src\core\math\vec4.h" />
     <ClInclude Include="src\core\model.h" />
     <ClInclude Include="src\core\openglgui.h" />
+    <ClInclude Include="src\core\OpenGL\framebuffero.h" />
     <ClInclude Include="src\core\OpenGL\indexbuffer.h" />
     <ClInclude Include="src\core\OpenGL\vao.h" />
     <ClInclude Include="src\core\shader.h" />

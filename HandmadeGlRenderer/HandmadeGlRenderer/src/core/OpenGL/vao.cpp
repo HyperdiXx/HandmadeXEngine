@@ -1,6 +1,5 @@
 
-#include <gl/GL.h>
-#include <glad/glad.h>
+
 #include "vao.h"
 
 

@@ -17,9 +17,6 @@
         DX12 ...
 */
 
-#ifndef UNICODE
-#define UNICODE
-#endif 
 
 
 
@@ -29,8 +26,8 @@
 
 #include "application/app.h"
 
-#include "graphicsapi/dx12.h"
-
+//#include "graphicsapi/dx12.h"
+#include <windows.h>
 
 #define OPENGL
 
@@ -64,10 +61,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 
-        NULL,       // Parent window    
-        NULL,       // Menu
-        hInstance,  // Instance handle
-        NULL        // Additional application data
+        NULL,       
+        NULL,       
+        hInstance,  
+        NULL        
     );
 
     if (hwnd == NULL)
@@ -85,10 +82,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
     static D3D12_COMMAND_QUEUE_DESC graphics_command_que_desc = {};
     static ID3D12CommandAllocator *commandAllocator;
     static ID3D12RootSignature* rootSignature;
+    static ID3D12Debug* debug;
 
     graphics_command_que_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
     HRESULT hResult;
+
+    hResult = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
+    CheckSucceeded(hResult);
+
+    debug->EnableDebugLayer();
 
     hResult = CreateDXGIFactory(IID_PPV_ARGS(&dxgi_factory));
     CheckSucceeded(hResult);
@@ -111,6 +114,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
     
     hResult = device->CreateCommandAllocator(graphics_command_que_desc.Type, IID_PPV_ARGS(&commandAllocator));
     CheckSucceeded(hResult);
+
+    UINT compiler_flag = 0;
+
+    /*ID3DBlob *vertex_shader, *pixel_shader;
+    hResult = D3DCompileFromFile(L"E:\\HandmadeXEngine\\HandmadeGlRenderer\\HandmadeGlRenderer\\src\\shaders\\triangle.hlsl", 0, 0, "vs_main", "vs_5_0", compiler_flag, 0, &vertex_shader, 0);
+    CheckSucceeded(hResult);
+    hResult = D3DCompileFromFile(L"E:\\HandmadeXEngine\\HandmadeGlRenderer\\HandmadeGlRenderer\\src\\shaders\\triangle.hlsl", 0, 0, "ps_main", "ps_5_0", compiler_flag, 0, &pixel_shader, 0);
+    CheckSucceeded(hResult);*/
 
     CD3DX12_ROOT_SIGNATURE_DESC root_signature_desc = {};
     root_signature_desc.Init(0, 0, 0, 0, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);

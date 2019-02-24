@@ -133,6 +133,12 @@
     <None Include="src\shaders\blur.fs" />
     <None Include="src\shaders\blendingshader.vs" />
     <None Include="src\shaders\blendingshader.fs" />
+    <None Include="src\shaders\parallaxmapping.fs" />
+    <None Include="src\shaders\parallaxmapping.vs" />
+    <None Include="src\shaders\gBuffer.fs" />
+    <None Include="src\shaders\gBuffer.vs" />
+    <None Include="src\shaders\defshading.fs" />
+    <None Include="src\shaders\defshading.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

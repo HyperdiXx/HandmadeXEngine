@@ -3,7 +3,7 @@ out vec4 FragColor;
 
 in VS_OUT {
     vec3 FragPos;
-    vec2 TexCoords;
+    vec2 UV;
     vec3 TangentLightPos;
     vec3 TangentViewPos;
     vec3 TangentFragPos;
@@ -25,9 +25,9 @@ void main()
 {           
     // offset texture coordinates with Parallax Mapping
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
-    vec2 texCoords = fs_in.TexCoords;
+    vec2 texCoords = fs_in.UV;
     
-    texCoords = ParallaxMapping(fs_in.TexCoords,  viewDir);       
+    texCoords = ParallaxMapping(fs_in.UV,  viewDir);       
     if(texCoords.x > 1.0 || texCoords.y > 1.0 || texCoords.x < 0.0 || texCoords.y < 0.0)
         discard;
 

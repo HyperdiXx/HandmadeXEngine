@@ -4,14 +4,13 @@
     OpenGL API 4.5
 
 
-    Features: Camera, Textures, MultiTextures, Lighting, Redering Interfaces, FrameBuffers, Cubemap, MSAA
-
-    TODO(vlad): Assimp, Logger, ImGUI, Stencil, Blending,
-        FaceCulling, Instancing, Add custom AA,
-        Antialiasing, ShadowMapping, PointShadow, NormalMapping,
-        ParallaxMapping, Bloom,
-        Deffered rendering,
-        Gamma Correctiom, HDR, SSAO, PBR
+    Features: Camera, Textures, MultiTextures, Lighting, Redering Interfaces, FrameBuffers, Cubemap, MSAA, ForwardShading, DefferedShading, Stencil, Blending, PostProcess,
+    FaceCulling, Instancing, DynamicShadowMapping + DirLight, OmniLightsShadows, NormalMapping, ParallaxMapping,  Antialiasing, Gamma Correctiom
+    TODO(vlad): Assimp, Logger, ImGUI, 
+        
+        
+        Bloom,
+        HDR, SSAO, PBR
 
         DX11 ...
         DX12 ...

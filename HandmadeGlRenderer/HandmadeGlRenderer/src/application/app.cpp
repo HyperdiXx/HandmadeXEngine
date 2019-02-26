@@ -3,7 +3,7 @@
 
 #include "app.h"
 
-#include "../core/generator.h"
+#include "../core/geometry/generator.h"
 
 #ifdef _WIN64
 namespace XEngine

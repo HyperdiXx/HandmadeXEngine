@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glad/glad.h>
-#include "types.h"
+#include "../types.h"
 
 namespace XEngine
 {

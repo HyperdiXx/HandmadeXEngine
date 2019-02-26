@@ -11,13 +11,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../graphicsapi/openglwnd.h"
-#include "../core/shader.h"
+#include "../core/rendering/pipeline/shader.h"
 #include "../core/texture.h"
-#include "../core/model.h"
+#include "../core/geometry/model.h"
 #include "../core/imguibase.h"
-#include "../core/camera.h"
-
-
+#include "../core/cameras/camera.h"
 
 #include <iostream>
 

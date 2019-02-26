@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "camera.h"
+#include "../cameras/camera.h"
 
 namespace XEngine
 {

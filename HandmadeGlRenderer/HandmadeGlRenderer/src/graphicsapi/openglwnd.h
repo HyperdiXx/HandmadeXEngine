@@ -9,8 +9,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../core/types.h"
 #include "../xenpch.h"
-#include "../core/input.h"
-#include "../core/camera.h"
+#include "../core/events/input.h"
+#include "../core/cameras/camera.h"
 
 const uint32 WIDTH = 1280;
 const uint32 HEIGHT = 720;

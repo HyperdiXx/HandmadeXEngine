@@ -4,9 +4,10 @@
 #define UNICODE
 #endif 
 
+#define WIN32_LEAN_AND_MEAN
 
 #include "dx12.h"
-
+#include "dx11.h"
 
 static bool Running = true;
 

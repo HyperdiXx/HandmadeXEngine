@@ -96,18 +96,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
-    <ClCompile Include="src\core\camera.cpp" />
+    <ClCompile Include="src\core\cameras\camera.cpp" />
     <ClCompile Include="src\core\events\events.cpp" />
-    <ClCompile Include="src\core\generator.cpp" />
+    <ClCompile Include="src\core\geometry\generator.cpp" />
     <ClCompile Include="src\core\imguibase.cpp" />
-    <ClCompile Include="src\core\input.cpp" />
-    <ClCompile Include="src\core\model.cpp" />
+    <ClCompile Include="src\core\events\input.cpp" />
+    <ClCompile Include="src\core\systems\filesystem.cpp" />
+    <ClCompile Include="src\core\utility\log.cpp" />
+    <ClCompile Include="src\core\geometry\model.cpp" />
     <ClCompile Include="src\core\openglgui.cpp" />
     <ClCompile Include="src\core\OpenGL\framebuffero.cpp" />
     <ClCompile Include="src\core\OpenGL\indexbuffer.cpp" />
     <ClCompile Include="src\core\OpenGL\vao.cpp" />
-    <ClCompile Include="src\core\shader.cpp" />
-    <ClCompile Include="src\core\shadertype.cpp" />
+    <ClCompile Include="src\core\rendering\pipeline\shader.cpp" />
+    <ClCompile Include="src\core\rendering\pipeline\shadertype.cpp" />
     <ClCompile Include="src\core\stb_image.cpp" />
     <ClCompile Include="src\core\text.cpp" />
     <ClCompile Include="src\core\texture.cpp" />
@@ -162,15 +164,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
-    <ClInclude Include="src\core\camera.h" />
+    <ClInclude Include="src\core\cameras\camera.h" />
     <ClInclude Include="src\core\Entity.h" />
     <ClInclude Include="src\core\events\events.h" />
     <ClInclude Include="src\core\events\joystick.h" />
     <ClInclude Include="src\core\events\keyboard.h" />
     <ClInclude Include="src\core\events\mouseEvent.h" />
-    <ClInclude Include="src\core\generator.h" />
+    <ClInclude Include="src\core\geometry\generator.h" />
     <ClInclude Include="src\core\imguibase.h" />
-    <ClInclude Include="src\core\input.h" />
+    <ClInclude Include="src\core\events\input.h" />
+    <ClInclude Include="src\core\systems\filesystem.h" />
+    <ClInclude Include="src\core\utility\log.h" />
     <ClInclude Include="src\core\math\mat3.h" />
     <ClInclude Include="src\core\math\mat4.h" />
     <ClInclude Include="src\core\math\math.h" />
@@ -178,13 +182,13 @@
     <ClInclude Include="src\core\math\vec2.h" />
     <ClInclude Include="src\core\math\vec3.h" />
     <ClInclude Include="src\core\math\vec4.h" />
-    <ClInclude Include="src\core\model.h" />
+    <ClInclude Include="src\core\geometry\model.h" />
     <ClInclude Include="src\core\openglgui.h" />
     <ClInclude Include="src\core\OpenGL\framebuffero.h" />
     <ClInclude Include="src\core\OpenGL\indexbuffer.h" />
     <ClInclude Include="src\core\OpenGL\vao.h" />
-    <ClInclude Include="src\core\shader.h" />
-    <ClInclude Include="src\core\shadertype.h" />
+    <ClInclude Include="src\core\rendering\pipeline\shader.h" />
+    <ClInclude Include="src\core\rendering\pipeline\shadertype.h" />
     <ClInclude Include="src\core\stb_image.h" />
     <ClInclude Include="src\core\text.h" />
     <ClInclude Include="src\core\texture.h" />

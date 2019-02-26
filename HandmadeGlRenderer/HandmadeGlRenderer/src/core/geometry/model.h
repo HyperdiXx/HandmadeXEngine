@@ -16,9 +16,8 @@
 #include <iostream>
 #include <string>
 
-#include "types.h"
-#include "shader.h"
-
+#include "../types.h"
+#include "../rendering/pipeline/shader.h"
 
 struct VertexX
 {

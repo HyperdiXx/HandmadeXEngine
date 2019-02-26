@@ -45,7 +45,7 @@ namespace XEngine
         OpenGLWindowBuffer wb = {};
         InitOpenglWindow(&wb);
 
-        XEngine::EngineGUI::InitGui();
+        XEngine::EngineGUI::InitGui(wb.window);
 
         InitStats();
         
@@ -653,7 +653,7 @@ namespace XEngine
             glDepthFunc(GL_LESS);
 
 
-            XEngine::EngineGUI::UpdateGui(&gui);
+            XEngine::EngineGUI::UpdateGui(wb.window,&gui);
 
             glfwSwapBuffers(wb.window);
             glfwPollEvents();

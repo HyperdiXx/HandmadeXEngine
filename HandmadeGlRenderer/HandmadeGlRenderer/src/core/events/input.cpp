@@ -52,6 +52,7 @@ namespace XEngine
        
     void processInput(GLFWwindow *window, Camera *cam)
     {
+        //gInp.lock();
         if (onKeyboardPressed(window, GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window, true); 
         if (onKeyboardPressed(window, GLFW_KEY_W))
@@ -62,7 +63,7 @@ namespace XEngine
             cam->camPos -= glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
         if (onKeyboardPressed(window, GLFW_KEY_D))
             cam->camPos += glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
-        
+        //gInp.unlock();
     }
 
   

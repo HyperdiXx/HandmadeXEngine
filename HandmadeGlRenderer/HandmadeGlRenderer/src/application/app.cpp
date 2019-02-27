@@ -1,6 +1,6 @@
 
 
-
+#include <thread>
 #include "app.h"
 
 #include "../core/geometry/generator.h"
@@ -562,7 +562,6 @@ namespace XEngine
         bool bloom = true;
         bool bloomKeyPressed = false;
         float exposure = 1.0f;
-
         while (!glfwWindowShouldClose(wb.window))
         {
 
@@ -575,6 +574,7 @@ namespace XEngine
                         
             XEngine::processInput(wb.window, &cam);
             //std::thread inp(XEngine::processInput, wb.window, &cam);
+            //inp.detach();
             //inp.join();
 
           

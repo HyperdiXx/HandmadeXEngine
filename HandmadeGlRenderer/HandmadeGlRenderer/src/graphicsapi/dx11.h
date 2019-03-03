@@ -1,6 +1,7 @@
 #pragma once
 
-
+#ifndef DX11
+#define DX11
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -12,20 +13,24 @@
 using namespace DirectX;
 
 
-namespace XEngine
+
+struct DirectX11
 {
-    namespace DX11
-    {
-        struct DirectX11
-        {    
-            ID3D11Device* device;
-            ID3D11DeviceContext* deviceContext;
-            ID3D11RenderTargetView* renderTargetView;
-            ID3D11DepthStencilState* depthStencilState;
-            ID3D11DepthStencilView* depthStencilView;
-            ID3D11RasterizerState* rasterState;
-            IDXGISwapChain* swapChain;
-            ID3D11Texture2D* depthStencilBuffer;
-        };
-    }
-}
+    ID3D11Device* device;
+    ID3D11DeviceContext* deviceContext;
+    ID3D11RenderTargetView* renderTargetView;
+    ID3D11DepthStencilState* depthStencilState;
+    ID3D11DepthStencilView* depthStencilView;
+    ID3D11RasterizerState* rasterState;
+    IDXGISwapChain* swapChain;
+    ID3D11Texture2D* depthStencilBuffer;
+};
+
+void InitDX11(HWND hwnd, DirectX11 *dx, int width, int height, float screenNear, float screenFar);
+
+
+
+
+#endif // !DX1
+
+

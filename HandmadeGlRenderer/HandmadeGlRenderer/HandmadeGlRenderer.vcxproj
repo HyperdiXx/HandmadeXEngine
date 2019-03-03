@@ -114,6 +114,7 @@
     <ClCompile Include="src\core\text.cpp" />
     <ClCompile Include="src\core\texture.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\graphicsapi\dx11.cpp" />
     <ClCompile Include="src\graphicsapi\dx12.cpp" />
     <ClCompile Include="src\graphicsapi\openglwnd.cpp" />
     <ClCompile Include="src\graphicsapi\windowabstaraction.cpp" />
@@ -208,6 +209,9 @@
     <ClInclude Include="src\imguit\imstb_truetype.h" />
     <ClInclude Include="src\material.h" />
     <ClInclude Include="src\xenpch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\shaders\triangle.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

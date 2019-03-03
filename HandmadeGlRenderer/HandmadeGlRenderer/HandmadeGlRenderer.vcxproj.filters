@@ -99,6 +99,9 @@
     <ClCompile Include="src\core\systems\filesystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphicsapi\dx11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\textures\container.jpg">
@@ -282,5 +285,8 @@
     <ClInclude Include="src\core\math\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\shaders\triangle.hlsl" />
   </ItemGroup>
 </Project>

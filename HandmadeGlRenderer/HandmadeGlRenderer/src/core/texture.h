@@ -58,8 +58,8 @@ namespace XEngine
     uint32 loadCubemap(std::vector<std::string> textures);
     int loadTexture(const char* filename);
 
-
-
+    void bindTexture2D(uint16 n, uint32 tex1);
+    void bindCubeTexture2D(uint16 n, uint32 tex1);
 }
 
 

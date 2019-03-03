@@ -173,6 +173,7 @@
     <ClInclude Include="src\core\geometry\generator.h" />
     <ClInclude Include="src\core\imguibase.h" />
     <ClInclude Include="src\core\events\input.h" />
+    <ClInclude Include="src\core\math\matrix.h" />
     <ClInclude Include="src\core\systems\filesystem.h" />
     <ClInclude Include="src\core\utility\log.h" />
     <ClInclude Include="src\core\math\mat3.h" />

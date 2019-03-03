@@ -1,4 +1,6 @@
 #pragma once
+
+
 #ifndef INIT
 #define INIT
 
@@ -12,8 +14,9 @@
 #include "../core/events/input.h"
 #include "../core/cameras/camera.h"
 
-const uint32 WIDTH = 1280;
-const uint32 HEIGHT = 720;
+
+static const uint32 WIDTH = 1280;
+static const uint32 HEIGHT = 720;
 
 struct OpenGLWindowBuffer
 {

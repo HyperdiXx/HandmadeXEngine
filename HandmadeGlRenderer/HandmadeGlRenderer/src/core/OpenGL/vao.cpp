@@ -15,6 +15,37 @@ void addVertexBuffer(VertexAO *ao, std::vector<float> values, int dimension, int
 
 }
 
+void vertexAttribPointers(int n, uint32 ds)
+{
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+}
+
+void setAttribPointersFloat()
+{
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+}
+
+void createVertexBuffer(GeometryBuffer *geo)
+{
+    glGenVertexArrays(1, &geo->vao);
+    glGenBuffers(1, &geo->vbo);
+    glBindVertexArray(geo->vao);
+    glBindBuffer(GL_ARRAY_BUFFER, geo->vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(geo->data), geo->data, GL_STATIC_DRAW);
+    setAttribPointersFloat();
+    glBindVertexArray(0);
+}
+
+void createIndexBuffer()
+{
+
+}
+
 void bindVAO(VertexAO *ao)
 {
     glBindVertexArray(ao->id);
@@ -32,4 +63,67 @@ void unbindVAO(VertexAO *ao)
     }
 
     glBindVertexArray(0);
+}
+
+void test(int *planeVertices, int* vertices)
+{
+    unsigned int planeVAO, planeVBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glBindVertexArray(planeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glBindVertexArray(0);
+
+    unsigned int VBO, VAO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    
+}
+
+void createSkybox(GeometryBuffer* sky)
+{
+    glGenVertexArrays(1, &sky->vao);
+    glBindVertexArray(sky->vao);
+
+    glGenBuffers(1, &sky->vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, sky->vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sky->data), sky->data, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+}
+
+void delGeometry(GeometryBuffer* b)
+{
+    glDeleteVertexArrays(1, &b->vao);
+    glDeleteBuffers(1, &b->vbo);
 }

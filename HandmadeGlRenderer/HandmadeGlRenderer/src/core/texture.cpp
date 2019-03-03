@@ -46,6 +46,18 @@ namespace XEngine
         return textureid;
     }
 
+    void bindTexture2D(uint16 n, uint32 tex1)
+    {
+        glActiveTexture(GL_TEXTURE0 + n);
+        glBindTexture(GL_TEXTURE_2D, tex1);
+    }
+
+    void bindCubeTexture2D(uint16 n, uint32 tex1)
+    {
+        glActiveTexture(GL_TEXTURE0 + n);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tex1);
+    }
+
 
     uint32 loadCubemap(std::vector<std::string> textures)
     {

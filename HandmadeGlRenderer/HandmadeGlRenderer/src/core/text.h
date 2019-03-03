@@ -8,7 +8,7 @@
 
 
 #include "texture.h"
-#include "shader.h"
+#include "rendering/pipeline/shader.h"
 
 namespace XEngine
 {

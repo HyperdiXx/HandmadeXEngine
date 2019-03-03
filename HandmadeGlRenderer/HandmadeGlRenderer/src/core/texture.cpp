@@ -59,6 +59,11 @@ namespace XEngine
     }
 
 
+    void setDepthFunc(int n)
+    {
+        glDepthFunc(n);
+    }
+
     uint32 loadCubemap(std::vector<std::string> textures)
     {
         unsigned int textureid;

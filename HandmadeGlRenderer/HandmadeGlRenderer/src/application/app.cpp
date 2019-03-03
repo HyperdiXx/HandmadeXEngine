@@ -153,50 +153,7 @@ namespace XEngine
              25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
         };
 
-        float skyboxVertices[] = {
-
-            -1.0f,  1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
-
-            -1.0f, -1.0f,  1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f,  1.0f,
-            -1.0f, -1.0f,  1.0f,
-
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-
-            -1.0f, -1.0f,  1.0f,
-            -1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f, -1.0f,  1.0f,
-            -1.0f, -1.0f,  1.0f,
-
-            -1.0f,  1.0f, -1.0f,
-             1.0f,  1.0f, -1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-            -1.0f,  1.0f,  1.0f,
-            -1.0f,  1.0f, -1.0f,
-
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f,  1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f,  1.0f,
-             1.0f, -1.0f,  1.0f
-        };
+      
 
         float vertices[] = {
 
@@ -258,11 +215,9 @@ namespace XEngine
         
 
         GeometryBuffer plane;
-        GeometryBuffer sky;
-        plane.data = planeVertices;
-        sky.data = skyboxVertices;
-        createVertexBuffer(&plane);
-        createVertexBuffer(&sky);
+
+        createVertexBuffer(&plane, planeVertices);
+        GeometryBuffer sky = createSkybox();
 
         /*std::vector<glm::vec3> lightPositions;
         lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
@@ -337,6 +292,8 @@ namespace XEngine
         setInt(&shaderLightingPass, "GNormal", 1);
         setInt(&shaderLightingPass, "GSpeccolor", 2);
 
+        Win32UseShader(&cubeMap);
+        setInt(&cubeMap, "skybox", 0);
         
 
         /*Win32UseShader(&normalMappingShader);
@@ -369,14 +326,6 @@ namespace XEngine
         setInt(&mixedShader, "bloomBlur", 1);*/
 
 
-        /*Model barrel = {};
-
-        barrel.filename = "Models/barrels.fbx";
-
-        loadModelopengl(&barrel);
-
-        */
-
 
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
@@ -401,6 +350,7 @@ namespace XEngine
         glm::vec3 point = glm::vec3(rand() % 20, 0.0, rand() % 20);
         glm::mat4 floormodel = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 mvp = glm::mat4(1.0f);
         float nearp = 1.0f, farp = 7.5f;
         glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearp, farp);
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
@@ -428,7 +378,7 @@ namespace XEngine
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-          
+           
             projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
             view = glm::mat4(XEngine::getViewMatrix(&cam));
             Win32UseShader(&dispShader);
@@ -436,7 +386,7 @@ namespace XEngine
             setMat4(&dispShader, "view", view);
 
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // rotate the quad to show parallax mapping from multiple directions
+            model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
             setMat4(&dispShader, "model", model);
             setVec3(&dispShader, "viewPos", cam.camPos);
             setVec3(&dispShader, "lightPos", lightPos);
@@ -456,7 +406,7 @@ namespace XEngine
             renderQuad();
 
             //skybox
-            glDepthFunc(GL_LEQUAL);
+            setDepthFunc(GL_LEQUAL);
             Win32UseShader(&cubeMap);
             view = glm::mat4(glm::mat3(XEngine::getViewMatrix(&cam)));
             setMat4(&cubeMap, "projection", projection);
@@ -465,7 +415,7 @@ namespace XEngine
             bindCubeTexture2D(0, cubemaptexture);
             glDrawArrays(GL_TRIANGLES, 0, 36);
             glBindVertexArray(0);
-            glDepthFunc(GL_LESS);
+            setDepthFunc(GL_LESS);
 
 
             XEngine::EngineGUI::UpdateGui(wb.window,&gui);
@@ -478,6 +428,7 @@ namespace XEngine
         delGeometry(&plane);
         delGeometry(&sky);
         glDeleteVertexArrays(1, &cubeVAO);
+
         glDeleteBuffers(1, &cubeVBO);
 
         glfwTerminate();

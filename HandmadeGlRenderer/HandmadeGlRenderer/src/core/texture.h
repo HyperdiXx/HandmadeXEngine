@@ -60,6 +60,7 @@ namespace XEngine
 
     void bindTexture2D(uint16 n, uint32 tex1);
     void bindCubeTexture2D(uint16 n, uint32 tex1);
+    void setDepthFunc(int n);
 }
 
 

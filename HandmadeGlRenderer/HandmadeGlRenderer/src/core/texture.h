@@ -5,8 +5,9 @@
 
 #include <glad/glad.h>
 #include <stb_image.h>
-#include "../xenpch.h"
 #include "types.h"
+
+#include <vector>
 
 namespace XEngine
 {

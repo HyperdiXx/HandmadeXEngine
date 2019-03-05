@@ -11,10 +11,7 @@
 #include "../../types.h"
 #include "shadertype.h"
 
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <string>
+
 
 struct Shader
 {

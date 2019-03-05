@@ -1,3 +1,4 @@
+#include "../xenpch.h"
 #include "texture.h"
 
 namespace XEngine

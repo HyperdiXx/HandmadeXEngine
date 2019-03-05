@@ -3,20 +3,13 @@
 #ifndef DX12
 #define DX12
 
+#include "../core/utility/assert.h"
 
 #include <d3d12.h>
 #include "../core/d3dx12.h"
 #include <dxgi1_2.h>
 #include <d3dcompiler.h>
 
-#define Assert(x) \
-    if (!(x)) { MessageBoxA(0, #x, "Assertion Failure", MB_OK); __debugbreak();}
-
-#define Check(x) \
-    if (!(x)) { MessageBoxA(0, #x, "Check Failure", MB_OK); __debugbreak();}
-
-#define CheckSucceeded(hresult) \
-    Check(SUCCEEDED(hresult))
 
 #pragma comment (lib, "d3d12.lib")
 #pragma comment (lib, "dxgi.lib")

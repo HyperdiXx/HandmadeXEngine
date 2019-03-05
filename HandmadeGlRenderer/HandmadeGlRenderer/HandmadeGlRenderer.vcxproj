@@ -176,6 +176,7 @@
     <ClInclude Include="src\core\events\input.h" />
     <ClInclude Include="src\core\math\matrix.h" />
     <ClInclude Include="src\core\systems\filesystem.h" />
+    <ClInclude Include="src\core\utility\assert.h" />
     <ClInclude Include="src\core\utility\log.h" />
     <ClInclude Include="src\core\math\mat3.h" />
     <ClInclude Include="src\core\math\mat4.h" />
@@ -211,7 +212,10 @@
     <ClInclude Include="src\xenpch.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\shaders\triangle.hlsl" />
+    <FxCompile Include="src\shaders\triangle.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

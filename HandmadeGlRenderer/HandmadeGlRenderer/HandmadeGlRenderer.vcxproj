@@ -166,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
+    <ClInclude Include="src\core\containers\vector.h" />
     <ClInclude Include="src\core\Entity.h" />
     <ClInclude Include="src\core\events\events.h" />
     <ClInclude Include="src\core\events\joystick.h" />

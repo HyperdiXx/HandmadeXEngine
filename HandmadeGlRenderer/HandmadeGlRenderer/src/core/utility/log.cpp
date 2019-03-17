@@ -5,10 +5,10 @@
 
 using namespace XEngine;
 
-XEngine::Log& XEngine::getLog()
-{
-    return Instance;
-}
+//XEngine::Log& XEngine::getLog()
+//{
+//    return Instance;
+//}
 
 bool32 XEngine::openFile(Log *a)
 {

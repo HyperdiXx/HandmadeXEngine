@@ -6,6 +6,10 @@
 #include "../types.h"
 #include <string>
 #include <fstream>
+#include <iostream>
+
+#define LOG(i) std::cout << i;
+
 
 namespace XEngine
 {
@@ -15,9 +19,9 @@ namespace XEngine
         std::wofstream logstream;
     };
 
-    static Log Instance;
+    //static Log Instance;
 
-    static Log& getLog();
+    //static Log& getLog();
 
     bool32 openFile(Log * a);
     bool32 closeFile(Log* a);

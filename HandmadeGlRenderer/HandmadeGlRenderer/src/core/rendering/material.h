@@ -8,8 +8,8 @@
 
 #include <glm/glm.hpp>
 
-struct Material {
-
+struct Material 
+{
     glm::vec4 diffuseColor;
     glm::vec4 specularColor ;
     glm::vec4 glowColor;

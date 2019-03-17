@@ -7,7 +7,7 @@
 
 #include <glad/glad.h>
 #include <gl/GL.h>
-#include "../types.h"
+#include "src/core/types.h"
 
 #include "IndexBuffer.h"
 
@@ -28,8 +28,7 @@ struct GeometryBuffer
 void addIndexBuffer(std::vector<unsigned int> indices, IndexBuffer &index);
 void addVertexBuffer(std::vector<float> values, int dimension, int row);
 
-void createVertexBuffer(GeometryBuffer *geo, float d[]);
-GeometryBuffer createSkybox();
+void createVertexBuffer(GeometryBuffer *geo, std::vector<float> d);
 void createIndexBuffer();
 
 void bindVAO(VertexAO *ao);

@@ -60,6 +60,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype.lib;assimp-vc140-mt.lib;glfw643.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -80,6 +81,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -96,23 +98,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
+    <ClCompile Include="src\core\assets.cpp" />
     <ClCompile Include="src\core\cameras\camera.cpp" />
     <ClCompile Include="src\core\events\events.cpp" />
     <ClCompile Include="src\core\geometry\generator.cpp" />
     <ClCompile Include="src\core\imguibase.cpp" />
     <ClCompile Include="src\core\events\input.cpp" />
+    <ClCompile Include="src\core\math\matrix.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\framebuffero.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\indexbuffer.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\vao.cpp" />
+    <ClCompile Include="src\core\rendering\scenegraph.cpp" />
+    <ClCompile Include="src\core\rendering\texture.cpp" />
     <ClCompile Include="src\core\systems\filesystem.cpp" />
     <ClCompile Include="src\core\utility\log.cpp" />
     <ClCompile Include="src\core\geometry\model.cpp" />
     <ClCompile Include="src\core\openglgui.cpp" />
-    <ClCompile Include="src\core\OpenGL\framebuffero.cpp" />
-    <ClCompile Include="src\core\OpenGL\indexbuffer.cpp" />
-    <ClCompile Include="src\core\OpenGL\vao.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shader.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shadertype.cpp" />
     <ClCompile Include="src\core\stb_image.cpp" />
     <ClCompile Include="src\core\text.cpp" />
-    <ClCompile Include="src\core\texture.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\graphicsapi\dx11.cpp" />
     <ClCompile Include="src\graphicsapi\dx12.cpp" />
@@ -124,6 +129,7 @@
     <ClCompile Include="src\imguit\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\objects\skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\imguit\imgui.ini" />
@@ -165,9 +171,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
+    <ClInclude Include="src\core\assets.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
     <ClInclude Include="src\core\containers\vector.h" />
-    <ClInclude Include="src\core\Entity.h" />
+    <ClInclude Include="src\core\entity.h" />
     <ClInclude Include="src\core\events\events.h" />
     <ClInclude Include="src\core\events\joystick.h" />
     <ClInclude Include="src\core\events\keyboard.h" />
@@ -175,7 +182,13 @@
     <ClInclude Include="src\core\geometry\generator.h" />
     <ClInclude Include="src\core\imguibase.h" />
     <ClInclude Include="src\core\events\input.h" />
+    <ClInclude Include="src\core\rendering\material.h" />
     <ClInclude Include="src\core\math\matrix.h" />
+    <ClInclude Include="src\core\rendering\openglnew\framebuffero.h" />
+    <ClInclude Include="src\core\rendering\openglnew\indexbuffer.h" />
+    <ClInclude Include="src\core\rendering\openglnew\vao.h" />
+    <ClInclude Include="src\core\rendering\scenegraph.h" />
+    <ClInclude Include="src\core\rendering\texture.h" />
     <ClInclude Include="src\core\systems\filesystem.h" />
     <ClInclude Include="src\core\utility\assert.h" />
     <ClInclude Include="src\core\utility\log.h" />
@@ -195,7 +208,6 @@
     <ClInclude Include="src\core\rendering\pipeline\shadertype.h" />
     <ClInclude Include="src\core\stb_image.h" />
     <ClInclude Include="src\core\text.h" />
-    <ClInclude Include="src\core\texture.h" />
     <ClInclude Include="src\core\types.h" />
     <ClInclude Include="src\core\d3dx12.h" />
     <ClInclude Include="src\graphicsapi\dx11.h" />
@@ -210,6 +222,7 @@
     <ClInclude Include="src\imguit\imstb_textedit.h" />
     <ClInclude Include="src\imguit\imstb_truetype.h" />
     <ClInclude Include="src\material.h" />
+    <ClInclude Include="src\objects\skybox.h" />
     <ClInclude Include="src\xenpch.h" />
   </ItemGroup>
   <ItemGroup>

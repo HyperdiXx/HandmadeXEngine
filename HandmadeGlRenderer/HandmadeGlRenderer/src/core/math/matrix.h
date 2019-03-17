@@ -4,12 +4,16 @@
 #ifndef MATRIX
 #define MATRIX
 
+class Matrix
+{
+public:
+    static void setProjectionMatrix();
+    static void setTransform();
+    static void setScale();
+    static void setRot();
+};
 
 
-void setProjectionMatrix();
-void setTransform();
-void setScale();
-void setScale();
 
 #endif // !MATRIX
 

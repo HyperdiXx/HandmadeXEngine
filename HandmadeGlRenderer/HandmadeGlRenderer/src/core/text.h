@@ -6,8 +6,7 @@
 
 #include <glm/glm.hpp>
 
-
-#include "texture.h"
+#include "rendering/texture.h"
 #include "rendering/pipeline/shader.h"
 
 namespace XEngine

@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include "../types.h"
+#include <vector>
 
 namespace XEngine
 {
@@ -15,7 +16,8 @@ namespace XEngine
     void renderCube();
     void renderRect();
     void renderQuad();
-
+    std::vector<float> createPlane();
+    std::vector<float> createVert();
 }
 
 

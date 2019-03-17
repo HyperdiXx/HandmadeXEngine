@@ -5,7 +5,7 @@
 
 #include <glad/glad.h>
 #include <stb_image.h>
-#include "types.h"
+#include "../types.h"
 
 #include <vector>
 
@@ -54,10 +54,10 @@ namespace XEngine
         std::vector<std::string> textures;
     };
 
-
    
     uint32 loadCubemap(std::vector<std::string> textures);
     int loadTexture(const char* filename);
+    uint32 loadtexture2DFromDir(const std::string path, const std::string &dir, bool gamma);
 
     void bindTexture2D(uint16 n, uint32 tex1);
     void bindCubeTexture2D(uint16 n, uint32 tex1);

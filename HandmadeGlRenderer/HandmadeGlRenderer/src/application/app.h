@@ -12,7 +12,7 @@
 
 #include "../graphicsapi/openglwnd.h"
 #include "../core/rendering/pipeline/shader.h"
-#include "../core/texture.h"
+#include "../core/rendering/texture.h"
 #include "../core/geometry/model.h"
 #include "../core/imguibase.h"
 #include "../core/cameras/camera.h"

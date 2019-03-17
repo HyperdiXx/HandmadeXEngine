@@ -4,7 +4,10 @@
 #include "app.h"
 
 #include "../core/geometry/generator.h"
-#include "../core/OpenGL/vao.h"
+#include "src/core/rendering/openglnew/vao.h"
+#include "src/objects/skybox.h"
+#include "src/core/utility/log.h"
+
 
 #ifdef _WIN64
 namespace XEngine
@@ -15,33 +18,32 @@ namespace XEngine
     void renderScene(Shader *shader, unsigned int &vao)
     {
         glm::mat4 model = glm::mat4(1.0f);
-        setMat4(shader, "model", model);
+        shader->setMat4("model", model);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // cubes
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
         model = glm::scale(model, glm::vec3(0.5f));
-        setMat4(shader, "model", model);
+        shader->setMat4("model", model);
         renderCube();
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
         model = glm::scale(model, glm::vec3(0.5f));
-        setMat4(shader, "model", model);
+        shader->setMat4("model", model);
         renderCube();
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
         model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
         model = glm::scale(model, glm::vec3(0.25));
-        setMat4(shader, "model", model);
+        shader->setMat4("model", model);
         renderCube();
     }
 
     
     void OpenGLRunEngineWin32()
     {
-        
-        std::cout << "OpenGLInitEngine\n";
+        LOG("OpenGLInitEngine\n");
 
         OpenGLWindowBuffer wb = {};
         InitOpenglWindow(&wb);
@@ -50,85 +52,40 @@ namespace XEngine
 
         InitStats();
         
-        Shader basicShader = {};
-        Shader lightShader = {};
-        Shader cubeMap = {};
-        Shader floorShader = {};
-        Shader textShader = {};
-        Shader lightMapShader = {};
-        Shader depthMapQuad = {};
-        Shader shadowShader = {};
-        Shader normalMappingShader = {};
+        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
+        Shader lightShader("src/shaders/bloom.vs", "src/shaders/light.fs");
+        Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
+        Shader floorShader("src/shaders/lightPhongnew.vs", "src/shaders/lightPhongnew.fs");
+        Shader textShader("src/shaders/text.vs", "src/shaders/text.fs");
+        Shader lightMapShader("src/shaders/lightrender.vs", "src/shaders/lightrender.fs");
+        Shader depthMapQuad("src/shaders/depth.vs", "src/shaders/depth.fs");
+        Shader shadowShader("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");
+        Shader normalMappingShader("src/shaders/normalShader.vs", "src/shaders/normalShader.fs");
 
-        Shader blurShader = {};
-        Shader bloomShader = {};
-        Shader mixedShader = {};
+        Shader blurShader("src/shaders/blur.vs", "src/shaders/blur.fs");
+        Shader bloomShader("src/shaders/bloom.vs", "src/shaders/bloom.fs");
+        Shader mixedShader("src/shaders/blendingshader.vs", "src/shaders/blendingshader.fs");
 
-        Shader dispShader = {};
+        Shader dispShader("src/shaders/parallaxmapping.vs", "src/shaders/parallaxmapping.fs");
 
-        Shader shaderGeometryPass = {}; 
-        Shader shaderLightingPass = {}; 
+        Shader shaderGeometryPass("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
+        Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
-        
-        shaderGeometryPass.vs = "src/shaders/gBuffer.vs";
-        shaderGeometryPass.fs = "src/shaders/gBuffer.fs";
 
-        shaderLightingPass.vs = "src/shaders/defshading.vs";
-        shaderLightingPass.fs = "src/shaders/defshading.fs";
-
-        dispShader.vs = "src/shaders/parallaxmapping.vs";
-        dispShader.fs = "src/shaders/parallaxmapping.fs";
-
-        blurShader.vs = "src/shaders/blur.vs";
-        blurShader.fs = "src/shaders/blur.fs";
-
-        bloomShader.vs = "src/shaders/bloom.vs";
-        bloomShader.fs = "src/shaders/bloom.fs";
-
-        mixedShader.vs = "src/shaders/blendingshader.vs";
-        mixedShader.fs = "src/shaders/blendingshader.fs";
-
-        normalMappingShader.vs = "src/shaders/normalShader.vs";
-        normalMappingShader.fs = "src/shaders/normalShader.fs";
-
-        cubeMap.vs = "src/shaders/cubeMap.vs";
-        cubeMap.fs = "src/shaders/cubeMap.fs";
-
-        basicShader.vs = "src/shaders/basicShader.vs";
-        basicShader.fs = "src/shaders/basicShader.fs";
-
-        lightShader.vs = "src/shaders/bloom.vs";
-        lightShader.fs = "src/shaders/light.fs";
-
-        floorShader.vs = "src/shaders/lightPhongnew.vs";
-        floorShader.fs = "src/shaders/lightPhongnew.fs";
-
-        textShader.vs = "src/shaders/text.vs";
-        textShader.fs = "src/shaders/text.fs";
-
-        depthMapQuad.vs = "src/shaders/depth.vs";
-        depthMapQuad.fs = "src/shaders/depth.fs";
-
-        lightMapShader.vs = "src/shaders/lightrender.vs";
-        lightMapShader.fs = "src/shaders/lightrender.fs";
-
-        shadowShader.vs = "src/shaders/basicshadows.vs";
-        shadowShader.fs = "src/shaders/basicshadows.fs";
-
-        Win32SetShaderName(&basicShader);
-        Win32SetShaderName(&lightShader);
-        Win32SetShaderName(&cubeMap);
-        Win32SetShaderName(&floorShader);
-        Win32SetShaderName(&lightMapShader);
-        Win32SetShaderName(&depthMapQuad);
-        Win32SetShaderName(&shadowShader);
-        Win32SetShaderName(&normalMappingShader);
-        Win32SetShaderName(&blurShader);
-        Win32SetShaderName(&bloomShader);
-        Win32SetShaderName(&mixedShader);
-        Win32SetShaderName(&dispShader);
-        Win32SetShaderName(&shaderGeometryPass);
-        Win32SetShaderName(&shaderLightingPass);
+        basicShader.Win32SetShaderName();
+        lightShader.Win32SetShaderName();
+        cubeMap.Win32SetShaderName();
+        floorShader.Win32SetShaderName();
+        lightMapShader.Win32SetShaderName();
+        depthMapQuad.Win32SetShaderName();
+        shadowShader.Win32SetShaderName();
+        normalMappingShader.Win32SetShaderName();
+        blurShader.Win32SetShaderName();
+        bloomShader.Win32SetShaderName();
+        mixedShader.Win32SetShaderName();
+        dispShader.Win32SetShaderName();
+        shaderGeometryPass.Win32SetShaderName();
+        shaderLightingPass.Win32SetShaderName();
 
 
         std::vector<glm::vec3> objectPositions;
@@ -142,64 +99,7 @@ namespace XEngine
         objectPositions.push_back(glm::vec3(0.0, 0.0, 3.0));
         objectPositions.push_back(glm::vec3(3.0, 0.0, 3.0));
 
-        float planeVertices[] = {
-                        
-             25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-            -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-            -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-
-             25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-            -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-             25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
-        };
-
-      
-
-        float vertices[] = {
-
-             -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-             0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-
-            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-             0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-             0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-             0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-        };
-
+        
         glm::vec3 cubePositions[] = {
             glm::vec3(2.0f,  1.0f,  0.0f),
             glm::vec3(4.0f,  5.0f,  0.0f),
@@ -215,10 +115,14 @@ namespace XEngine
         
 
         GeometryBuffer plane;
+        std::vector<float> planeVertices = createPlane();
 
         createVertexBuffer(&plane, planeVertices);
-        GeometryBuffer sky = createSkybox();
 
+        Skybox sky;
+
+        sky.createSkybox();
+                
         /*std::vector<glm::vec3> lightPositions;
         lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
         lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
@@ -235,7 +139,7 @@ namespace XEngine
 
         //gBuffer creation
 
-        uint32 GPos, GNormal, GSpeccolor, GBuffer, rboDepth;
+        //uint32 GPos, GNormal, GSpeccolor, GBuffer, rboDepth;
 
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -247,14 +151,14 @@ namespace XEngine
         for (unsigned int i = 0; i < NR_LIGHTS; i++)
         {
             // calculate slightly random offsets
-            float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-            float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
-            float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+            float xPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
+            float yPos = ((rand() % 100) / 100.0f) * 6.0f - 4.0f;
+            float zPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
             lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
             // also calculate random color
-            float rColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
-            float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
-            float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+            float rColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
+            float gColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
+            float bColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
             lightColors.push_back(glm::vec3(rColor, gColor, bColor));
         }
 
@@ -278,22 +182,24 @@ namespace XEngine
         unsigned int normalMap = loadTexture("src/textures/bricks2_normal.jpg");
         unsigned int dispMap = loadTexture("src/textures/bricks2_disp.jpg");
 
-        Win32UseShader(&dispShader);
-        setInt(&dispShader, "diffuseMap", 0);
-        setInt(&dispShader, "normalMap", 1);
-        setInt(&dispShader, "depthMap", 2);
+       
 
-        Win32UseShader(&shaderGeometryPass);
-        setInt(&shaderGeometryPass, "tex1", 0);
-        setInt(&shaderGeometryPass, "tex2", 1);
+        dispShader.Win32UseShader();
+        dispShader.setInt("diffuseMap", 0);
+        dispShader.setInt("normalMap", 1);
+        dispShader.setInt("depthMap", 2);
 
-        Win32UseShader(&shaderLightingPass);
-        setInt(&shaderLightingPass, "GPos", 0);
-        setInt(&shaderLightingPass, "GNormal", 1);
-        setInt(&shaderLightingPass, "GSpeccolor", 2);
+        shaderGeometryPass.Win32UseShader();
+        shaderGeometryPass.setInt("tex1", 0);
+        shaderGeometryPass.setInt("tex2", 1);
 
-        Win32UseShader(&cubeMap);
-        setInt(&cubeMap, "skybox", 0);
+        shaderLightingPass.Win32UseShader();
+        shaderLightingPass.setInt("GPos", 0);
+        shaderLightingPass.setInt("GNormal", 1);
+        shaderLightingPass.setInt("GSpeccolor", 2);
+
+        cubeMap.Win32UseShader();
+        cubeMap.setInt("skybox", 0);
         
 
         /*Win32UseShader(&normalMappingShader);
@@ -326,14 +232,14 @@ namespace XEngine
         setInt(&mixedShader, "bloomBlur", 1);*/
 
 
+        Model firstmodel("src/models/barrels.fbx", false);
 
+           
+        
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
 
-        cam.camPos = glm::vec3(0.0f, 2.0f, 10.0f);
-        cam.camTarget = glm::vec3(0.0f, 0.0f, -1.0f);
-        cam.camUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
+   
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
 
@@ -362,8 +268,9 @@ namespace XEngine
         while (!glfwWindowShouldClose(wb.window))
         {
 
-            std::cout << "UpdateEngine\n";
+            LOG("\rUpdateLoop...");
             cam.speed = 2.5f * deltaTime;
+            
             real64 currFrame = glfwGetTime();
 
             deltaTime = currFrame - lastFrame;
@@ -380,17 +287,17 @@ namespace XEngine
 
            
             projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-            view = glm::mat4(XEngine::getViewMatrix(&cam));
-            Win32UseShader(&dispShader);
-            setMat4(&dispShader, "projection", projection);
-            setMat4(&dispShader, "view", view);
+            view = glm::mat4(cam.getViewMatrix());
+            dispShader.Win32UseShader();
+            dispShader.setMat4("projection", projection);
+            dispShader.setMat4("view", view);
 
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-            setMat4(&dispShader, "model", model);
-            setVec3(&dispShader, "viewPos", cam.camPos);
-            setVec3(&dispShader, "lightPos", lightPos);
-            setFloat(&dispShader, "heightScale", 0.1);
+            dispShader.setMat4("model", model);
+            dispShader.setVec3("viewPos", cam.getCamPos());
+            dispShader.setVec3("lightPos", lightPos);
+            dispShader.setFloat("heightScale", 0.1f);
 
             bindTexture2D(0, diffuseMapForNormals);
             bindTexture2D(1, normalMap);
@@ -402,31 +309,34 @@ namespace XEngine
             model = glm::mat4(1.0f);
             model = glm::translate(model, lightPos);
             model = glm::scale(model, glm::vec3(0.1f));
-            setMat4(&dispShader, "model", model);
+            dispShader.setMat4("model", model);
             renderQuad();
 
             //skybox
-            setDepthFunc(GL_LEQUAL);
-            Win32UseShader(&cubeMap);
-            view = glm::mat4(glm::mat3(XEngine::getViewMatrix(&cam)));
-            setMat4(&cubeMap, "projection", projection);
-            setMat4(&cubeMap, "view", view);
+           /* setDepthFunc(GL_LEQUAL);
+            cubeMap.Win32UseShader();
+            view = glm::mat4(cam.getViewMatrix());
+            cubeMap.setMat4("projection", projection);
+            cubeMap.setMat4("view", view);
             glBindVertexArray(sky.vao);
             bindCubeTexture2D(0, cubemaptexture);
             glDrawArrays(GL_TRIANGLES, 0, 36);
             glBindVertexArray(0);
-            setDepthFunc(GL_LESS);
+            setDepthFunc(GL_LESS);*/
 
+            view = glm::mat4(cam.getViewMatrix());
+            sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
 
             XEngine::EngineGUI::UpdateGui(wb.window,&gui);
 
             glfwSwapBuffers(wb.window);
             glfwPollEvents();
+            
         }
 
 
         delGeometry(&plane);
-        delGeometry(&sky);
+        delGeometry(sky.getGeometryBuffer());
         glDeleteVertexArrays(1, &cubeVAO);
 
         glDeleteBuffers(1, &cubeVBO);
@@ -455,6 +365,11 @@ namespace XEngine
     void RenderQ(Shader *shader)
     {
         
+    }
+
+    void renderSky()
+    {
+
     }
 }
    

@@ -21,7 +21,6 @@
 
 #include <thread>
 #include <future>
-#include <thread>
 
 #include "application/app.h"
 

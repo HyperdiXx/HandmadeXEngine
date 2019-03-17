@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef MODEL
-#define MODEL
 
 #include <glad/glad.h> 
 
@@ -15,52 +13,82 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <cstddef>
+#include <fstream>
 
 #include "../types.h"
 #include "../rendering/pipeline/shader.h"
 
-struct VertexX
+
+struct VertexStruct
 {
     glm::vec3 pos;
     glm::vec3 normal;
-    glm::vec2 uv;
     glm::vec3 tangent;
     glm::vec3 bitangent;
+    glm::vec2 uv;
 };
 
-struct Texture
+struct TextureStruct
 {
-    uint16 id;
-    std::string name;
-    char* type;
+    uint32 id;
+    std::string path;
+    std::string type;
 };
 
-struct Mesh
+struct Material 
 {
-    std::vector<VertexX> vertices;
+    glm::vec3 dif;
+    glm::vec3 spec;
+    glm::vec3 ambient;
+    float shiness;
+};
+
+class Mesh
+{
+public:
+    
+    Mesh(std::vector<VertexStruct> vert, std::vector<uint32> ind, std::vector<TextureStruct> text)
+        : vertices(vert), indices(ind), textures(text) 
+    {
+        setupMesh();
+    };
+
+    void renderMeshes(Shader *shader);
+
+    std::vector<VertexStruct> vertices;
     std::vector<uint32> indices;
-    std::vector<Texture> textures;
+    std::vector<TextureStruct> textures;
+
+
+private:
+
     uint32 VAO, VBO, EBO;
+    void setupMesh();
 };
 
-//TODO: write own substr
-struct Model
+
+class Model
 {
-    std::vector<Mesh> meshs;
-    std::vector<Texture> texturesl;
-    std::string dir;
-    std::string filename;
+public:
+    Model(const std::string& path, bool gamma)
+    {
+        isGammaCorrected = gamma;
+        loadModel(path);
+    }
+    
 
+    std::vector<TextureStruct> texturesl;
+    std::vector<Mesh> meshes;
+
+    std::string dir;
+    bool isGammaCorrected;
+
+private:
+    void loadModel(std::string const &path);
+    Material loadMaterial(aiMaterial* mat);
+    void processNode(aiNode *node, const aiScene* scene);
+    Mesh processMesh(aiMesh *mesh, const aiScene* scene);
+    std::vector<TextureStruct> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 };
 
-
-void setupmeshopengl(Mesh *mesh);
-void loadModelopengl(Model *model);
-void processNode(aiNode *node, const aiScene *s, Model *model);
-Mesh processMesh(Model* model, aiMesh *mesh, const aiScene* scene);
-Mesh setupMesh(std::vector<VertexX> vert, std::vector<uint32> ind, std::vector<Texture> text);
-std::vector<Texture> loadTextureVec(Model *model, aiMaterial *mat, aiTextureType type, char* name);
-uint32 readtexturefromfile(const char* path, std::string &namedir);
-void drawMesh(Mesh* mesh, Shader *shader); 
-void drawMeshFrom(Model *model, Shader *shader);
-#endif

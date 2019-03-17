@@ -1,4 +1,4 @@
-#include "../xenpch.h"
+#include "../../xenpch.h"
 #include "texture.h"
 
 namespace XEngine
@@ -9,6 +9,8 @@ namespace XEngine
         glGenTextures(1, &textureid);
 
         int width, height, nrChannels;
+
+
 
         unsigned char* data = stbi_load(filename, &width, &height, &nrChannels, 0);
         if (data)
@@ -37,6 +39,7 @@ namespace XEngine
             glTexParameteri(TEXTURE2D, MIN_FILTER, MIMAP_LINEAR);
             glTexParameteri(TEXTURE2D, MAG_FILTER, LINEAR);
 
+
             stbi_image_free(data);
         }
         else
@@ -45,6 +48,47 @@ namespace XEngine
         }
 
         return textureid;
+    }
+
+    uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)
+    {
+        std::string filename = path;
+        filename = dir + '/' + filename;
+
+        uint32 textureID;
+        glGenTextures(1, &textureID);
+
+        int width, height, sizechannels;
+
+        unsigned char *data = stbi_load(filename.c_str(), &width, &height, &sizechannels, 0);
+        if (data)
+        {
+            GLenum format;
+            if (sizechannels == 1)
+                format = GL_RED;
+            else if (sizechannels == 3)
+                format = GL_RGB;
+            else if (sizechannels == 4)
+                format = GL_RGBA;
+
+            glBindTexture(GL_TEXTURE_2D, textureID);
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Texture failed to load at path: " << path << std::endl;
+            stbi_image_free(data);
+        }
+
+        return textureID;
     }
 
     void bindTexture2D(uint16 n, uint32 tex1)

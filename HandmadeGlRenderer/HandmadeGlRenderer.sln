@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HandmadeGlRenderer", "Handm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher", "Launcher\Launcher.csproj", "{074BF39A-F224-4CE0-9608-4B9C15EDB104}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,20 @@ Global
 		{074BF39A-F224-4CE0-9608-4B9C15EDB104}.Release|x64.Build.0 = Release|Any CPU
 		{074BF39A-F224-4CE0-9608-4B9C15EDB104}.Release|x86.ActiveCfg = Release|Any CPU
 		{074BF39A-F224-4CE0-9608-4B9C15EDB104}.Release|x86.Build.0 = Release|Any CPU
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Debug|ARM.ActiveCfg = Debug|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Debug|x64.ActiveCfg = Debug|x64
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Debug|x64.Build.0 = Debug|x64
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Debug|x86.ActiveCfg = Debug|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Debug|x86.Build.0 = Debug|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Release|Any CPU.ActiveCfg = Release|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Release|ARM.ActiveCfg = Release|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Release|ARM64.ActiveCfg = Release|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Release|x64.ActiveCfg = Release|x64
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Release|x64.Build.0 = Release|x64
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Release|x86.ActiveCfg = Release|Win32
+		{7081EB0D-A3A1-4A82-84DA-867BB1871DBD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
+    <ClInclude Include="src\audio\audio.h" />
     <ClInclude Include="src\core\assets.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
     <ClInclude Include="src\core\containers\vector.h" />

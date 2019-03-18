@@ -4,19 +4,11 @@
 #ifndef INIT
 #define INIT
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "../core/types.h"
 #include "../xenpch.h"
 #include "../core/events/input.h"
 #include "../core/cameras/camera.h"
 
-
-static const uint32 WIDTH = 1280;
-static const uint32 HEIGHT = 720;
 
 struct OpenGLWindowBuffer
 {

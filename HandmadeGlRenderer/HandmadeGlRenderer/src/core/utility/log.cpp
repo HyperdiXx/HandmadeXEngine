@@ -12,7 +12,6 @@ using namespace XEngine;
 
 bool32 XEngine::openFile(Log *a)
 {
-    FileSystem fs;
     std::wstring filename = FileSystemGetLogFolder() + L"\\Log.txt";
 
     a->logstream.open(filename.c_str());

@@ -227,7 +227,7 @@
     <ClInclude Include="src\imguit\imstb_truetype.h" />
     <ClInclude Include="src\material.h" />
     <ClInclude Include="src\objects\skybox.h" />
-    <ClInclude Include="src\objects\terain.h" />
+    <ClInclude Include="src\objects\terrain.h" />
     <ClInclude Include="src\objects\terrainutils\tile.h" />
     <ClInclude Include="src\objects\water.h" />
     <ClInclude Include="src\xenpch.h" />

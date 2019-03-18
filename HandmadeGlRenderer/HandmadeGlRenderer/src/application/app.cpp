@@ -43,7 +43,7 @@ namespace XEngine
     
     void OpenGLRunEngineWin32()
     {
-        LOG("OpenGLInitEngine\n");
+        LOG("XEngine v.0.0.1\nCPU:\nGPU:\nRender API: OPENGL\nEngine Init\n");
 
         OpenGLWindowBuffer wb = {};
         InitOpenglWindow(&wb);
@@ -51,8 +51,9 @@ namespace XEngine
         XEngine::EngineGUI::InitGui(wb.window);
 
         InitStats();
-        
-        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
+
+        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");        
+
         Shader lightShader("src/shaders/bloom.vs", "src/shaders/light.fs");
         Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
         Shader floorShader("src/shaders/lightPhongnew.vs", "src/shaders/lightPhongnew.fs");
@@ -72,6 +73,7 @@ namespace XEngine
         Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
+
 
         basicShader.Win32SetShaderName();
         lightShader.Win32SetShaderName();
@@ -205,6 +207,8 @@ namespace XEngine
         cubeMap.Win32UseShader();
         cubeMap.setInt("skybox", 0);
         
+        floorShader.Win32UseShader();
+        floorShader.setInt("floorTexture", 0);
 
         /*Win32UseShader(&normalMappingShader);
         setInt(&normalMappingShader, "diffuseMap", 0);
@@ -217,8 +221,7 @@ namespace XEngine
         Win32UseShader(&cubeMap);
         setInt(&cubeMap, "skybox", 0);
 
-        Win32UseShader(&floorShader);
-        setInt(&floorShader, "floorTexture", 0);
+        
 
         Win32UseShader(&shadowShader);
         setInt(&shadowShader, "diffuseTexture", 0);
@@ -234,7 +237,6 @@ namespace XEngine
         Win32UseShader(&mixedShader);
         setInt(&mixedShader, "scene", 0);
         setInt(&mixedShader, "bloomBlur", 1);*/
-
 
         Model firstmodel("src/models/barrels/barrels.fbx", false);
         Model secondmodel("src/models/nano/nanosuit.obj", false);
@@ -283,37 +285,33 @@ namespace XEngine
             //std::thread inp(XEngine::processInput, wb.window, &cam);
             //inp.detach();
             //inp.join();
-
             
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
            
-            projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+            projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
             view = glm::mat4(cam.getViewMatrix());
-
+                     
             loading.Win32UseShader();
-
-
-            
+  
             loading.setMat4("projection", projection);
             loading.setMat4("view", view);
 
             glm::mat4 modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(5.0f, -1.0f, 0.0f)); // translate it down so it's at the center of the scene
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(5.0f, -1.0f, 0.0f)); 
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	
             loading.setMat4("model", modelNanosuit);
             secondmodel.drawMesh(&loading);
 
             modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(10.0f, -1.0f, 0.0f)); // translate it down so it's at the center of the scene
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(10.0f, -1.0f, 0.0f)); 
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	
             loading.setMat4("model", modelNanosuit);
             firstmodel.drawMesh(&loading);
 
             modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(-10.0f, -1.0f, 0.0f)); // translate it down so it's at the center of the scene
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(-10.0f, -1.0f, 0.0f)); 
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	
             loading.setMat4("model", modelNanosuit);
             cityModel.drawMesh(&loading);
 
@@ -341,19 +339,17 @@ namespace XEngine
             model = glm::scale(model, glm::vec3(0.1f));
             dispShader.setMat4("model", model);
             renderQuad();
+            
+            floorShader.Win32UseShader();
 
-            //skybox
-           /* setDepthFunc(GL_LEQUAL);
-            cubeMap.Win32UseShader();
-            view = glm::mat4(cam.getViewMatrix());
-            cubeMap.setMat4("projection", projection);
-            cubeMap.setMat4("view", view);
-            glBindVertexArray(sky.vao);
-            bindCubeTexture2D(0, cubemaptexture);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            glBindVertexArray(0);
-            setDepthFunc(GL_LESS);*/
+            floorShader.setMat4("projection", projection);
+            floorShader.setMat4("view", view);
 
+            floorShader.setVec3("viewPos", cam.camPos);
+            floorShader.setVec3("lightPos", lightposfloor);
+           
+            renderQuad();
+                       
             view = glm::mat4(cam.getViewMatrix());
             sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
 

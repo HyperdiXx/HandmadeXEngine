@@ -332,13 +332,13 @@
     <ClInclude Include="src\core\rendering\openglnew\vao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\objects\terain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\objects\water.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\terrainutils\tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

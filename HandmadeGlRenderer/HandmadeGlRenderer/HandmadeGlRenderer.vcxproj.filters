@@ -114,6 +114,12 @@
     <ClCompile Include="src\core\rendering\openglnew\vao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\water.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\textures\container.jpg">
@@ -160,6 +166,8 @@
     <None Include="src\shaders\gBuffer.vs" />
     <None Include="src\shaders\defshading.fs" />
     <None Include="src\shaders\defshading.vs" />
+    <None Include="src\shaders\simplemodel.vs" />
+    <None Include="src\shaders\simplemodel.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">
@@ -322,6 +330,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\openglnew\vao.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\terain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\water.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\terrainutils\tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

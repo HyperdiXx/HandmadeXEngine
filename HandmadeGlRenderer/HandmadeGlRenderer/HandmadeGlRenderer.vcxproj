@@ -130,6 +130,8 @@
     <ClCompile Include="src\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
+    <ClCompile Include="src\objects\terrain.cpp" />
+    <ClCompile Include="src\objects\water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\imguit\imgui.ini" />
@@ -162,6 +164,8 @@
     <None Include="src\shaders\normalShader.vs" />
     <None Include="src\shaders\parallaxmapping.fs" />
     <None Include="src\shaders\parallaxmapping.vs" />
+    <None Include="src\shaders\simplemodel.fs" />
+    <None Include="src\shaders\simplemodel.vs" />
     <None Include="src\shaders\text.fs" />
     <None Include="src\shaders\text.vs" />
     <None Include="src\textures\container.jpg" />
@@ -223,6 +227,9 @@
     <ClInclude Include="src\imguit\imstb_truetype.h" />
     <ClInclude Include="src\material.h" />
     <ClInclude Include="src\objects\skybox.h" />
+    <ClInclude Include="src\objects\terain.h" />
+    <ClInclude Include="src\objects\terrainutils\tile.h" />
+    <ClInclude Include="src\objects\water.h" />
     <ClInclude Include="src\xenpch.h" />
   </ItemGroup>
   <ItemGroup>

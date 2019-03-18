@@ -70,6 +70,7 @@ namespace XEngine
 
         Shader shaderGeometryPass("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
         Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
+        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
 
         basicShader.Win32SetShaderName();
@@ -86,6 +87,7 @@ namespace XEngine
         dispShader.Win32SetShaderName();
         shaderGeometryPass.Win32SetShaderName();
         shaderLightingPass.Win32SetShaderName();
+        loading.Win32SetShaderName();
 
 
         std::vector<glm::vec3> objectPositions;
@@ -182,6 +184,8 @@ namespace XEngine
         unsigned int normalMap = loadTexture("src/textures/bricks2_normal.jpg");
         unsigned int dispMap = loadTexture("src/textures/bricks2_disp.jpg");
 
+        //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
+        //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
        
 
         dispShader.Win32UseShader();
@@ -232,14 +236,13 @@ namespace XEngine
         setInt(&mixedShader, "bloomBlur", 1);*/
 
 
-        Model firstmodel("src/models/barrels.fbx", false);
-
-           
+        Model firstmodel("src/models/barrels/barrels.fbx", false);
+        Model secondmodel("src/models/nano/nanosuit.obj", false);
+        Model cityModel("src/models/house/house.obj", false);
         
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
 
-   
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
 
@@ -288,6 +291,33 @@ namespace XEngine
            
             projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
             view = glm::mat4(cam.getViewMatrix());
+
+            loading.Win32UseShader();
+
+
+            
+            loading.setMat4("projection", projection);
+            loading.setMat4("view", view);
+
+            glm::mat4 modelNanosuit = glm::mat4(1.0f);
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(5.0f, -1.0f, 0.0f)); // translate it down so it's at the center of the scene
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+            loading.setMat4("model", modelNanosuit);
+            secondmodel.drawMesh(&loading);
+
+            modelNanosuit = glm::mat4(1.0f);
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(10.0f, -1.0f, 0.0f)); // translate it down so it's at the center of the scene
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+            loading.setMat4("model", modelNanosuit);
+            firstmodel.drawMesh(&loading);
+
+            modelNanosuit = glm::mat4(1.0f);
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(-10.0f, -1.0f, 0.0f)); // translate it down so it's at the center of the scene
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+            loading.setMat4("model", modelNanosuit);
+            cityModel.drawMesh(&loading);
+
+
             dispShader.Win32UseShader();
             dispShader.setMat4("projection", projection);
             dispShader.setMat4("view", view);

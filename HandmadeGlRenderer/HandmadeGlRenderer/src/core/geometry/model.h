@@ -77,6 +77,11 @@ public:
         loadModel(path);
     }
     
+    void drawMesh(Shader *shader)
+    {
+        for (unsigned int i = 0; i < meshes.size(); i++)
+            meshes[i].renderMeshes(shader);
+    }
 
     std::vector<TextureStruct> texturesl;
     std::vector<Mesh> meshes;

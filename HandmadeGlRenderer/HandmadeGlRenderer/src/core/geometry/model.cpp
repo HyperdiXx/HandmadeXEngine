@@ -25,6 +25,13 @@ void Mesh::setupMesh()
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void*)offsetof(VertexStruct, uv));
 
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void*)offsetof(VertexStruct, tangent));
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void*)offsetof(VertexStruct, bitangent));
+
+
     glBindVertexArray(0);
 
 }
@@ -51,30 +58,35 @@ Material Model::loadMaterial(aiMaterial* mat) {
 
 void Mesh::renderMeshes(Shader * shader)
 {
-    uint32 diffusecount = 1;
-    uint32 specularcount = 1;
-
-    for (size_t i = 0; i < textures.size(); ++i)
+    // bind appropriate textures
+    uint32 diffuseNr = 1;
+    uint32 specularNr = 1;
+    uint32 normalNr = 1;
+    uint32 heightNr = 1;
+    for (unsigned int i = 0; i < textures.size(); i++)
     {
-        glActiveTexture(GL_TEXTURE0 + i);
-
+        glActiveTexture(GL_TEXTURE0 + i); 
         std::string number;
         std::string name = textures[i].type;
-
         if (name == "texture_diffuse")
-            number = std::to_string(diffusecount++);
+            number = std::to_string(diffuseNr++);
         else if (name == "texture_specular")
-            number = std::to_string(specularcount++);
+            number = std::to_string(specularNr++); // transfer unsigned int to stream
+        else if (name == "texture_normal")
+            number = std::to_string(normalNr++); // transfer unsigned int to stream
+        else if (name == "texture_height")
+            number = std::to_string(heightNr++); // transfer unsigned int to stream
 
-        shader->setFloat(("material." + name + number).c_str(), i);
+                                                 // now set the sampler to the correct texture unit
+        glUniform1i(glGetUniformLocation(shader->getID(), (name + number).c_str()), i);
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
-
-    glActiveTexture(GL_TEXTURE0);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glActiveTexture(GL_TEXTURE0);
 }
 
 void Model::loadModel(std::string const & path)
@@ -117,17 +129,16 @@ Mesh Model::processMesh(aiMesh * mesh, const aiScene * scene)
     std::vector<uint32> indices;
     std::vector<TextureStruct> textures;
 
-
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
         VertexStruct vertex;
         glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
-        // positions
+
         vector.x = mesh->mVertices[i].x;
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
         vertex.pos = vector;
-        // normals
+
         vector.x = mesh->mNormals[i].x;
         vector.y = mesh->mNormals[i].y;
         vector.z = mesh->mNormals[i].z;
@@ -144,12 +155,12 @@ Mesh Model::processMesh(aiMesh * mesh, const aiScene * scene)
         }
         else
             vertex.uv = glm::vec2(0.0f, 0.0f);
-        // tangent
+
         vector.x = mesh->mTangents[i].x;
         vector.y = mesh->mTangents[i].y;
         vector.z = mesh->mTangents[i].z;
         vertex.tangent = vector;
-        // bitangent
+
         vector.x = mesh->mBitangents[i].x;
         vector.y = mesh->mBitangents[i].y;
         vector.z = mesh->mBitangents[i].z;
@@ -173,16 +184,16 @@ Mesh Model::processMesh(aiMesh * mesh, const aiScene * scene)
     // specular: texture_specularN
     // normal: texture_normalN
 
-    // 1. diffuse maps
+
     std::vector<TextureStruct> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-    // 2. specular maps
+
     std::vector<TextureStruct> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    // 3. normal maps
+
     std::vector<TextureStruct> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-    // 4. height maps
+
     std::vector<TextureStruct> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 

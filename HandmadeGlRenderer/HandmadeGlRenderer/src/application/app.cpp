@@ -45,7 +45,18 @@ namespace XEngine
     {
         LOG("XEngine v.0.0.1\nCPU:\nGPU:\nRender API: OPENGL\nEngine Init\n");
 
-        OpenGLWindowBuffer wb = {};
+        Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
+        
+        InitStats();
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        while (!classicwindow.isClosed())
+        {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            classicwindow.update();
+        }
+
+        /*OpenGLWindowBuffer wb = {};
         InitOpenglWindow(&wb);
 
         XEngine::EngineGUI::InitGui(wb.window);
@@ -137,7 +148,7 @@ namespace XEngine
         lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
         lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
         lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
-        lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));*/
+        lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
 
         
 
@@ -236,7 +247,7 @@ namespace XEngine
         setInt(&blurShader, "diffuseTexture", 0);
         Win32UseShader(&mixedShader);
         setInt(&mixedShader, "scene", 0);
-        setInt(&mixedShader, "bloomBlur", 1);*/
+        setInt(&mixedShader, "bloomBlur", 1);
 
         Model firstmodel("src/models/barrels/barrels.fbx", false);
         Model secondmodel("src/models/nano/nanosuit.obj", false);
@@ -270,6 +281,9 @@ namespace XEngine
         bool bloom = true;
         bool bloomKeyPressed = false;
         float exposure = 1.0f;
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
         while (!glfwWindowShouldClose(wb.window))
         {
 
@@ -286,7 +300,7 @@ namespace XEngine
             //inp.detach();
             //inp.join();
             
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
            
             projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
@@ -360,7 +374,7 @@ namespace XEngine
             
         }
 
-
+        
         delGeometry(&plane);
         delGeometry(sky.getGeometryBuffer());
         glDeleteVertexArrays(1, &cubeVAO);
@@ -368,14 +382,9 @@ namespace XEngine
         glDeleteBuffers(1, &cubeVBO);
 
         glfwTerminate();
-
+        */
     }
 
-    void UpdateLoopWin32(OpenGLWindowBuffer* wb, XEngine::Camera *cam, Loop *lp)
-    {
-
-
-    }
 
     void InitStats()
     {

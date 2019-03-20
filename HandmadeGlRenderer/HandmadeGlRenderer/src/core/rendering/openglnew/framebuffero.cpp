@@ -3,9 +3,9 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include "src/application/xenpch.h"
+#include "../../../xenpch.h"
 
-void FrameBuffer::createShadows()
+void createShadows()
 {
 
     //generating depth map for shadows
@@ -88,7 +88,7 @@ void FrameBuffer::createShadows()
 
 }
 
-void FrameBuffer::createFBOforDefShading(uint32 GPos, uint32 GNormal, uint32 GSpeccolor, uint32 GBuffer, uint32 rboDepth)
+void createFBOforDefShading(uint32 GPos, uint32 GNormal, uint32 GSpeccolor, uint32 GBuffer, uint32 rboDepth)
 {
 
     glGenFramebuffers(1, &GBuffer);
@@ -130,7 +130,7 @@ void FrameBuffer::createFBOforDefShading(uint32 GPos, uint32 GNormal, uint32 GSp
 
 }
 
-void FrameBuffer::bindFBO(uint32 GBuffer)
+void bindFBO(uint32 GBuffer)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, GBuffer);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -1,8 +1,6 @@
 #include "windowabstaraction.h"
 
-using namespace XEngine;
-
-void Win32Window::DXInitEngineWindow(Win32Window *window)
+void XEngine::DXInitEngineWindow(Win32Window *window)
 {
     const wchar_t* nameWindow = L"XEngine";
 
@@ -41,7 +39,7 @@ void Win32Window::DXInitEngineWindow(Win32Window *window)
 
 }
 
-IDXGISwapChain1* Win32Window::getSwapChain1(IDXGISwapChain1 *sc)
+IDXGISwapChain1* XEngine::getSwapChain1(IDXGISwapChain1 *sc)
 {
     return sc;
 }

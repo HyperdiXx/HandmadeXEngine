@@ -3,77 +3,22 @@
 #include "vao.h"
 
 
-void VAO::addIndexBuffer(std::vector<unsigned int> indices, IndexBuffer & index)
+void addIndexBuffer(std::vector<unsigned int> indices, IndexBuffer & index)
 {
 
 }
 
-void VAO::addVertexBuffer(std::vector<float> values, int dimension, int row)
-{
-    
-}
-
-void VAO::createVertexBuffer(GeometryBuffer * geo, std::vector<float> d)
-{
-    glGenVertexArrays(1, &geo->vao);
-    glGenBuffers(1, &geo->vbo);
-    glBindVertexArray(geo->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, geo->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d.size(), &d[0], GL_STATIC_DRAW);
-    setAttribPointersFloat();
-    glBindVertexArray(0);
-}
-
-void VAO::createIndexBuffer()
-{
-}
-
-void VAO::setAttribPointersFloat()
-{
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-}
-
-void VAO::bindVAO(VertexAO * ao)
-{
-    glBindVertexArray(ao->id);
-
-    for (int i = 0; i < ao->attribs.size(); ++i)
-    {
-        glEnableVertexAttribArray(ao->attribs[i]);
-    }
-}
-
-void VAO::unbindVAO(VertexAO * ao)
-{
-
-    for (int i = 0; i < ao->attribs.size(); i++) {
-        glDisableVertexAttribArray(ao->attribs[i]);
-    }
-
-    glBindVertexArray(0);
-}
-
-void VAO::delGeometry(GeometryBuffer * b)
-{
-    glDeleteVertexArrays(1, &b->vao);
-    glDeleteBuffers(1, &b->vbo);
-}
-
-/*void VAO::addVertexBuffer(VertexAO *ao, std::vector<float> values, int dimension, int row)
+void addVertexBuffer(VertexAO *ao, std::vector<float> values, int dimension, int row)
 {
     bindVAO(ao);
+
+
 }
 
-void VAO::vertexAttribPointers(int n, uint32 ds)
+void vertexAttribPointers(int n, uint32 ds)
 {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-}*/
+}
 
 void setAttribPointersFloat()
 {
@@ -83,7 +28,6 @@ void setAttribPointersFloat()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-  
 }
 
 void createVertexBuffer(GeometryBuffer *geo, std::vector<float> d)
@@ -163,4 +107,10 @@ void test(int *planeVertices, int* vertices)
     glEnableVertexAttribArray(0);
 
     
+}
+
+void delGeometry(GeometryBuffer* b)
+{
+    glDeleteVertexArrays(1, &b->vao);
+    glDeleteBuffers(1, &b->vbo);
 }

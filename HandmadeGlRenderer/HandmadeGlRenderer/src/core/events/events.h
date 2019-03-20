@@ -4,10 +4,9 @@
 #define EVENTS
 
 
-
 namespace XEngine
 {
-    enum __declspec(dllexport) EventsType
+    enum EventsType
     {
         MousePressed,
         MouseReleased,
@@ -19,12 +18,12 @@ namespace XEngine
     };
 
 
-    struct __declspec(dllexport) WindowResized
+    struct WindowResized
     {
 
     };
 
-    struct __declspec(dllexport) WindowClosed
+    struct WindowClosed
     {
 
     };

@@ -10,14 +10,11 @@
 
 #include <d3d11.h>
 #include <directxmath.h>
-
-
-
 using namespace DirectX;
 
 
 
-struct __declspec(dllexport) DirectX11
+struct DirectX11
 {
     ID3D11Device* device;
     ID3D11DeviceContext* deviceContext;
@@ -29,7 +26,7 @@ struct __declspec(dllexport) DirectX11
     ID3D11Texture2D* depthStencilBuffer;
 };
 
-void __declspec(dllexport) InitDX11(HWND hwnd, DirectX11 *dx, int width, int height, float screenNear, float screenFar);
+void InitDX11(HWND hwnd, DirectX11 *dx, int width, int height, float screenNear, float screenFar);
 
 
 

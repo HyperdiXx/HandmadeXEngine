@@ -3,12 +3,12 @@
 #ifndef SKYBOXH
 #define SKYBOXH
 
-#include "../core/rendering/pipeline/shader.h"
-#include "../core/rendering/texture.h"
-#include "../core/cameras/camera.h"
-#include "../core/rendering/openglnew/vao.h"
+#include "src/core/rendering/pipeline/shader.h"
+#include "src/core/rendering/texture.h"
+#include "src/core/cameras/camera.h"
+#include "src/core/rendering/openglnew/vao.h"
 
-class __declspec(dllexport) Skybox
+class Skybox
 {
 public:
     Skybox() 
@@ -22,7 +22,7 @@ public:
 
     void createSkybox();
     void initShader();
-    void renderSkybox(Shader * shader, XEngine::FlyCamera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex);
+    void renderSkybox(Shader * shader, XEngine::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex);
     GeometryBuffer* getGeometryBuffer() { return sky; };
 private:
     GeometryBuffer *sky;

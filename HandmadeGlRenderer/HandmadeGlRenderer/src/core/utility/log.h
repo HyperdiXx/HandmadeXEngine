@@ -4,7 +4,6 @@
 #define LOG_H
 
 #include "../types.h"
-
 #include <string>
 #include <fstream>
 #include <iostream>

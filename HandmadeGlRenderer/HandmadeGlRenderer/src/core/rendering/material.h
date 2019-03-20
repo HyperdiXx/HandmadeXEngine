@@ -4,11 +4,11 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "../../application/xenpch.h"
-#include "../../core/types.h"
+#include "core/types.h"
 
+#include <glm/glm.hpp>
 
-struct __declspec(dllexport) Material 
+struct Material 
 {
     glm::vec4 diffuseColor;
     glm::vec4 specularColor ;

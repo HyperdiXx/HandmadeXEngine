@@ -3,12 +3,17 @@
 #ifndef SHADER
 #define SHADER
 
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "src/core/types.h"
+#include "shadertype.h"
+
 #include <string>
 
-#include "../../types.h"
-#include "../../../application/xenpch.h"
-
-class __declspec(dllexport) Shader
+class Shader
 {
 public:
     Shader(const GLchar* vs1, const GLchar* fs1)

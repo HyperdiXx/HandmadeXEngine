@@ -3,23 +3,23 @@
 namespace XEngine
 {
 
-    glm::mat4 Camera::getViewMatrix()
+    glm::mat4 FlyCamera::getViewMatrix()
     {
         return glm::lookAt(camPos, camPos + camTarget, camUp);
     }
-    glm::vec3 Camera::getCamPos()
+    glm::vec3 FlyCamera::getCamPos()
     {
         return (camPos);
     }
-    glm::vec3 Camera::getCamTarget()
+    glm::vec3 FlyCamera::getCamTarget()
     {
         return (camTarget);
     }
-    glm::vec3 Camera::getCamUp()
+    glm::vec3 FlyCamera::getCamUp()
     {
         return (camUp);
     }
-    real32 Camera::getSpeed()
+    real32 FlyCamera::getSpeed()
     {
         return (speed);
     }

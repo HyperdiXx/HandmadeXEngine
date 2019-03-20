@@ -4,7 +4,6 @@
 #define ENTITY
 
 
-
 struct Entity
 {
     //model

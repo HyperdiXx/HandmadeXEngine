@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include "Events/events.h"
 
+
 namespace XEngine
 {
     namespace EngineGUI
@@ -25,20 +26,18 @@ namespace XEngine
             float locTime;
         };
 
-        
-
-        void InitGui(GLFWwindow* window);
-        void UpdateGui(GLFWwindow *window, GraphicInterface *gui);
-        void mouseUpdatePos(GLFWwindow* window);
-        void updateMouseCursor(GLFWwindow* window);
-        void onMouseButtonPressed(GLFWwindow* window, int button, int action, int mods);
-        bool onMouseButtonReleased();
-        bool onWindowResized();
-        bool onMouseMovedEvent();
-        bool onMouseScrolledEvent();
-        bool onKeyboardPressed();
-        bool onKeyboardReleased();
-        void Shutdown();
+        void __declspec(dllexport) InitGui(GLFWwindow* window);
+        void __declspec(dllexport) UpdateGui(GLFWwindow *window, GraphicInterface *gui);
+        void __declspec(dllexport) mouseUpdatePos(GLFWwindow* window);
+        void __declspec(dllexport) updateMouseCursor(GLFWwindow* window);
+        void __declspec(dllexport) onMouseButtonPressed(GLFWwindow* window, int button, int action, int mods);
+        bool __declspec(dllexport) onMouseButtonReleased();
+        bool __declspec(dllexport) onWindowResized();
+        bool __declspec(dllexport) onMouseMovedEvent();
+        bool __declspec(dllexport) onMouseScrolledEvent();
+        bool __declspec(dllexport) onKeyboardPressed();
+        bool __declspec(dllexport) onKeyboardReleased();
+        void __declspec(dllexport) Shutdown();
     }
 }
 

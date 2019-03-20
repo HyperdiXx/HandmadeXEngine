@@ -3,7 +3,7 @@
 namespace XEngine
 {
 
-    inline glm::vec2 getMousePos(GLFWwindow* window)
+    inline glm::vec2 WINInput::getMousePos(GLFWwindow* window)
     {
         double xpos, ypos;
 
@@ -14,43 +14,43 @@ namespace XEngine
         return (ret);
     }
 
-    inline float getMouseX(GLFWwindow* window)
+    inline float WINInput::getMouseX(GLFWwindow* window)
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         return (float)xpos;
     }
 
-    inline float getMouseY(GLFWwindow* window)
+    inline float WINInput::getMouseY(GLFWwindow* window)
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         return (float)ypos;
     }
 
-    WINInput setMouseButton()
+    WINInput WINInput::setMouseButton()
     {
         return WINInput();
     }
 
-    WINInput setkeyboardButton()
+    WINInput WINInput::setkeyboardButton()
     {
         return WINInput();
     }
     
-    bool onMouseButtonPressed(GLFWwindow* window, int key)
+    bool WINInput::onMouseButtonPressed(GLFWwindow* window, int key)
     {
         auto state = glfwGetMouseButton(window, key);
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
     
-    bool onKeyboardPressed(GLFWwindow *window, int key)
+    bool WINInput::onKeyboardPressed(GLFWwindow *window, int key)
     {
         auto state = glfwGetKey(window, key);
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
        
-    void processInput(GLFWwindow *window, Camera *cam)
+    void WINInput::processInput(GLFWwindow *window, FlyCamera *cam)
     {
         //gInp.lock();
         if (onKeyboardPressed(window, GLFW_KEY_ESCAPE))

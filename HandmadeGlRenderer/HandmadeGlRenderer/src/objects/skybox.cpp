@@ -65,7 +65,7 @@ void Skybox::createSkybox()
 }
 
 
-void Skybox::renderSkybox(Shader * shader, XEngine::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex)
+void Skybox::renderSkybox(Shader * shader, XEngine::FlyCamera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex)
 {
     setDepthFunc(GL_LEQUAL);
     shader->Win32UseShader();

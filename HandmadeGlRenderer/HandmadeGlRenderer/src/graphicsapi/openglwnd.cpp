@@ -8,7 +8,7 @@ void setVSYNC(bool set)
         glfwSwapInterval(0);
 }
 
-void InitOpenglWindow(OpenGLWindowBuffer *buffer)
+void InitOpenglWindow(OpenGLWindow *wb)
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -16,15 +16,17 @@ void InitOpenglWindow(OpenGLWindowBuffer *buffer)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    buffer->window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "XEngine", NULL, NULL);
-    if (buffer->window == NULL)
+    wb->window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "XEngine", NULL, NULL);
+    if (wb->window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return;
     }
-    glfwMakeContextCurrent(buffer->window);
-    glfwSetFramebufferSizeCallback(buffer->window, framebufferSizeCallback);
+    glfwMakeContextCurrent(wb->window);
+    //int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    //std::cout << status << "\n";
+    glfwSetFramebufferSizeCallback(wb->window, framebufferSizeCallback);
     //glfwSetCursorPosCallback(buffer->window, mousecallback);
     setVSYNC(true);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

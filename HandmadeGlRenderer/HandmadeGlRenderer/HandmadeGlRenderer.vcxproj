@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -46,14 +46,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\inc;$(IncludePath)</IncludePath>
     <LibraryPath>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)int\$(Configuration)_$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)int\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\inc;$(IncludePath)</IncludePath>
     <LibraryPath>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)int\$(Configuration)_$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)int\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -62,6 +62,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XENGINE_WINDOWS;XENGINE_DLL;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype.lib;assimp-vc140-mt.lib;glfw643.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -83,6 +84,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XENGINE_WINDOWS;XENGINE_DLL;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -98,7 +100,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\application\app.cpp" />
     <ClCompile Include="src\core\assets.cpp" />
     <ClCompile Include="src\core\cameras\camera.cpp" />
     <ClCompile Include="src\core\events\events.cpp" />
@@ -129,7 +130,6 @@
     <ClCompile Include="src\imguit\imgui_draw.cpp" />
     <ClCompile Include="src\imguit\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\imguit\imgui_widgets.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
     <ClCompile Include="src\objects\water.cpp" />
@@ -175,11 +175,10 @@
     <None Include="src\textures\water-texture.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\audio\audio.h" />
     <ClInclude Include="src\core\assets.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
-    <ClInclude Include="src\core\containers\vector.h" />
+    <ClInclude Include="src\core\containers\envector.h" />
     <ClInclude Include="src\core\entity.h" />
     <ClInclude Include="src\core\events\events.h" />
     <ClInclude Include="src\core\events\joystick.h" />
@@ -216,6 +215,7 @@
     <ClInclude Include="src\core\text.h" />
     <ClInclude Include="src\core\types.h" />
     <ClInclude Include="src\core\d3dx12.h" />
+    <ClInclude Include="src\core\xenginedll.h" />
     <ClInclude Include="src\graphicsapi\dx11.h" />
     <ClInclude Include="src\graphicsapi\dx12.h" />
     <ClInclude Include="src\graphicsapi\openglwnd.h" />
@@ -232,7 +232,8 @@
     <ClInclude Include="src\objects\terrain.h" />
     <ClInclude Include="src\objects\terrainutils\tile.h" />
     <ClInclude Include="src\objects\water.h" />
-    <ClInclude Include="src\xenpch.h" />
+    <ClInclude Include="src\application\xenpch.h" />
+    <ClInclude Include="src\allxengine.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl">

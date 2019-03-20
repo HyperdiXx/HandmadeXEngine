@@ -3,37 +3,42 @@
 #ifndef VERTEXARRAYOBJECT
 #define VERTEXARRAYOBJECT
 
-#include <vector>
+#include "../../../application/xenpch.h"
+#include "../../types.h"
 
-#include <glad/glad.h>
-#include <gl/GL.h>
-#include "src/core/types.h"
 
 #include "IndexBuffer.h"
 
-struct VertexAO
+struct __declspec(dllexport) VertexAO
 {
     std::vector<unsigned int> vboIds;
     std::vector<unsigned int> attribs;
     unsigned int id;
 };
 
-struct GeometryBuffer
+struct __declspec(dllexport) GeometryBuffer
 {
     uint32 vao;
     uint32 vbo;
     float data[256];
 };
 
-void addIndexBuffer(std::vector<unsigned int> indices, IndexBuffer &index);
-void addVertexBuffer(std::vector<float> values, int dimension, int row);
+class __declspec(dllexport) VAO
+{
+public:
+    static void addIndexBuffer(std::vector<unsigned int> indices, IndexBuffer &index);
+    static void addVertexBuffer(std::vector<float> values, int dimension, int row);
 
-void createVertexBuffer(GeometryBuffer *geo, std::vector<float> d);
-void createIndexBuffer();
+    static void createVertexBuffer(GeometryBuffer *geo, std::vector<float> d);
+    static void createIndexBuffer();
+    static void setAttribPointersFloat();
 
-void bindVAO(VertexAO *ao);
-void unbindVAO(VertexAO *ao);
+    static void bindVAO(VertexAO *ao);
+    static void unbindVAO(VertexAO *ao);
 
-void delGeometry(GeometryBuffer *b);
+    static void delGeometry(GeometryBuffer *b);
+};
+
+
 
 #endif

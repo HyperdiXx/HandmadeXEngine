@@ -1,10 +1,9 @@
 #pragma once
 
 
-#include <glm/glm.hpp>
-#include <glad/glad.h>
+#include "../../application/xenpch.h"
 #include "../types.h"
-#include <vector>
+
 
 namespace XEngine
 {
@@ -13,11 +12,11 @@ namespace XEngine
     static uint32 quadVAO = 0;
     static uint32 quadVBO;
 
-    void renderCube();
-    void renderRect();
-    void renderQuad();
-    std::vector<float> createPlane();
-    std::vector<float> createVert();
+    void __declspec(dllexport) renderCube();
+    void __declspec(dllexport) renderRect();
+    void __declspec(dllexport) renderQuad();
+    std::vector<float> __declspec(dllexport) createPlane();
+    std::vector<float> __declspec(dllexport) createVert();
 }
 
 

@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\imguit\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,9 +43,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\events\events.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\application\app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\text.cpp">
@@ -118,6 +109,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\objects\water.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,12 +212,6 @@
     <ClInclude Include="src\core\events\mouseEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\application\app.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\xenpch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -302,9 +290,6 @@
     <ClInclude Include="src\core\utility\assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\containers\vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\assets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -342,6 +327,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\audio\audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\xenginedll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\application\xenpch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\containers\envector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\allxengine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

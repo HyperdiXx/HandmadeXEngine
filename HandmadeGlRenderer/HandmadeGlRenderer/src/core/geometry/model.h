@@ -1,26 +1,18 @@
 #pragma once
 
 
-#include <glad/glad.h> 
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <stb_image.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <vector>
-#include <iostream>
-#include <string>
-#include <cstddef>
-#include <fstream>
 
 #include "../types.h"
 #include "../rendering/pipeline/shader.h"
+#include "../../application/xenpch.h"
 
 
-struct VertexStruct
+struct __declspec(dllexport) VertexStruct
 {
     glm::vec3 pos;
     glm::vec3 normal;
@@ -29,14 +21,14 @@ struct VertexStruct
     glm::vec2 uv;
 };
 
-struct TextureStruct
+struct __declspec(dllexport) TextureStruct
 {
     uint32 id;
     std::string path;
     std::string type;
 };
 
-struct Material 
+struct __declspec(dllexport) MaterialStruct
 {
     glm::vec3 dif;
     glm::vec3 spec;
@@ -44,7 +36,7 @@ struct Material
     float shiness;
 };
 
-class Mesh
+class __declspec(dllexport) Mesh
 {
 public:
     
@@ -68,7 +60,7 @@ private:
 };
 
 
-class Model
+class __declspec(dllexport) Model
 {
 public:
     Model(const std::string& path, bool gamma)
@@ -91,7 +83,7 @@ public:
 
 private:
     void loadModel(std::string const &path);
-    Material loadMaterial(aiMaterial* mat);
+    MaterialStruct loadMaterial(aiMaterial* mat);
     void processNode(aiNode *node, const aiScene* scene);
     Mesh processMesh(aiMesh *mesh, const aiScene* scene);
     std::vector<TextureStruct> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);

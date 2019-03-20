@@ -13,8 +13,23 @@ static bool Running = true;
 
 namespace XEngine
 {
-    struct Win32Window
+    class Win32Window
     {
+    public:
+
+        Win32Window()
+        {
+
+        }
+
+        ~Win32Window()
+        {
+
+        }
+
+        void DXInitEngineWindow(Win32Window *window);
+        IDXGISwapChain1* getSwapChain1(IDXGISwapChain1 *sc);
+
         HWND hwnd;
         UINT Msg;
         WPARAM wParam;
@@ -25,7 +40,6 @@ namespace XEngine
         int cmd_show;
     };
 
-    void DXInitEngineWindow(Win32Window *window);
-    IDXGISwapChain1* getSwapChain1(IDXGISwapChain1 *sc);
+   
     LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 }

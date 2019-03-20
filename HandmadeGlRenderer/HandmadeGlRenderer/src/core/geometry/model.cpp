@@ -36,8 +36,8 @@ void Mesh::setupMesh()
 
 }
 
-Material Model::loadMaterial(aiMaterial* mat) {
-    Material material;
+MaterialStruct Model::loadMaterial(aiMaterial* mat) {
+    MaterialStruct material;
     aiColor3D color(0.f, 0.f, 0.f);
     float shininess;
 

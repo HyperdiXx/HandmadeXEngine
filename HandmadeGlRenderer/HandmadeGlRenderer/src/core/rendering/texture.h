@@ -3,21 +3,20 @@
 #ifndef TEXTURE
 #define TEXTURE
 
-#include <glad/glad.h>
-#include <stb_image.h>
+#include "../../application/xenpch.h"
 #include "../types.h"
 
-#include <vector>
+
 
 namespace XEngine
 {
-    enum Maps
+    enum __declspec(dllexport) Maps
     {
         FRAMEBUFFER = GL_FRAMEBUFFER,
         DEPTHATTACHMENT = GL_DEPTH_ATTACHMENT
     };
 
-    enum Channels
+    enum __declspec(dllexport) Channels
     {
         GREEN = GL_GREEN,
         BLUE = GL_BLUE,
@@ -26,7 +25,7 @@ namespace XEngine
         RGBA = GL_RGBA
     };
 
-    enum TypeTexture
+    enum __declspec(dllexport) TypeTexture
     {
         TEXTURE2D = GL_TEXTURE_2D,
         CUBETEXTURE = GL_TEXTURE_CUBE_MAP,
@@ -45,7 +44,7 @@ namespace XEngine
         DEPTHTEX = GL_DEPTH_COMPONENT
     };
 
-    struct Cubemap
+    struct __declspec(dllexport) Cubemap
     {
         uint32 ID;
         uint32 w, h, channels;
@@ -55,13 +54,13 @@ namespace XEngine
     };
 
    
-    uint32 loadCubemap(std::vector<std::string> textures);
-    int loadTexture(const char* filename);
-    uint32 loadtexture2DFromDir(const std::string path, const std::string &dir, bool gamma);
+    uint32 __declspec(dllexport) loadCubemap(std::vector<std::string> textures);
+    int __declspec(dllexport) loadTexture(const char* filename);
+    uint32 __declspec(dllexport) loadtexture2DFromDir(const std::string path, const std::string &dir, bool gamma);
 
-    void bindTexture2D(uint16 n, uint32 tex1);
-    void bindCubeTexture2D(uint16 n, uint32 tex1);
-    void setDepthFunc(int n);
+    void __declspec(dllexport) bindTexture2D(uint16 n, uint32 tex1);
+    void __declspec(dllexport) bindCubeTexture2D(uint16 n, uint32 tex1);
+    void __declspec(dllexport) setDepthFunc(int n);
 }
 
 

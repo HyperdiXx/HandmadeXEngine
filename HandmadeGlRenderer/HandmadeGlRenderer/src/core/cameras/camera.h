@@ -3,22 +3,22 @@
 #ifndef CAMERAH
 #define CAMERAH
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "../../application/xenpch.h"
 #include "../types.h"
+
 
 namespace XEngine
 {
-    class Camera
+    class __declspec(dllexport) FlyCamera
     {
     public:
-        Camera()
+        FlyCamera()
         {
             camPos = glm::vec3(0.0f, 2.0f, 10.0f);
             camTarget = glm::vec3(0.0f, 0.0f, -1.0f);
             camUp = glm::vec3(0.0f, 1.0f, 0.0f);
         }
-        ~Camera()
+        ~FlyCamera()
         {
 
         }
@@ -30,6 +30,7 @@ namespace XEngine
         glm::vec3 getCamTarget();
         glm::vec3 getCamUp();
         real32 getSpeed();
+
         glm::vec3 camPos;
         glm::vec3 camTarget;
         glm::vec3 camUp;

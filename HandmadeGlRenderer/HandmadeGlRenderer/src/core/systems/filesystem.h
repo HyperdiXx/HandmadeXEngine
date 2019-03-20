@@ -4,9 +4,13 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
+#include "src/core/xenginedll.h"
+
 #include <string>
 
-struct FileSystem
+
+
+struct XENGINE_API FileSystem
 {
     static std::wstring sDataFolder;
     static std::wstring sModelsSubFolder;
@@ -16,6 +20,6 @@ struct FileSystem
 };
 
 
-std::wstring FileSystemGetLogFolder();
+std::wstring XENGINE_API FileSystemGetLogFolder();
 
 #endif // !FILESYSTEM_H

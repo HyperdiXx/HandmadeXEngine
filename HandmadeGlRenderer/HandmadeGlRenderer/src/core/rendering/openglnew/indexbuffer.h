@@ -1,6 +1,8 @@
 #pragma once
 
-struct IndexBuffer
+
+
+class __declspec(dllexport) IndexBuffer
 {
 
 };

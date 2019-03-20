@@ -3,7 +3,8 @@
 #ifndef SHADER_TYPE
 #define SHADER_TYPE
 
-#include <glad/glad.h>
+#include "src/application/xenpch.h"
+
 
 enum shadertypes
 {

@@ -4,6 +4,8 @@
 #ifndef MATRIX
 #define MATRIX
 
+#include "math.h"
+
 class Matrix
 {
 public:

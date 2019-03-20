@@ -7,7 +7,7 @@
 #include "src/core/rendering/openglnew/vao.h"
 #include "src/objects/skybox.h"
 #include "src/core/utility/log.h"
-
+#include "../core/math/math.h"
 
 #ifdef _WIN64
 namespace XEngine
@@ -43,16 +43,31 @@ namespace XEngine
     
     void OpenGLRunEngineWin32()
     {
-        LOG("XEngine v.0.0.1\nCPU:\nGPU:\nRender API: OPENGL\nEngine Init\n");
+        LOG("XEngine v.0.0.1\nCPU:\nGPU:\n");
+       
+        Math::vec2<real32> avec(1.0f, 3.0f);
+        Math::vec2<real32> bvec(1.0f, 3.0f);
+        Math::vec3<real32> fvec(1.0f, 3.0f, 5.0f);
+        Math::vec4<real32> gvec(1.0f, 3.0f, 5.0f, 2.0f);
+        Math::vec2<real32> cvec = avec + bvec;
+
+        std::cout << cvec << "\n";
+        std::cout << fvec << "\n";
+        std::cout << gvec << "\n";
+
+
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
         
         InitStats();
 
+        
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         while (!classicwindow.isClosed())
         {
+            LOG("\rUpdateLoop...");
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
             classicwindow.update();
         }
 

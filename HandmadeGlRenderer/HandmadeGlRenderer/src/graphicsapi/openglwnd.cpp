@@ -5,7 +5,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-       
+
         void WindowGL::initGL()
         {
             glfwInit();
@@ -14,15 +14,15 @@ namespace XEngine
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
             glfwWindowHint(GLFW_SAMPLES, 4);
 
-            window = glfwCreateWindow(w, h, name, NULL, NULL);
-            if (window == NULL)
+            m_window = glfwCreateWindow(m_w, m_h, m_name, NULL, NULL);
+            if (m_window == NULL)
             {
                 std::cout << "Failed to create GLFW window" << std::endl;
                 glfwTerminate();
                 return;
             }
-            glfwMakeContextCurrent(window);
-            glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+            glfwMakeContextCurrent(m_window);
+            glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
             //glfwSetCursorPosCallback(buffer->window, mousecallback);
             setVSYNC(true);
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -30,6 +30,9 @@ namespace XEngine
                 std::cout << "Failed to initialize GLAD" << std::endl;
                 return;
             }
+
+            std::cout << "Render API: OpenGL" << glGetString(GL_VERSION) << "\nEngine init\n";
+
         }
 
         void WindowGL::initStats()
@@ -52,49 +55,18 @@ namespace XEngine
 
         void WindowGL::update() const
         {
-            glfwSwapBuffers(window);
+            glfwSwapBuffers(m_window);
             glfwPollEvents();
         }
         bool32 WindowGL::isClosed()
         {
-            return glfwWindowShouldClose(window) == 1;
+            return glfwWindowShouldClose(m_window) == 1;
         }
     }
 }
-
-
-void setVSYNC(bool set)
+void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height)
 {
-    if (set)
-        glfwSwapInterval(1);
-    else
-        glfwSwapInterval(0);
-}
-
-void InitOpenglWindow(OpenGLWindowBuffer *buffer)
-{
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_SAMPLES, 4);
-
-    buffer->window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "XEngine", NULL, NULL);
-    if (buffer->window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return;
-    }
-    glfwMakeContextCurrent(buffer->window);
-    glfwSetFramebufferSizeCallback(buffer->window, framebufferSizeCallback);
-    //glfwSetCursorPosCallback(buffer->window, mousecallback);
-    setVSYNC(true);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return;
-    }
+    glViewport(0, 0, width, height);
 }
 
 
@@ -134,7 +106,3 @@ void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos)
     camTarget = glm::normalize(front);
 }
 #endif
-void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height)
-{
-    glViewport(0, 0, width, height);
-}

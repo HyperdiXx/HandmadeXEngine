@@ -13,18 +13,20 @@ namespace XEngine
 {
     namespace Rendering
     {
+
+      
         class WindowGL
         {
         public:
-            const char* name;
-            GLFWwindow* window;
-            int32 w, h;
+            const char* m_name;
+            GLFWwindow* m_window;
+            int32 m_w, m_h;
             bool isRunning;
             WindowGL(const char* n, int32 width, int32 height)
             {
-                name = n;
-                w = width;
-                h = height;
+                m_name = n;
+                m_w = width;
+                m_h = height;
                 initGL();
             }
             ~WindowGL()
@@ -34,6 +36,10 @@ namespace XEngine
             
             void update() const;
             bool32 isClosed();
+
+            inline int32 getWidth() const { return m_w; };
+            inline int32 getHeight() const { return m_h; };
+
         private:
             void initGL();
             void initStats();
@@ -42,15 +48,6 @@ namespace XEngine
     }
 }
 
-struct OpenGLWindowBuffer
-{
-    GLFWwindow* window;
-    int32 w, h;
-};
-
-
-void InitOpenglWindow(OpenGLWindowBuffer *buffer);
-void setVSYNC(bool set);
 void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos);
 void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height);
 #endif

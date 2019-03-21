@@ -62,6 +62,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype.lib;assimp-vc140-mt.lib;glfw643.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -83,6 +84,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -105,7 +107,7 @@
     <ClCompile Include="src\core\geometry\generator.cpp" />
     <ClCompile Include="src\core\imguibase.cpp" />
     <ClCompile Include="src\core\events\input.cpp" />
-    <ClCompile Include="src\core\math\matrix.cpp" />
+    <ClCompile Include="src\core\math\mat4.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\framebuffero.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\vao.cpp" />
@@ -188,13 +190,14 @@
     <ClInclude Include="src\core\geometry\generator.h" />
     <ClInclude Include="src\core\imguibase.h" />
     <ClInclude Include="src\core\events\input.h" />
+    <ClInclude Include="src\core\math\utils.h" />
     <ClInclude Include="src\core\rendering\material.h" />
-    <ClInclude Include="src\core\math\matrix.h" />
     <ClInclude Include="src\core\rendering\openglnew\framebuffero.h" />
     <ClInclude Include="src\core\rendering\openglnew\indexbuffer.h" />
     <ClInclude Include="src\core\rendering\openglnew\vao.h" />
     <ClInclude Include="src\core\rendering\scenegraph.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
+    <ClInclude Include="src\core\systems\filefunc.h" />
     <ClInclude Include="src\core\systems\filesystem.h" />
     <ClInclude Include="src\core\utility\assert.h" />
     <ClInclude Include="src\core\utility\log.h" />

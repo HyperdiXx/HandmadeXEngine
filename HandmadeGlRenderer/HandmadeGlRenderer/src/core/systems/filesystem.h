@@ -18,4 +18,5 @@ struct FileSystem
 
 std::wstring FileSystemGetLogFolder();
 
+
 #endif // !FILESYSTEM_H

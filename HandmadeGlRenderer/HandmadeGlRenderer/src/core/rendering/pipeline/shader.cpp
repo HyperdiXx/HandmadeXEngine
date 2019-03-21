@@ -1,39 +1,17 @@
 
-#include "src/xenpch.h"
+
 #include "shader.h"
+#include "../../systems/filefunc.h"
 
-void Shader::Win32SetShaderName()
+
+void Shader::Win32setupShaderFile()
 {
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
-
-
-    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try
-    {
-        vShaderFile.open(vs);
-        fShaderFile.open(fs);
-        std::stringstream vShaderStream, fShaderStream;
-
-
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-
-        vShaderFile.close();
-        fShaderFile.close();
-
-        vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
-    }
-    catch (std::ifstream::failure e)
-    {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-    }
-    const char* vShaderCode = vertexCode.c_str();
-    const char * fShaderCode = fragmentCode.c_str();
+    using namespace XEngine;
+ 
+    std::string fileVs = FileUtils::readFileEngine(vs);
+    std::string fileFs = FileUtils::readFileEngine(fs);
+    const char* vShaderCode = fileVs.c_str();
+    const char * fShaderCode = fileFs.c_str();
 
     unsigned int vertex, fragment;
 
@@ -49,59 +27,14 @@ void Shader::Win32SetShaderName()
     glAttachShader(ID, vertex);
     glAttachShader(ID, fragment);
     glLinkProgram(ID);
+    glValidateProgram(ID);
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }
 
-void Shader::Win32SetupShaders()
-{
-    UINT32 vertex, fragment;
-    GLint s;
 
-    char log[512];
-
-
-    vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vs, NULL);
-    glCompileShader(vertex);
-
-    glGetShaderiv(vertex, GL_COMPILE_STATUS, &s);
-    if (!s)
-    {
-        glGetShaderInfoLog(vertex, 512, NULL, log);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << log << std::endl;
-    };
-
-
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fs, NULL);
-    glCompileShader(fragment);
-
-    glGetShaderiv(fragment, GL_COMPILE_STATUS, &s);
-    if (!s)
-    {
-        glGetShaderInfoLog(fragment, 512, NULL, log);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << log << std::endl;
-    };
-
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    glLinkProgram(ID);
-
-    glGetProgramiv(ID, GL_LINK_STATUS, &s);
-    if (!s)
-    {
-        glGetProgramInfoLog(ID, 512, NULL, log);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << log << std::endl;
-    }
-
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
-}
-
-void Shader::Win32UseShader()
+void Shader::Win32useShader()
 {
     glUseProgram(ID);
 }

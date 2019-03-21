@@ -1,14 +1,14 @@
 #pragma once
 
 
-
+#include "../xenpch.h"
 #include "../graphicsapi/openglwnd.h"
 #include "../core/rendering/pipeline/shader.h"
 #include "../core/rendering/texture.h"
 #include "../core/geometry/model.h"
 #include "../core/imguibase.h"
 #include "../core/cameras/camera.h"
-#include "../xenpch.h"
+
 
 namespace XEngine
 {
@@ -30,8 +30,6 @@ namespace XEngine
         GLuint     Advance;
     };
 
-
-   
 
     void OpenGLRunEngineWin32();
     void InitStats();

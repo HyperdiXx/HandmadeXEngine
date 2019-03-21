@@ -4,10 +4,11 @@
 #include "app.h"
 
 #include "../core/geometry/generator.h"
-#include "src/core/rendering/openglnew/vao.h"
-#include "src/objects/skybox.h"
-#include "src/core/utility/log.h"
-#include "../core/math/math.h"
+#include "../core/rendering/openglnew/vao.h"
+#include "../objects/skybox.h"
+#include "../core/utility/log.h"
+
+
 
 #ifdef _WIN64
 namespace XEngine
@@ -43,42 +44,17 @@ namespace XEngine
     
     void OpenGLRunEngineWin32()
     {
-        LOG("XEngine v.0.0.1\nCPU:\nGPU:\n");
-       
-        Math::vec2<real32> avec(1.0f, 3.0f);
-        Math::vec2<real32> bvec(1.0f, 3.0f);
-        Math::vec3<real32> fvec(1.0f, 3.0f, 5.0f);
-        Math::vec4<real32> gvec(1.0f, 3.0f, 5.0f, 2.0f);
-        Math::vec2<real32> cvec = avec + bvec;
-
-        std::cout << cvec << "\n";
-        std::cout << fvec << "\n";
-        std::cout << gvec << "\n";
-
-
+        LOG("XEngine v.0.0.1\nCPU:\nGPU:\n");  
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
         
         InitStats();
 
-        
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        while (!classicwindow.isClosed())
-        {
-            LOG("\rUpdateLoop...");
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-            classicwindow.update();
-        }
 
-        /*OpenGLWindowBuffer wb = {};
-        InitOpenglWindow(&wb);
+        XEngine::EngineGUI::InitGui(classicwindow.m_window);
 
-        XEngine::EngineGUI::InitGui(wb.window);
 
-        InitStats();
-
-        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");        
+        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
         Shader lightShader("src/shaders/bloom.vs", "src/shaders/light.fs");
         Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
@@ -101,24 +77,24 @@ namespace XEngine
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
 
 
-        basicShader.Win32SetShaderName();
-        lightShader.Win32SetShaderName();
-        cubeMap.Win32SetShaderName();
-        floorShader.Win32SetShaderName();
-        lightMapShader.Win32SetShaderName();
-        depthMapQuad.Win32SetShaderName();
-        shadowShader.Win32SetShaderName();
-        normalMappingShader.Win32SetShaderName();
-        blurShader.Win32SetShaderName();
-        bloomShader.Win32SetShaderName();
-        mixedShader.Win32SetShaderName();
-        dispShader.Win32SetShaderName();
-        shaderGeometryPass.Win32SetShaderName();
-        shaderLightingPass.Win32SetShaderName();
-        loading.Win32SetShaderName();
+        basicShader.Win32setupShaderFile();
+        lightShader.Win32setupShaderFile();
+        cubeMap.Win32setupShaderFile();
+        floorShader.Win32setupShaderFile();
+        lightMapShader.Win32setupShaderFile();
+        depthMapQuad.Win32setupShaderFile();
+        shadowShader.Win32setupShaderFile();
+        normalMappingShader.Win32setupShaderFile();
+        blurShader.Win32setupShaderFile();
+        bloomShader.Win32setupShaderFile();
+        mixedShader.Win32setupShaderFile();
+        dispShader.Win32setupShaderFile();
+        shaderGeometryPass.Win32setupShaderFile();
+        shaderLightingPass.Win32setupShaderFile();
+        loading.Win32setupShaderFile();
 
 
-        std::vector<glm::vec3> objectPositions;
+        /*std::vector<glm::vec3> objectPositions;
         objectPositions.push_back(glm::vec3(-3.0, 0.0, -3.0));
         objectPositions.push_back(glm::vec3(0.0, 0.0, -3.0));
         objectPositions.push_back(glm::vec3(3.0, 0.0, -3.0));
@@ -129,7 +105,7 @@ namespace XEngine
         objectPositions.push_back(glm::vec3(0.0, 0.0, 3.0));
         objectPositions.push_back(glm::vec3(3.0, 0.0, 3.0));
 
-        
+
         glm::vec3 cubePositions[] = {
             glm::vec3(2.0f,  1.0f,  0.0f),
             glm::vec3(4.0f,  5.0f,  0.0f),
@@ -141,8 +117,8 @@ namespace XEngine
             glm::vec3(-6.5f,  2.0f, -2.5f),
             glm::vec3(-8.5f,  0.2f, -1.5f),
             glm::vec3(15.3f,  1.0f, -1.5f)
-        };
-        
+        };*/
+
 
         GeometryBuffer plane;
         std::vector<float> planeVertices = createPlane();
@@ -152,7 +128,7 @@ namespace XEngine
         Skybox sky;
 
         sky.createSkybox();
-                
+
         /*std::vector<glm::vec3> lightPositions;
         lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
         lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
@@ -163,9 +139,9 @@ namespace XEngine
         lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
         lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
         lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
-        lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
+        lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));*/
 
-        
+
 
         //gBuffer creation
 
@@ -214,26 +190,26 @@ namespace XEngine
 
         //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
         //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
-       
 
-        dispShader.Win32UseShader();
+
+        dispShader.Win32useShader();
         dispShader.setInt("diffuseMap", 0);
         dispShader.setInt("normalMap", 1);
         dispShader.setInt("depthMap", 2);
 
-        shaderGeometryPass.Win32UseShader();
+        shaderGeometryPass.Win32useShader();
         shaderGeometryPass.setInt("tex1", 0);
         shaderGeometryPass.setInt("tex2", 1);
 
-        shaderLightingPass.Win32UseShader();
+        shaderLightingPass.Win32useShader();
         shaderLightingPass.setInt("GPos", 0);
         shaderLightingPass.setInt("GNormal", 1);
         shaderLightingPass.setInt("GSpeccolor", 2);
 
-        cubeMap.Win32UseShader();
+        cubeMap.Win32useShader();
         cubeMap.setInt("skybox", 0);
-        
-        floorShader.Win32UseShader();
+
+        floorShader.Win32useShader();
         floorShader.setInt("floorTexture", 0);
 
         /*Win32UseShader(&normalMappingShader);
@@ -247,7 +223,7 @@ namespace XEngine
         Win32UseShader(&cubeMap);
         setInt(&cubeMap, "skybox", 0);
 
-        
+
 
         Win32UseShader(&shadowShader);
         setInt(&shadowShader, "diffuseTexture", 0);
@@ -262,12 +238,14 @@ namespace XEngine
         setInt(&blurShader, "diffuseTexture", 0);
         Win32UseShader(&mixedShader);
         setInt(&mixedShader, "scene", 0);
-        setInt(&mixedShader, "bloomBlur", 1);
+        setInt(&mixedShader, "bloomBlur", 1);*/
+
+           
 
         Model firstmodel("src/models/barrels/barrels.fbx", false);
         Model secondmodel("src/models/nano/nanosuit.obj", false);
         Model cityModel("src/models/house/house.obj", false);
-        
+
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
 
@@ -297,55 +275,54 @@ namespace XEngine
         bool bloomKeyPressed = false;
         float exposure = 1.0f;
 
+        
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-        while (!glfwWindowShouldClose(wb.window))
+        while (!classicwindow.isClosed())
         {
-
             LOG("\rUpdateLoop...");
-            cam.speed = 2.5f * deltaTime;
             
+            cam.speed = 2.5f * deltaTime;
+
             real64 currFrame = glfwGetTime();
 
             deltaTime = currFrame - lastFrame;
             lastFrame = currFrame;
-                        
-            XEngine::processInput(wb.window, &cam);
+
+            XEngine::processInput(classicwindow.m_window, &cam);
             //std::thread inp(XEngine::processInput, wb.window, &cam);
             //inp.detach();
             //inp.join();
-            
-            
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-           
+
             projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
             view = glm::mat4(cam.getViewMatrix());
-                     
-            loading.Win32UseShader();
-  
+
+            loading.Win32useShader();
+
             loading.setMat4("projection", projection);
             loading.setMat4("view", view);
 
             glm::mat4 modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(5.0f, -1.0f, 0.0f)); 
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(5.0f, -1.0f, 0.0f));
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", modelNanosuit);
             secondmodel.drawMesh(&loading);
 
             modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(10.0f, -1.0f, 0.0f)); 
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(10.0f, -1.0f, 0.0f));
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", modelNanosuit);
             firstmodel.drawMesh(&loading);
 
             modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(-10.0f, -1.0f, 0.0f)); 
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));	
+            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(-10.0f, -1.0f, 0.0f));
+            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", modelNanosuit);
             cityModel.drawMesh(&loading);
 
 
-            dispShader.Win32UseShader();
+            dispShader.Win32useShader();
             dispShader.setMat4("projection", projection);
             dispShader.setMat4("view", view);
 
@@ -368,36 +345,33 @@ namespace XEngine
             model = glm::scale(model, glm::vec3(0.1f));
             dispShader.setMat4("model", model);
             renderQuad();
-            
-            floorShader.Win32UseShader();
+
+            floorShader.Win32useShader();
 
             floorShader.setMat4("projection", projection);
             floorShader.setMat4("view", view);
 
             floorShader.setVec3("viewPos", cam.camPos);
             floorShader.setVec3("lightPos", lightposfloor);
-           
+
             renderQuad();
-                       
+
             view = glm::mat4(cam.getViewMatrix());
             sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
 
-            XEngine::EngineGUI::UpdateGui(wb.window,&gui);
+            XEngine::EngineGUI::UpdateGui(classicwindow.m_window, &gui);
 
-            glfwSwapBuffers(wb.window);
-            glfwPollEvents();
-            
+            classicwindow.update();
         }
 
-        
         delGeometry(&plane);
         delGeometry(sky.getGeometryBuffer());
-        glDeleteVertexArrays(1, &cubeVAO);
 
+        glDeleteVertexArrays(1, &cubeVAO);
         glDeleteBuffers(1, &cubeVBO);
 
         glfwTerminate();
-        */
+       
     }
 
 

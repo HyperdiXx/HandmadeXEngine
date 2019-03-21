@@ -3,15 +3,11 @@
 #ifndef SHADER
 #define SHADER
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
+#include "src/xenpch.h"
 #include "src/core/types.h"
 #include "shadertype.h"
 
-#include <string>
 
 class Shader
 {
@@ -25,12 +21,11 @@ public:
     {
         vs = nullptr;
         fs = nullptr;
+        glDeleteProgram(ID);
     }
 
-    void Win32SetShaderName();
-
-    void Win32SetupShaders();
-    void Win32UseShader();
+    void Win32setupShaderFile();
+    void Win32useShader();
 
     const GLchar* Win32GetFsName();
     const GLchar* Win32GetVsName();

@@ -55,6 +55,11 @@ namespace XEngine
 
         void WindowGL::update() const
         {
+            GLenum errors = glGetError();
+
+            if (errors != GL_NO_ERROR)
+                std::cout << "Error in " << errors << "\n";
+
             glfwSwapBuffers(m_window);
             glfwPollEvents();
         }

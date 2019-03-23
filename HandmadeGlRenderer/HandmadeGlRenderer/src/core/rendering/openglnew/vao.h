@@ -25,7 +25,7 @@ struct GeometryBuffer
     float data[256];
 };
 
-void addIndexBuffer(std::vector<unsigned int> indices, IndexBuffer &index);
+void addIndexBuffer(std::vector<unsigned int> indices, XEngine::Rendering::IndexBuffer &index);
 void addVertexBuffer(std::vector<float> values, int dimension, int row);
 
 void createVertexBuffer(GeometryBuffer *geo, std::vector<float> d);
@@ -35,5 +35,6 @@ void bindVAO(VertexAO *ao);
 void unbindVAO(VertexAO *ao);
 
 void delGeometry(GeometryBuffer *b);
+
 
 #endif

@@ -3,7 +3,7 @@
 #include "vao.h"
 
 
-void addIndexBuffer(std::vector<unsigned int> indices, IndexBuffer & index)
+void addIndexBuffer(std::vector<unsigned int> indices)
 {
 
 }

@@ -108,9 +108,11 @@
     <ClCompile Include="src\core\imguibase.cpp" />
     <ClCompile Include="src\core\events\input.cpp" />
     <ClCompile Include="src\core\math\mat4.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\buffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\framebuffero.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\vao.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\vertexarray.cpp" />
     <ClCompile Include="src\core\rendering\scenegraph.cpp" />
     <ClCompile Include="src\core\rendering\texture.cpp" />
     <ClCompile Include="src\core\systems\filesystem.cpp" />
@@ -192,9 +194,11 @@
     <ClInclude Include="src\core\events\input.h" />
     <ClInclude Include="src\core\math\utils.h" />
     <ClInclude Include="src\core\rendering\material.h" />
+    <ClInclude Include="src\core\rendering\openglnew\buffer.h" />
     <ClInclude Include="src\core\rendering\openglnew\framebuffero.h" />
     <ClInclude Include="src\core\rendering\openglnew\indexbuffer.h" />
     <ClInclude Include="src\core\rendering\openglnew\vao.h" />
+    <ClInclude Include="src\core\rendering\openglnew\vertexarray.h" />
     <ClInclude Include="src\core\rendering\scenegraph.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
     <ClInclude Include="src\core\systems\filefunc.h" />

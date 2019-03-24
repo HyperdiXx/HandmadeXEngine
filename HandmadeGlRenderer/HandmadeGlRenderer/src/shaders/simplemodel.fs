@@ -10,7 +10,7 @@ uniform sampler2D texture_specular1;
 void main()
 {    
     vec4 diftex = texture(texture_diffuse1, UV);
-	//vec4 normaltex = texture(texture_normal1, UV);
-	//normaltex = normalize(normaltex * 2.0 - 1.0);
+	vec4 normaltex = texture(texture_normal1, UV);
+	normaltex = normalize(normaltex * 2.0 - 1.0);
     FragColor = diftex;
 }

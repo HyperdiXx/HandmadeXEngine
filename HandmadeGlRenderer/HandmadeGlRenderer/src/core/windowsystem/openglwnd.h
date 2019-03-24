@@ -4,10 +4,10 @@
 #ifndef INIT
 #define INIT
 
-#include "../core/types.h"
-#include "../xenpch.h"
-#include "../core/events/input.h"
-#include "../core/cameras/camera.h"
+#include "../types.h"
+#include "../../xenpch.h"
+#include "../../core/events/input.h"
+#include "../../core/cameras/camera.h"
 
 namespace XEngine
 {

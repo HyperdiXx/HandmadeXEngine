@@ -18,10 +18,15 @@ namespace XEngine
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             }
 
+            ~IndexBuffer()
+            {
+                glDeleteBuffers(1, &mID);
+            }
+
             void bind() const;
             void unbind() const;
 
-
+            GLuint getCount() const { return mCount; };
         private:
             GLuint mID;
             GLuint mCount;

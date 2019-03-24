@@ -8,7 +8,8 @@
 #include "../objects/skybox.h"
 #include "../core/utility/log.h"
 
-
+#include "../core/rendering/openglnew/irenderable2d.h"
+#include "../core/rendering/openglnew/renderer2d.h"
 
 #ifdef _WIN64
 namespace XEngine
@@ -251,6 +252,8 @@ namespace XEngine
 
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
+        glm::mat4 floormodel = glm::mat4(1.0f);
+        glm::mat4 model = glm::mat4(1.0f);
 
         glm::vec3 lightPos(0.5f, 1.0f, 0.3f);
         glm::vec3 lightposfloor(0.0f, 4.0f, 0.0f);
@@ -263,18 +266,36 @@ namespace XEngine
         gui.locTime = 0.0f;
 
         glm::vec3 point = glm::vec3(rand() % 20, 0.0, rand() % 20);
-        glm::mat4 floormodel = glm::mat4(1.0f);
-        glm::mat4 model = glm::mat4(1.0f);
+
+        bool bloom = true;
+        bool bloomKeyPressed = false;
+        float exposure = 1.0f;
+
         glm::mat4 mvp = glm::mat4(1.0f);
         float nearp = 1.0f, farp = 7.5f;
         glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearp, farp);
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightspaceMatrix = lightProjection * lightView;
 
-        bool bloom = true;
-        bool bloomKeyPressed = false;
-        float exposure = 1.0f;
 
+        glm::mat4 orho = glm::mat4(1.0f);
+
+        orho = glm::ortho(0.0f, 16.0f, 0.0f, 9.0f, -1.0f, 1.0f);
+
+        Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
+
+        glm::mat4 modelforsprite = glm::mat4(1.0f);
+        modelforsprite = glm::translate(modelforsprite, glm::vec3(4.0f, 0.0f, 0.0f));
+        shadersprite.Win32setupShaderFile();
+
+        shadersprite.Win32useShader();
+        shadersprite.setMat4("projection", orho);
+        shadersprite.setMat4("model", modelforsprite);
+        shadersprite.setVec4("color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+       
+        using namespace Rendering;
+        Renderable2d testsprite(glm::vec3(5, 5, 0), glm::vec2(4, 4), glm::vec4(1, 0, 0, 1), shadersprite);
+        Renderer2d renderer;
         
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         while (!classicwindow.isClosed())
@@ -294,6 +315,8 @@ namespace XEngine
             //inp.join();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            
 
             projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
             view = glm::mat4(cam.getViewMatrix());
@@ -339,7 +362,7 @@ namespace XEngine
 
             renderQuad();
 
-            // render light source (simply re-renders a smaller plane at the light's position for debugging/visualization)
+            
             model = glm::mat4(1.0f);
             model = glm::translate(model, lightPos);
             model = glm::scale(model, glm::vec3(0.1f));
@@ -356,10 +379,14 @@ namespace XEngine
 
             renderQuad();
 
-            view = glm::mat4(cam.getViewMatrix());
-            sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
+            //sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
+
+            
 
             XEngine::EngineGUI::UpdateGui(classicwindow.m_window, &gui);
+
+            renderer.submit(&testsprite);
+            renderer.flush();
 
             classicwindow.update();
         }

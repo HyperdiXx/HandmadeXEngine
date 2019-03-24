@@ -20,6 +20,8 @@ namespace XEngine
                 {
                     delete mBuffer[i];
                 }
+
+                glDeleteVertexArrays(1, &mId);
             }
 
             void addBuffer(VertexBuffer *buf, GLuint attribute);

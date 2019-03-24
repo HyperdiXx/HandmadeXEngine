@@ -2,7 +2,7 @@
 
 
 #include "../xenpch.h"
-#include "../graphicsapi/openglwnd.h"
+#include "../core/windowsystem/openglwnd.h"
 #include "../core/rendering/pipeline/shader.h"
 #include "../core/rendering/texture.h"
 #include "../core/geometry/model.h"

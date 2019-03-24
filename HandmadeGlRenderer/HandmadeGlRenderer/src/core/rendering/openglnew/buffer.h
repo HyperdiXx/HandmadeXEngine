@@ -17,6 +17,11 @@ namespace XEngine
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
             }
 
+            ~VertexBuffer()
+            {
+                glDeleteBuffers(1, &mID);
+            }
+
             void bind() const;
             void unbind() const;
 

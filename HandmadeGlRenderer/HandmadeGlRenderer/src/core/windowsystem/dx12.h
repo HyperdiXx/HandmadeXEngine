@@ -3,10 +3,10 @@
 #ifndef DX12
 #define DX12
 
-#include "../core/utility/assert.h"
+#include "../utility/assert.h"
 
 #include <d3d12.h>
-#include "../core/d3dx12.h"
+#include "../d3dx12.h"
 #include <dxgi1_2.h>
 #include <d3dcompiler.h>
 

@@ -6,9 +6,8 @@
 #include "../core/rendering/pipeline/shader.h"
 #include "../core/rendering/texture.h"
 #include "../core/geometry/model.h"
-#include "../core/imguibase.h"
-#include "../core/cameras/camera.h"
 
+#include "../core/cameras/camera.h"
 
 namespace XEngine
 {

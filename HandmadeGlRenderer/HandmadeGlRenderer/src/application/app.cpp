@@ -11,36 +11,15 @@
 #include "../core/rendering/openglnew/irenderable2d.h"
 #include "../core/rendering/openglnew/renderer2d.h"
 
+#include "../core/rendering/ui/glui.h"
+
+
 #ifdef _WIN64
 namespace XEngine
 {
 
     XEngine::Camera cam;
  
-    void renderScene(Shader *shader, unsigned int &vao)
-    {
-        glm::mat4 model = glm::mat4(1.0f);
-        shader->setMat4("model", model);
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        // cubes
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
-        model = glm::scale(model, glm::vec3(0.5f));
-        shader->setMat4("model", model);
-        renderCube();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
-        model = glm::scale(model, glm::vec3(0.5f));
-        shader->setMat4("model", model);
-        renderCube();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
-        model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-        model = glm::scale(model, glm::vec3(0.25));
-        shader->setMat4("model", model);
-        renderCube();
-    }
 
     
     void OpenGLRunEngineWin32()
@@ -49,11 +28,9 @@ namespace XEngine
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
         
-        InitStats();
+        //InitStats();
 
-
-        XEngine::EngineGUI::InitGui(classicwindow.m_window);
-
+        XEngine::GLGUI myUi(classicwindow.m_window);
 
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
@@ -151,23 +128,23 @@ namespace XEngine
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        const unsigned int NR_LIGHTS = 32;
-        std::vector<glm::vec3> lightPositions;
-        std::vector<glm::vec3> lightColors;
-        srand(13);
-        for (unsigned int i = 0; i < NR_LIGHTS; i++)
-        {
-            // calculate slightly random offsets
-            float xPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
-            float yPos = ((rand() % 100) / 100.0f) * 6.0f - 4.0f;
-            float zPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
-            lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-            // also calculate random color
-            float rColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
-            float gColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
-            float bColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
-            lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-        }
+        //const unsigned int NR_LIGHTS = 32;
+        //std::vector<glm::vec3> lightPositions;
+        //std::vector<glm::vec3> lightColors;
+        //srand(13);
+        //for (unsigned int i = 0; i < NR_LIGHTS; i++)
+        //{
+        //    // calculate slightly random offsets
+        //    float xPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
+        //    float yPos = ((rand() % 100) / 100.0f) * 6.0f - 4.0f;
+        //    float zPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
+        //    lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
+        //    // also calculate random color
+        //    float rColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
+        //    float gColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
+        //    float bColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
+        //    lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+        //}
 
         XEngine::Cubemap cub;
         std::vector<std::string> textures;
@@ -252,6 +229,8 @@ namespace XEngine
 
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
+
         glm::mat4 floormodel = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -261,9 +240,9 @@ namespace XEngine
         bool show_demo_window = true;
         bool show_another_window = false;
 
-        XEngine::EngineGUI::GraphicInterface gui = {};
+        //XEngine::EngineGUI::GraphicInterface gui = {};
 
-        gui.locTime = 0.0f;
+        //gui.locTime = 0.0f;
 
         glm::vec3 point = glm::vec3(rand() % 20, 0.0, rand() % 20);
 
@@ -285,18 +264,17 @@ namespace XEngine
         Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
 
         glm::mat4 modelforsprite = glm::mat4(1.0f);
-        modelforsprite = glm::translate(modelforsprite, glm::vec3(4.0f, 0.0f, 0.0f));
+        modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 5.0f, 0.0f));
         shadersprite.Win32setupShaderFile();
 
         shadersprite.Win32useShader();
         shadersprite.setMat4("projection", orho);
-        shadersprite.setMat4("model", modelforsprite);
-        shadersprite.setVec4("color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-       
-        using namespace Rendering;
-        Renderable2d testsprite(glm::vec3(5, 5, 0), glm::vec2(4, 4), glm::vec4(1, 0, 0, 1), shadersprite);
-        Renderer2d renderer;
+
         
+        using namespace Rendering;
+        Renderable2d testsprite(glm::vec3(0, 0, 0), glm::vec2(2, 2), glm::vec4(0, 0, 1, 1), shadersprite);
+        Renderer2d renderer;
+        glm::vec4 spriteColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         while (!classicwindow.isClosed())
         {
@@ -316,10 +294,13 @@ namespace XEngine
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            myUi.startUpdate();
             
+            shadersprite.Win32useShader();
+            shadersprite.setVec4("color", spriteColor);
 
-            projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
-            view = glm::mat4(cam.getViewMatrix());
+            
+            /*view = glm::mat4(cam.getViewMatrix());
 
             loading.Win32useShader();
 
@@ -378,16 +359,18 @@ namespace XEngine
             floorShader.setVec3("lightPos", lightposfloor);
 
             renderQuad();
-
+*/
             //sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
 
             
 
-            XEngine::EngineGUI::UpdateGui(classicwindow.m_window, &gui);
 
             renderer.submit(&testsprite);
             renderer.flush();
 
+            myUi.update(spriteColor);
+
+           
             classicwindow.update();
         }
 
@@ -397,6 +380,8 @@ namespace XEngine
         glDeleteVertexArrays(1, &cubeVAO);
         glDeleteBuffers(1, &cubeVBO);
 
+
+        //XEngine::EngineGUI::shutdownGUI();
         glfwTerminate();
        
     }
@@ -753,6 +738,33 @@ setFloat(&depthMapQuad, "near_plane", nearp);
 setFloat(&depthMapQuad, "far_plane", farp);
 glActiveTexture(GL_TEXTURE0);
 glBindTexture(GL_TEXTURE_2D, depthMap);
+
+
+void renderScene(Shader *shader, unsigned int &vao)
+{
+    glm::mat4 model = glm::mat4(1.0f);
+    shader->setMat4("model", model);
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    // cubes
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader->setMat4("model", model);
+    renderCube();
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader->setMat4("model", model);
+    renderCube();
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+    model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    model = glm::scale(model, glm::vec3(0.25));
+    shader->setMat4("model", model);
+    renderCube();
+}
+
 #endif
 
 

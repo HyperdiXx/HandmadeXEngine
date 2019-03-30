@@ -49,7 +49,13 @@ namespace XEngine
         auto state = glfwGetKey(window, key);
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
-       
+
+    bool onKeyboardReleased(GLFWwindow *window, int key)
+    {
+        auto state = glfwGetKey(window, key);
+        return state == GLFW_RELEASE;
+    }
+
     void processInput(GLFWwindow *window, Camera *cam)
     {
         //gInp.lock();

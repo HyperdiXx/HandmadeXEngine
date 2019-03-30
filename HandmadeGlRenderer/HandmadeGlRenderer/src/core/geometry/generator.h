@@ -18,6 +18,8 @@ namespace XEngine
     void renderQuad();
     std::vector<float> createPlane();
     std::vector<float> createVert();
+
+
 }
 
 

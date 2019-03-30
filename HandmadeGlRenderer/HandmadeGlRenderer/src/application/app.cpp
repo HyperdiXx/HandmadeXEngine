@@ -30,7 +30,7 @@ namespace XEngine
         
         //InitStats();
 
-        XEngine::GLGUI myUi(classicwindow.m_window);
+        XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
@@ -239,10 +239,6 @@ namespace XEngine
 
         bool show_demo_window = true;
         bool show_another_window = false;
-
-        //XEngine::EngineGUI::GraphicInterface gui = {};
-
-        //gui.locTime = 0.0f;
 
         glm::vec3 point = glm::vec3(rand() % 20, 0.0, rand() % 20);
 

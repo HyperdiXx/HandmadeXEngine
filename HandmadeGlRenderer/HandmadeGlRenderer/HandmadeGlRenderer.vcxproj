@@ -117,7 +117,9 @@
     <ClCompile Include="src\core\rendering\openglnew\vertexarray.cpp" />
     <ClCompile Include="src\core\rendering\scenegraph.cpp" />
     <ClCompile Include="src\core\rendering\texture.cpp" />
+    <ClCompile Include="src\core\rendering\ui\dxui.cpp" />
     <ClCompile Include="src\core\rendering\ui\glui.cpp" />
+    <ClCompile Include="src\core\rendering\ui\ui.cpp" />
     <ClCompile Include="src\core\systems\clock.cpp" />
     <ClCompile Include="src\core\systems\filesystem.cpp" />
     <ClCompile Include="src\core\utility\log.cpp" />
@@ -214,7 +216,9 @@
     <ClInclude Include="src\core\rendering\openglnew\vertexarray.h" />
     <ClInclude Include="src\core\rendering\scenegraph.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
+    <ClInclude Include="src\core\rendering\ui\dxui.h" />
     <ClInclude Include="src\core\rendering\ui\glui.h" />
+    <ClInclude Include="src\core\rendering\ui\ui.h" />
     <ClInclude Include="src\core\systems\filefunc.h" />
     <ClInclude Include="src\core\systems\filesystem.h" />
     <ClInclude Include="src\core\utility\assert.h" />

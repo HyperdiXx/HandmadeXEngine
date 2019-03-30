@@ -1,10 +1,8 @@
 #include "glui.h"
 
-#include "../../../imguit/imgui.h"
-#include "../../../imguit/imgui_impl_opengl3.h"
-#include "../../../imguit/imgui_impl_glfw.h"
 
-void XEngine::GLGUI::init(GLFWwindow* window)
+
+void XEngine::GLGUI::init(GLFWwindow* window, int theme)
 {
     glEnable(GL_DEPTH_TEST);
     IMGUI_CHECKVERSION();
@@ -16,7 +14,14 @@ void XEngine::GLGUI::init(GLFWwindow* window)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    setDarkTheme();
+    if (theme == 1)
+    {
+        setDarkTheme();
+    }
+    else
+    {
+        setLightTheme();
+    }
 }
 
 void XEngine::GLGUI::startUpdate()

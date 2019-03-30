@@ -3,18 +3,17 @@
 #ifndef GLUIH
 #define GLUIH
 
-#include <glm/glm.hpp>
-#include <GLFW/glfw3.h>
-
+#include "ui.h"
 
 namespace XEngine
 {
-    class GLGUI
+    class GLGUI : public UserInterface
     {
     public:
-        GLGUI(GLFWwindow* win) : m_window(win)
+
+        GLGUI(GLFWwindow* win, int theme) : m_window(win)
         {
-            init(win);
+            init(win, theme);
         }
 
         ~GLGUI()
@@ -22,7 +21,7 @@ namespace XEngine
             shutdown();
         }
 
-        void init(GLFWwindow* m_window);
+        void init(GLFWwindow* window, int theme);
         void startUpdate();
         void update(glm::vec4& spritecol);
         void shutdown();

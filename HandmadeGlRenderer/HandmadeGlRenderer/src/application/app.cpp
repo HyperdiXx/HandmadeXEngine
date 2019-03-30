@@ -272,6 +272,8 @@ namespace XEngine
         Renderer2d renderer;
         glm::vec4 spriteColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+
         while (!classicwindow.isClosed())
         {
             LOG("\rUpdateLoop...");
@@ -282,6 +284,7 @@ namespace XEngine
 
             deltaTime = currFrame - lastFrame;
             lastFrame = currFrame;
+
 
             XEngine::processInput(classicwindow.m_window, &cam);
             //std::thread inp(XEngine::processInput, wb.window, &cam);

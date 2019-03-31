@@ -18,11 +18,10 @@
 namespace XEngine
 {
 
-    XEngine::Camera cam;
  
 
     
-    void OpenGLRunEngineWin32()
+    void Application::OpenGLRunEngineWin32()
     {
         LOG("XEngine v.0.0.1\nCPU:\nGPU:\n");  
 
@@ -350,7 +349,7 @@ namespace XEngine
     }
 
 
-    void InitStats()
+    void Application::InitStats()
     {
         //glEnable(GL_CULL_FACE);
         glEnable(GL_BLEND);
@@ -361,15 +360,6 @@ namespace XEngine
 
     }
 
-    void RenderQ(Shader *shader)
-    {
-        
-    }
-
-    void renderSky()
-    {
-
-    }
 }
    
 

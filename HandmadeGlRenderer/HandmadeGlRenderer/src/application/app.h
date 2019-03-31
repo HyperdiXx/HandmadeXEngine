@@ -29,8 +29,14 @@ namespace XEngine
         GLuint     Advance;
     };
 
+    class Application
+    {
+    public:
+        void OpenGLRunEngineWin32();
+        void InitStats();
 
-    void OpenGLRunEngineWin32();
-    void InitStats();
-    void RenderQ(Shader *shader);
+
+        XEngine::Camera cam;
+    };
+
 }

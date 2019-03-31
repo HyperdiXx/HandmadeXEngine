@@ -214,7 +214,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 #ifdef OPENGL
 int main(int argc, char** argv)
 {
-    XEngine::OpenGLRunEngineWin32();
+    using namespace XEngine;
+
+    Application *testapp = (Application*)malloc(sizeof(Application));
+    testapp->OpenGLRunEngineWin32();
+    free(testapp);
 
     return (0);
 }

@@ -101,12 +101,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
-    <ClCompile Include="src\core\assets.cpp" />
+    <ClCompile Include="src\core\rendering\assets.cpp" />
     <ClCompile Include="src\core\cameras\camera.cpp" />
     <ClCompile Include="src\core\events\events.cpp" />
     <ClCompile Include="src\core\geometry\generator.cpp" />
     <ClCompile Include="src\core\events\input.cpp" />
     <ClCompile Include="src\core\math\mat4.cpp" />
+    <ClCompile Include="src\core\memory\allocator.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\bathcrenderer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\buffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\framebuffero.cpp" />
@@ -126,8 +127,8 @@
     <ClCompile Include="src\core\geometry\model.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shader.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shadertype.cpp" />
-    <ClCompile Include="src\core\stb_image.cpp" />
-    <ClCompile Include="src\core\text.cpp" />
+    <ClCompile Include="src\core\utility\stb_image.cpp" />
+    <ClCompile Include="src\core\rendering\text.cpp" />
     <ClCompile Include="src\core\windowsystem\dx11.cpp" />
     <ClCompile Include="src\core\windowsystem\dx12.cpp" />
     <ClCompile Include="src\core\windowsystem\openglwnd.cpp" />
@@ -191,10 +192,10 @@
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\audio\audio.h" />
-    <ClInclude Include="src\core\assets.h" />
+    <ClInclude Include="src\core\rendering\assets.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
     <ClInclude Include="src\core\containers\vector.h" />
-    <ClInclude Include="src\core\entity.h" />
+    <ClInclude Include="src\core\ecs\entity.h" />
     <ClInclude Include="src\core\events\events.h" />
     <ClInclude Include="src\core\events\joystick.h" />
     <ClInclude Include="src\core\events\keyboard.h" />
@@ -202,6 +203,8 @@
     <ClInclude Include="src\core\geometry\generator.h" />
     <ClInclude Include="src\core\events\input.h" />
     <ClInclude Include="src\core\math\utils.h" />
+    <ClInclude Include="src\core\memory\allocator.h" />
+    <ClInclude Include="src\core\memory\enmemory.h" />
     <ClInclude Include="src\core\rendering\material.h" />
     <ClInclude Include="src\core\rendering\openglnew\batchrenderer.h" />
     <ClInclude Include="src\core\rendering\openglnew\buffer.h" />
@@ -223,6 +226,7 @@
     <ClInclude Include="src\core\systems\filesystem.h" />
     <ClInclude Include="src\core\utility\assert.h" />
     <ClInclude Include="src\core\utility\clock.h" />
+    <ClInclude Include="src\core\utility\enstring.h" />
     <ClInclude Include="src\core\utility\log.h" />
     <ClInclude Include="src\core\math\mat3.h" />
     <ClInclude Include="src\core\math\mat4.h" />
@@ -237,8 +241,8 @@
     <ClInclude Include="src\core\OpenGL\vao.h" />
     <ClInclude Include="src\core\rendering\pipeline\shader.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadertype.h" />
-    <ClInclude Include="src\core\stb_image.h" />
-    <ClInclude Include="src\core\text.h" />
+    <ClInclude Include="src\core\utility\stb_image.h" />
+    <ClInclude Include="src\core\rendering\text.h" />
     <ClInclude Include="src\core\types.h" />
     <ClInclude Include="src\core\d3dx12.h" />
     <ClInclude Include="src\core\windowsystem\dx11.h" />

@@ -103,48 +103,13 @@ namespace XEngine
 
         createVertexBuffer(&plane, planeVertices);
 
-        Skybox sky;
+        XEngine::Rendering::Skybox sky;
 
         sky.createSkybox();
 
-        /*std::vector<glm::vec3> lightPositions;
-        lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
-        lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
-        lightPositions.push_back(glm::vec3(3.0f, 0.5f, 1.0f));
-        lightPositions.push_back(glm::vec3(-0.8f, 2.4f, -1.0f));
-
-        std::vector<glm::vec3> lightColors;
-        lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
-        lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
-        lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
-        lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));*/
-
-
-
-        //gBuffer creation
-
-        //uint32 GPos, GNormal, GSpeccolor, GBuffer, rboDepth;
 
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        //const unsigned int NR_LIGHTS = 32;
-        //std::vector<glm::vec3> lightPositions;
-        //std::vector<glm::vec3> lightColors;
-        //srand(13);
-        //for (unsigned int i = 0; i < NR_LIGHTS; i++)
-        //{
-        //    // calculate slightly random offsets
-        //    float xPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
-        //    float yPos = ((rand() % 100) / 100.0f) * 6.0f - 4.0f;
-        //    float zPos = ((rand() % 100) / 100.0f) * 6.0f - 3.0f;
-        //    lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-        //    // also calculate random color
-        //    float rColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
-        //    float gColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
-        //    float bColor = ((rand() % 100) / 200.0f) + 0.5f; // between 0.5 and 1.0
-        //    lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-        //}
 
         XEngine::Cubemap cub;
         std::vector<std::string> textures;
@@ -200,7 +165,6 @@ namespace XEngine
 
         Win32UseShader(&cubeMap);
         setInt(&cubeMap, "skybox", 0);
-
 
 
         Win32UseShader(&shadowShader);

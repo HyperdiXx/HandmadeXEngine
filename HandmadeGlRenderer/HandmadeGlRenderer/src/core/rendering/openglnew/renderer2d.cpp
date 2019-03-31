@@ -20,8 +20,8 @@ namespace XEngine
             model = glm::translate(model, objToRender->getPos());
             objToRender->getShader().setMat4("model", model);
             glDrawElements(GL_TRIANGLES, objToRender->getIBO()->getCount(), GL_UNSIGNED_SHORT, 0);
-            objToRender->getVAO()->unbind();
             objToRender->getIBO()->unbind();
+            objToRender->getVAO()->unbind();
             mrenderQ.pop_front();
         }
 

@@ -41,11 +41,14 @@ void XEngine::GLGUI::update(glm::vec4& spritecol)
 
     ImGui::Begin("XEngine Editor");
     float col1[3] = { spritecol.x, spritecol.y, spritecol.z };
+    
     ImGui::ColorEdit3("Sprite color", col1);
 
     spritecol.x = col1[0];
     spritecol.y = col1[1];
     spritecol.z = col1[2];
+
+
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();

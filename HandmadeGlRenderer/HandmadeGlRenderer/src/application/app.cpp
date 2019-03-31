@@ -18,9 +18,6 @@
 namespace XEngine
 {
 
- 
-
-    
     void Application::OpenGLRunEngineWin32()
     {
         LOG("XEngine v.0.0.1\nCPU:\nGPU:\n");  
@@ -52,7 +49,6 @@ namespace XEngine
         Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
-
 
         basicShader.Win32setupShaderFile();
         lightShader.Win32setupShaderFile();
@@ -105,8 +101,6 @@ namespace XEngine
         XEngine::Rendering::Skybox sky;
 
         sky.createSkybox();
-
-
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -215,27 +209,32 @@ namespace XEngine
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightspaceMatrix = lightProjection * lightView;
 
-
         glm::mat4 orho = glm::mat4(1.0f);
 
-        orho = glm::ortho(0.0f, 16.0f, 0.0f, 9.0f, -1.0f, 1.0f);
+        orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
 
         Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
 
         glm::mat4 modelforsprite = glm::mat4(1.0f);
-        modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 5.0f, 0.0f));
+        modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
+
         shadersprite.Win32setupShaderFile();
 
         shadersprite.Win32useShader();
         shadersprite.setMat4("projection", orho);
 
-        
-        using namespace Rendering;
-        Renderable2d testsprite(glm::vec3(0, 0, 0), glm::vec2(2, 2), glm::vec4(0, 0, 1, 1), shadersprite);
-        Renderer2d renderer;
-        glm::vec4 spriteColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+         
+        glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
 
+        using namespace Rendering;
+        Renderable2d testsprite(glm::vec3(1280 / 2, 720 / 2, 0), glm::vec2(100, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), shadersprite);
+        Renderable2d testsprite2(glm::vec3(20, 20, 0), glm::vec2(60, 60), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), shadersprite);
+
+
+        Renderer2d renderer;
+
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
         while (!classicwindow.isClosed())
         {
@@ -260,6 +259,7 @@ namespace XEngine
             
             shadersprite.Win32useShader();
             shadersprite.setVec4("color", spriteColor);
+
 
             
             /*view = glm::mat4(cam.getViewMatrix());
@@ -325,25 +325,23 @@ namespace XEngine
             //sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
 
             
-
-
+         
             renderer.submit(&testsprite);
+            renderer.submit(&testsprite2);
+
             renderer.flush();
 
             myUi.update(spriteColor);
 
-           
             classicwindow.update();
         }
-
+        
         delGeometry(&plane);
         delGeometry(sky.getGeometryBuffer());
 
         glDeleteVertexArrays(1, &cubeVAO);
         glDeleteBuffers(1, &cubeVBO);
 
-
-        //XEngine::EngineGUI::shutdownGUI();
         glfwTerminate();
        
     }

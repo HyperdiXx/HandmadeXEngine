@@ -25,7 +25,7 @@ namespace XEngine
                 color.x, color.y, color.z, color.w,
             };
 
-            GLushort ind[] =
+            GLuint ind[] =
             {
                 0, 1, 2,
                 2, 3, 0

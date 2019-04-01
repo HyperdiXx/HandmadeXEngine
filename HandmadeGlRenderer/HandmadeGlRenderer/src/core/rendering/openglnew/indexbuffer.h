@@ -10,11 +10,11 @@ namespace XEngine
         class IndexBuffer
         {
         public:
-            IndexBuffer(GLushort* data, GLsizei size) : mCount(size)
+            IndexBuffer(GLuint* data, GLsizei size) : mCount(size)
             {
                 glGenBuffers(1, &mID);
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mID);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLushort), data, GL_STATIC_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLuint), data, GL_STATIC_DRAW);
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             }
 

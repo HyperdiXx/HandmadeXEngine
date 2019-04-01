@@ -21,7 +21,7 @@ namespace XEngine
                 objToRender->getIBO()->bind();
                 model = glm::translate(model, objToRender->getPos());
                 objToRender->getShader().setMat4("model", model);
-                glDrawElements(GL_TRIANGLES, objToRender->getIBO()->getCount(), GL_UNSIGNED_SHORT, 0);
+                glDrawElements(GL_TRIANGLES, objToRender->getIBO()->getCount(), GL_UNSIGNED_INT, 0);
                 objToRender->getIBO()->unbind();
                 objToRender->getVAO()->unbind();
                 mrenderQ.pop_front();

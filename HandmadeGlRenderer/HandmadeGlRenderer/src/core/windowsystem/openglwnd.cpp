@@ -24,7 +24,7 @@ namespace XEngine
             glfwMakeContextCurrent(m_window);
             glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
             //glfwSetCursorPosCallback(buffer->window, mousecallback);
-            setVSYNC(true);
+            setVSYNC(false);
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             {
                 std::cout << "Failed to initialize GLAD" << std::endl;

@@ -43,6 +43,8 @@ namespace maths
 
         mat4& mul(const mat4& a)
         {
+            float data[16];
+
             for (size_t y = 0; y < 4; ++y)
             {
                 for (size_t x = 0; x < 4; ++x)
@@ -52,9 +54,13 @@ namespace maths
                     {
                         s += elem[x + el * 4] * a.elem[el + y * 4];
                     }
-                    elem[x + y * 4] = s;
+                    data[x + y * 4] = s;
                 }
             }
+
+            memcpy(elem, data, 16);
+
+            return *this;
         }
 
         static mat4 ortho(float left, float right, float top, float bottom, float nearplane, float farplane)

@@ -17,6 +17,8 @@
 
 #include "../core/rendering/ui/glui.h"
 
+#include "../core/utility/clock.h"
+
 #define BATCH 0
 
 #ifdef _WIN64
@@ -213,6 +215,12 @@ namespace XEngine
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightspaceMatrix = lightProjection * lightView;
 
+
+        Clock clockm, time;
+        float ctime = 0;
+        unsigned int frames = 0;
+
+
         glm::mat4 orho = glm::mat4(1.0f);
 
         orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
@@ -251,6 +259,7 @@ namespace XEngine
         {
             LOG("\rUpdateLoop...");
             
+
             cam.speed = 2.5f * deltaTime;
 
             real64 currFrame = glfwGetTime();
@@ -283,9 +292,13 @@ namespace XEngine
             myUi.update(spriteColor);
 
             classicwindow.update();
-
-            
-
+            frames++;
+            if (time.elapsed() - ctime > 1.0f)
+            {
+                ctime += 1.0f;
+                std::cout << "\n" << frames << "fps\n";
+                frames = 0;
+            }
         }
         
         delGeometry(&plane);
@@ -295,6 +308,7 @@ namespace XEngine
         glDeleteBuffers(1, &cubeVBO);
 
         myUi.shutdown();
+       
 
         glfwTerminate();
        

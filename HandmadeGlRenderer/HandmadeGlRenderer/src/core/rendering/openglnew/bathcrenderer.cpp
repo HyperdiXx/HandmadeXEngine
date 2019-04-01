@@ -1,5 +1,5 @@
 #include "batchrenderer.h"
-
+#include <cstddef>
 
 namespace XEngine
 {
@@ -22,6 +22,13 @@ namespace XEngine
             const glm::vec2& size = renderObj->getCount();
             const glm::vec3& pos = renderObj->getPos();
             const glm::vec4& color = renderObj->getColor();
+
+            int r = color.x * 255.0f;
+            int g = color.y * 255.0f;
+            int b = color.z * 255.0f;
+            int a = color.w * 255.0f;
+
+            unsigned int col = a << 24 | b << 16 | g << 8 | r;
 
             mBuf->pos = pos;
             mBuf->color = color;
@@ -46,7 +53,7 @@ namespace XEngine
         {
             glBindVertexArray(mVAO);
             mIBO->bind();
-            glDrawElements(GL_TRIANGLES, mIndCount, GL_UNSIGNED_SHORT, NULL);
+            glDrawElements(GL_TRIANGLES, mIndCount, GL_UNSIGNED_INT, NULL);
             mIBO->unbind();
             glBindVertexArray(0);
         }
@@ -61,13 +68,13 @@ namespace XEngine
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, RENDER_VERTEX_SIZE, (const GLvoid*)0);
             glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, RENDER_VERTEX_SIZE, (const GLvoid*)(3 * sizeof(GL_FLOAT)));
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, RENDER_VERTEX_SIZE, (const GLvoid*)(offsetof(Vertex, Vertex::color)));
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-            GLushort indices[RENDER_INDICES_SIZE];
+            GLuint indices[RENDER_INDICES_SIZE];
             float offset = 0;
 
-            for (size_t i = 0; i < RENDER_INDICES_SIZE; i += 6)
+            for (int i = 0; i < RENDER_INDICES_SIZE; i += 6)
             {
                 indices[i] = offset + 0;
                 indices[i + 1] = offset + 1;

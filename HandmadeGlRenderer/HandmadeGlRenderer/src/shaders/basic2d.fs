@@ -2,9 +2,14 @@
 
 layout (location = 0) out vec4 FragColor;
 
-in vec4 color;
+in d
+{
+	vec4 pos;
+	vec4 color;
+} fs_in;
+
 
 void main()
 {
-	FragColor = color;
+	FragColor = fs_in.color;
 }

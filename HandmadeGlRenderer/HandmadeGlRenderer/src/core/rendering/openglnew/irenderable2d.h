@@ -20,6 +20,7 @@ namespace XEngine
         class Renderable2d
         {
         public:
+            
 
             Renderable2d(glm::vec3 pos, glm::vec2 size, glm::vec4 color) : mPos(pos), mCount(size), mColor(color)
             {

@@ -108,6 +108,7 @@
     <ClCompile Include="src\core\events\input.cpp" />
     <ClCompile Include="src\core\math\mat4.cpp" />
     <ClCompile Include="src\core\memory\allocator.cpp" />
+    <ClCompile Include="src\core\rendering\batchsprite.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\bathcrenderer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\buffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\framebuffero.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="src\core\math\utils.h" />
     <ClInclude Include="src\core\memory\allocator.h" />
     <ClInclude Include="src\core\memory\enmemory.h" />
+    <ClInclude Include="src\core\rendering\batchsprite.h" />
     <ClInclude Include="src\core\rendering\material.h" />
     <ClInclude Include="src\core\rendering\openglnew\batchrenderer.h" />
     <ClInclude Include="src\core\rendering\openglnew\buffer.h" />

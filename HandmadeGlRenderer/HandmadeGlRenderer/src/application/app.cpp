@@ -13,9 +13,11 @@
 #include "../core/rendering/openglnew/batchrenderer.h"
 
 #include "../core/rendering/sprite.h"
+#include "../core/rendering/batchsprite.h"
 
 #include "../core/rendering/ui/glui.h"
 
+#define BATCH 0
 
 #ifdef _WIN64
 namespace XEngine
@@ -178,7 +180,6 @@ namespace XEngine
         setInt(&mixedShader, "scene", 0);
         setInt(&mixedShader, "bloomBlur", 1);*/
 
-           
 
         Model firstmodel("src/models/barrels/barrels.fbx", false);
         Model secondmodel("src/models/nano/nanosuit.obj", false);
@@ -228,16 +229,21 @@ namespace XEngine
 
          
         glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
+        glm::vec4 spriteColor2 = glm::vec4(1.0, 1.0, 0.0, 1.0);
 
         using namespace Rendering;
-        Sprite testsprite(glm::vec2(0, 0), glm::vec2(100, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-        Sprite testsprite2(glm::vec2(20, 20), glm::vec2(60, 60), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
-
+#if BATCH
+        BatchSprite testsprite(100, 100, 40, 40, spriteColor);
+        BatchSprite testsprite2(500, 500, 100, 100, spriteColor2);
+        BatchRenderer2d renderer;
+#else
+        Sprite testsprite(100, 100, 500, 40, spriteColor, shadersprite);
+        Sprite testsprite2(500, 500, 100, 100, spriteColor2, shadersprite);
         Renderer2d renderer;
+#endif
 
-        BatchRenderer2d bathcrender;
-
+        
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -252,8 +258,8 @@ namespace XEngine
             deltaTime = currFrame - lastFrame;
             lastFrame = currFrame;
 
-
             XEngine::processInput(classicwindow.m_window, &cam);
+
             //std::thread inp(XEngine::processInput, wb.window, &cam);
             //inp.detach();
             //inp.join();
@@ -264,81 +270,22 @@ namespace XEngine
             
             shadersprite.Win32useShader();
             shadersprite.setVec4("color", spriteColor);
-
-
-            
-            /*view = glm::mat4(cam.getViewMatrix());
-
-            loading.Win32useShader();
-
-            loading.setMat4("projection", projection);
-            loading.setMat4("view", view);
-
-            glm::mat4 modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(5.0f, -1.0f, 0.0f));
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
-            loading.setMat4("model", modelNanosuit);
-            secondmodel.drawMesh(&loading);
-
-            modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(10.0f, -1.0f, 0.0f));
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
-            loading.setMat4("model", modelNanosuit);
-            firstmodel.drawMesh(&loading);
-
-            modelNanosuit = glm::mat4(1.0f);
-            modelNanosuit = glm::translate(modelNanosuit, glm::vec3(-10.0f, -1.0f, 0.0f));
-            modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
-            loading.setMat4("model", modelNanosuit);
-            cityModel.drawMesh(&loading);
-
-
-            dispShader.Win32useShader();
-            dispShader.setMat4("projection", projection);
-            dispShader.setMat4("view", view);
-
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-            dispShader.setMat4("model", model);
-            dispShader.setVec3("viewPos", cam.getCamPos());
-            dispShader.setVec3("lightPos", lightPos);
-            dispShader.setFloat("heightScale", 0.1f);
-
-            bindTexture2D(0, diffuseMapForNormals);
-            bindTexture2D(1, normalMap);
-            bindTexture2D(2, dispMap);
-
-            renderQuad();
-
-            
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, lightPos);
-            model = glm::scale(model, glm::vec3(0.1f));
-            dispShader.setMat4("model", model);
-            renderQuad();
-
-            floorShader.Win32useShader();
-
-            floorShader.setMat4("projection", projection);
-            floorShader.setMat4("view", view);
-
-            floorShader.setVec3("viewPos", cam.camPos);
-            floorShader.setVec3("lightPos", lightposfloor);
-
-            renderQuad();
-*/
-            //sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
-
-            
-         
+#if BATCH
+            renderer.start();
+#endif
             renderer.submit(&testsprite);
             renderer.submit(&testsprite2);
 
+#if BATCH
+            renderer.end();
+#endif
             renderer.flush();
-
             myUi.update(spriteColor);
 
             classicwindow.update();
+
+            
+
         }
         
         delGeometry(&plane);
@@ -346,6 +293,8 @@ namespace XEngine
 
         glDeleteVertexArrays(1, &cubeVAO);
         glDeleteBuffers(1, &cubeVBO);
+
+        myUi.shutdown();
 
         glfwTerminate();
        
@@ -369,6 +318,74 @@ namespace XEngine
 #endif
 
 #if 0
+
+model loading
+
+
+/*view = glm::mat4(cam.getViewMatrix());
+
+loading.Win32useShader();
+
+loading.setMat4("projection", projection);
+loading.setMat4("view", view);
+
+glm::mat4 modelNanosuit = glm::mat4(1.0f);
+modelNanosuit = glm::translate(modelNanosuit, glm::vec3(5.0f, -1.0f, 0.0f));
+modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
+loading.setMat4("model", modelNanosuit);
+secondmodel.drawMesh(&loading);
+
+modelNanosuit = glm::mat4(1.0f);
+modelNanosuit = glm::translate(modelNanosuit, glm::vec3(10.0f, -1.0f, 0.0f));
+modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
+loading.setMat4("model", modelNanosuit);
+firstmodel.drawMesh(&loading);
+
+modelNanosuit = glm::mat4(1.0f);
+modelNanosuit = glm::translate(modelNanosuit, glm::vec3(-10.0f, -1.0f, 0.0f));
+modelNanosuit = glm::scale(modelNanosuit, glm::vec3(0.2f, 0.2f, 0.2f));
+loading.setMat4("model", modelNanosuit);
+cityModel.drawMesh(&loading);
+
+
+dispShader.Win32useShader();
+dispShader.setMat4("projection", projection);
+dispShader.setMat4("view", view);
+
+glm::mat4 model = glm::mat4(1.0f);
+model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+dispShader.setMat4("model", model);
+dispShader.setVec3("viewPos", cam.getCamPos());
+dispShader.setVec3("lightPos", lightPos);
+dispShader.setFloat("heightScale", 0.1f);
+
+bindTexture2D(0, diffuseMapForNormals);
+bindTexture2D(1, normalMap);
+bindTexture2D(2, dispMap);
+
+renderQuad();
+
+
+model = glm::mat4(1.0f);
+model = glm::translate(model, lightPos);
+model = glm::scale(model, glm::vec3(0.1f));
+dispShader.setMat4("model", model);
+renderQuad();
+
+floorShader.Win32useShader();
+
+floorShader.setMat4("projection", projection);
+floorShader.setMat4("view", view);
+
+floorShader.setVec3("viewPos", cam.camPos);
+floorShader.setVec3("lightPos", lightposfloor);
+
+renderQuad();
+*/
+//sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
+
+
+
 
 glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

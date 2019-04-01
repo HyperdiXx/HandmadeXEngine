@@ -2,6 +2,7 @@
 
 #include <deque>
 #include "render2d.h"
+#include "../sprite.h"
 
 namespace XEngine
 {
@@ -15,7 +16,7 @@ namespace XEngine
             void flush() override;
 
         private:
-            std::deque<const Renderable2d *> mrenderQ;
+            std::deque<const Sprite *> mrenderQ;
         };
     }
 }

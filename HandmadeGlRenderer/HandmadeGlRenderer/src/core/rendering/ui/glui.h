@@ -18,7 +18,7 @@ namespace XEngine
 
         ~GLGUI()
         {
-            shutdown();
+           
         }
 
         void init(GLFWwindow* window, int theme);

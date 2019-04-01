@@ -31,7 +31,7 @@ namespace XEngine
             mBuf->color = color;
             mBuf++;
 
-            mBuf->pos = glm::vec3(pos.x + size.x, pos.y, pos.z);
+            mBuf->pos = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z);
             mBuf->color = color;
             mBuf++;
 
@@ -61,7 +61,7 @@ namespace XEngine
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, RENDER_VERTEX_SIZE, (const GLvoid*)0);
             glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, RENDER_VERTEX_SIZE, (const GLvoid*)(3 * GL_FLOAT));
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, RENDER_VERTEX_SIZE, (const GLvoid*)(3 * sizeof(GL_FLOAT)));
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
             GLushort indices[RENDER_INDICES_SIZE];

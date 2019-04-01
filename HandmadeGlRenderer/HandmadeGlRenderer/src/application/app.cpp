@@ -10,6 +10,9 @@
 
 #include "../core/rendering/openglnew/irenderable2d.h"
 #include "../core/rendering/openglnew/renderer2d.h"
+#include "../core/rendering/openglnew/batchrenderer.h"
+
+#include "../core/rendering/sprite.h"
 
 #include "../core/rendering/ui/glui.h"
 
@@ -227,11 +230,13 @@ namespace XEngine
         glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
 
         using namespace Rendering;
-        Renderable2d testsprite(glm::vec3(1280 / 2, 720 / 2, 0), glm::vec2(100, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), shadersprite);
-        Renderable2d testsprite2(glm::vec3(20, 20, 0), glm::vec2(60, 60), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), shadersprite);
+        Sprite testsprite(glm::vec2(0, 0), glm::vec2(100, 100), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        Sprite testsprite2(glm::vec2(20, 20), glm::vec2(60, 60), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
 
         Renderer2d renderer;
+
+        BatchRenderer2d bathcrender;
 
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);

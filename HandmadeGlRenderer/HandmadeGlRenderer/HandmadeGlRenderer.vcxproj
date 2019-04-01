@@ -117,6 +117,7 @@
     <ClCompile Include="src\core\rendering\openglnew\vao.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\vertexarray.cpp" />
     <ClCompile Include="src\core\rendering\scenegraph.cpp" />
+    <ClCompile Include="src\core\rendering\sprite.cpp" />
     <ClCompile Include="src\core\rendering\texture.cpp" />
     <ClCompile Include="src\core\rendering\ui\dxui.cpp" />
     <ClCompile Include="src\core\rendering\ui\glui.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="src\core\rendering\openglnew\vao.h" />
     <ClInclude Include="src\core\rendering\openglnew\vertexarray.h" />
     <ClInclude Include="src\core\rendering\scenegraph.h" />
+    <ClInclude Include="src\core\rendering\sprite.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
     <ClInclude Include="src\core\rendering\ui\dxui.h" />
     <ClInclude Include="src\core\rendering\ui\glui.h" />

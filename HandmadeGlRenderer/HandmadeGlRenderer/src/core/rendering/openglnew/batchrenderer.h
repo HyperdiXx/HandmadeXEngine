@@ -21,16 +21,19 @@ namespace XEngine
         public:
             BatchRenderer2d()
             {
-
+                init();
             }
 
             ~BatchRenderer2d()
             {
                 delete mIBO;
+                delete mBuf;
                 glDeleteBuffers(1, &mVBO);
 
             }
                 
+            void start();
+            void end();
             void submit(const Renderable2d* renderObj) override;
             void flush() override;
         private:
@@ -40,7 +43,7 @@ namespace XEngine
             GLuint mVAO;
             GLuint mVBO;
             GLsizei mIndCount;
-            
+            Vertex* mBuf;
         };
                                    
     }

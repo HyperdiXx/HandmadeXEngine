@@ -17,8 +17,8 @@ namespace XEngine
             const Renderable2d* objToRender = mrenderQ.front();
             objToRender->getVAO()->bind();
             objToRender->getIBO()->bind();
-            model = glm::translate(model, objToRender->getPos());
-            objToRender->getShader().setMat4("model", model);
+            //model = glm::translate(model, objToRender->getPos());
+            //objToRender->getShader().setMat4("model", model);
             glDrawElements(GL_TRIANGLES, objToRender->getIBO()->getCount(), GL_UNSIGNED_SHORT, 0);
             objToRender->getIBO()->unbind();
             objToRender->getVAO()->unbind();

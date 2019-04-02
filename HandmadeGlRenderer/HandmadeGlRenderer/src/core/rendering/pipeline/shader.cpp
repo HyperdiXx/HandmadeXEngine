@@ -4,7 +4,7 @@
 #include "../../systems/filefunc.h"
 
 
-void Shader::Win32setupShaderFile()
+void Shader::setupShaderFile()
 {
     using namespace XEngine;
  
@@ -23,6 +23,23 @@ void Shader::Win32setupShaderFile()
     glShaderSource(fragment, 1, &fShaderCode, NULL);
     glCompileShader(fragment);
 
+    GLint status;
+    glGetShaderiv(vertex, GL_COMPILE_STATUS, &status);
+
+    if (status != GL_TRUE)
+    {
+        GLint length;
+        glGetShaderiv(vertex, GL_INFO_LOG_LENGTH, &length);
+
+        GLchar* buffer = new GLchar[length];
+        GLint buflength;
+        glGetShaderInfoLog(vertex, length, &buflength, buffer);
+
+        printf("%s\n", buffer);
+
+        delete[] buffer;
+    }
+
     ID = glCreateProgram();
     glAttachShader(ID, vertex);
     glAttachShader(ID, fragment);
@@ -34,9 +51,14 @@ void Shader::Win32setupShaderFile()
 }
 
 
-void Shader::Win32useShader()
+void Shader::enableShader()
 {
     glUseProgram(ID);
+}
+
+void Shader::disableShader()
+{
+    glUseProgram(0);
 }
 
 const GLchar * Shader::Win32GetFsName()

@@ -4,11 +4,11 @@
 #define SKYBOXH
 
 #include "src/core/rendering/pipeline/shader.h"
-#include "src/core/rendering/texture.h"
-#include "src/core/cameras/camera.h"
 #include "src/core/rendering/openglnew/vao.h"
 #include "../core/rendering/openglnew/vertexarray.h"
 #include "../core/rendering/openglnew/buffer.h"
+#include "src/core/cameras/camera.h"
+
 
 namespace XEngine
 {
@@ -81,7 +81,6 @@ namespace XEngine
             }
 
             void createSkybox();
-            void initShader();
             void renderSkybox(Shader * shader, XEngine::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex);
             GeometryBuffer* getGeometryBuffer() { return sky; };
         private:

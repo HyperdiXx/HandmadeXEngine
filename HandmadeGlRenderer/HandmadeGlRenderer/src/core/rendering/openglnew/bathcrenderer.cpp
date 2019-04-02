@@ -31,19 +31,19 @@ namespace XEngine
             unsigned int col = a << 24 | b << 16 | g << 8 | r;
 
             mBuf->pos = pos;
-            mBuf->color = color;
+            mBuf->color = col;
             mBuf++;
 
             mBuf->pos = glm::vec3(pos.x, pos.y + size.y, pos.z);
-            mBuf->color = color;
+            mBuf->color = col;
             mBuf++;
 
             mBuf->pos = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z);
-            mBuf->color = color;
+            mBuf->color = col;
             mBuf++;
 
             mBuf->pos = glm::vec3(pos.x + size.x, pos.y, pos.z);
-            mBuf->color = color;
+            mBuf->color = col;
             mBuf++;
 
             mIndCount += 6;

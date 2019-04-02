@@ -1,7 +1,9 @@
-#include "../rendering/texture.h"
+
+
 #include "model.h"
 
-
+using namespace XEngine;
+using namespace Assets;
 void Mesh::setupMesh()
 {
     glGenVertexArrays(1, &VAO);
@@ -222,7 +224,7 @@ std::vector<TextureStruct> Model::loadMaterialTextures(aiMaterial * mat, aiTextu
         if (!skip)
         {   // if texture hasn't been loaded already, load it
             TextureStruct texture;
-            texture.id = XEngine::loadtexture2DFromDir(str.C_Str(), this->dir, false);
+            texture.id = loadtexture2DFromDir(str.C_Str(), this->dir, false);
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);
@@ -230,4 +232,47 @@ std::vector<TextureStruct> Model::loadMaterialTextures(aiMaterial * mat, aiTextu
         }
     }
     return textures;
+
+   
+}
+
+uint32 Model::loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)
+{
+    std::string filename = path;
+    filename = dir + '/' + filename;
+
+    uint32 textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, sizechannels;
+
+    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &sizechannels, 0);
+    if (data)
+    {
+        GLenum format;
+        if (sizechannels == 1)
+            format = GL_RED;
+        else if (sizechannels == 3)
+            format = GL_RGB;
+        else if (sizechannels == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
 }

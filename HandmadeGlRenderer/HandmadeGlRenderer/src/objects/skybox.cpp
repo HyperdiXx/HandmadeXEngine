@@ -1,7 +1,11 @@
 #include "skybox.h"
 
+#include "src/core/rendering/texture.h"
+
 using namespace XEngine;
 using namespace Rendering;
+
+
 
 void Skybox::createSkybox()
 {
@@ -69,17 +73,19 @@ void Skybox::createSkybox()
 
 void Skybox::renderSkybox(Shader * shader, XEngine::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex)
 {
-    setDepthFunc(GL_LEQUAL);
-    shader->Win32useShader();
+    Texture2d::setDepthFunc(GL_LEQUAL);
+    shader->enableShader();
     v = glm::mat4(glm::mat3(cam->getViewMatrix()));
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
     glBindVertexArray(sky->vao);
-    bindCubeTexture2D(0, tex);
+    Texture2d::bindCubeTexture2D(0, tex);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-    setDepthFunc(GL_LESS);
+    Texture2d::setDepthFunc(GL_LESS);
 }
+
+
 
 
 

@@ -14,7 +14,7 @@ namespace XEngine
         struct Vertex
         {
             glm::vec3 pos;
-            glm::vec4 color;
+            unsigned int color;
         };
 
         class Renderable2d

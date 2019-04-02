@@ -24,8 +24,9 @@ public:
         glDeleteProgram(ID);
     }
 
-    void Win32setupShaderFile();
-    void Win32useShader();
+    void setupShaderFile();
+    void enableShader();
+    void disableShader();
 
     const GLchar* Win32GetFsName();
     const GLchar* Win32GetVsName();

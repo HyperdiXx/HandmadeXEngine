@@ -4,11 +4,9 @@
 #include "app.h"
 
 #include "../core/geometry/generator.h"
-#include "../core/rendering/openglnew/vao.h"
 #include "../objects/skybox.h"
 #include "../core/utility/log.h"
 
-#include "../core/rendering/openglnew/irenderable2d.h"
 #include "../core/rendering/openglnew/renderer2d.h"
 #include "../core/rendering/openglnew/batchrenderer.h"
 
@@ -18,6 +16,14 @@
 #include "../core/rendering/ui/glui.h"
 
 #include "../core/utility/clock.h"
+
+#include "../core/windowsystem/openglwnd.h"
+#include "../core/rendering/pipeline/shader.h"
+
+#include "../core/rendering/texture.h"
+
+#include "../core/systems/textureload.h"
+#include "../core/geometry/model.h"
 
 #define BATCH 0
 
@@ -57,48 +63,21 @@ namespace XEngine
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
 
-        basicShader.Win32setupShaderFile();
-        lightShader.Win32setupShaderFile();
-        cubeMap.Win32setupShaderFile();
-        floorShader.Win32setupShaderFile();
-        lightMapShader.Win32setupShaderFile();
-        depthMapQuad.Win32setupShaderFile();
-        shadowShader.Win32setupShaderFile();
-        normalMappingShader.Win32setupShaderFile();
-        blurShader.Win32setupShaderFile();
-        bloomShader.Win32setupShaderFile();
-        mixedShader.Win32setupShaderFile();
-        dispShader.Win32setupShaderFile();
-        shaderGeometryPass.Win32setupShaderFile();
-        shaderLightingPass.Win32setupShaderFile();
-        loading.Win32setupShaderFile();
-
-
-        /*std::vector<glm::vec3> objectPositions;
-        objectPositions.push_back(glm::vec3(-3.0, 0.0, -3.0));
-        objectPositions.push_back(glm::vec3(0.0, 0.0, -3.0));
-        objectPositions.push_back(glm::vec3(3.0, 0.0, -3.0));
-        objectPositions.push_back(glm::vec3(-3.0, 0.0, 0.0));
-        objectPositions.push_back(glm::vec3(0.0, 0.0, 0.0));
-        objectPositions.push_back(glm::vec3(3.0, 0.0, 0.0));
-        objectPositions.push_back(glm::vec3(-3.0, 0.0, 3.0));
-        objectPositions.push_back(glm::vec3(0.0, 0.0, 3.0));
-        objectPositions.push_back(glm::vec3(3.0, 0.0, 3.0));
-
-
-        glm::vec3 cubePositions[] = {
-            glm::vec3(2.0f,  1.0f,  0.0f),
-            glm::vec3(4.0f,  5.0f,  0.0f),
-            glm::vec3(0.0f,  3.2f,  0.5f),
-            glm::vec3(6.0f,  2.0f,  0.3f),
-            glm::vec3(-2.4f, 0.4f,  0.5f),
-            glm::vec3(-3.7f,  3.0f, 0.5f),
-            glm::vec3(-41.3f,  2.0f,  0.5f),
-            glm::vec3(-6.5f,  2.0f, -2.5f),
-            glm::vec3(-8.5f,  0.2f, -1.5f),
-            glm::vec3(15.3f,  1.0f, -1.5f)
-        };*/
-
+        basicShader.setupShaderFile();
+        lightShader.setupShaderFile();
+        cubeMap.setupShaderFile();
+        floorShader.setupShaderFile();
+        lightMapShader.setupShaderFile();
+        depthMapQuad.setupShaderFile();
+        shadowShader.setupShaderFile();
+        normalMappingShader.setupShaderFile();
+        blurShader.setupShaderFile();
+        bloomShader.setupShaderFile();
+        mixedShader.setupShaderFile();
+        dispShader.setupShaderFile();
+        shaderGeometryPass.setupShaderFile();
+        shaderLightingPass.setupShaderFile();
+        loading.setupShaderFile();
 
         GeometryBuffer plane;
         std::vector<float> planeVertices = createPlane();
@@ -122,37 +101,38 @@ namespace XEngine
 
         cub.textures = std::move(textures);
 
-        unsigned int diffuseMapTexture = XEngine::loadTexture("src/textures/desertsky_bk.tga");
-        unsigned int specularMap = XEngine::loadTexture("src/textures/container2_specular.png");
-        unsigned int cubemaptexture = XEngine::loadCubemap(cub.textures);
-        unsigned int floorTexture = XEngine::loadTexture("src/textures/get.png");
+        unsigned int diffuseMapTexture = XEngine::Utils::loadTexture("src/textures/desertsky_bk.tga");
+        unsigned int specularMap = XEngine::Utils::loadTexture("src/textures/container2_specular.png");
+        unsigned int cubemaptexture = XEngine::Utils::loadCubemap(cub.textures);
+        unsigned int floorTexture = XEngine::Utils::loadTexture("src/textures/get.png");
 
-        unsigned int diffuseMapForNormals = loadTexture("src/textures/bricks2.jpg");
-        unsigned int normalMap = loadTexture("src/textures/bricks2_normal.jpg");
-        unsigned int dispMap = loadTexture("src/textures/bricks2_disp.jpg");
+        unsigned int diffuseMapForNormals = XEngine::Utils::loadTexture("src/textures/bricks2.jpg");
+        unsigned int normalMap = XEngine::Utils::loadTexture("src/textures/bricks2_normal.jpg");
+        unsigned int dispMap = XEngine::Utils::loadTexture("src/textures/bricks2_disp.jpg");
 
         //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
         //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
 
-
-        dispShader.Win32useShader();
+        
+        dispShader.enableShader();
         dispShader.setInt("diffuseMap", 0);
         dispShader.setInt("normalMap", 1);
         dispShader.setInt("depthMap", 2);
 
-        shaderGeometryPass.Win32useShader();
+        shaderGeometryPass.enableShader();
         shaderGeometryPass.setInt("tex1", 0);
         shaderGeometryPass.setInt("tex2", 1);
 
-        shaderLightingPass.Win32useShader();
+        //gbuffer shader
+        /*shaderLightingPass.enableShader();
         shaderLightingPass.setInt("GPos", 0);
         shaderLightingPass.setInt("GNormal", 1);
-        shaderLightingPass.setInt("GSpeccolor", 2);
+        shaderLightingPass.setInt("GSpeccolor", 2);*/
 
-        cubeMap.Win32useShader();
+        cubeMap.enableShader();
         cubeMap.setInt("skybox", 0);
 
-        floorShader.Win32useShader();
+        floorShader.enableShader();
         floorShader.setInt("floorTexture", 0);
 
         /*Win32UseShader(&normalMappingShader);
@@ -180,12 +160,12 @@ namespace XEngine
         setInt(&blurShader, "diffuseTexture", 0);
         Win32UseShader(&mixedShader);
         setInt(&mixedShader, "scene", 0);
-        setInt(&mixedShader, "bloomBlur", 1);*/
+        setInt(&mixedShader, "bloomBlur", 1)*/
 
 
-        Model firstmodel("src/models/barrels/barrels.fbx", false);
-        Model secondmodel("src/models/nano/nanosuit.obj", false);
-        Model cityModel("src/models/house/house.obj", false);
+        //Assets::Model firstmodel("src/models/barrels/barrels.fbx", false);
+        //Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+        //Assets::Model cityModel("src/models/house/house.obj", false);
 
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
@@ -199,9 +179,6 @@ namespace XEngine
 
         glm::vec3 lightPos(0.5f, 1.0f, 0.3f);
         glm::vec3 lightposfloor(0.0f, 4.0f, 0.0f);
-
-        bool show_demo_window = true;
-        bool show_another_window = false;
 
         glm::vec3 point = glm::vec3(rand() % 20, 0.0, rand() % 20);
 
@@ -230,9 +207,9 @@ namespace XEngine
         glm::mat4 modelforsprite = glm::mat4(1.0f);
         modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
 
-        shadersprite.Win32setupShaderFile();
+        shadersprite.setupShaderFile();
 
-        shadersprite.Win32useShader();
+        shadersprite.enableShader();
         shadersprite.setMat4("projection", orho);
 
          
@@ -277,7 +254,7 @@ namespace XEngine
 
             myUi.startUpdate();
             
-            shadersprite.Win32useShader();
+            shadersprite.enableShader();
             shadersprite.setVec4("color", spriteColor);
 #if BATCH
             renderer.start();

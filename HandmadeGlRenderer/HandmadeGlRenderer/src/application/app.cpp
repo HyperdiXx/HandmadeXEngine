@@ -25,6 +25,8 @@
 #include "../core/systems/textureload.h"
 #include "../core/geometry/model.h"
 
+#include "../core/rendering/text.h"
+
 #define BATCH 0
 
 #ifdef _WIN64
@@ -38,6 +40,9 @@ namespace XEngine
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
         
         //InitStats();
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
@@ -78,6 +83,7 @@ namespace XEngine
         shaderGeometryPass.setupShaderFile();
         shaderLightingPass.setupShaderFile();
         loading.setupShaderFile();
+        textShader.setupShaderFile();
 
         GeometryBuffer plane;
         std::vector<float> planeVertices = createPlane();
@@ -197,13 +203,14 @@ namespace XEngine
         float ctime = 0;
         unsigned int frames = 0;
 
+        XEngine::Rendering::Font text1("src/fonts/arial.ttf", &textShader);
 
         glm::mat4 orho = glm::mat4(1.0f);
 
         orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
 
         Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
-
+  
         glm::mat4 modelforsprite = glm::mat4(1.0f);
         modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
 
@@ -212,7 +219,6 @@ namespace XEngine
         shadersprite.enableShader();
         shadersprite.setMat4("projection", orho);
 
-         
         glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
         glm::vec4 spriteColor2 = glm::vec4(1.0, 1.0, 0.0, 1.0);
 
@@ -266,14 +272,20 @@ namespace XEngine
             renderer.end();
 #endif
             renderer.flush();
+
+            
             myUi.update(spriteColor);
+            
+            text1.updateText("FPS: " + std::to_string(frames), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
 
             classicwindow.update();
+
             frames++;
+
             if (time.elapsed() - ctime > 1.0f)
             {
                 ctime += 1.0f;
-                std::cout << "\n" << frames << "fps\n";
+                //std::cout << "\n" << frames << "fps\n";
                 frames = 0;
             }
         }

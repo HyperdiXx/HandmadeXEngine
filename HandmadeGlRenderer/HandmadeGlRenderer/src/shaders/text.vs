@@ -3,10 +3,10 @@ layout (location = 0) in vec4 v;
 
 out vec2 UV;
 
-uniform mat4 ortho;
+uniform mat4 projection;
 
 void main()
 {
    UV = v.zw;
-   gl_Position = ortho * vec4(v.xy, 0.0, 1.0);
+   gl_Position = projection * vec4(v.xy, 0.0, 1.0);
 };

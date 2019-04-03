@@ -476,4 +476,7 @@
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="src\fonts\arial.ttf" />
+  </ItemGroup>
 </Project>

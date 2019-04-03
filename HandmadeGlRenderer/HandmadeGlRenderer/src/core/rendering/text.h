@@ -10,24 +10,26 @@
 #include <glm/glm.hpp>
 
 #include "texture.h"
-#include "pipeline/shader.h"
+#include "../rendering/openglnew/irenderable2d.h"
 
 namespace XEngine
 {
     namespace Rendering
     {
-        class Font
+        class Font : public Renderable2d
         {
         public:
-            Font()
-            {
+            Font(std::string t, glm::vec2 pos, glm::vec4 color);
+            ~Font();
 
-            }
-            ~Font()
-            {
+            void add();
 
-            }
         private:
+
+            void initFreeType();
+        private:
+
+            std::string mtext;
 
         };
     }

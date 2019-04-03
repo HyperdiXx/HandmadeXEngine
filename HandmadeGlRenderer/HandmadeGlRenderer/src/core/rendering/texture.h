@@ -36,6 +36,10 @@ namespace XEngine
         static void bindTexture2D(uint16 n, uint32 tex1);
         static void bindCubeTexture2D(uint16 n, uint32 tex1);
         static void setDepthFunc(int n);
+        //inline const GLuint getID() const { return mID; };
+
+    private:
+        //GLuint mID;
     };
 
 

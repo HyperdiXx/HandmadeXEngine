@@ -11,5 +11,6 @@ in d
 
 void main()
 {
+	
 	FragColor = fs_in.color;
 }

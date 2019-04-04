@@ -14,7 +14,6 @@ namespace XEngine
     namespace Rendering
     {
 
-      
         class WindowGL
         {
         public:
@@ -31,7 +30,7 @@ namespace XEngine
             }
             ~WindowGL()
             {
-                glfwTerminate();
+               
             }
             
             void update() const;

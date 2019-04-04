@@ -27,6 +27,8 @@
 
 #include "../core/rendering/text.h"
 
+#include "../core/windowsystem/windowWin.h"
+
 #define BATCH 0
 
 #ifdef _WIN64
@@ -297,6 +299,19 @@ namespace XEngine
 
         glfwTerminate();
        
+    }
+
+    void Application::DX11InitEngine()
+    {
+        Rendering::WindowDX dxwnd;
+
+        dxwnd.initEngine();
+
+        LOG("XEngine v 0.0.1");
+
+        dxwnd.update();
+        dxwnd.shutdown();
+
     }
 
 

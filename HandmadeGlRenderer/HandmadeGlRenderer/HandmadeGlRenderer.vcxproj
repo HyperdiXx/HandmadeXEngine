@@ -108,6 +108,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
+    <ClCompile Include="src\core\rendering\api\dx11\dx11context.cpp" />
+    <ClCompile Include="src\core\rendering\api\dx11\dx11indexbuffer.cpp" />
+    <ClCompile Include="src\core\rendering\api\dx11\dx11vertexbuffer.cpp" />
+    <ClCompile Include="src\core\rendering\api\dx11\dxtexture.cpp" />
     <ClCompile Include="src\core\rendering\assets.cpp" />
     <ClCompile Include="src\core\cameras\camera.cpp" />
     <ClCompile Include="src\core\events\events.cpp" />
@@ -119,13 +123,13 @@
     <ClCompile Include="src\core\rendering\layers\layer.cpp" />
     <ClCompile Include="src\core\rendering\layers\scene2d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\bathcrenderer.cpp" />
-    <ClCompile Include="src\core\rendering\openglnew\buffer.cpp" />
-    <ClCompile Include="src\core\rendering\openglnew\framebuffero.cpp" />
-    <ClCompile Include="src\core\rendering\openglnew\indexbuffer.cpp" />
+    <ClCompile Include="src\core\rendering\api\opengl\buffer.cpp" />
+    <ClCompile Include="src\core\rendering\api\opengl\framebuffero.cpp" />
+    <ClCompile Include="src\core\rendering\api\opengl\indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\render3d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\renderer2d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\vao.cpp" />
-    <ClCompile Include="src\core\rendering\openglnew\vertexarray.cpp" />
+    <ClCompile Include="src\core\rendering\api\opengl\vertexarray.cpp" />
     <ClCompile Include="src\core\rendering\layers\scenegraph.cpp" />
     <ClCompile Include="src\core\rendering\sprite.cpp" />
     <ClCompile Include="src\core\rendering\texture.cpp" />
@@ -143,7 +147,7 @@
     <ClCompile Include="src\core\windowsystem\dx11.cpp" />
     <ClCompile Include="src\core\windowsystem\dx12.cpp" />
     <ClCompile Include="src\core\windowsystem\openglwnd.cpp" />
-    <ClCompile Include="src\core\windowsystem\windowabstaraction.cpp" />
+    <ClCompile Include="src\core\windowsystem\windowWin.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\imguit\imgui.cpp" />
     <ClCompile Include="src\imguit\imgui_demo.cpp" />
@@ -203,6 +207,10 @@
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\audio\audio.h" />
+    <ClInclude Include="src\core\rendering\api\dx11\dx11context.h" />
+    <ClInclude Include="src\core\rendering\api\dx11\dx11indexbuffer.h" />
+    <ClInclude Include="src\core\rendering\api\dx11\dx11vertexbuffer.h" />
+    <ClInclude Include="src\core\rendering\api\dx11\dxtexture.h" />
     <ClInclude Include="src\core\rendering\assets.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
     <ClInclude Include="src\core\containers\vector.h" />
@@ -221,16 +229,16 @@
     <ClInclude Include="src\core\rendering\layers\scene2d.h" />
     <ClInclude Include="src\core\rendering\material.h" />
     <ClInclude Include="src\core\rendering\openglnew\batchrenderer.h" />
-    <ClInclude Include="src\core\rendering\openglnew\buffer.h" />
-    <ClInclude Include="src\core\rendering\openglnew\framebuffero.h" />
-    <ClInclude Include="src\core\rendering\openglnew\indexbuffer.h" />
+    <ClInclude Include="src\core\rendering\api\opengl\buffer.h" />
+    <ClInclude Include="src\core\rendering\api\opengl\framebuffero.h" />
+    <ClInclude Include="src\core\rendering\api\opengl\indexbuffer.h" />
     <ClInclude Include="src\core\rendering\openglnew\irenderable2d.h" />
     <ClInclude Include="src\core\rendering\openglnew\irenderable3d.h" />
     <ClInclude Include="src\core\rendering\openglnew\render2d.h" />
     <ClInclude Include="src\core\rendering\openglnew\render3d.h" />
     <ClInclude Include="src\core\rendering\openglnew\renderer2d.h" />
     <ClInclude Include="src\core\rendering\openglnew\vao.h" />
-    <ClInclude Include="src\core\rendering\openglnew\vertexarray.h" />
+    <ClInclude Include="src\core\rendering\api\opengl\vertexarray.h" />
     <ClInclude Include="src\core\rendering\layers\scenegraph.h" />
     <ClInclude Include="src\core\rendering\sprite.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
@@ -265,7 +273,7 @@
     <ClInclude Include="src\core\windowsystem\dx11.h" />
     <ClInclude Include="src\core\windowsystem\dx12.h" />
     <ClInclude Include="src\core\windowsystem\openglwnd.h" />
-    <ClInclude Include="src\core\windowsystem\windowabstaraction.h" />
+    <ClInclude Include="src\core\windowsystem\windowWin.h" />
     <ClInclude Include="src\imguit\imgui_impl_dx11.h" />
     <ClInclude Include="src\imguit\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imguit\imgui_impl_win32.h" />

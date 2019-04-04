@@ -8,14 +8,12 @@
 namespace XEngine
 {
 
-   
     class Application
     {
     public:
         void OpenGLRunEngineWin32();
-        void InitStats();
-
-
+        void DX11InitEngine();
+        
         XEngine::Camera cam;
     };
 

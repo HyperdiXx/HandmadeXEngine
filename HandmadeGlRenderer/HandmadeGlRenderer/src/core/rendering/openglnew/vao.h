@@ -9,7 +9,7 @@
 #include <gl/GL.h>
 #include "src/core/types.h"
 
-#include "IndexBuffer.h"
+#include "../api/opengl/indexbuffer.h"
 
 struct VertexAO
 {

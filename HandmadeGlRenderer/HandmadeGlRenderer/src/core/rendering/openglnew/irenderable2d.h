@@ -1,8 +1,8 @@
 #pragma once
 
-#include "buffer.h"
-#include "vertexarray.h"
-#include "indexbuffer.h"
+#include "../api/opengl/buffer.h"
+#include "../api/opengl/vertexarray.h"
+#include "../api/opengl/indexbuffer.h"
 #include "../pipeline/shader.h"
 #include "../texture.h"
 #include "../../../xenpch.h" 

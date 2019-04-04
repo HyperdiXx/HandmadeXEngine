@@ -1,4 +1,5 @@
 #include "openglwnd.h"
+#include "../utility/log.h"
 
 
 namespace XEngine
@@ -8,6 +9,8 @@ namespace XEngine
 
         void WindowGL::initGL()
         {
+            LOG("XEngine v.0.0.1\n");
+
             glfwInit();
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -30,17 +33,40 @@ namespace XEngine
                 std::cout << "Failed to initialize GLAD" << std::endl;
                 return;
             }
-
-            std::cout << "Render API: OpenGL" << glGetString(GL_VERSION) << "\nEngine init\n";
-
+            LOGSTRING("Render API : OpenGL", glGetString(GL_VERSION));
+            LOGSTRING("Manufacturer: ", glGetString(GL_VENDOR));
+            LOGSTRING("GLSL: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
+            LOGSTRING("GPU: ", glGetString(GL_RENDERER));
+            LOG("Engine init\n");
+            
         }
 
         void WindowGL::initStats()
         {
-            //glEnable(GL_CULL_FACE);
+            setDepth();
+            setBlendFunc();
+            enableMultisample();
+            
+        }
+
+        void WindowGL::setDepth()
+        {
+            glEnable(GL_DEPTH_TEST);
+        }
+
+        void WindowGL::setCullface()
+        {
+            glEnable(GL_CULL_FACE);
+        }
+
+        void WindowGL::setBlendFunc()
+        {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glEnable(GL_DEPTH_TEST);
+        }
+
+        void WindowGL::enableMultisample()
+        {
             glEnable(GL_MULTISAMPLE);
         }
 

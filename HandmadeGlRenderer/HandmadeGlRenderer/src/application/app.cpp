@@ -35,14 +35,10 @@ namespace XEngine
 
     void Application::OpenGLRunEngineWin32()
     {
-        LOG("XEngine v.0.0.1\nCPU:\nGPU:\n");  
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
         
-        //InitStats();
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        classicwindow.initStats();
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
@@ -304,16 +300,6 @@ namespace XEngine
     }
 
 
-    void Application::InitStats()
-    {
-        //glEnable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_MULTISAMPLE);
-
-
-    }
 
 }
    

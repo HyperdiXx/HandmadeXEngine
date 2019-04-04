@@ -35,6 +35,13 @@ namespace XEngine
             }
             
             void update() const;
+            void initStats();
+
+            void setDepth();
+            void setCullface();
+            void setBlendFunc();
+            void enableMultisample();
+
             bool32 isClosed();
 
             inline int32 getWidth() const { return m_w; };
@@ -42,7 +49,7 @@ namespace XEngine
 
         private:
             void initGL();
-            void initStats();
+            
             void setVSYNC(bool set);
         };
     }

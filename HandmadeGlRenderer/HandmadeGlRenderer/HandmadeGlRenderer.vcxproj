@@ -111,6 +111,7 @@
     <ClCompile Include="src\core\rendering\api\dx11\dx11context.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11vertexbuffer.cpp" />
+    <ClCompile Include="src\core\rendering\api\dx11\dxshader.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dxtexture.cpp" />
     <ClCompile Include="src\core\rendering\assets.cpp" />
     <ClCompile Include="src\core\cameras\camera.cpp" />
@@ -210,7 +211,9 @@
     <ClInclude Include="src\core\rendering\api\dx11\dx11context.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11indexbuffer.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11vertexbuffer.h" />
+    <ClInclude Include="src\core\rendering\api\dx11\dxshader.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dxtexture.h" />
+    <ClInclude Include="src\core\rendering\api\dx11\dxtypes.h" />
     <ClInclude Include="src\core\rendering\assets.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
     <ClInclude Include="src\core\containers\vector.h" />

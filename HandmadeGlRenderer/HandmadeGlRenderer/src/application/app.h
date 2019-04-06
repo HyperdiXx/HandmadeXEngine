@@ -14,7 +14,7 @@ namespace XEngine
         void OpenGLRunEngineWin32();
         void DX11InitEngine();
         
-        XEngine::Camera cam;
+        
     };
 
 }

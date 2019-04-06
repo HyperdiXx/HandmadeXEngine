@@ -63,8 +63,7 @@ namespace XEngine
 
         Shader shaderGeometryPass("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
         Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
-        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
-        //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
+       //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
 
         basicShader.setupShaderFile();
         lightShader.setupShaderFile();
@@ -80,7 +79,6 @@ namespace XEngine
         dispShader.setupShaderFile();
         shaderGeometryPass.setupShaderFile();
         shaderLightingPass.setupShaderFile();
-        loading.setupShaderFile();
         textShader.setupShaderFile();
 
         GeometryBuffer plane;
@@ -117,6 +115,7 @@ namespace XEngine
         //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
         //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
 
+       
         
         dispShader.enableShader();
         dispShader.setInt("diffuseMap", 0);
@@ -168,16 +167,13 @@ namespace XEngine
 
 
         //Assets::Model firstmodel("src/models/barrels/barrels.fbx", false);
-        //Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
-        //Assets::Model cityModel("src/models/house/house.obj", false);
-
+        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+        Assets::Model cityModel("src/models/house/house.obj", false);
+      
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
 
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
-
+       
         glm::mat4 floormodel = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -195,7 +191,8 @@ namespace XEngine
         glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearp, farp);
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightspaceMatrix = lightProjection * lightView;
-
+            
+        XEngine::Camera cam;
 
         Clock clockm, time;
         float ctime = 0;
@@ -206,9 +203,17 @@ namespace XEngine
         glm::mat4 orho = glm::mat4(1.0f);
 
         orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
+
 
         Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
-  
+        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
+
+
+        loading.setupShaderFile();
+        
         glm::mat4 modelforsprite = glm::mat4(1.0f);
         modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
 
@@ -216,6 +221,9 @@ namespace XEngine
 
         shadersprite.enableShader();
         shadersprite.setMat4("projection", orho);
+
+        loading.enableShader();
+        loading.setMat4("projection", projection);
 
         glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
         glm::vec4 spriteColor2 = glm::vec4(1.0, 1.0, 0.0, 1.0);
@@ -257,7 +265,24 @@ namespace XEngine
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             myUi.startUpdate();
+                       
+            loading.enableShader();
+            view = cam.getViewMatrix();
+            loading.setMat4("view", view);
+
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+            loading.setMat4("model", model);
+            secondmodel.drawMesh(&loading);
+
+            glm::mat4 model1 = glm::mat4(1.0f);
+            model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
+            model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));
+            loading.setMat4("model", model1);
+            cityModel.drawMesh(&loading);
             
+
             shadersprite.enableShader();
             shadersprite.setVec4("color", spriteColor);
 #if BATCH
@@ -278,7 +303,7 @@ namespace XEngine
 
             classicwindow.update();
 
-            frames++;
+            ++frames;
 
             if (time.elapsed() - ctime > 1.0f)
             {

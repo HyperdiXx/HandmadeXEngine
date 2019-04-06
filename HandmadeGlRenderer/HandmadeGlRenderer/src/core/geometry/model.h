@@ -72,6 +72,14 @@ namespace XEngine
                 loadModel(path);
             }
 
+            Model(const std::string& path, const std::string& tex1, const std::string& tex2, Shader *shader)
+            {
+                loadModel(path);
+                shader->enableShader();
+                for (size_t i = 0; i < 2; ++i)
+                    shader->setInt( "text" + std::to_string(i), i);
+            }
+
             void drawMesh(Shader *shader)
             {
                 for (unsigned int i = 0; i < meshes.size(); i++)

@@ -171,10 +171,10 @@ namespace XEngine
 
 
         //Assets::Model firstmodel("src/models/barrels/barrels.fbx", false);
-        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
-        Assets::Model cityModel("src/models/house/house2.obj", false);
+        //Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+        //Assets::Model cityModel("src/models/house/house2.obj", false);
         Assets::Model sponza("src/models/sponza/sponza.obj", false);
-      
+
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
 

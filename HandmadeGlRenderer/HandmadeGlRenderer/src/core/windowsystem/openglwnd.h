@@ -7,7 +7,6 @@
 #include "../types.h"
 #include "../../xenpch.h"
 #include "../../core/events/input.h"
-#include "../../core/cameras/camera.h"
 
 namespace XEngine
 {
@@ -43,17 +42,23 @@ namespace XEngine
 
             bool32 isClosed();
 
-            inline int32 getWidth() const { return m_w; };
-            inline int32 getHeight() const { return m_h; };
+            inline const int32 getWidth() const { return m_w; };
+            inline const int32 getHeight() const { return m_h; };
 
         private:
-            void initGL();
-            
+            void initGL(); 
             void setVSYNC(bool set);
         };
     }
-}
 
-void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos);
-void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height);
+    
+    void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height);
+    //void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+    //void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
+}
 #endif
+
+
+
+

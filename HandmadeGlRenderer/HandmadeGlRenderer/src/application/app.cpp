@@ -17,7 +17,7 @@
 
 #include "../core/utility/clock.h"
 
-#include "../core/windowsystem/openglwnd.h"
+
 #include "../core/rendering/pipeline/shader.h"
 
 #include "../core/rendering/texture.h"
@@ -26,8 +26,11 @@
 #include "../core/geometry/model.h"
 
 #include "../core/rendering/text.h"
-
 #include "../core/windowsystem/windowWin.h"
+
+#include "../core/windowsystem/openglwnd.h"
+
+
 
 #define BATCH 0
 
@@ -39,10 +42,12 @@ namespace XEngine
     {
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
-        
+
         classicwindow.initStats();
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
+        
+        XEngine::CameraU::Camera camera;
 
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
@@ -87,19 +92,18 @@ namespace XEngine
         createVertexBuffer(&plane, planeVertices);
 
         XEngine::Rendering::Skybox sky;
-
         sky.createSkybox();
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         XEngine::Cubemap cub;
         std::vector<std::string> textures;
-        textures.push_back("src/textures/lakes_rt.tga");
-        textures.push_back("src/textures/lakes_lf.tga");
-        textures.push_back("src/textures/lakes_up.tga");
-        textures.push_back("src/textures/lakes_dn.tga");
-        textures.push_back("src/textures/lakes_ft.tga");
-        textures.push_back("src/textures/lakes_bk.tga");
+        textures.push_back("src/textures/sahara_rt.tga");
+        textures.push_back("src/textures/sahara_lf.tga");
+        textures.push_back("src/textures/sahara_up.tga");
+        textures.push_back("src/textures/sahara_dn.tga");
+        textures.push_back("src/textures/sahara_ft.tga");
+        textures.push_back("src/textures/sahara_bk.tga");
 
         cub.textures = std::move(textures);
 
@@ -168,7 +172,7 @@ namespace XEngine
 
         //Assets::Model firstmodel("src/models/barrels/barrels.fbx", false);
         Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
-        Assets::Model cityModel("src/models/house/house.obj", false);
+        Assets::Model cityModel("src/models/house/house2.obj", false);
       
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
@@ -192,7 +196,7 @@ namespace XEngine
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightspaceMatrix = lightProjection * lightView;
             
-        XEngine::Camera cam;
+        //XEngine::Camera cam;
 
         Clock clockm, time;
         float ctime = 0;
@@ -249,14 +253,14 @@ namespace XEngine
             LOG("\rUpdateLoop...");
             
 
-            cam.speed = 2.5f * deltaTime;
+            camera.speed = 2.5f * deltaTime;
 
             real64 currFrame = glfwGetTime();
 
             deltaTime = currFrame - lastFrame;
             lastFrame = currFrame;
 
-            XEngine::processInput(classicwindow.m_window, &cam);
+            XEngine::processInput(classicwindow.m_window, &camera);
 
             //std::thread inp(XEngine::processInput, wb.window, &cam);
             //inp.detach();
@@ -267,7 +271,7 @@ namespace XEngine
             myUi.startUpdate();
                        
             loading.enableShader();
-            view = cam.getViewMatrix();
+            view = camera.getViewMatrix();
             loading.setMat4("view", view);
 
             glm::mat4 model = glm::mat4(1.0f);
@@ -296,7 +300,8 @@ namespace XEngine
 #endif
             renderer.flush();
 
-            
+            sky.renderSkybox(&cubeMap, &camera, view, projection, cubemaptexture);
+
             myUi.update(spriteColor);
             
             text1.updateText("FPS: " + std::to_string(frames), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));

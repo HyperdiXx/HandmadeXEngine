@@ -214,6 +214,7 @@
     <ClInclude Include="src\core\rendering\api\dx11\dxshader.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dxtexture.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dxtypes.h" />
+    <ClInclude Include="src\core\rendering\api\dx12\dx12context.h" />
     <ClInclude Include="src\core\rendering\assets.h" />
     <ClInclude Include="src\core\cameras\camera.h" />
     <ClInclude Include="src\core\containers\vector.h" />

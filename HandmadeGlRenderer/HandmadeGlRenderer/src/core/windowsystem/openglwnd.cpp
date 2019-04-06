@@ -1,11 +1,11 @@
 #include "openglwnd.h"
 #include "../utility/log.h"
 
-
 namespace XEngine
 {
     namespace Rendering
     {
+        
 
         void WindowGL::initGL()
         {
@@ -26,7 +26,8 @@ namespace XEngine
             }
             glfwMakeContextCurrent(m_window);
             glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
-            //glfwSetCursorPosCallback(buffer->window, mousecallback);
+            //glfwSetCursorPosCallback(m_window, mouseCallback);
+            //glfwSetScrollCallback(m_window, scrollCallback);
             setVSYNC(false);
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             {
@@ -95,45 +96,38 @@ namespace XEngine
         }
     }
 }
-void framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height)
+
+bool mouseStart = true;
+double lastX = (float)WINDOWWIDTH / 2.0;
+double lastY = (float)WINDOWHEIGHT / 2.0;
+
+void XEngine::framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height)
 {
     glViewport(0, 0, width, height);
 }
 
 
-#if 0
-void mousecallback(GLFWwindow* window, real64 xpos, real64 ypos)
-{
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    real32 xoffset = xpos - lastX;
-    real32 yoffset = lastY - ypos;
-    lastX = xpos;
-    lastY = ypos;
-
-    real32 sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    camTarget = glm::normalize(front);
-}
-#endif
+//void XEngine::mouseCallback(GLFWwindow* window, double xpos, double ypos)
+//{
+//    if (mouseStart)
+//    {
+//        lastX = xpos;
+//        lastY = ypos;
+//        mouseStart = false;
+//    }
+//
+//    float xoffset = xpos - lastX;
+//    float yoffset = lastY - ypos; 
+//
+//    lastX = xpos;
+//    lastY = ypos;
+//
+//    camera.ProcessMouseMovement(xoffset, yoffset);
+//
+//}
+//
+//void XEngine::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+//{
+//    camera.ProcessMouseScroll(yoffset);
+//}
+//

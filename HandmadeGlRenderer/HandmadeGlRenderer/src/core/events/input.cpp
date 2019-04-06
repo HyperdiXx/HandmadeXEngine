@@ -56,7 +56,7 @@ namespace XEngine
         return state == GLFW_RELEASE;
     }
 
-    void processInput(GLFWwindow *window, Camera *cam)
+    void processInput(GLFWwindow *window, CameraU::Camera *cam)
     {
         //gInp.lock();
         if (onKeyboardPressed(window, GLFW_KEY_ESCAPE))

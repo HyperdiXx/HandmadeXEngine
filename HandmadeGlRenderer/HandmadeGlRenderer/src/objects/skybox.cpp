@@ -71,7 +71,7 @@ void Skybox::createSkybox()
 }
 
 
-void Skybox::renderSkybox(Shader * shader, XEngine::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex)
+void Skybox::renderSkybox(Shader * shader, XEngine::CameraU::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex)
 {
     Texture2d::setDepthFunc(GL_LEQUAL);
     shader->enableShader();

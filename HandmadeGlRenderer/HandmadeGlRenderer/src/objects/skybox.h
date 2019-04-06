@@ -81,7 +81,7 @@ namespace XEngine
             }
 
             void createSkybox();
-            void renderSkybox(Shader * shader, XEngine::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex);
+            void renderSkybox(Shader * shader, XEngine::CameraU::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex);
             GeometryBuffer* getGeometryBuffer() { return sky; };
         private:
             GeometryBuffer *sky;

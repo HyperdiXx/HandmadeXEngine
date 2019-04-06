@@ -505,6 +505,9 @@
     <ClInclude Include="src\core\rendering\api\dx11\dxtypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\rendering\api\dx12\dx12context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl" />

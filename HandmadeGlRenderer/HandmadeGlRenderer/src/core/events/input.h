@@ -8,8 +8,6 @@
 
 namespace XEngine
 {
-    
-
     struct WINInput
     {
         bool IskeyPressed;
@@ -30,7 +28,5 @@ namespace XEngine
     bool onMouseButtonPressed(GLFWwindow* window, int key);
     bool onKeyboardPressed(GLFWwindow* window, int key);
 
-
-    void processInput(GLFWwindow* window, Camera *cam);
-
+    void processInput(GLFWwindow* window, CameraU::Camera *cam);
 }

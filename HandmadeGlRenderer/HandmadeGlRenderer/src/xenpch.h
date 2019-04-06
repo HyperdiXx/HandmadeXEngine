@@ -29,7 +29,6 @@
 #define WINDOWWIDTH 1280
 #define WINDOWHEIGHT 720
 
-
 #if defined _WIN64
 
 

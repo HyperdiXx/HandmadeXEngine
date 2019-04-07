@@ -28,10 +28,7 @@ void main()
     vec2 texCoords = fs_in.UV;
     
     texCoords = ParallaxMapping(fs_in.UV,  viewDir);       
-    if(texCoords.x > 1.0 || texCoords.y > 1.0 || texCoords.x < 0.0 || texCoords.y < 0.0)
-        discard;
-
-    // obtain normal from normal map
+    if(texCoords.x > 1.0 || texCoords.y > 1.0 || texCoords.x < 0.0 |
     vec3 normal = texture(normalMap, texCoords).rgb;
     normal = normalize(normal * 2.0 - 1.0);   
    

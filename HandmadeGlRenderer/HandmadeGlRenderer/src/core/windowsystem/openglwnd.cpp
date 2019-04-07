@@ -7,7 +7,6 @@ namespace XEngine
     namespace Rendering
     {
         
-
         void WindowGL::initGL()
         {
             LOG("XEngine v.0.0.1\n");

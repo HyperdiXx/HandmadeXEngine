@@ -1,6 +1,6 @@
 #include "skybox.h"
 
-#include "src/core/rendering/texture.h"
+#include "../core/systems/textureload.h"
 
 using namespace XEngine;
 using namespace Rendering;
@@ -52,7 +52,18 @@ void Skybox::createSkybox()
                  -1.0f, -1.0f,  1.0f,
                   1.0f, -1.0f,  1.0f
     };
-       
+
+    
+    
+
+    cub.textures.push_back("src/textures/right.jpg");
+    cub.textures.push_back("src/textures/left.jpg");
+    cub.textures.push_back("src/textures/top.jpg");
+    cub.textures.push_back("src/textures/bottom.jpg");
+    cub.textures.push_back("src/textures/front.jpg");
+    cub.textures.push_back("src/textures/back.jpg");
+
+    
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -65,12 +76,12 @@ void Skybox::createSkybox()
     sky->vao = skyboxVAO;
     sky->vbo = skyboxVBO;
 
-        
+    cubemaptexture = XEngine::Utils::loadCubemap(cub.textures);
 
 }
 
 
-void Skybox::renderSkybox(Shader * shader, glm::mat4& v, glm::mat4& proj, uint32& tex)
+void Skybox::renderSkybox(Shader *shader, glm::mat4& v, glm::mat4& proj)
 {
     Texture2d::setDepthFunc(GL_LEQUAL);
     shader->enableShader();
@@ -78,7 +89,7 @@ void Skybox::renderSkybox(Shader * shader, glm::mat4& v, glm::mat4& proj, uint32
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
     glBindVertexArray(sky->vao);
-    Texture2d::bindCubeTexture2D(0, tex);
+    Texture2d::bindCubeTexture2D(0, cubemaptexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     Texture2d::setDepthFunc(GL_LESS);

@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef TEXTURELOADH
+#define TEXTURELOADH
+
 #include <stb_image.h>
 
 #include "../../xenpch.h"
@@ -160,3 +163,7 @@ namespace XEngine
     }
 
 }
+
+
+#endif // !TEXTURELOADH
+

@@ -19,9 +19,10 @@
 
 #include "../core/rendering/pipeline/shader.h"
 
-#include "../core/rendering/texture.h"
+//#include "../core/rendering/texture.h"
+//#include "../core/systems/textureload.h"
 
-#include "../core/systems/textureload.h"
+
 #include "../core/geometry/model.h"
 
 #include "../core/rendering/text.h"
@@ -45,18 +46,18 @@ namespace XEngine
     double lastX = WINDOWWIDTH / 2;
     double lastY = WINDOWHEIGHT / 2;
 
+    static bool isUI = false;
+
     void Application::OpenGLRunEngineWin32()
     {
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
         glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
         glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
-        glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        //glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         classicwindow.initStats();
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
-
-        //Camera camera;
 
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
@@ -105,26 +106,14 @@ namespace XEngine
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        XEngine::Cubemap cub;
-        std::vector<std::string> textures;
-
-        textures.push_back("src/textures/right.jpg");
-        textures.push_back("src/textures/left.jpg");
-        textures.push_back("src/textures/top.jpg");
-        textures.push_back("src/textures/bottom.jpg");
-        textures.push_back("src/textures/front.jpg");
-        textures.push_back("src/textures/back.jpg");
-
-        cub.textures = std::move(textures);
-
-        unsigned int diffuseMapTexture = XEngine::Utils::loadTexture("src/textures/desertsky_bk.tga");
+      /*  unsigned int diffuseMapTexture = XEngine::Utils::loadTexture("src/textures/desertsky_bk.tga");
         unsigned int specularMap = XEngine::Utils::loadTexture("src/textures/container2_specular.png");
-        unsigned int cubemaptexture = XEngine::Utils::loadCubemap(cub.textures);
+        
         unsigned int floorTexture = XEngine::Utils::loadTexture("src/textures/get.png");
 
         unsigned int diffuseMapForNormals = XEngine::Utils::loadTexture("src/textures/bricks2.jpg");
         unsigned int normalMap = XEngine::Utils::loadTexture("src/textures/bricks2_normal.jpg");
-        unsigned int dispMap = XEngine::Utils::loadTexture("src/textures/bricks2_disp.jpg");
+        unsigned int dispMap = XEngine::Utils::loadTexture("src/textures/bricks2_disp.jpg");*/
 
         //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
         //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
@@ -210,6 +199,7 @@ namespace XEngine
         Clock clockm, time;
         float ctime = 0;
         unsigned int frames = 0;
+        int f = 0;
 
         XEngine::Rendering::Font text1("src/fonts/arial.ttf", &textShader);
 
@@ -266,7 +256,7 @@ namespace XEngine
             deltaTime = currFrame - lastFrame;
             lastFrame = currFrame;
 
-            XEngine::processInput(classicwindow.m_window, &camera);
+            XEngine::processInput(classicwindow.m_window, &camera, isUI);
 
             //std::thread inp(XEngine::processInput, wb.window, &cam);
             //inp.detach();
@@ -274,7 +264,19 @@ namespace XEngine
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            myUi.startUpdate();
+            if (isUI == true)
+            {
+                myUi.startUpdate();
+                glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                glfwSetCursorPosCallback(classicwindow.m_window, NULL);
+               
+            }
+            else
+            {
+                glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
+                glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);                
+            }
+            
 
             loading.enableShader();
             view = camera.getViewMatrix();
@@ -284,7 +286,7 @@ namespace XEngine
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", model);
-            //sponza.drawMesh(&loading);
+            sponza.drawMesh(&loading);
 
             /* glm::mat4 model1 = glm::mat4(1.0f);
              model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
@@ -305,11 +307,13 @@ namespace XEngine
 #endif
             renderer.flush();
 
-            sky.renderSkybox(&cubeMap, view, projection, cubemaptexture);
+            sky.renderSkybox(&cubeMap, view, projection);
 
-            myUi.update(spriteColor);
+            if(isUI)
+                myUi.update(spriteColor);
+            
 
-            text1.updateText("FPS: " + std::to_string(frames), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
 
             classicwindow.update();
 
@@ -319,6 +323,7 @@ namespace XEngine
             {
                 ctime += 1.0f;
                 //std::cout << "\n" << frames << "fps\n";
+                f = frames;
                 frames = 0;
             }
         }

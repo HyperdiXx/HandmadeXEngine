@@ -1,4 +1,5 @@
 #include "openglwnd.h"
+#include <stb_image.h>
 #include "../utility/log.h"
 
 namespace XEngine
@@ -26,14 +27,19 @@ namespace XEngine
             }
             glfwMakeContextCurrent(m_window);
             glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
-            //glfwSetCursorPosCallback(m_window, mouseCallback);
-            //glfwSetScrollCallback(m_window, scrollCallback);
+
             setVSYNC(false);
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             {
                 std::cout << "Failed to initialize GLAD" << std::endl;
                 return;
             }
+
+            GLFWimage images[1];
+            images[0].pixels = stbi_load("src/textures/logo.png", &images[0].width, &images[0].height, 0, 4);
+            glfwSetWindowIcon(m_window, 1, images);
+            stbi_image_free(images[0].pixels);
+
             LOGSTRING("Render API : OpenGL", glGetString(GL_VERSION));
             LOGSTRING("Manufacturer: ", glGetString(GL_VENDOR));
             LOGSTRING("GLSL: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -94,40 +100,8 @@ namespace XEngine
         {
             return glfwWindowShouldClose(m_window) == 1;
         }
+
+       
     }
 }
 
-bool mouseStart = true;
-double lastX = (float)WINDOWWIDTH / 2.0;
-double lastY = (float)WINDOWHEIGHT / 2.0;
-
-void XEngine::framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height)
-{
-    glViewport(0, 0, width, height);
-}
-
-
-//void XEngine::mouseCallback(GLFWwindow* window, double xpos, double ypos)
-//{
-//    if (mouseStart)
-//    {
-//        lastX = xpos;
-//        lastY = ypos;
-//        mouseStart = false;
-//    }
-//
-//    float xoffset = xpos - lastX;
-//    float yoffset = lastY - ypos; 
-//
-//    lastX = xpos;
-//    lastY = ypos;
-//
-//    camera.ProcessMouseMovement(xoffset, yoffset);
-//
-//}
-//
-//void XEngine::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-//{
-//    camera.ProcessMouseScroll(yoffset);
-//}
-//

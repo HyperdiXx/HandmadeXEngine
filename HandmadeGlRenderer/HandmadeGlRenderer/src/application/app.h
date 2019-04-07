@@ -3,6 +3,8 @@
 
 #include "../xenpch.h"
 
+
+
 namespace XEngine
 {
     class Application
@@ -11,4 +13,7 @@ namespace XEngine
         void OpenGLRunEngineWin32();
         void DX11InitEngine();    
     };
+
+   
+
 }

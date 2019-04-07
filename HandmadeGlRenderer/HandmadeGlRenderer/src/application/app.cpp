@@ -17,7 +17,6 @@
 
 #include "../core/utility/clock.h"
 
-
 #include "../core/rendering/pipeline/shader.h"
 
 #include "../core/rendering/texture.h"
@@ -31,23 +30,33 @@
 #include "../core/windowsystem/openglwnd.h"
 
 
-
 #define BATCH 0
 
 #ifdef _WIN64
 namespace XEngine
 {
+    void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+    void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
+
+    XEngine::Camera camera;
+
+    bool mouseStart = true;
+    double lastX = WINDOWWIDTH / 2;
+    double lastY = WINDOWHEIGHT / 2;
 
     void Application::OpenGLRunEngineWin32()
     {
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
-
+        glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
+        glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
+        glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         classicwindow.initStats();
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
-        
-        XEngine::CameraU::Camera camera;
+
+        //Camera camera;
 
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
@@ -68,7 +77,7 @@ namespace XEngine
 
         Shader shaderGeometryPass("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
         Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
-       //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
+        //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
 
         basicShader.setupShaderFile();
         lightShader.setupShaderFile();
@@ -119,8 +128,8 @@ namespace XEngine
         //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
         //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
 
-       
-        
+
+
         dispShader.enableShader();
         dispShader.setInt("diffuseMap", 0);
         dispShader.setInt("normalMap", 1);
@@ -178,7 +187,7 @@ namespace XEngine
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
 
-       
+
         glm::mat4 floormodel = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -196,8 +205,6 @@ namespace XEngine
         glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearp, farp);
         glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightspaceMatrix = lightProjection * lightView;
-            
-        //XEngine::Camera cam;
 
         Clock clockm, time;
         float ctime = 0;
@@ -210,7 +217,7 @@ namespace XEngine
         orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 400.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
 
 
         Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
@@ -218,7 +225,7 @@ namespace XEngine
 
 
         loading.setupShaderFile();
-        
+
         glm::mat4 modelforsprite = glm::mat4(1.0f);
         modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
 
@@ -245,14 +252,11 @@ namespace XEngine
         Renderer2d renderer;
 #endif
 
-        
-
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
         while (!classicwindow.isClosed())
         {
             LOG("\rUpdateLoop...");
-            
 
             camera.speed = 10.0f * deltaTime;
 
@@ -270,7 +274,7 @@ namespace XEngine
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             myUi.startUpdate();
-                       
+
             loading.enableShader();
             view = camera.getViewMatrix();
             loading.setMat4("view", view);
@@ -281,12 +285,11 @@ namespace XEngine
             loading.setMat4("model", model);
             sponza.drawMesh(&loading);
 
-           /* glm::mat4 model1 = glm::mat4(1.0f);
-            model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
-            model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));
-            loading.setMat4("model", model1);
-            cityModel.drawMesh(&loading);*/
-            
+            /* glm::mat4 model1 = glm::mat4(1.0f);
+             model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
+             model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));
+             loading.setMat4("model", model1);
+             cityModel.drawMesh(&loading);*/
 
             shadersprite.enableShader();
             shadersprite.setVec4("color", spriteColor);
@@ -301,10 +304,10 @@ namespace XEngine
 #endif
             renderer.flush();
 
-            sky.renderSkybox(&cubeMap, &camera, view, projection, cubemaptexture);
+            sky.renderSkybox(&cubeMap, view, projection, cubemaptexture);
 
             myUi.update(spriteColor);
-            
+
             text1.updateText("FPS: " + std::to_string(frames), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
 
             classicwindow.update();
@@ -318,7 +321,7 @@ namespace XEngine
                 frames = 0;
             }
         }
-        
+
         delGeometry(&plane);
         delGeometry(sky.getGeometryBuffer());
 
@@ -326,10 +329,10 @@ namespace XEngine
         glDeleteBuffers(1, &cubeVBO);
 
         myUi.shutdown();
-       
+
 
         glfwTerminate();
-       
+
     }
 
     void Application::DX11InitEngine()
@@ -344,6 +347,38 @@ namespace XEngine
         dxwnd.shutdown();
 
     }
+
+
+    void XEngine::framebufferSizeCallback(GLFWwindow* window, int32 width, int32 height)
+    {
+        glViewport(0, 0, width, height);
+    }
+
+    void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+    {
+        if (mouseStart)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            mouseStart = false;
+        }
+
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos;
+
+        lastX = xpos;
+        lastY = ypos;
+
+        camera.ProcessMouseMovement(xoffset, yoffset);
+
+    }
+
+    void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    {
+        camera.ProcessMouseScroll(yoffset);
+    }
+
+
 
 
 

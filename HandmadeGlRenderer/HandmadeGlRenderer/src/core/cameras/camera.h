@@ -12,9 +12,6 @@
 namespace XEngine
 {
 
-    namespace CameraU
-    {
-
         enum Camera_Movement {
             FORWARD,
             BACKWARD,
@@ -103,7 +100,6 @@ namespace XEngine
 
             void updateCameraDir();
         };
-    }
     /*class Camera
     {
     public:

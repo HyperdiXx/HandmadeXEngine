@@ -6,7 +6,6 @@ using namespace XEngine;
 using namespace Rendering;
 
 
-
 void Skybox::createSkybox()
 {
     float skyboxVertices[] = {
@@ -71,11 +70,10 @@ void Skybox::createSkybox()
 }
 
 
-void Skybox::renderSkybox(Shader * shader, XEngine::CameraU::Camera *cam, glm::mat4& v, glm::mat4& proj, uint32& tex)
+void Skybox::renderSkybox(Shader * shader, glm::mat4& v, glm::mat4& proj, uint32& tex)
 {
     Texture2d::setDepthFunc(GL_LEQUAL);
     shader->enableShader();
-    v = glm::mat4(glm::mat3(cam->getViewMatrix()));
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
     glBindVertexArray(sky->vao);

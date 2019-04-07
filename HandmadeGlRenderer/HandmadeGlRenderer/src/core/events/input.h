@@ -28,5 +28,5 @@ namespace XEngine
     bool onMouseButtonPressed(GLFWwindow* window, int key);
     bool onKeyboardPressed(GLFWwindow* window, int key);
 
-    void processInput(GLFWwindow* window, CameraU::Camera *cam);
+    void processInput(GLFWwindow* window, Camera *cam);
 }

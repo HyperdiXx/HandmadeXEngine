@@ -2,8 +2,6 @@
 
 namespace XEngine
 {
-    namespace CameraU
-    {
         glm::mat4 Camera::getViewMatrix()
         {
             return glm::lookAt(camPos, camPos + camTarget, camUp);
@@ -19,6 +17,4 @@ namespace XEngine
             camRight = glm::normalize(glm::cross(camTarget, camWorldUp));
             camUp = glm::normalize(glm::cross(camRight, camTarget));
         }
-    }
-
 }

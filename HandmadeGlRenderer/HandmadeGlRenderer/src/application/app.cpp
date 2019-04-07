@@ -107,12 +107,13 @@ namespace XEngine
 
         XEngine::Cubemap cub;
         std::vector<std::string> textures;
-        textures.push_back("src/textures/sahara_rt.tga");
-        textures.push_back("src/textures/sahara_lf.tga");
-        textures.push_back("src/textures/sahara_up.tga");
-        textures.push_back("src/textures/sahara_dn.tga");
-        textures.push_back("src/textures/sahara_ft.tga");
-        textures.push_back("src/textures/sahara_bk.tga");
+
+        textures.push_back("src/textures/right.jpg");
+        textures.push_back("src/textures/left.jpg");
+        textures.push_back("src/textures/top.jpg");
+        textures.push_back("src/textures/bottom.jpg");
+        textures.push_back("src/textures/front.jpg");
+        textures.push_back("src/textures/back.jpg");
 
         cub.textures = std::move(textures);
 
@@ -258,7 +259,7 @@ namespace XEngine
         {
             LOG("\rUpdateLoop...");
 
-            camera.speed = 10.0f * deltaTime;
+            camera.speed = 10.0 * deltaTime;
 
             real64 currFrame = glfwGetTime();
 
@@ -283,7 +284,7 @@ namespace XEngine
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", model);
-            sponza.drawMesh(&loading);
+            //sponza.drawMesh(&loading);
 
             /* glm::mat4 model1 = glm::mat4(1.0f);
              model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
@@ -363,8 +364,8 @@ namespace XEngine
             mouseStart = false;
         }
 
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos;
+        double xoffset = xpos - lastX;
+        double yoffset = lastY - ypos;
 
         lastX = xpos;
         lastY = ypos;

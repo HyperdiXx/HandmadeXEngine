@@ -74,6 +74,7 @@ void Skybox::renderSkybox(Shader * shader, glm::mat4& v, glm::mat4& proj, uint32
 {
     Texture2d::setDepthFunc(GL_LEQUAL);
     shader->enableShader();
+    v = glm::mat3(v);
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
     glBindVertexArray(sky->vao);

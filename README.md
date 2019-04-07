@@ -1,7 +1,5 @@
 # HandmadeXEngine
 
-Currently is OpenGL rendering API for HandmadeEngine.
-
 ### Features:
 - Camera(FPS, Debug)
 - Texturing, TextureArrays

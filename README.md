@@ -13,8 +13,8 @@ Currently is OpenGL rendering API for HandmadeEngine.
 - PostProcess Effects
 - High - quality Skybox via Cubemaps
 - MSAA
-- ForwarShading
-- DefferedShading
+- Forward Shading
+- Deffered Shading
 - DynamicShadowMapping + DirLight
 - OmniLightsShadows, NormalMapping, ParallaxMapping, Gamma Correction
 - Math lib(vectors, matrices)

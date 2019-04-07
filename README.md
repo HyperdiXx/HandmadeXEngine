@@ -1,11 +1,31 @@
 # HandmadeXEngine
 
-Currently is OpenGL rendering API for HandmadeEngine.
+### Features:
+- Camera(FPS, Debug)
+- Texturing, TextureArrays
+- Blinn-Phong Light Model
+- Rendering Interfaces
+- 2D, 3D Layer renders
+- Model loading pipeline via Assimp
+- FrameBuffers
+- PostProcess Effects
+- High - quality Skybox via Cubemaps
+- MSAA
+- Forward Shading
+- Deffered Shading
+- DynamicShadowMapping + DirLight
+- OmniLightsShadows, NormalMapping, ParallaxMapping, Gamma Correction
+- Math lib(vectors, matrices)
+- Stencil, Blending, FaceCulling, Instancing
+- UI(ImGUI)
 
-Features: 
-Camera, Textures, MultiTextures, Lighting, Rendering Interfaces, FrameBuffers, Cubemap, MSAA, ForwardShading, DefferedShading, Stencil, Blending, PostProcess,
-FaceCulling, Instancing, DynamicShadowMapping + DirLight, OmniLightsShadows, NormalMapping, ParallaxMapping, Gamma Correctiom
+### Platforms:
+- Windows PC Desktop (x64)
+- Universal Windows (PC, Phone, XBOX One)
 
-DX11, DX12 APIs soon 
+### API:
+- OpenGL
+- DX11
+- DX12 soon
 
-![Engine]((https://raw.githubusercontent.com/{user}/{repo}/test1image.png)
+![EngineTest](../master/test1image.png)

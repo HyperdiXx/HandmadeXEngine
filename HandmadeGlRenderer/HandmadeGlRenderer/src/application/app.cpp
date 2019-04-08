@@ -170,9 +170,11 @@ namespace XEngine
 
 
         //Assets::Model firstmodel("src/models/barrels/barrels.fbx", false);
-        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
-        Assets::Model cityModel("src/models/house/house2.obj", false);
+        //Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+        //Assets::Model cityModel("src/models/house/house2.obj", false);
         //Assets::Model sponza("src/models/sponza/sponza.obj", false);
+        Assets::Model room("src/models/room/fireplace_room.obj", false);
+        Assets::Model castlelow("src/models/rungholt/rungholt.obj", false);
 
         real64 deltaTime = 0.0f;
         real64 lastFrame = 0.0f;
@@ -230,6 +232,7 @@ namespace XEngine
 
         glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
         glm::vec4 spriteColor2 = glm::vec4(1.0, 1.0, 0.0, 1.0);
+        glm::vec4 spriteColor3 = glm::vec4(0.0, 1.0, 0.0, 1.0);
 
         using namespace Rendering;
 
@@ -238,8 +241,9 @@ namespace XEngine
         BatchSprite testsprite2(500, 500, 100, 100, spriteColor2);
         BatchRenderer2d renderer;
 #else
-        Sprite testsprite(100, 100, 500, 40, spriteColor, shadersprite);
-        Sprite testsprite2(500, 500, 100, 100, spriteColor2, shadersprite);
+        Sprite testsprite(10, 10, 20, 20, spriteColor, shadersprite);
+        Sprite testsprite2(30, 10, 20, 20, spriteColor2, shadersprite);
+        Sprite testsprite3(50, 10, 20, 20, spriteColor3, shadersprite);
         Renderer2d renderer;
 #endif
 
@@ -289,13 +293,13 @@ namespace XEngine
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", model);
-            cityModel.drawMesh(&loading);
+            castlelow.drawMesh(&loading);
 
-             glm::mat4 model1 = glm::mat4(1.0f);
-             model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
-             model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));
-             loading.setMat4("model", model1);
-             secondmodel.drawMesh(&loading);
+            glm::mat4 model1 = glm::mat4(1.0f);
+            model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
+            model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));
+            loading.setMat4("model", model1);
+            // secondmodel.drawMesh(&loading);
 
             shadersprite.enableShader();
             shadersprite.setVec4("color", spriteColor);
@@ -304,6 +308,8 @@ namespace XEngine
 #endif
             renderer.submit(&testsprite);
             renderer.submit(&testsprite2);
+            renderer.submit(&testsprite3);
+            
 
 #if BATCH
             renderer.end();
@@ -312,9 +318,12 @@ namespace XEngine
 
             sky.renderSkybox(&cubeMap, view, projection);
 
-            if(isUI)
+            if (isUI)
+            {
+                
                 myUi.update(spriteColor);
-            
+            }
+             
 
             text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
 
@@ -324,9 +333,10 @@ namespace XEngine
 
             if (time.elapsed() - ctime > 1.0f)
             {
-                ctime += 1.0f;
+                
                 f = frames;
                 frames = 0;
+                ctime += 1.0f;
             }
         }
 

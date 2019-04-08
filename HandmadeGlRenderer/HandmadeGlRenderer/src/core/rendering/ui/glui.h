@@ -5,6 +5,8 @@
 
 #include "ui.h"
 
+#include <vector>
+
 namespace XEngine
 {
     class GLGUI : public UserInterface
@@ -24,6 +26,7 @@ namespace XEngine
         void init(GLFWwindow* window, int theme);
         void startUpdate();
         void update(glm::vec4& spritecol);
+        void addEdit3();
         void shutdown();
 
         void setDarkTheme();
@@ -33,6 +36,7 @@ namespace XEngine
 
     private:
         GLFWwindow* m_window;
+        std::vector<int> editLayer;
     };
 }
 

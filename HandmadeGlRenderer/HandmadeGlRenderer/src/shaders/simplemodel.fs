@@ -36,6 +36,8 @@ void main()
     float spec = pow(max(dot(normaltex, halfwayDir), 0.0), 32.0);
     vec3 specular = speccolor * spec * spectex;  
  
+	//vec3 colortotest = vec3(1.0, 0.0, 0.0);
+
 
 	vec3 res = ambient + diffuse;
 	

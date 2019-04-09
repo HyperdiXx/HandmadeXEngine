@@ -51,8 +51,8 @@ namespace XEngine
         {
             setDepth();
             setBlendFunc();
-            enableMultisample();
-            
+            enableMultisample(); 
+            enableFramebufferSRGB();
         }
 
         void WindowGL::setDepth()
@@ -74,6 +74,11 @@ namespace XEngine
         void WindowGL::enableMultisample()
         {
             glEnable(GL_MULTISAMPLE);
+        }
+
+        void WindowGL::enableFramebufferSRGB()
+        {
+            glEnable(GL_FRAMEBUFFER_SRGB);
         }
 
         void WindowGL::setVSYNC(bool set)

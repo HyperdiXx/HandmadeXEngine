@@ -16,10 +16,12 @@ uniform vec3 camPos;
 
 void main()
 {    
+	float gamma = 2.2;
 	vec3 diffusecolor = vec3(0.8, 0.8, 0.8);
 	vec3 speccolor = vec3(1.0, 1.0, 1.0);
 
-    vec3 diftex = vec3(texture(texture_diffuse1, UV));
+    //vec3 diftex = vec3(texture(texture_diffuse1, UV));
+	vec3 diftex = pow(texture(texture_diffuse1, UV).rgb, vec3(gamma));
 	vec3 normaltex = vec3(texture(texture_normal1, UV));
 	vec3 spectex = vec3(texture(texture_specular1, UV));
 	normaltex = normalize(normaltex * 2.0 - 1.0);
@@ -40,6 +42,10 @@ void main()
 
 
 	vec3 res = ambient + diffuse;
+	vec4 frag = vec4(res, 1.0);
+
 	
-    FragColor = vec4(res, 1.0);
+
+	FragColor = frag;
+
 }

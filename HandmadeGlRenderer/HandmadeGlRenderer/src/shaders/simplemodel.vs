@@ -13,8 +13,7 @@ out vec3 TangentViewPos;
 out vec3 TangentFragPos;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 viewproj;
 
 uniform vec3 lightPos;
 uniform vec3 camPos;
@@ -34,5 +33,5 @@ void main()
     TangentViewPos  = TBN * camPos;
     TangentFragPos  = TBN * FragPos;
 
-    gl_Position = projection * view * model* vec4(aPos, 1.0);
+    gl_Position = viewproj * model* vec4(aPos, 1.0);
 }

@@ -284,7 +284,10 @@ namespace XEngine
 
             loading.enableShader();
             view = camera.getViewMatrix();
-            loading.setMat4("view", view);
+
+            glm::mat4 viewproj = projection * view;
+
+            loading.setMat4("viewproj", viewproj);
             loading.setVec3("lightPos", lightPos);
             loading.setVec3("camPos", camera.camPos);
 

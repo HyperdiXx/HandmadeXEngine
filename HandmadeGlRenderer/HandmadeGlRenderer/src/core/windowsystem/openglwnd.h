@@ -45,6 +45,7 @@ namespace XEngine
             void setCullface();
             void setBlendFunc();
             void enableMultisample();
+            void enableFramebufferSRGB();
 
           
             bool32 isClosed();

@@ -1,10 +1,6 @@
 #pragma once
 
 
-#include "../xenpch.h"
-
-
-
 namespace XEngine
 {
     class Application

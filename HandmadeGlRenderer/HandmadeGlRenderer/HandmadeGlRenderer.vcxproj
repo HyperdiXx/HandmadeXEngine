@@ -129,8 +129,8 @@
     <ClCompile Include="src\core\rendering\api\opengl\indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\defferedrender.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\forwardrender.cpp" />
-    <ClCompile Include="src\core\rendering\openglnew\render3d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\renderer2d.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\renderer3d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\vao.cpp" />
     <ClCompile Include="src\core\rendering\api\opengl\vertexarray.cpp" />
     <ClCompile Include="src\core\rendering\layers\scenegraph.cpp" />
@@ -246,6 +246,7 @@
     <ClInclude Include="src\core\rendering\openglnew\render2d.h" />
     <ClInclude Include="src\core\rendering\openglnew\render3d.h" />
     <ClInclude Include="src\core\rendering\openglnew\renderer2d.h" />
+    <ClInclude Include="src\core\rendering\openglnew\renderer3d.h" />
     <ClInclude Include="src\core\rendering\openglnew\vao.h" />
     <ClInclude Include="src\core\rendering\api\opengl\vertexarray.h" />
     <ClInclude Include="src\core\rendering\layers\scenegraph.h" />

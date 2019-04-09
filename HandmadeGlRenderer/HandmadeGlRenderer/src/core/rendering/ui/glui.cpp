@@ -38,10 +38,10 @@ void XEngine::GLGUI::update(glm::vec4& spritecol)
     static float f = 0.0f;
     static int counter = 0;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    float col1[3] = { spritecol.x, spritecol.y, spritecol.z };
 
     ImGui::Begin("XEngine Editor");
-    float col1[3] = { spritecol.x, spritecol.y, spritecol.z };
-    
+
     for (auto a : editLayer)
     {
         ImGui::ColorEdit3("Color edit", col1);
@@ -51,7 +51,7 @@ void XEngine::GLGUI::update(glm::vec4& spritecol)
     }
 
 
-    if (ImGui::Button("Click!"))
+    if (ImGui::Button("Add color!"))
         editLayer.push_back(0);
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

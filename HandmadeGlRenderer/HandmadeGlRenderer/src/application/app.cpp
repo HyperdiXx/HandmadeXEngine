@@ -17,11 +17,8 @@
 
 #include "../core/utility/clock.h"
 
+#include "../core/rendering/texture.h"
 #include "../core/rendering/pipeline/shader.h"
-
-//#include "../core/rendering/texture.h"
-//#include "../core/systems/textureload.h"
-
 
 #include "../core/geometry/model.h"
 
@@ -176,10 +173,9 @@ namespace XEngine
         Assets::Model room("src/models/room/fireplace_room.obj", false);
         Assets::Model castlelow("src/models/rungholt/rungholt.obj", false);
 
-        real64 deltaTime = 0.0f;
-        real64 lastFrame = 0.0f;
-
-
+        real64 deltaTime = 0.0;
+        real64 lastFrame = 0.0;
+        
         glm::mat4 floormodel = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -351,6 +347,7 @@ namespace XEngine
 
     }
 
+    
     void Application::OpenGLScene2()
     {
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
@@ -361,11 +358,51 @@ namespace XEngine
         
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
+        unsigned int diffuseT= Texture2d::loadTexture2D("src/textures/wood.png");
+        unsigned int containerT = Texture2d::loadTexture2D("src/textures/container2.png");
+
+
+
+       /* unsigned int hdrFBO;
+        unsigned int buffers[2];*/
+
+        /*glGenFramebuffers(1, &hdrFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+        glGenTextures(2, buffers);
+        for (int i = 0; i < 2; ++i)
+        {
+            glBindTexture(GL_TEXTURE_2D, buffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WINDOWWIDTH, WINDOWHEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, buffers[i], 0);
+        }
+
+        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, attachments);*/
+
+        Shader blurShader("src/shaders/blur.vs", "src/shaders/blur.fs");
+        Shader bloomShader("src/shaders/bloom.vs", "src/shaders/bloom.fs");
+        Shader mixedShader("src/shaders/blendingshader.vs", "src/shaders/blendingshader.fs");
+
+        blurShader.setupShaderFile();
+        bloomShader.setupShaderFile();
+        mixedShader.setupShaderFile();
+
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    
         while (!classicwindow.isClosed())
         {
             LOG("\rUpdate loop...");
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+            
             classicwindow.update();
         }
 

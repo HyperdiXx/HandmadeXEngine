@@ -84,9 +84,6 @@
     <ClCompile Include="src\core\math\mat4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\rendering\openglnew\render3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\rendering\openglnew\renderer2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -187,6 +184,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\rendering\openglnew\defferedrender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\openglnew\renderer3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -524,6 +524,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\openglnew\defferedrender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\openglnew\renderer3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

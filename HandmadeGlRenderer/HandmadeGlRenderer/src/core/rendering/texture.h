@@ -3,8 +3,10 @@
 #ifndef TEXTURE
 #define TEXTURE
 
+#include <stb_image.h>
 #include "../types.h"
-#include <vector>
+#include "../rendering/texturetypes.h"
+#include "../../xenpch.h"
 
 namespace XEngine
 {
@@ -31,8 +33,11 @@ namespace XEngine
 
         }
 
-        void loadTexture2d();
-        void loadTextureCubemap();
+        static uint32 loadTexture2D(const char* filename);
+        static uint32 loadTextureCubemap(std::vector<std::string> textures);
+        static uint32 loadTextureHDR(const char* filename);
+        static uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma);
+
         static void bindTexture2D(uint16 n, uint32 tex1);
         static void bindCubeTexture2D(uint16 n, uint32 tex1);
         static void setDepthFunc(int n);

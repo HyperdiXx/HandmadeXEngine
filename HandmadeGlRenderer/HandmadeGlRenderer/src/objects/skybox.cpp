@@ -1,6 +1,5 @@
 #include "skybox.h"
 
-#include "../core/systems/textureload.h"
 
 using namespace XEngine;
 using namespace Rendering;
@@ -76,7 +75,7 @@ void Skybox::createSkybox()
     sky->vao = skyboxVAO;
     sky->vbo = skyboxVBO;
 
-    cubemaptexture = XEngine::Utils::loadCubemap(cub.textures);
+    cubemaptexture = Texture2d::loadTextureCubemap(cub.textures);
 
 }
 

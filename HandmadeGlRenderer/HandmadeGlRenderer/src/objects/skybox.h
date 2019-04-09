@@ -76,7 +76,8 @@ namespace XEngine
             };
             ~Skybox()
             {
-                delete VAO;
+                glDeleteVertexArrays(1, &sky->vao);
+                glDeleteBuffers(1, &sky->vbo);
                 free(sky);
             }
 

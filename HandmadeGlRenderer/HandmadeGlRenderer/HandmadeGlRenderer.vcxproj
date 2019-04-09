@@ -127,6 +127,8 @@
     <ClCompile Include="src\core\rendering\api\opengl\buffer.cpp" />
     <ClCompile Include="src\core\rendering\api\opengl\framebuffero.cpp" />
     <ClCompile Include="src\core\rendering\api\opengl\indexbuffer.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\defferedrender.cpp" />
+    <ClCompile Include="src\core\rendering\openglnew\forwardrender.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\render3d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\renderer2d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\vao.cpp" />
@@ -159,6 +161,7 @@
     <ClCompile Include="src\imguit\imgui_impl_win32.cpp" />
     <ClCompile Include="src\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\objects\Gbuffer.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
     <ClCompile Include="src\objects\water.cpp" />
@@ -236,6 +239,8 @@
     <ClInclude Include="src\core\rendering\api\opengl\buffer.h" />
     <ClInclude Include="src\core\rendering\api\opengl\framebuffero.h" />
     <ClInclude Include="src\core\rendering\api\opengl\indexbuffer.h" />
+    <ClInclude Include="src\core\rendering\openglnew\defferedrender.h" />
+    <ClInclude Include="src\core\rendering\openglnew\forwardrender.h" />
     <ClInclude Include="src\core\rendering\openglnew\irenderable2d.h" />
     <ClInclude Include="src\core\rendering\openglnew\irenderable3d.h" />
     <ClInclude Include="src\core\rendering\openglnew\render2d.h" />
@@ -281,6 +286,7 @@
     <ClInclude Include="src\imguit\imgui_impl_dx11.h" />
     <ClInclude Include="src\imguit\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imguit\imgui_impl_win32.h" />
+    <ClInclude Include="src\objects\GBuffer.h" />
     <ClInclude Include="src\windowsystem\dx11.h" />
     <ClInclude Include="src\windowsystem\dx12.h" />
     <ClInclude Include="src\windowsystem\openglwnd.h" />

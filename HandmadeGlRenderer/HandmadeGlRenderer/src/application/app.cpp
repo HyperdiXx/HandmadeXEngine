@@ -48,7 +48,7 @@ namespace XEngine
 
     static bool isUI = false;
 
-    void Application::OpenGLRunEngineWin32()
+    void Application::OpenGLScene1()
     {
 
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
@@ -344,16 +344,85 @@ namespace XEngine
         }
 
         delGeometry(&plane);
-        delGeometry(sky.getGeometryBuffer());
-
-        glDeleteVertexArrays(1, &cubeVAO);
-        glDeleteBuffers(1, &cubeVBO);
 
         myUi.shutdown();
 
-
         glfwTerminate();
 
+    }
+
+    void Application::OpenGLScene2()
+    {
+        Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
+        glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
+        glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
+        
+        classicwindow.initStats();
+        
+        XEngine::GLGUI myUi(classicwindow.m_window, 1);
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        while (!classicwindow.isClosed())
+        {
+            LOG("\rUpdate loop...");
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            classicwindow.update();
+        }
+
+
+        myUi.shutdown();
+
+        glfwTerminate();
+    }
+
+    void Application::OpenGLScene3()
+    {
+        Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
+        glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
+        glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
+
+        classicwindow.initStats();
+
+        XEngine::GLGUI myUi(classicwindow.m_window, 1);
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        while (!classicwindow.isClosed())
+        {
+            LOG("\rUpdate loop...");
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            classicwindow.update();
+        }
+
+
+        myUi.shutdown();
+
+        glfwTerminate();
+    }
+
+    void Application::OpenGLScene4()
+    {
+        Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
+        glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
+        glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
+
+        classicwindow.initStats();
+
+        XEngine::GLGUI myUi(classicwindow.m_window, 1);
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        while (!classicwindow.isClosed())
+        {
+            LOG("\rUpdate loop...");
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            classicwindow.update();
+
+        }
+
+
+        myUi.shutdown();
+
+        glfwTerminate();
     }
 
     void Application::DX11InitEngine()

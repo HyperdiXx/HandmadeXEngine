@@ -17,7 +17,7 @@
 - OmniLightsShadows, NormalMapping, ParallaxMapping, Gamma Correction
 - Math lib(vectors, matrices)
 - Stencil, Blending, FaceCulling, Instancing
-- UI(ImGUI)
+- User Interface via ImGUI
 
 ### Platforms:
 - Windows PC Desktop (x64)

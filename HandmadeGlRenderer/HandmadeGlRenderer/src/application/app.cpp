@@ -27,6 +27,8 @@
 
 #include "../core/windowsystem/openglwnd.h"
 
+#include "../objects/GBuffer.h"
+
 
 #define BATCH 0
 
@@ -422,11 +424,125 @@ namespace XEngine
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
+        Camera camera;
+
+        float deltaTime = 0.0f;
+        float lastFrame = 0.0f;
+
+        Assets::Model nanoobj("src/models/nano/nanosuit.obj", false);
+
+        std::vector<glm::vec3> positions =
+        {};
+
+        positions.push_back(glm::vec3(-3.0, -3.0, -3.0));
+        positions.push_back(glm::vec3(0.0, -3.0, -3.0));
+        positions.push_back(glm::vec3(3.0, -3.0, -3.0));
+        positions.push_back(glm::vec3(-3.0, -3.0, 0.0));
+        positions.push_back(glm::vec3(0.0, -3.0, 0.0));
+        positions.push_back(glm::vec3(3.0, -3.0, 0.0));
+        positions.push_back(glm::vec3(-3.0, -3.0, 3.0));
+        positions.push_back(glm::vec3(0.0, -3.0, 3.0));
+        positions.push_back(glm::vec3(3.0, -3.0, 3.0));
+
+        Rendering::Gbuffer gBuf;
+
+        unsigned int rboDepth;
+        glGenRenderbuffers(1, &rboDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WINDOWWIDTH, WINDOWHEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "Framebuffer not complete!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+        std::vector<glm::vec3> lightPositions;
+        std::vector<glm::vec3> lightColors;
+        const unsigned int NR_LIGHTS = 32;
+        srand(13);
+
+        for (unsigned int i = 0; i < NR_LIGHTS; ++i)
+        {
+
+            float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+            float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
+            float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+            lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
+
+            float rColor = ((rand() % 100) / 200.0f) + 0.5; 
+            float gColor = ((rand() % 100) / 200.0f) + 0.5; 
+            float bColor = ((rand() % 100) / 200.0f) + 0.5; 
+            lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+        }
+
+        Shader gBufferShader("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
+        Shader defShading("src/shaders/defshading.vs", "src/shaders/defshading.fs");
+
+        gBufferShader.setupShaderFile();
+        defShading.setupShaderFile();
+
+        defShading.enableShader();
+        defShading.setInt("GPos", 0);
+        defShading.setInt("GNormal", 1);
+        defShading.setInt("GColor", 2);
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         while (!classicwindow.isClosed())
         {
             LOG("\rUpdate loop...");
+
+            real32 curFrame = glfwGetTime();
+            deltaTime = curFrame - lastFrame;
+            lastFrame = curFrame;
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, gBuf.getGBuffer());
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH/ (float)WINDOWHEIGHT, 0.1f, 100.0f);
+            glm::mat4 view = camera.getViewMatrix();
+            glm::mat4 model = glm::mat4(1.0f);
+            gBufferShader.enableShader();
+            gBufferShader.setMat4("projection", projection);
+            gBufferShader.setMat4("view", view);
+            for (unsigned int i = 0; i < positions.size(); i++)
+            {
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, positions[i]);
+                model = glm::scale(model, glm::vec3(0.25f));
+                gBufferShader.setMat4("model", model);
+                nanoobj.drawMesh(&gBufferShader);
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            defShading.enableShader();
+            Texture2d::bindTexture2D(0, gBuf.getGPos());
+            Texture2d::bindTexture2D(1, gBuf.getGNormal());
+            Texture2d::bindTexture2D(2, gBuf.getGColor());
+            
+
+            for (unsigned int i = 0; i < lightPositions.size(); i++)
+            {
+                defShading.setVec3("lights[" + std::to_string(i) + "].pos", lightPositions[i]);
+                defShading.setVec3("lights[" + std::to_string(i) + "].color", lightColors[i]);
+
+                const float constant = 1.0; 
+                const float linear = 0.7;
+                const float quadratic = 1.8;
+                defShading.setFloat("lights[" + std::to_string(i) + "].linear", linear);
+                defShading.setFloat("lights[" + std::to_string(i) + "].quadratic", quadratic);
+            }
+            defShading.setVec3("camPos", camera.camPos);
+            
+            renderQuad();
+
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuf.getGBuffer());
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+            glBlitFramebuffer(0, 0, WINDOWWIDTH, WINDOWHEIGHT, 0, 0, WINDOWWIDTH, WINDOWHEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
             classicwindow.update();
         }
 

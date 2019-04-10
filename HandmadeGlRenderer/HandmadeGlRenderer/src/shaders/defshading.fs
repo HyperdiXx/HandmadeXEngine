@@ -5,7 +5,7 @@ in vec2 UV;
 
 uniform sampler2D GPos;
 uniform sampler2D GNormal;
-uniform sampler2D GSpeccolor;
+uniform sampler2D GColor;
 
 struct Light {
     vec3 pos;
@@ -16,19 +16,19 @@ struct Light {
 };
 const int NR_LIGHTS = 32;
 uniform Light lights[NR_LIGHTS];
-uniform vec3 viewPos;
+uniform vec3 camPos;
 
 void main()
 {             
     vec3 FragPos = texture(GPos, UV).rgb;
     vec3 Normal = texture(GNormal, UV).rgb;
-    vec3 diffuseRes = texture(GSpeccolor, UV).rgb;
-    float specularRes = texture(GSpeccolor, UV).a;
+    vec3 diffuseRes = texture(GColor, UV).rgb;
+    float specularRes = texture(GColor, UV).a;
     
 	flota ambient = 0.1;
 
     vec3 lighting  = diffuseRes * ambient; 
-    vec3 viewDir  = normalize(viewPos - FragPos);
+    vec3 viewDir  = normalize(camPos - FragPos);
     for(int i = 0; i < NR_LIGHTS; ++i)
     {
 
@@ -38,7 +38,8 @@ void main()
         vec3 halfwayDir = normalize(lightDir + viewDir);  
         float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
         vec3 specular = lights[i].color * spec * specularRes;
-        // attenuation
+        
+		
         float distance = length(lights[i].pos - FragPos);
         float attenuation = 1.0 / (1.0 + lights[i].linear * distance + lights[i].quadratic * distance * distance);
         diffuse *= attenuation;

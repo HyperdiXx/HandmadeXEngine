@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
     Application *testapp = (Application*)malloc(sizeof(Application));
 #ifdef  OPENGL
-    testapp->OpenGLScene2();
+    testapp->OpenGLScene3();
 #else
     testapp->DX11InitEngine();
 #endif 

@@ -96,8 +96,6 @@ namespace XEngine
             glm::vec3 tangent1, bitangent1;
             glm::vec3 tangent2, bitangent2;
 
-            // triangle 1
-
             glm::vec3 edge1 = pos2 - pos1;
             glm::vec3 edge2 = pos3 - pos1;
             glm::vec2 deltaUV1 = uv2 - uv1;
@@ -114,8 +112,6 @@ namespace XEngine
             bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
             bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
             bitangent1 = glm::normalize(bitangent1);
-
-            // triangle 2
 
             edge1 = pos3 - pos1;
             edge2 = pos4 - pos1;

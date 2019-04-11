@@ -108,6 +108,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
+    <ClCompile Include="src\core\math\transforms.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11context.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11vertexbuffer.cpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="src\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\objects\Gbuffer.cpp" />
+    <ClCompile Include="src\objects\light.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
     <ClCompile Include="src\objects\water.cpp" />
@@ -201,6 +203,8 @@
     <None Include="src\shaders\parallaxmapping.vs" />
     <None Include="src\shaders\simplemodel.fs" />
     <None Include="src\shaders\simplemodel.vs" />
+    <None Include="src\shaders\slight.fs" />
+    <None Include="src\shaders\slight.vs" />
     <None Include="src\shaders\text.fs" />
     <None Include="src\shaders\text.vs" />
     <None Include="src\textures\container.jpg" />
@@ -211,6 +215,7 @@
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\audio\audio.h" />
+    <ClInclude Include="src\core\math\transforms.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11context.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11indexbuffer.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11vertexbuffer.h" />
@@ -288,6 +293,7 @@
     <ClInclude Include="src\imguit\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imguit\imgui_impl_win32.h" />
     <ClInclude Include="src\objects\GBuffer.h" />
+    <ClInclude Include="src\objects\light.h" />
     <ClInclude Include="src\windowsystem\dx11.h" />
     <ClInclude Include="src\windowsystem\dx12.h" />
     <ClInclude Include="src\windowsystem\openglwnd.h" />

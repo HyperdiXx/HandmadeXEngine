@@ -4,6 +4,7 @@
 
 using namespace XEngine;
 using namespace Assets;
+
 void Mesh::setupMesh()
 {
     glGenVertexArrays(1, &VAO);
@@ -38,7 +39,9 @@ void Mesh::setupMesh()
 
 }
 
-Material Model::loadMaterial(aiMaterial* mat) {
+Material Model::loadMaterial(aiMaterial* mat) 
+{
+  
     Material material;
     aiColor3D color(0.f, 0.f, 0.f);
     float shininess;
@@ -60,7 +63,6 @@ Material Model::loadMaterial(aiMaterial* mat) {
 
 void Mesh::renderMeshes(Shader * shader)
 {
-    // bind appropriate textures
     uint32 diffuseNr = 1;
     uint32 specularNr = 1;
     uint32 normalNr = 1;
@@ -73,13 +75,12 @@ void Mesh::renderMeshes(Shader * shader)
         if (name == "texture_diffuse")
             number = std::to_string(diffuseNr++);
         else if (name == "texture_specular")
-            number = std::to_string(specularNr++); // transfer unsigned int to stream
+            number = std::to_string(specularNr++);
         else if (name == "texture_normal")
-            number = std::to_string(normalNr++); // transfer unsigned int to stream
+            number = std::to_string(normalNr++); 
         else if (name == "texture_height")
-            number = std::to_string(heightNr++); // transfer unsigned int to stream
-
-                                                 // now set the sampler to the correct texture unit
+            number = std::to_string(heightNr++); 
+                                                 
         glUniform1i(glGetUniformLocation(shader->getID(), (name + number).c_str()), i);
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
@@ -112,12 +113,11 @@ void Model::processNode(aiNode* node, const aiScene *scene)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
-        // the node object only contains indices to index the actual objects in the scene. 
-        // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
+        
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(mesh, scene));
     }
-    // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
+
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
         processNode(node->mChildren[i], scene);
@@ -177,13 +177,6 @@ Mesh Model::processMesh(aiMesh * mesh, const aiScene * scene)
     }
     
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-    // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-    // Same applies to other texture as the following list summarizes:
-    // diffuse: texture_diffuseN
-    // specular: texture_specularN
-    // normal: texture_normalN
-
 
     std::vector<TextureStruct> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -208,14 +201,14 @@ std::vector<TextureStruct> Model::loadMaterialTextures(aiMaterial * mat, aiTextu
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-        // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
+
         bool skip = false;
         for (unsigned int j = 0; j < texturesl.size(); j++)
         {
             if (std::strcmp(texturesl[j].path.data(), str.C_Str()) == 0)
             {
                 textures.push_back(texturesl[j]);
-                skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+                skip = true; 
                 break;
             }
         }

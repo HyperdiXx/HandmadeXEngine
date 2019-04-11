@@ -5,6 +5,41 @@
 
 #include "../../../../xenpch.h"
 
+namespace XEngine
+{
+    namespace Rendering
+    {
+
+        FrameBuffer::FrameBuffer(uint32 rboDepth)
+        {
+            glGenRenderbuffers(1, &rboDepth);
+            glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WINDOWWIDTH, WINDOWHEIGHT);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                std::cout << "Framebuffer not complete!" << std::endl;
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
+        void FrameBuffer::bindFramebuffer(uint32 type, uint32 GBuffer)
+        {
+            glBindFramebuffer(type, GBuffer);
+        }
+
+        void FrameBuffer::blitFramebuffer()
+        {
+            glBlitFramebuffer(0, 0, WINDOWWIDTH, WINDOWHEIGHT, 0, 0, WINDOWWIDTH, WINDOWHEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        }
+
+    }
+}
+
+XEngine::Rendering::FrameBuffer::~FrameBuffer()
+{
+}
+
+
 void createShadows()
 {
 
@@ -88,50 +123,3 @@ void createShadows()
 
 }
 
-void createFBOforDefShading(uint32 GPos, uint32 GNormal, uint32 GSpeccolor, uint32 GBuffer, uint32 rboDepth)
-{
-
-    glGenFramebuffers(1, &GBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, GBuffer);
-
-    glGenTextures(1, &GPos);
-    glBindTexture(GL_TEXTURE_2D, GPos);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1280, 720, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GPos, 0);
-
-    glGenTextures(1, &GNormal);
-    glBindTexture(GL_TEXTURE_2D, GNormal);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1280, 720, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, GNormal, 0);
-
-    glGenTextures(1, &GSpeccolor);
-    glBindTexture(GL_TEXTURE_2D, GSpeccolor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, GSpeccolor, 0);
-
-    uint32 attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers(3, attachments);
-
-  
-    glGenRenderbuffers(1, &rboDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1280, 720);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-    // finally check if framebuffer is complete
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-}
-
-void bindFBO(uint32 GBuffer)
-{
-    glBindFramebuffer(GL_FRAMEBUFFER, GBuffer);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}

@@ -1,24 +1,22 @@
 #version 330 core
-layout (location = 0) out vec3 GPos;
-layout (location = 1) out vec3 GNormal;
-layout (location = 2) out vec4 GColor;
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec3 gNormal;
+layout (location = 2) out vec4 gAlbedoSpec;
 
-
-in vec3 FragPos;
 in vec2 UV;
+in vec3 FragPos;
 in vec3 Normal;
 
-uniform sampler2D tex1_dif;
-uniform sampler2D tex2_normal;
-uniform sampler2D tex3_spec;
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
 
 
 void main()
 {
-	GPos = FragPos;
-	GNormal = normalize(Normal);
-	//GNormal = texture(tex2_normal, UV));
+	gPosition = FragPos;
+	gNormal = normalize(Normal);
+	//GNormal = texture(texture_normal1, UV));
 	//GNormal = normalize(GNormal * 2.0 - 1.0);
-	GColor.rgb = texture(tex1_dif, UV).rgb;
-	GColor.a = texture(tex3_spec, UV).r;
+	gAlbedoSpec.rgb = texture(texture_diffuse1, UV).rgb;
+	gAlbedoSpec.a = texture(texture_specular1, UV).r;
 }

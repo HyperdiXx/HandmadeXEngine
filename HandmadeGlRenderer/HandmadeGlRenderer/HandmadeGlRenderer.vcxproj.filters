@@ -189,6 +189,12 @@
     <ClCompile Include="src\core\rendering\openglnew\renderer3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\math\transforms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\textures\container.jpg">
@@ -239,6 +245,8 @@
     <None Include="src\shaders\simplemodel.fs" />
     <None Include="src\shaders\basic2d.fs" />
     <None Include="src\shaders\basic2d.vs" />
+    <None Include="src\shaders\slight.vs" />
+    <None Include="src\shaders\slight.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">
@@ -527,6 +535,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\openglnew\renderer3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\math\transforms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -28,7 +28,9 @@
 #include "../core/windowsystem/openglwnd.h"
 
 #include "../objects/GBuffer.h"
+#include "../core/rendering/api/opengl/framebuffero.h"
 
+#include "../core/math/transforms.h"
 
 #define BATCH 0
 
@@ -127,12 +129,6 @@ namespace XEngine
         shaderGeometryPass.enableShader();
         shaderGeometryPass.setInt("tex1", 0);
         shaderGeometryPass.setInt("tex2", 1);
-
-        //gbuffer shader
-        /*shaderLightingPass.enableShader();
-        shaderLightingPass.setInt("GPos", 0);
-        shaderLightingPass.setInt("GNormal", 1);
-        shaderLightingPass.setInt("GSpeccolor", 2);*/
 
         cubeMap.enableShader();
         cubeMap.setInt("skybox", 0);
@@ -420,31 +416,62 @@ namespace XEngine
         glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
         glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
 
-        classicwindow.initStats();
+        //classicwindow.initStats();
 
-        XEngine::GLGUI myUi(classicwindow.m_window, 1);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
 
-        Camera camera;
+        Shader shaderGeometryPass("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
+        Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
+        Shader shaderLightBox("src/shaders/slight.vs", "src/shaders/slight.fs");
 
-        float deltaTime = 0.0f;
-        float lastFrame = 0.0f;
+        shaderGeometryPass.setupShaderFile();
+        shaderLightingPass.setupShaderFile();
+        shaderLightBox.setupShaderFile();
 
-        Assets::Model nanoobj("src/models/nano/nanosuit.obj", false);
 
-        std::vector<glm::vec3> positions =
-        {};
+        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+        std::vector<glm::vec3> objectPositions;
+        objectPositions.push_back(glm::vec3(-3.0, -3.0, -3.0));
+        objectPositions.push_back(glm::vec3(0.0, -3.0, -3.0));
+        objectPositions.push_back(glm::vec3(3.0, -3.0, -3.0));
+        objectPositions.push_back(glm::vec3(-3.0, -3.0, 0.0));
+        objectPositions.push_back(glm::vec3(0.0, -3.0, 0.0));
+        objectPositions.push_back(glm::vec3(3.0, -3.0, 0.0));
+        objectPositions.push_back(glm::vec3(-3.0, -3.0, 3.0));
+        objectPositions.push_back(glm::vec3(0.0, -3.0, 3.0));
+        objectPositions.push_back(glm::vec3(3.0, -3.0, 3.0));
 
-        positions.push_back(glm::vec3(-3.0, -3.0, -3.0));
-        positions.push_back(glm::vec3(0.0, -3.0, -3.0));
-        positions.push_back(glm::vec3(3.0, -3.0, -3.0));
-        positions.push_back(glm::vec3(-3.0, -3.0, 0.0));
-        positions.push_back(glm::vec3(0.0, -3.0, 0.0));
-        positions.push_back(glm::vec3(3.0, -3.0, 0.0));
-        positions.push_back(glm::vec3(-3.0, -3.0, 3.0));
-        positions.push_back(glm::vec3(0.0, -3.0, 3.0));
-        positions.push_back(glm::vec3(3.0, -3.0, 3.0));
 
-        Rendering::Gbuffer gBuf;
+
+        unsigned int gBuffer;
+        glGenFramebuffers(1, &gBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+        unsigned int gPosition, gNormal, gAlbedoSpec;
+
+        glGenTextures(1, &gPosition);
+        glBindTexture(GL_TEXTURE_2D, gPosition);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WINDOWWIDTH, WINDOWHEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+        glGenTextures(1, &gNormal);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WINDOWWIDTH, WINDOWHEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+
+        glGenTextures(1, &gAlbedoSpec);
+        glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WINDOWWIDTH, WINDOWHEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
+
+        unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+        glDrawBuffers(3, attachments);
 
         unsigned int rboDepth;
         glGenRenderbuffers(1, &rboDepth);
@@ -455,99 +482,113 @@ namespace XEngine
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             std::cout << "Framebuffer not complete!" << std::endl;
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
+
+        const unsigned int NR_LIGHTS = 32;
         std::vector<glm::vec3> lightPositions;
         std::vector<glm::vec3> lightColors;
-        const unsigned int NR_LIGHTS = 32;
         srand(13);
-
-        for (unsigned int i = 0; i < NR_LIGHTS; ++i)
-        {
-
+        for (unsigned int i = 0; i < NR_LIGHTS; i++)
+        {        
             float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
             float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
             float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
             lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-
-            float rColor = ((rand() % 100) / 200.0f) + 0.5; 
-            float gColor = ((rand() % 100) / 200.0f) + 0.5; 
-            float bColor = ((rand() % 100) / 200.0f) + 0.5; 
+         
+            float rColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+            float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+            float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
             lightColors.push_back(glm::vec3(rColor, gColor, bColor));
         }
 
-        Shader gBufferShader("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
-        Shader defShading("src/shaders/defshading.vs", "src/shaders/defshading.fs");
+        shaderLightingPass.enableShader();
+        shaderLightingPass.setInt("gPosition", 0);
+        shaderLightingPass.setInt("gNormal", 1);
+        shaderLightingPass.setInt("gAlbedoSpec", 2);
 
-        gBufferShader.setupShaderFile();
-        defShading.setupShaderFile();
 
-        defShading.enableShader();
-        defShading.setInt("GPos", 0);
-        defShading.setInt("GNormal", 1);
-        defShading.setInt("GColor", 2);
+        real32 deltaTime = 0.0f;
+        real32 lastFrame = 0.0f;
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
         while (!classicwindow.isClosed())
         {
-            LOG("\rUpdate loop...");
 
-            real32 curFrame = glfwGetTime();
-            deltaTime = curFrame - lastFrame;
-            lastFrame = curFrame;
+            LOG("\rUpdateLoop...");
 
+            camera.speed = 10.0 * deltaTime;
+
+            real64 currFrame = glfwGetTime();
+
+            deltaTime = currFrame - lastFrame;
+            lastFrame = currFrame;
+
+            XEngine::processInput(classicwindow.m_window, &camera, isUI);
+
+
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, gBuf.getGBuffer());
+            glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH/ (float)WINDOWHEIGHT, 0.1f, 100.0f);
+            glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
             glm::mat4 view = camera.getViewMatrix();
             glm::mat4 model = glm::mat4(1.0f);
-            gBufferShader.enableShader();
-            gBufferShader.setMat4("projection", projection);
-            gBufferShader.setMat4("view", view);
-            for (unsigned int i = 0; i < positions.size(); i++)
+            shaderGeometryPass.enableShader();
+            shaderGeometryPass.setMat4("projection", projection);
+            shaderGeometryPass.setMat4("view", view);
+            for (unsigned int i = 0; i < objectPositions.size(); i++)
             {
-                model = glm::mat4(1.0f);
-                model = glm::translate(model, positions[i]);
+                model = glm::translate(model, objectPositions[i]);
                 model = glm::scale(model, glm::vec3(0.25f));
-                gBufferShader.setMat4("model", model);
-                nanoobj.drawMesh(&gBufferShader);
+                shaderGeometryPass.setMat4("model", model);
+                secondmodel.drawMesh(&shaderGeometryPass);
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            defShading.enableShader();
-            Texture2d::bindTexture2D(0, gBuf.getGPos());
-            Texture2d::bindTexture2D(1, gBuf.getGNormal());
-            Texture2d::bindTexture2D(2, gBuf.getGColor());
-            
+            shaderLightingPass.enableShader();
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, gPosition);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, gNormal);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 
             for (unsigned int i = 0; i < lightPositions.size(); i++)
             {
-                defShading.setVec3("lights[" + std::to_string(i) + "].pos", lightPositions[i]);
-                defShading.setVec3("lights[" + std::to_string(i) + "].color", lightColors[i]);
-
-                const float constant = 1.0; 
+                shaderLightingPass.setVec3("lights[" + std::to_string(i) + "].pos", lightPositions[i]);
+                shaderLightingPass.setVec3("lights[" + std::to_string(i) + "].color", lightColors[i]);
+               
                 const float linear = 0.7;
                 const float quadratic = 1.8;
-                defShading.setFloat("lights[" + std::to_string(i) + "].linear", linear);
-                defShading.setFloat("lights[" + std::to_string(i) + "].quadratic", quadratic);
+                shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].linear", linear);
+                shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].quadratic", quadratic);
             }
-            defShading.setVec3("camPos", camera.camPos);
-            
+            shaderLightingPass.setVec3("camPos", camera.camPos);
+
             renderQuad();
 
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuf.getGBuffer());
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
+            
             glBlitFramebuffer(0, 0, WINDOWWIDTH, WINDOWHEIGHT, 0, 0, WINDOWWIDTH, WINDOWHEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+            shaderLightBox.enableShader();
+            shaderLightBox.setMat4("projection", projection);
+            shaderLightBox.setMat4("view", view);
+            for (unsigned int i = 0; i < lightPositions.size(); i++)
+            {
+                model = glm::translate(model, lightPositions[i]);
+                model = glm::scale(model, glm::vec3(0.125f));
+                shaderLightBox.setMat4("model", model);
+                shaderLightBox.setVec3("lightColor", lightColors[i]);
+                renderCube();
+            }
+                                  
             classicwindow.update();
         }
 
-
-        myUi.shutdown();
 
         glfwTerminate();
     }
@@ -696,42 +737,6 @@ floorShader.setVec3("lightPos", lightposfloor);
 renderQuad();
 */
 //sky.renderSkybox(&cubeMap, &cam, view, projection, cubemaptexture);
-
-
-
-
-glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-Win32UseShader(&shaderLightingPass);
-glActiveTexture(GL_TEXTURE0);
-glBindTexture(GL_TEXTURE_2D, GPos);
-glActiveTexture(GL_TEXTURE1);
-glBindTexture(GL_TEXTURE_2D, GNormal);
-glActiveTexture(GL_TEXTURE2);
-glBindTexture(GL_TEXTURE_2D, GSpeccolor);
-for (unsigned int i = 0; i < lightPositions.size(); i++)
-{
-    setVec3(&shaderLightingPass, "lights[" + std::to_string(i) + "].pos", lightPositions[i]);
-    setVec3(&shaderLightingPass, "lights[" + std::to_string(i) + "].color", lightColors[i]);
-
-    const float constant = 1.0;
-    const float linear = 0.7;
-    const float quadratic = 1.8;
-    setFloat(&shaderLightingPass, "lights[" + std::to_string(i) + "].linear", linear);
-    setFloat(&shaderLightingPass, "lights[" + std::to_string(i) + "].quadratic", quadratic);
-}
-setVec3(&shaderLightingPass, "viewPos", cam.camPos);
-renderQuad();
-
-glBindFramebuffer(GL_READ_FRAMEBUFFER, GBuffer);
-glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
-// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
-// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
-glBlitFramebuffer(0, 0, WIDTH, HEIGHT, 0, 0, WIDTH, HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 //parallax mapping example

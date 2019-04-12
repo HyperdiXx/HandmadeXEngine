@@ -165,11 +165,11 @@ namespace XEngine
 
 
         //Assets::Model firstmodel("src/models/barrels/barrels.fbx", false);
-        //Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
         //Assets::Model cityModel("src/models/house/house2.obj", false);
         //Assets::Model sponza("src/models/sponza/sponza.obj", false);
-        Assets::Model room("src/models/room/fireplace_room.obj", false);
-        Assets::Model castlelow("src/models/rungholt/rungholt.obj", false);
+        //Assets::Model room("src/models/room/fireplace_room.obj", false);
+        //Assets::Model castlelow("src/models/rungholt/rungholt.obj", false);
 
         real64 deltaTime = 0.0;
         real64 lastFrame = 0.0;
@@ -177,7 +177,7 @@ namespace XEngine
         glm::mat4 floormodel = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
-        glm::vec3 lightPos(-13.0f, 0.0f, 0.0f);
+        glm::vec3 lightPos(0.0f, 3.0f, 3.0f);
         glm::vec3 lightposfloor(0.0f, 4.0f, 0.0f);
 
         glm::vec3 point = glm::vec3(rand() % 20, 0.0, rand() % 20);
@@ -290,13 +290,13 @@ namespace XEngine
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", model);
-            castlelow.drawMesh(&loading);
+            //castlelow.drawMesh(&loading);
 
             glm::mat4 model1 = glm::mat4(1.0f);
             model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
             model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));
             loading.setMat4("model", model1);
-            // secondmodel.drawMesh(&loading);
+            secondmodel.drawMesh(&loading);
 
             shadersprite.enableShader();
             shadersprite.setVec4("color", spriteColor);

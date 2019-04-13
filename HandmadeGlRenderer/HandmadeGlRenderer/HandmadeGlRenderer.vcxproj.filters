@@ -247,6 +247,8 @@
     <None Include="src\shaders\basic2d.vs" />
     <None Include="src\shaders\slight.vs" />
     <None Include="src\shaders\slight.fs" />
+    <None Include="src\shaders\pbr.vs" />
+    <None Include="src\shaders\pbr.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

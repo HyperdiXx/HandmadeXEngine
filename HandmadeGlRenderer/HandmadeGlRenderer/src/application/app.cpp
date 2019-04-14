@@ -603,11 +603,89 @@ namespace XEngine
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
+        float deltaTime = 0.0f;
+        float lastFrame = 0.0f;
+
+        glm::vec3 lightPositions[] = {
+            glm::vec3(-10.0f,  10.0f, 10.0f),
+            glm::vec3(10.0f,  10.0f, 10.0f),
+            glm::vec3(-10.0f, -10.0f, 10.0f),
+            glm::vec3(10.0f, -10.0f, 10.0f),
+        };
+
+        glm::vec3 lightColors[] = {
+            glm::vec3(300.0f, 300.0f, 300.0f),
+            glm::vec3(300.0f, 300.0f, 300.0f),
+            glm::vec3(300.0f, 300.0f, 300.0f),
+            glm::vec3(300.0f, 300.0f, 300.0f)
+        };
+
+        Shader pbr("src/shaders/pbr.vs", "src/shaders/pbr.fs");
+
+        pbr.setupShaderFile();
+
+        pbr.enableShader();
+        pbr.setVec3("albedo", 0.5f, 0.0f, 0.0f);
+        pbr.setFloat("ao", 1.0f);
+
+        int nRows = 7;
+        int nrColumns = 7;
+        float spacing = 2.5f;
+
+        bool ui = false;
+
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / float(WINDOWHEIGHT), 0.1f, 100.0f);
+        pbr.enableShader();
+        pbr.setMat4("projection", projection);
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         while (!classicwindow.isClosed())
         {
             LOG("\rUpdate loop...");
+
+            float currentFrame = glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
+            XEngine::processInput(classicwindow.m_window, &camera, ui);
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glm::mat4 view = camera.getViewMatrix();
+            pbr.enableShader();
+            
+            pbr.setMat4("view", view);
+            pbr.setVec3("camPos", camera.camPos);
+
+            glm::mat4 model = glm::mat4(1.0f);
+            
+            for (int i = 0; i < nRows; ++i)
+            {
+                pbr.setFloat("metallic", (float)i / (float)nRows);
+                for (int y = 0; i < nrColumns; ++i)
+                {
+                    pbr.setFloat("roughness", glm::clamp((float)y / (float)nrColumns, 0.05f, 1.0f));
+
+                    model = glm::mat4(1.0f);
+                    model = glm::translate(model, glm::vec3((y - (nrColumns / 2)) * spacing, (i - (nRows / 2)) * spacing, 0.0f));
+                    pbr.setMat4("model", model);
+                    renderSphere();
+                }
+            }
+
+            for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+            {
+                glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+                newPos = lightPositions[i];
+                pbr.setVec3("lightPos[" + std::to_string(i) + "]", newPos);
+                pbr.setVec3("lightColor[" + std::to_string(i) + "]", lightColors[i]);
+
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, newPos);
+                model = glm::scale(model, glm::vec3(0.5f));
+                pbr.setMat4("model", model);
+                renderSphere();
+            }
 
             classicwindow.update();
 

@@ -164,6 +164,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\objects\Gbuffer.cpp" />
     <ClCompile Include="src\objects\light.cpp" />
+    <ClCompile Include="src\objects\pbr.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
     <ClCompile Include="src\objects\water.cpp" />
@@ -294,6 +295,7 @@
     <ClInclude Include="src\imguit\imgui_impl_win32.h" />
     <ClInclude Include="src\objects\GBuffer.h" />
     <ClInclude Include="src\objects\light.h" />
+    <ClInclude Include="src\objects\pbr.h" />
     <ClInclude Include="src\windowsystem\dx11.h" />
     <ClInclude Include="src\windowsystem\dx12.h" />
     <ClInclude Include="src\windowsystem\openglwnd.h" />

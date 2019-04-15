@@ -595,16 +595,47 @@ namespace XEngine
 
     void Application::OpenGLScene4()
     {
-        Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
-        glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
-        glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_SAMPLES, 4);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        classicwindow.initStats();
+#ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
 
-        XEngine::GLGUI myUi(classicwindow.m_window, 1);
+        GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "LearnOpenGL", NULL, NULL);
+        glfwMakeContextCurrent(window);
+        if (window == NULL)
+        {
+            std::cout << "Failed to create GLFW window" << std::endl;
+            glfwTerminate();
+            
+        }
+        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+        glfwSetCursorPosCallback(window, mouseCallback);
+        glfwSetScrollCallback(window, scrollCallback);
 
-        float deltaTime = 0.0f;
-        float lastFrame = 0.0f;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        {
+            std::cout << "Failed to initialize GLAD" << std::endl;            
+        }
+
+        glEnable(GL_DEPTH_TEST);
+
+        Camera camera;
+
+        real32 lastFrame = 0.0f;
+        real32 deltaTime = 0.0f;
+
+        Shader shader("src/shaders/pbr.vs", "src/shaders/pbr.fs");
+
+        shader.enableShader();
+        shader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
+        shader.setFloat("ao", 1.0f);
 
         glm::vec3 lightPositions[] = {
             glm::vec3(-10.0f,  10.0f, 10.0f),
@@ -612,88 +643,74 @@ namespace XEngine
             glm::vec3(-10.0f, -10.0f, 10.0f),
             glm::vec3(10.0f, -10.0f, 10.0f),
         };
-
         glm::vec3 lightColors[] = {
             glm::vec3(300.0f, 300.0f, 300.0f),
             glm::vec3(300.0f, 300.0f, 300.0f),
             glm::vec3(300.0f, 300.0f, 300.0f),
             glm::vec3(300.0f, 300.0f, 300.0f)
         };
-
-        Shader pbr("src/shaders/pbr.vs", "src/shaders/pbr.fs");
-
-        pbr.setupShaderFile();
-
-        pbr.enableShader();
-        pbr.setVec3("albedo", 0.5f, 0.0f, 0.0f);
-        pbr.setFloat("ao", 1.0f);
-
-        int nRows = 7;
+        int nrRows = 7;
         int nrColumns = 7;
-        float spacing = 2.5f;
+        float spacing = 2.5;
 
-        bool ui = false;
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
+        shader.enableShader();
+        shader.setMat4("projection", projection);
 
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / float(WINDOWHEIGHT), 0.1f, 100.0f);
-        pbr.enableShader();
-        pbr.setMat4("projection", projection);
-
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        while (!classicwindow.isClosed())
+        while (!glfwWindowShouldClose(window))
         {
-            LOG("\rUpdate loop...");
-
+            
             float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
-            XEngine::processInput(classicwindow.m_window, &camera, ui);
+            //processInput(window);
 
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            shader.enableShader();
             glm::mat4 view = camera.getViewMatrix();
-            pbr.enableShader();
-            
-            pbr.setMat4("view", view);
-            pbr.setVec3("camPos", camera.camPos);
+            shader.setMat4("view", view);
+            shader.setVec3("camPos", camera.camPos);
 
             glm::mat4 model = glm::mat4(1.0f);
-            
-            for (int i = 0; i < nRows; ++i)
+            for (int row = 0; row < nrRows; ++row)
             {
-                pbr.setFloat("metallic", (float)i / (float)nRows);
-                for (int y = 0; i < nrColumns; ++i)
+                shader.setFloat("metallic", (float)row / (float)nrRows);
+                for (int col = 0; col < nrColumns; ++col)
                 {
-                    pbr.setFloat("roughness", glm::clamp((float)y / (float)nrColumns, 0.05f, 1.0f));
+                    shader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
 
                     model = glm::mat4(1.0f);
-                    model = glm::translate(model, glm::vec3((y - (nrColumns / 2)) * spacing, (i - (nRows / 2)) * spacing, 0.0f));
-                    pbr.setMat4("model", model);
+                    model = glm::translate(model, glm::vec3(
+                        (col - (nrColumns / 2)) * spacing,
+                        (row - (nrRows / 2)) * spacing,
+                        0.0f
+                    ));
+                    shader.setMat4("model", model);
                     renderSphere();
                 }
             }
+
 
             for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
             {
                 glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
                 newPos = lightPositions[i];
-                pbr.setVec3("lightPos[" + std::to_string(i) + "]", newPos);
-                pbr.setVec3("lightColor[" + std::to_string(i) + "]", lightColors[i]);
+                shader.setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
+                shader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 
                 model = glm::mat4(1.0f);
                 model = glm::translate(model, newPos);
                 model = glm::scale(model, glm::vec3(0.5f));
-                pbr.setMat4("model", model);
+                shader.setMat4("model", model);
                 renderSphere();
             }
 
-            classicwindow.update();
-
+            glfwSwapBuffers(window);
+            glfwPollEvents();
         }
-
-
-        myUi.shutdown();
-
         glfwTerminate();
     }
 

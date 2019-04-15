@@ -43,7 +43,7 @@ namespace XEngine
             float camZoom;
             float speed;
 
-            Camera(glm::vec3 position = glm::vec3(0.0f, 2.0f, 10.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : camTarget(glm::vec3(0.0f, 0.0f, -1.0f)), speed(SPEED), camMouseSensitivity(SENSITIVITY), camZoom(ZOOM)
+            Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : camTarget(glm::vec3(0.0f, 0.0f, -1.0f)), speed(SPEED), camMouseSensitivity(SENSITIVITY), camZoom(ZOOM)
             {
                 camPos = position;
                 camWorldUp = up;

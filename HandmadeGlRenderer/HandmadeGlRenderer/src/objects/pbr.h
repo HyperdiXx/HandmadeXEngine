@@ -7,6 +7,14 @@ namespace XEngine
         class PBR
         {
         public:
+            PBR();
+            ~PBR();
+
+            void init();
+
+        private:
+
+
 
         };
 

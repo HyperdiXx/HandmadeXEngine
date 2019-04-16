@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../core/rendering/pipeline/shader.h"
+
 namespace XEngine
 {
     namespace Rendering
@@ -10,7 +12,7 @@ namespace XEngine
             PBR();
             ~PBR();
 
-            void init();
+            void init(Shader *mshader);
 
         private:
 

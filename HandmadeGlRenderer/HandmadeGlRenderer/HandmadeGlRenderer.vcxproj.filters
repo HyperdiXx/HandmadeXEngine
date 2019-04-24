@@ -252,6 +252,7 @@
     <None Include="src\shaders\slight.fs" />
     <None Include="src\shaders\pbr.vs" />
     <None Include="src\shaders\pbr.fs" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">
@@ -549,6 +550,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\pbr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\RenderingType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

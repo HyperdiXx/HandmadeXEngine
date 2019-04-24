@@ -25,8 +25,6 @@ namespace XEngine
         const float SENSITIVITY = 0.1f;
         const float ZOOM = 45.0f;
 
-
-
         class Camera
         {
         public:

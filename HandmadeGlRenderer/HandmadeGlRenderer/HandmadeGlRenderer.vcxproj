@@ -170,6 +170,7 @@
     <ClCompile Include="src\objects\water.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="src\imguit\imgui.ini" />
     <None Include="src\models\barrels.fbx" />
     <None Include="src\shaders\basic2d.fs" />
@@ -258,6 +259,7 @@
     <ClInclude Include="src\core\rendering\openglnew\vao.h" />
     <ClInclude Include="src\core\rendering\api\opengl\vertexarray.h" />
     <ClInclude Include="src\core\rendering\layers\scenegraph.h" />
+    <ClInclude Include="src\core\rendering\RenderingType.h" />
     <ClInclude Include="src\core\rendering\sprite.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
     <ClInclude Include="src\core\rendering\ui\dxui.h" />

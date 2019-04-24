@@ -595,104 +595,118 @@ namespace XEngine
 
     void Application::OpenGLScene4()
     {
-        glfwInit();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_SAMPLES, 4);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
+        glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
+        glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
 
-#ifdef __APPLE__
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
-#endif
+        classicwindow.initStats();
 
-        GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "LearnOpenGL", NULL, NULL);
-        glfwMakeContextCurrent(window);
-        if (window == NULL)
-        {
-            std::cout << "Failed to create GLFW window" << std::endl;
-            glfwTerminate();
-            
-        }
-        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-        glfwSetCursorPosCallback(window, mouseCallback);
-        glfwSetScrollCallback(window, scrollCallback);
-
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            std::cout << "Failed to initialize GLAD" << std::endl;            
-        }
+        XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
         glEnable(GL_DEPTH_TEST);
 
         Camera camera;
+
+        unsigned int albedo = Texture2d::loadTexture2D("src/textures/pbr/pbr1/albedo.png");
+        unsigned int normal = Texture2d::loadTexture2D("src/textures/pbr/pbr1/normal.png");
+        unsigned int metallic = Texture2d::loadTexture2D("src/textures/pbr/pbr1/metallic.png");
+        unsigned int roughness = Texture2d::loadTexture2D("src/textures/pbr/pbr1/roughness.png");
+        unsigned int ao = Texture2d::loadTexture2D("src/textures/pbr/pbr1/ao.png");
+
 
         real32 lastFrame = 0.0f;
         real32 deltaTime = 0.0f;
 
         Shader shader("src/shaders/pbr.vs", "src/shaders/pbr.fs");
 
+        shader.setupShaderFile();
+
         shader.enableShader();
-        shader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
-        shader.setFloat("ao", 1.0f);
+        shader.setInt("albedoMap", 0);
+        shader.setInt("normalMap", 1);
+        shader.setInt("metallicMap", 2);
+        shader.setInt("roughnessMap", 3);
+        shader.setInt("aoMap", 4);
 
         glm::vec3 lightPositions[] = {
-            glm::vec3(-10.0f,  10.0f, 10.0f),
-            glm::vec3(10.0f,  10.0f, 10.0f),
-            glm::vec3(-10.0f, -10.0f, 10.0f),
-            glm::vec3(10.0f, -10.0f, 10.0f),
+            glm::vec3(0.0f, 0.0f, 10.0f),
         };
         glm::vec3 lightColors[] = {
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f)
+            glm::vec3(150.0f, 150.0f, 150.0f),
         };
+
+
         int nrRows = 7;
         int nrColumns = 7;
         float spacing = 2.5;
+        
+        bool ui = false;
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
         shader.enableShader();
         shader.setMat4("projection", projection);
+    
 
-        while (!glfwWindowShouldClose(window))
+     
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+     
+        while (!classicwindow.isClosed())
         {
             
-            float currentFrame = glfwGetTime();
-            deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
+            LOG("\rUpdateLoop...");
 
-            //processInput(window);
+            camera.speed = 10.0 * deltaTime;
 
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            real64 currFrame = glfwGetTime();
+
+            deltaTime = currFrame - lastFrame;
+            lastFrame = currFrame;
+
+            XEngine::processInput(classicwindow.m_window, &camera, isUI);
+
+            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            if (isUI == true)
+            {
+                myUi.startUpdate();
+                glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                glfwSetCursorPosCallback(classicwindow.m_window, NULL);
+
+            }
+            else
+            {
+                glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
+                glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
 
             shader.enableShader();
             glm::mat4 view = camera.getViewMatrix();
             shader.setMat4("view", view);
             shader.setVec3("camPos", camera.camPos);
 
+            Texture2d::bindTexture2D(0, albedo);
+            Texture2d::bindTexture2D(1, normal);
+            Texture2d::bindTexture2D(2, metallic);
+            Texture2d::bindTexture2D(3, roughness);
+            Texture2d::bindTexture2D(4, ao);
+            
+
             glm::mat4 model = glm::mat4(1.0f);
             for (int row = 0; row < nrRows; ++row)
             {
-                shader.setFloat("metallic", (float)row / (float)nrRows);
                 for (int col = 0; col < nrColumns; ++col)
                 {
-                    shader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-
                     model = glm::mat4(1.0f);
                     model = glm::translate(model, glm::vec3(
-                        (col - (nrColumns / 2)) * spacing,
-                        (row - (nrRows / 2)) * spacing,
+                        (float)(col - (nrColumns / 2)) * spacing,
+                        (float)(row - (nrRows / 2)) * spacing,
                         0.0f
                     ));
                     shader.setMat4("model", model);
                     renderSphere();
                 }
             }
-
 
             for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
             {
@@ -708,9 +722,11 @@ namespace XEngine
                 renderSphere();
             }
 
-            glfwSwapBuffers(window);
-            glfwPollEvents();
+            
+            classicwindow.update();
         }
+
+        myUi.shutdown();
         glfwTerminate();
     }
 

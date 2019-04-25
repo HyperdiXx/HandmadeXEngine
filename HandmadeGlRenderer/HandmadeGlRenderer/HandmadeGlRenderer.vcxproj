@@ -185,6 +185,7 @@
     <None Include="src\shaders\bloom.vs" />
     <None Include="src\shaders\blur.fs" />
     <None Include="src\shaders\blur.vs" />
+    <None Include="src\shaders\clut.fs" />
     <None Include="src\shaders\cubeMap.fs" />
     <None Include="src\shaders\cubeMap.vs" />
     <None Include="src\shaders\defshading.fs" />

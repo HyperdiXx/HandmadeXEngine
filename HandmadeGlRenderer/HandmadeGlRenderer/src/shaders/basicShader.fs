@@ -1,13 +1,15 @@
 #version 330 core
 out vec4 FragColor;
 
-struct Material {
+struct Material 
+{
     sampler2D diffuse;
     sampler2D specular;
     float shininess;
 }; 
 
-struct DirLight {
+struct DirLight
+{
     vec3 direction;
 	
     vec3 ambient;
@@ -15,9 +17,10 @@ struct DirLight {
     vec3 specular;
 };
 
-struct PointLight {
-    vec3 position;
-    
+struct PointLight 
+{    
+	vec3 position;
+  
     float constant;
     float linear;
     float quadratic;
@@ -27,7 +30,8 @@ struct PointLight {
     vec3 specular;
 };
 
-struct SpotLight {
+struct SpotLight 
+{
     vec3 position;
     vec3 direction;
     float cutOff;

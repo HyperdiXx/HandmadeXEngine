@@ -253,6 +253,7 @@
     <None Include="src\shaders\pbr.vs" />
     <None Include="src\shaders\pbr.fs" />
     <None Include="ClassDiagram.cd" />
+    <None Include="src\shaders\clut.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

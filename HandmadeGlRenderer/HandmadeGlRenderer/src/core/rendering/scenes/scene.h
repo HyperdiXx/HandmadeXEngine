@@ -10,11 +10,14 @@ namespace XEngine
     {
     public:
         Scene(const char* name);
-        
+        ~Scene();
         void init();
         void addEntity(Entity *ent);
         void delEntity(Entity *ent);
 
+        void drawScene();
+        void clear();
+        void clearEnt(int ind);
     private:
         std::vector<Entity*> mEntity;
 

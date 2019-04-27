@@ -62,21 +62,43 @@ namespace XEngine
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
         Scene scene1("Scene1");
-        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
+        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
+        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
+
+        Assets::Model *secondmodel= new Assets::Model("src/models/nano/nanosuit.obj", false);
+       
         ShaderBases &shdManager = ShaderBases::getInstance();
 
         shdManager.addShader("basic", new Shader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs"));
+        shdManager.addShader("model", new Shader("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs"));
+        
+        Material *testMat = new Material(shdManager.getShaderByName("model"));
+        Transform *testTransform = new Transform();
 
-       
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
+
         Entity mesh1;
+        Entity mesh2;
 
-        mesh1.model = new Assets::Model();
-        mesh1.material = new Material();
-        mesh1.transf = new Transform();
+
+        glm::mat4 model1 = glm::mat4(1.0f);
+        model1 = glm::translate(model1, glm::vec3(10.0f, 0.0f, 0.0f));
+        model1 = glm::scale(model1, glm::vec3(2.2f, 2.2f, 2.2f));
+        //loading.setMat4("model", model1);
+        //secondmodel.drawMesh(shdManager.getShaderByName("model"));
+
+
+        mesh1.model = secondmodel;
+        mesh1.material = testMat;
+        mesh1.transf = testTransform;
+      
+        //shdManager.getShaderByName("model")->setMat4("projection", projection);
 
         scene1.addEntity(&mesh1);
-
+       
+        
       
         Shader lightShader("src/shaders/bloom.vs", "src/shaders/light.fs");
         Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
@@ -96,22 +118,6 @@ namespace XEngine
         Shader shaderGeometryPass("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
         Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
-
-        basicShader.setupShaderFile();
-        lightShader.setupShaderFile();
-        cubeMap.setupShaderFile();
-        floorShader.setupShaderFile();
-        lightMapShader.setupShaderFile();
-        depthMapQuad.setupShaderFile();
-        shadowShader.setupShaderFile();
-        normalMappingShader.setupShaderFile();
-        blurShader.setupShaderFile();
-        bloomShader.setupShaderFile();
-        mixedShader.setupShaderFile();
-        dispShader.setupShaderFile();
-        shaderGeometryPass.setupShaderFile();
-        shaderLightingPass.setupShaderFile();
-        textShader.setupShaderFile();
 
         GeometryBuffer plane;
         std::vector<float> planeVertices = createPlane();
@@ -181,7 +187,6 @@ namespace XEngine
 
 
         //Assets::Model firstmodel("src/models/barrels/barrels.fbx", false);
-        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
         //Assets::Model cityModel("src/models/house/house2.obj", false);
         //Assets::Model sponza("src/models/sponza/sponza.obj", false);
         //Assets::Model room("src/models/room/fireplace_room.obj", false);
@@ -219,26 +224,17 @@ namespace XEngine
 
         orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
         glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
+       
 
 
         Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
-        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
-
-
-        loading.setupShaderFile();
+       
 
         glm::mat4 modelforsprite = glm::mat4(1.0f);
         modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
 
-        shadersprite.setupShaderFile();
-
         shadersprite.enableShader();
         shadersprite.setMat4("projection", orho);
-
-        loading.enableShader();
-        loading.setMat4("projection", projection);
 
         glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
         glm::vec4 spriteColor2 = glm::vec4(1.0, 1.0, 0.0, 1.0);
@@ -277,7 +273,7 @@ namespace XEngine
             //inp.join();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+           
             if (isUI == true)
             {
                 myUi.startUpdate();
@@ -292,27 +288,39 @@ namespace XEngine
             }
             
 
-            loading.enableShader();
+          
+            shdManager.getShaderByName("model")->enableShader();
+     
             view = camera.getViewMatrix();
 
             glm::mat4 viewproj = projection * view;
 
-            loading.setMat4("viewproj", viewproj);
-            loading.setVec3("lightPos", lightPos);
-            loading.setVec3("camPos", camera.camPos);
+            //loading.setMat4("viewproj", viewproj);
+            //loading.setVec3("lightPos", lightPos);
+            //loading.setVec3("camPos", camera.camPos);
+            
+            shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
+            shdManager.getShaderByName("model")->setVec3("lightPos", lightPos);
+            shdManager.getShaderByName("model")->setVec3("camPos", camera.camPos);
 
 
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+            model = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
             model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-            loading.setMat4("model", model);
+            //mesh1.transf->setTranslation(glm::vec3(0.0f, -2.0f, -2.0f));
+            //mesh1.transf->setScale(glm::vec3(0.2f, 0.2f, 0.2f));
+            //loading.setMat4("model", model);
             //castlelow.drawMesh(&loading);
 
-            glm::mat4 model1 = glm::mat4(1.0f);
-            model1 = glm::translate(model1, glm::vec3(-10.0f, 0.0f, 0.0f));
-            model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));
-            loading.setMat4("model", model1);
-            secondmodel.drawMesh(&loading);
+            glm::mat4 model2 = glm::mat4(1.0f);
+            model2 = glm::translate(model2, glm::vec3(-10.0f, -2.0f, -2.0f));
+            model2 = glm::scale(model2, glm::vec3(0.2f, 0.2f, 0.2f));
+
+            mesh1.material->getShader()->setMat4("model", model);
+            //shdManager.getShaderByName("model")->setMat4("model", model);
+            
+            scene1.drawScene();
+
 
             shadersprite.enableShader();
             shadersprite.setVec4("color", spriteColor);
@@ -543,6 +551,8 @@ namespace XEngine
 
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            
 
             glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

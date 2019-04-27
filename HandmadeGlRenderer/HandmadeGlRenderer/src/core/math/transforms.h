@@ -10,7 +10,6 @@ namespace XEngine
         {
         public:
             Transform() {};
-            Transform(glm::mat4 m, glm::mat4 v, glm::mat4 proj);
             ~Transform();
             
             void setTranslation(glm::vec3 trans);
@@ -22,11 +21,12 @@ namespace XEngine
             inline const glm::mat4& getModelMatrix() const { return mModel; };
             inline const glm::mat4& getViewMatrix() const { return mView; };
             inline const glm::mat4& getProjectionMatrix() const { return mProjection; };
+            inline const glm::mat4& getViewProjMatrix() const { return mProjection * mView; };
         private:
 
-            glm::mat4 mModel;
-            glm::mat4 mView;
-            glm::mat4 mProjection;
+            glm::mat4 mModel = glm::mat4(1.0f);
+            glm::mat4 mView = glm::mat4(1.0f);
+            glm::mat4 mProjection = glm::mat4(1.0f);
 
         };
     }

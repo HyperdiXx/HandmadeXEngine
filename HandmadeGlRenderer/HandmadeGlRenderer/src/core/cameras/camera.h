@@ -34,12 +34,12 @@ namespace XEngine
             glm::vec3 camRight;
             glm::vec3 camWorldUp;
 
-            float camYaw;
-            float camPitch;
+            real32 camYaw;
+            real32 camPitch;
 
-            float camMouseSensitivity;
-            float camZoom;
-            float speed;
+            real32 camMouseSensitivity;
+            real32 camZoom;
+            real32 speed;
 
             Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : camTarget(glm::vec3(0.0f, 0.0f, -1.0f)), speed(SPEED), camMouseSensitivity(SENSITIVITY), camZoom(ZOOM)
             {
@@ -51,7 +51,7 @@ namespace XEngine
             }
 
 
-            Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : camTarget(glm::vec3(0.0f, 0.0f, -1.0f)), speed(SPEED), camMouseSensitivity(SENSITIVITY), camZoom(ZOOM)
+            Camera(real32 posX, real32 posY, real32 posZ, real32 upX, real32 upY, real32 upZ, real32 yaw, real32 pitch) : camTarget(glm::vec3(0.0f, 0.0f, -1.0f)), speed(SPEED), camMouseSensitivity(SENSITIVITY), camZoom(ZOOM)
             {
                 camPos = glm::vec3(posX, posY, posZ);
                 camWorldUp = glm::vec3(upX, upY, upZ);
@@ -62,7 +62,7 @@ namespace XEngine
 
             glm::mat4 getViewMatrix();
 
-            void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true)
+            void ProcessMouseMovement(real32 xoffset, real32 yoffset, real32 constrainPitch = true)
             {
                 xoffset *= camMouseSensitivity;
                 yoffset *= camMouseSensitivity;
@@ -81,7 +81,7 @@ namespace XEngine
                 updateCameraDir();
             }
 
-            void ProcessMouseScroll(float yoffset)
+            void ProcessMouseScroll(real32 yoffset)
             {
                 if (camZoom >= 1.0f && camZoom <= 45.0f)
                     camZoom -= yoffset;

@@ -1,12 +1,5 @@
 #include "transforms.h"
 
-XEngine::Math::Transform::Transform(glm::mat4 m, glm::mat4 v, glm::mat4 proj)
-{
-    mModel = m;
-    mView = v;
-    mProjection = proj;
-}
-
 XEngine::Math::Transform::~Transform()
 {
 
@@ -16,6 +9,7 @@ void XEngine::Math::Transform::setTranslation(glm::vec3 trans)
 {
     mModel = glm::translate(mModel, trans);
 }
+
 
 void XEngine::Math::Transform::setRotation()
 {

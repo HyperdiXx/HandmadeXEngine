@@ -18,11 +18,12 @@ namespace XEngine
 
             void setTexture(uint32 data);
             void setShader(Shader shader);
-
+            Shader* getShader() { return mShader; };
             inline uint32 getId() const { return id; };
 
         private:
             uint32 id;
+            Shader* mShader;
         };
     }
 }

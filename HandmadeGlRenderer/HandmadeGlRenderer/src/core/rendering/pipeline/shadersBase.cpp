@@ -2,6 +2,11 @@
 
 
 
+XEngine::Rendering::ShaderBases::~ShaderBases()
+{
+    mShaders.clear();
+}
+
 void XEngine::Rendering::ShaderBases::addShader(std::string name, Shader *shader)
 {
     count++;

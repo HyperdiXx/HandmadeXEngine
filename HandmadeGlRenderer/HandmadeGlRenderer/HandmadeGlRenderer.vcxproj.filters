@@ -210,6 +210,9 @@
     <ClCompile Include="src\core\rendering\scenes\stackscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\ecs\entitymanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\textures\container.jpg">
@@ -578,6 +581,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\containers\stackll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\ecs\entitymanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

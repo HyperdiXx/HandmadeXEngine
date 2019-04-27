@@ -9,6 +9,7 @@ namespace XEngine
         class Transform
         {
         public:
+            Transform() {};
             Transform(glm::mat4 m, glm::mat4 v, glm::mat4 proj);
             ~Transform();
             

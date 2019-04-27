@@ -11,7 +11,7 @@ namespace XEngine
         public:
 
             BatchSprite(float x, float y, float width, float height, glm::vec4& color);
-            BatchSprite(float x, float y, float width, float height, Texture2d* text);
+            BatchSprite(float x, float y, float width, float height, Texture2D* text);
             ~BatchSprite()
             {
 

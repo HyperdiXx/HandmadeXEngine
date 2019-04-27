@@ -10,7 +10,7 @@ namespace XEngine
         class Material
         {
         public:
-
+            Material() {};
             Material(Shader* shader);
             Material(Shader* shader, Texture2D* mtext);
 

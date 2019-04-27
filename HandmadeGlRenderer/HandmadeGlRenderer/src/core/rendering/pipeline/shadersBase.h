@@ -10,18 +10,25 @@ namespace XEngine
         class ShaderBases
         {
         public:
-
-            ShaderBases();
-            
-            void init();
-            void addShader(Shader shader);
-            static Shader getShaderByName(std::string name);
+            void addShader(std::string name, Shader *shader);
+            Shader* getShaderByName(std::string name);
             inline int getCount() const { return count; }
         private:
-            static std::map<std::string, Shader> mShaders;
-            std::string basicVert = "baseVertex";
+            ShaderBases() {}
+            ShaderBases(const ShaderBases&);
+            ShaderBases& operator=(ShaderBases&);
+        private:
+            std::map<std::string, Shader*> mShaders;
             int count;
+        public:
+            static ShaderBases& getInstance()
+            {
+                static ShaderBases instance;
+                return instance;
+            }
         };
+
+       
     }
 }
 

@@ -20,6 +20,7 @@ namespace XEngine
             Skybox()
             {
                 sky = (GeometryBuffer*)malloc(sizeof(GeometryBuffer));
+                tex = new Texture2D(cub.textures);
             }
 
             Skybox(Shader *skyshader)
@@ -79,6 +80,7 @@ namespace XEngine
                 glDeleteVertexArrays(1, &sky->vao);
                 glDeleteBuffers(1, &sky->vbo);
                 free(sky);
+                free(tex);
             }
 
             void createSkybox();
@@ -88,6 +90,7 @@ namespace XEngine
             GeometryBuffer *sky;
             VertexArray *VAO;
             VertexBuffer *VBO;
+            Texture2D *tex;
             XEngine::Cubemap cub;
             unsigned int cubemaptexture;
         };

@@ -28,6 +28,11 @@ namespace XEngine
             this->path = path;
         }
 
+        Texture2D(std::vector<std::string> text) : mTextures(text)
+        {
+       
+        }
+
         ~Texture2D()
         {
 
@@ -49,6 +54,7 @@ namespace XEngine
         GLuint mID;
         uint32 dataInRow;
         std::string path;
+        std::vector<std::string> mTextures;
     };
 
 

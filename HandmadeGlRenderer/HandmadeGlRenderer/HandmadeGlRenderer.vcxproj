@@ -108,6 +108,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
+    <ClCompile Include="src\core\ecs\entitymanager.cpp" />
     <ClCompile Include="src\core\math\transforms.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11context.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11indexbuffer.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\audio\audio.h" />
     <ClInclude Include="src\core\containers\stackll.h" />
+    <ClInclude Include="src\core\ecs\entitymanager.h" />
     <ClInclude Include="src\core\math\transforms.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11context.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11indexbuffer.h" />

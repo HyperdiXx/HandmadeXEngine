@@ -31,6 +31,7 @@
 #include "../core/rendering/api/opengl/framebuffero.h"
 
 #include "../core/rendering/scenes/scene.h"
+#include "../core/rendering/pipeline/shadersBase.h"
 
 #define BATCH 0
 
@@ -61,11 +62,22 @@ namespace XEngine
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
         Scene scene1("Scene1");
-
-        
-
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
+        ShaderBases &shdManager = ShaderBases::getInstance();
+
+        shdManager.addShader("basic", new Shader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs"));
+
+       
+        Entity mesh1;
+
+        mesh1.model = new Assets::Model();
+        mesh1.material = new Material();
+        mesh1.transf = new Transform();
+
+        scene1.addEntity(&mesh1);
+
+      
         Shader lightShader("src/shaders/bloom.vs", "src/shaders/light.fs");
         Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
         Shader floorShader("src/shaders/lightPhongnew.vs", "src/shaders/lightPhongnew.fs");

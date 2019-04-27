@@ -63,6 +63,8 @@ namespace XEngine
         class Model
         {
         public:
+            Model() {};
+
             Model(const std::string& path, bool gamma)
             {
                 isGammaCorrected = gamma;

@@ -30,7 +30,7 @@
 #include "../objects/GBuffer.h"
 #include "../core/rendering/api/opengl/framebuffero.h"
 
-#include "../core/math/transforms.h"
+#include "../core/rendering/scenes/scene.h"
 
 #define BATCH 0
 
@@ -59,6 +59,10 @@ namespace XEngine
         classicwindow.initStats();
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
+
+        Scene scene1("Scene1");
+
+        
 
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
 
@@ -356,8 +360,8 @@ namespace XEngine
         
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
-        unsigned int diffuseT= Texture2d::loadTexture2D("src/textures/wood.png");
-        unsigned int containerT = Texture2d::loadTexture2D("src/textures/container2.png");
+        //unsigned int diffuseT= Texture2D::loadTexture2D("src/textures/wood.png");
+        //unsigned int containerT = Texture2D::loadTexture2D("src/textures/container2.png");
 
 
 
@@ -607,11 +611,11 @@ namespace XEngine
 
         Camera camera;
 
-        unsigned int albedo = Texture2d::loadTexture2D("src/textures/pbr/pbr1/albedo.png");
+        /*unsigned int albedo = Texture2d::loadTexture2D("src/textures/pbr/pbr1/albedo.png");
         unsigned int normal = Texture2d::loadTexture2D("src/textures/pbr/pbr1/normal.png");
         unsigned int metallic = Texture2d::loadTexture2D("src/textures/pbr/pbr1/metallic.png");
         unsigned int roughness = Texture2d::loadTexture2D("src/textures/pbr/pbr1/roughness.png");
-        unsigned int ao = Texture2d::loadTexture2D("src/textures/pbr/pbr1/ao.png");
+        unsigned int ao = Texture2d::loadTexture2D("src/textures/pbr/pbr1/ao.png");*/
 
 
         real32 lastFrame = 0.0f;
@@ -685,11 +689,11 @@ namespace XEngine
             shader.setMat4("view", view);
             shader.setVec3("camPos", camera.camPos);
 
-            Texture2d::bindTexture2D(0, albedo);
+            /*Texture2d::bindTexture2D(0, albedo);
             Texture2d::bindTexture2D(1, normal);
             Texture2d::bindTexture2D(2, metallic);
             Texture2d::bindTexture2D(3, roughness);
-            Texture2d::bindTexture2D(4, ao);
+            Texture2d::bindTexture2D(4, ao);*/
             
 
             glm::mat4 model = glm::mat4(1.0f);

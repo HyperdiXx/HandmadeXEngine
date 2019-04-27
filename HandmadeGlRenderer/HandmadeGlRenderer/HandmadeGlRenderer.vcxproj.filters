@@ -204,6 +204,12 @@
     <ClCompile Include="src\core\rendering\pipeline\shadersBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\rendering\scenes\scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\scenes\stackscene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\textures\container.jpg">
@@ -371,9 +377,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\skybox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\rendering\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\texture.h">
@@ -566,6 +569,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\scenes\scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\scenes\stackscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\containers\stackll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

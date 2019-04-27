@@ -137,6 +137,8 @@
     <ClCompile Include="src\core\rendering\layers\scenegraph.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\material.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shadersBase.cpp" />
+    <ClCompile Include="src\core\rendering\scenes\scene.cpp" />
+    <ClCompile Include="src\core\rendering\scenes\stackscene.cpp" />
     <ClCompile Include="src\core\rendering\sprite.cpp" />
     <ClCompile Include="src\core\rendering\texture.cpp" />
     <ClCompile Include="src\core\rendering\ui\dxui.cpp" />
@@ -222,6 +224,7 @@
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\audio\audio.h" />
+    <ClInclude Include="src\core\containers\stackll.h" />
     <ClInclude Include="src\core\math\transforms.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11context.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11indexbuffer.h" />
@@ -246,7 +249,6 @@
     <ClInclude Include="src\core\rendering\batchsprite.h" />
     <ClInclude Include="src\core\rendering\layers\layer.h" />
     <ClInclude Include="src\core\rendering\layers\scene2d.h" />
-    <ClInclude Include="src\core\rendering\material.h" />
     <ClInclude Include="src\core\rendering\openglnew\batchrenderer.h" />
     <ClInclude Include="src\core\rendering\api\opengl\buffer.h" />
     <ClInclude Include="src\core\rendering\api\opengl\framebuffero.h" />
@@ -265,6 +267,8 @@
     <ClInclude Include="src\core\rendering\pipeline\material.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h" />
     <ClInclude Include="src\core\rendering\RenderingType.h" />
+    <ClInclude Include="src\core\rendering\scenes\scene.h" />
+    <ClInclude Include="src\core\rendering\scenes\stackscene.h" />
     <ClInclude Include="src\core\rendering\sprite.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
     <ClInclude Include="src\core\rendering\ui\dxui.h" />

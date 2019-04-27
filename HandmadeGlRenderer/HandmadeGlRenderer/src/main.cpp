@@ -1,8 +1,8 @@
 
 /*
-    The Rendering Engine as Part of XEngine.
+    XEngine.
     OpenGL API 4.5
-
+    DX11
 
     Features: Camera, ImGUI, Textures, MultiTextures, Lighting, Redering Interfaces, FrameBuffers, Cubemap, MSAA, ForwardShading, DefferedShading, Stencil, Blending, PostProcess,
     FaceCulling, Instancing, DynamicShadowMapping + DirLight, OmniLightsShadows, NormalMapping, ParallaxMapping,  Antialiasing, Gamma Correctiom
@@ -10,7 +10,10 @@
         
         
         Bloom,
-        HDR, SSAO, PBR
+        HDR, SSAO, PBR, IBL
+        Spray Particles, Skinning
+
+        SceneManager, Stack Linked List, Materials, struct Entity, Scene, Transformation
 
         DX11 ...
         DX12 ...

@@ -4,15 +4,23 @@
 #define ENTITY
 
 
+#include "../geometry/model.h"
+#include "../rendering/pipeline/material.h"
+#include "../math/transforms.h"
 
-struct Entity
+namespace XEngine
 {
-    //model
-    //pos
-    //material
-};
+    using namespace Rendering;
+    using namespace Math;
 
+    struct Entity
+    {
+        Assets::Model model;
+        Material material;
+        Transform transf;
+    };
 
+}
 
 #endif // !ENTITY
 

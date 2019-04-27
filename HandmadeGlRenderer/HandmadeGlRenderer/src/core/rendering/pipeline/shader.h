@@ -12,10 +12,12 @@
 class Shader
 {
 public:
+    Shader() {};
     Shader(const GLchar* vs1, const GLchar* fs1)
     {
         this->vs = vs1;
         this->fs = fs1;
+        setupShaderFile();
     }
     ~Shader()
     {

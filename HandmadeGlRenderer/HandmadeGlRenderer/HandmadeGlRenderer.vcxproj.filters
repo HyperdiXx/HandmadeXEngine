@@ -198,6 +198,12 @@
     <ClCompile Include="src\objects\pbr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\rendering\pipeline\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\pipeline\shadersBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\textures\container.jpg">
@@ -554,6 +560,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\RenderingType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\pipeline\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\pipeline\shadersBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

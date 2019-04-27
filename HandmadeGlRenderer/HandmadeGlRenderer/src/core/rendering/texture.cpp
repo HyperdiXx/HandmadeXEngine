@@ -5,13 +5,12 @@
 
 namespace XEngine
 {
-    uint32 Texture2d::loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)
+    uint32 Texture2D::loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)
     {
         std::string filename = path;
         filename = dir + '/' + filename;
 
-        uint32 textureID;
-        glGenTextures(1, &textureID);
+        glGenTextures(1, &dataInRow);
 
         int width, height, sizechannels;
 
@@ -26,7 +25,7 @@ namespace XEngine
             else if (sizechannels == 4)
                 format = GL_RGBA;
 
-            glBindTexture(GL_TEXTURE_2D, textureID);
+            glBindTexture(GL_TEXTURE_2D, mID);
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -43,14 +42,12 @@ namespace XEngine
             stbi_image_free(data);
         }
 
-        return textureID;
+        return mID;
     }
 
-    uint32 Texture2d::loadTexture2D(const char* filename)
+    uint32 Texture2D::loadTexture2D(const char* filename)
     {
-
-        unsigned int textureid;
-        glGenTextures(1, &textureid);
+        glGenTextures(1, &dataInRow);
 
         int width, height, nrChannels;
 
@@ -71,7 +68,7 @@ namespace XEngine
                 dataformat = RGBA;
             }
 
-            glBindTexture(TEXTURE2D, textureid);
+            glBindTexture(TEXTURE2D, dataInRow);
             glTexImage2D(TEXTURE2D, 0, internalF, width, height, 0, dataformat, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(TEXTURE2D);
 
@@ -89,10 +86,10 @@ namespace XEngine
             stbi_image_free(data);
         }
 
-        return textureid;
+        return dataInRow;
     }
 
-    uint32 Texture2d::loadTextureCubemap(std::vector<std::string> textures)
+    uint32 Texture2D::loadTextureCubemap(std::vector<std::string> textures)
     {
         unsigned int textureid;
         glGenTextures(1, &textureid);
@@ -124,7 +121,8 @@ namespace XEngine
 
         return textureid;
     }
-    uint32 Texture2d::loadTextureHDR(const char * filename)
+
+    uint32 Texture2D::loadTextureHDR(const char * filename)
     {
         stbi_set_flip_vertically_on_load(true);
         int width, height, nrComponents;
@@ -151,20 +149,20 @@ namespace XEngine
         return (hdrTexture);
 
     }
-    void Texture2d::bindTexture2D(uint16 n, uint32 tex1)
+    void Texture2D::bindTexture2D(uint16 n, uint32 tex1)
     {
         glActiveTexture(GL_TEXTURE0 + n);
         glBindTexture(GL_TEXTURE_2D, tex1);
     }
 
-    void Texture2d::bindCubeTexture2D(uint16 n, uint32 tex1)
+    void Texture2D::bindCubeTexture2D(uint16 n, uint32 tex1)
     {
         glActiveTexture(GL_TEXTURE0 + n);
         glBindTexture(GL_TEXTURE_CUBE_MAP, tex1);
     }
 
 
-    void Texture2d::setDepthFunc(int n)
+    void Texture2D::setDepthFunc(int n)
     {
         glDepthFunc(n);
     }

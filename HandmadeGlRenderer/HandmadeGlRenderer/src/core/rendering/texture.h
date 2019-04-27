@@ -20,31 +20,35 @@ namespace XEngine
         std::vector<std::string> textures;
     };
 
-    class Texture2d
+    class Texture2D
     {
     public:
-        Texture2d(const char* path)
+        Texture2D(const char* path)
+        {
+            this->path = path;
+        }
+
+        ~Texture2D()
         {
 
         }
 
-        ~Texture2d()
-        {
+        uint32 loadTexture2D(const char* filename);
+        uint32 loadTextureCubemap(std::vector<std::string> textures);
+        uint32 loadTextureHDR(const char* filename);
+        uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma);
 
-        }
-
-        static uint32 loadTexture2D(const char* filename);
-        static uint32 loadTextureCubemap(std::vector<std::string> textures);
-        static uint32 loadTextureHDR(const char* filename);
-        static uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma);
-
-        static void bindTexture2D(uint16 n, uint32 tex1);
-        static void bindCubeTexture2D(uint16 n, uint32 tex1);
-        static void setDepthFunc(int n);
+        void bindTexture2D(uint16 n, uint32 tex1);
+        void bindCubeTexture2D(uint16 n, uint32 tex1);
+        void setDepthFunc(int n);
         //inline const GLuint getID() const { return mID; };
 
+        inline uint32 getTexture() const { return dataInRow; }
+
     private:
-        //GLuint mID;
+        GLuint mID;
+        uint32 dataInRow;
+        std::string path;
     };
 
 

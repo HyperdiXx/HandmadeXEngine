@@ -10,7 +10,6 @@ namespace XEngine
     {
     public:
         Scene(const char* name);
-        ~Scene();
         void init();
         void addEntity(Entity *ent);
         void delEntity(Entity *ent);

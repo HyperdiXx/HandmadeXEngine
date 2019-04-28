@@ -1,17 +1,10 @@
 #include "shadersBase.h"
 
 
-
-XEngine::Rendering::ShaderBases::~ShaderBases()
-{
-    mShaders.clear();
-}
-
 void XEngine::Rendering::ShaderBases::addShader(std::string name, Shader *shader)
 {
     count++;
     mShaders.insert(std::pair<std::string, Shader*>(name, shader));
-    
 }
 
 Shader* XEngine::Rendering::ShaderBases::getShaderByName(std::string name)

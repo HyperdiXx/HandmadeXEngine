@@ -15,9 +15,9 @@ namespace XEngine
 
     struct Entity
     {
-        Assets::Model* model;
-        Material* material;
-        Transform* transf;
+        Assets::Model *model;
+        Material *material;
+        Transform *transf;
     };
 
 }

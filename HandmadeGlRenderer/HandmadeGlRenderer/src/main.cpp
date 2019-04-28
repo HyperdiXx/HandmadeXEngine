@@ -21,7 +21,6 @@
 
 
 
-
 #include <thread>
 #include <future>
 
@@ -41,6 +40,7 @@ int main(int argc, char** argv)
 #endif 
 
     free(testapp);
+
 
     return (0);
 }

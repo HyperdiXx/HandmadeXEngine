@@ -80,7 +80,7 @@ namespace XEngine
                 glDeleteVertexArrays(1, &sky->vao);
                 glDeleteBuffers(1, &sky->vbo);
                 free(sky);
-                free(tex);
+                delete(tex);
             }
 
             void createSkybox();

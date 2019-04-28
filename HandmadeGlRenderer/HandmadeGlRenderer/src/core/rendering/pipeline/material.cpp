@@ -4,14 +4,16 @@ namespace XEngine
 {
     namespace Rendering
     {
-        Material::Material(Shader * shader) : mShader(shader)
+        
+        Material::Material(Shader* shd) : mShader(shd)
         {
-
+          
         }
 
-        Material::Material(Shader * shader, Texture2D * mtext)
+        Material::Material(Shader* shd, Texture2D* tex) :
+            mShader(shd), mTexture(tex)
         {
-            mShader = shader;
+            
         }
 
         Material::Material(const Material & mat)

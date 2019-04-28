@@ -29,7 +29,7 @@ namespace XEngine
                 delete mIBO;
                 delete mBuf;
                 glDeleteBuffers(1, &mVBO);
-                //glDeleteBuffers(1, &mVAO);
+                glDeleteBuffers(1, &mVAO);
             }
                 
             void start();

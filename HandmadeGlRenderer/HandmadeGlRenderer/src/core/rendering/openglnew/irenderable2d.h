@@ -46,7 +46,7 @@ namespace XEngine
             glm::vec3 mPos;
             glm::vec4 mColor;
             std::vector<glm::vec2> mUV;
-            Texture2D* mTexture;
+            
         };
     }
 }

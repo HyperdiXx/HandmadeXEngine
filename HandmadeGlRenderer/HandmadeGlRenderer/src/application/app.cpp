@@ -33,6 +33,15 @@
 #include "../core/rendering/scenes/scene.h"
 #include "../core/rendering/pipeline/shadersBase.h"
 
+/*#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include "crtdbg.h"
+#define DBG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DBG_NEW
+#endif  */
+
+
+
 #define BATCH 0
 
 #ifdef _WIN64
@@ -52,7 +61,12 @@ namespace XEngine
 
     void Application::OpenGLScene1()
     {
-
+/*#ifdef _DEBUG
+        _CrtMemState _msBegin, _msEnd, _msDiff;
+        _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+        _CrtMemCheckpoint(&_msBegin);
+#endif*/
         Rendering::WindowGL classicwindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
         glfwSetCursorPosCallback(classicwindow.m_window, mouseCallback);
         glfwSetScrollCallback(classicwindow.m_window, scrollCallback);
@@ -66,40 +80,27 @@ namespace XEngine
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
 
-        Assets::Model *secondmodel= new Assets::Model("src/models/nano/nanosuit.obj", false);
+        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
        
         ShaderBases &shdManager = ShaderBases::getInstance();
 
-        shdManager.addShader("basic", new Shader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs"));
-        shdManager.addShader("model", new Shader("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs"));
-        
-        Material *testMat = new Material(shdManager.getShaderByName("model"));
-        Transform *testTransform = new Transform();
+        shdManager.addShader("basic", &basicShader);
+        shdManager.addShader("model", &loading);
+   
+        Material testMat(shdManager.getShaderByName("model"));
+        Transform testTransform;
 
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
 
         Entity mesh1;
-        Entity mesh2;
 
-
-        glm::mat4 model1 = glm::mat4(1.0f);
-        model1 = glm::translate(model1, glm::vec3(10.0f, 0.0f, 0.0f));
-        model1 = glm::scale(model1, glm::vec3(2.2f, 2.2f, 2.2f));
-        //loading.setMat4("model", model1);
-        //secondmodel.drawMesh(shdManager.getShaderByName("model"));
-
-
-        mesh1.model = secondmodel;
-        mesh1.material = testMat;
-        mesh1.transf = testTransform;
+        mesh1.model = &secondmodel;
+        mesh1.material = &testMat;
+        mesh1.transf = &testTransform;
       
-        //shdManager.getShaderByName("model")->setMat4("projection", projection);
-
         scene1.addEntity(&mesh1);
        
-        
-      
         Shader lightShader("src/shaders/bloom.vs", "src/shaders/light.fs");
         Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
         Shader floorShader("src/shaders/lightPhongnew.vs", "src/shaders/lightPhongnew.fs");
@@ -290,7 +291,6 @@ namespace XEngine
 
           
             shdManager.getShaderByName("model")->enableShader();
-     
             view = camera.getViewMatrix();
 
             glm::mat4 viewproj = projection * view;
@@ -311,13 +311,8 @@ namespace XEngine
             //mesh1.transf->setScale(glm::vec3(0.2f, 0.2f, 0.2f));
             //loading.setMat4("model", model);
             //castlelow.drawMesh(&loading);
-
-            glm::mat4 model2 = glm::mat4(1.0f);
-            model2 = glm::translate(model2, glm::vec3(-10.0f, -2.0f, -2.0f));
-            model2 = glm::scale(model2, glm::vec3(0.2f, 0.2f, 0.2f));
-
+       
             mesh1.material->getShader()->setMat4("model", model);
-            //shdManager.getShaderByName("model")->setMat4("model", model);
             
             scene1.drawScene();
 
@@ -366,7 +361,14 @@ namespace XEngine
         myUi.shutdown();
 
         glfwTerminate();
-
+        /*
+#ifdef _DEBUG
+        _CrtMemCheckpoint(&_msEnd);
+        if (_CrtMemDifference(&_msDiff, &_msBegin, &_msEnd) > 0) {
+            _CrtDumpMemoryLeaks();
+            std::system("pause");
+        }
+#endif*/
     }
 
     

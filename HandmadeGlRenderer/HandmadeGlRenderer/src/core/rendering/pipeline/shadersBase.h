@@ -10,7 +10,6 @@ namespace XEngine
         class ShaderBases
         {
         public:
-            ~ShaderBases();
             void addShader(std::string name, Shader *shader);
             Shader* getShaderByName(std::string name);
             inline int getCount() const { return count; }

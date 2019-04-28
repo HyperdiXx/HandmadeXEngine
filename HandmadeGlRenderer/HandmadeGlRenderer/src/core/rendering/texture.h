@@ -26,11 +26,12 @@ namespace XEngine
         Texture2D(const char* path)
         {
             this->path = path;
+            loadTexture2D(path);
         }
 
         Texture2D(std::vector<std::string> text) : mTextures(text)
         {
-       
+            
         }
 
         ~Texture2D()
@@ -39,12 +40,12 @@ namespace XEngine
         }
 
         uint32 loadTexture2D(const char* filename);
-        uint32 loadTextureCubemap(std::vector<std::string> textures);
+        uint32 loadTextureCubemap(std::vector<std::string> tex);
         uint32 loadTextureHDR(const char* filename);
         uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma);
 
-        void bindTexture2D(uint16 n, uint32 tex1);
-        void bindCubeTexture2D(uint16 n, uint32 tex1);
+        void bindTexture2D(uint16 n);
+        void bindCubeTexture2D(uint16 n, uint32 tex);
         void setDepthFunc(int n);
         //inline const GLuint getID() const { return mID; };
 

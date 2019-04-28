@@ -89,7 +89,7 @@ namespace XEngine
         return dataInRow;
     }
 
-    uint32 Texture2D::loadTextureCubemap(std::vector<std::string> textures)
+    uint32 Texture2D::loadTextureCubemap(std::vector<std::string> tex)
     {
         unsigned int textureid;
         glGenTextures(1, &textureid);
@@ -98,9 +98,9 @@ namespace XEngine
 
         int width, height, nrChannels;
 
-        for (uint32 i = 0; i < textures.size(); ++i)
+        for (uint32 i = 0; i < tex.size(); ++i)
         {
-            unsigned char* info = stbi_load(textures[i].c_str(), &width, &height, &nrChannels, 0);
+            unsigned char* info = stbi_load(tex[i].c_str(), &width, &height, &nrChannels, 0);
             if (info)
             {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -149,16 +149,16 @@ namespace XEngine
         return (hdrTexture);
 
     }
-    void Texture2D::bindTexture2D(uint16 n, uint32 tex1)
+    void Texture2D::bindTexture2D(uint16 n)
     {
         glActiveTexture(GL_TEXTURE0 + n);
-        glBindTexture(GL_TEXTURE_2D, tex1);
+        glBindTexture(GL_TEXTURE_2D, dataInRow);
     }
 
-    void Texture2D::bindCubeTexture2D(uint16 n, uint32 tex1)
+    void Texture2D::bindCubeTexture2D(uint16 n, uint32 tex)
     {
         glActiveTexture(GL_TEXTURE0 + n);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, tex1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
     }
 
 

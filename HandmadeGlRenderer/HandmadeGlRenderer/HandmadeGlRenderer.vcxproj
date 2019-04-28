@@ -168,7 +168,10 @@
     <ClCompile Include="src\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\objects\Gbuffer.cpp" />
-    <ClCompile Include="src\objects\light.cpp" />
+    <ClCompile Include="src\objects\lights\dirLight.cpp" />
+    <ClCompile Include="src\objects\lights\light.cpp" />
+    <ClCompile Include="src\objects\lights\pointLight.cpp" />
+    <ClCompile Include="src\objects\lights\spotLight.cpp" />
     <ClCompile Include="src\objects\pbr.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
@@ -309,7 +312,10 @@
     <ClInclude Include="src\imguit\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imguit\imgui_impl_win32.h" />
     <ClInclude Include="src\objects\GBuffer.h" />
-    <ClInclude Include="src\objects\light.h" />
+    <ClInclude Include="src\objects\lights\dirLight.h" />
+    <ClInclude Include="src\objects\lights\light.h" />
+    <ClInclude Include="src\objects\lights\pointLight.h" />
+    <ClInclude Include="src\objects\lights\spotLight.h" />
     <ClInclude Include="src\objects\pbr.h" />
     <ClInclude Include="src\windowsystem\dx11.h" />
     <ClInclude Include="src\windowsystem\dx12.h" />

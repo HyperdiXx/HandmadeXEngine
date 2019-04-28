@@ -93,11 +93,7 @@ namespace XEngine
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
 
-        Entity mesh1;
-
-        mesh1.model = &secondmodel;
-        mesh1.material = &testMat;
-        mesh1.transf = &testTransform;
+        Entity mesh1(&secondmodel, &testMat, &testTransform);
       
         scene1.addEntity(&mesh1);
        
@@ -125,9 +121,6 @@ namespace XEngine
 
         createVertexBuffer(&plane, planeVertices);
 
-        XEngine::Rendering::Skybox sky;
-        sky.createSkybox();
-
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
       /*  unsigned int diffuseMapTexture = XEngine::Utils::loadTexture("src/textures/desertsky_bk.tga");
@@ -142,6 +135,8 @@ namespace XEngine
         //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
         //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
 
+        XEngine::Rendering::Skybox sky;
+        sky.createSkybox();
 
 
         dispShader.enableShader();
@@ -226,10 +221,7 @@ namespace XEngine
         orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
         glm::mat4 view = glm::mat4(1.0f);
        
-
-
         Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
-       
 
         glm::mat4 modelforsprite = glm::mat4(1.0f);
         modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
@@ -336,11 +328,9 @@ namespace XEngine
 
             if (isUI)
             {
-                
                 myUi.update(spriteColor);
             }
              
-
             text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
 
             classicwindow.update();
@@ -629,18 +619,19 @@ namespace XEngine
 
         classicwindow.initStats();
 
+        Scene pbrScene("pbrScene");
+
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
         glEnable(GL_DEPTH_TEST);
 
         Camera camera;
 
-        /*unsigned int albedo = Texture2d::loadTexture2D("src/textures/pbr/pbr1/albedo.png");
-        unsigned int normal = Texture2d::loadTexture2D("src/textures/pbr/pbr1/normal.png");
-        unsigned int metallic = Texture2d::loadTexture2D("src/textures/pbr/pbr1/metallic.png");
-        unsigned int roughness = Texture2d::loadTexture2D("src/textures/pbr/pbr1/roughness.png");
-        unsigned int ao = Texture2d::loadTexture2D("src/textures/pbr/pbr1/ao.png");*/
-
+        Texture2D albedo("src/textures/pbr/pbr1/albedo.png");
+        Texture2D normal("src/textures/pbr/pbr1/normal.png");
+        Texture2D metallic("src/textures/pbr/pbr1/metallic.png");
+        Texture2D roughness("src/textures/pbr/pbr1/roughness.png");
+        Texture2D ao("src/textures/pbr/pbr1/ao.png");
 
         real32 lastFrame = 0.0f;
         real32 deltaTime = 0.0f;
@@ -713,12 +704,11 @@ namespace XEngine
             shader.setMat4("view", view);
             shader.setVec3("camPos", camera.camPos);
 
-            /*Texture2d::bindTexture2D(0, albedo);
-            Texture2d::bindTexture2D(1, normal);
-            Texture2d::bindTexture2D(2, metallic);
-            Texture2d::bindTexture2D(3, roughness);
-            Texture2d::bindTexture2D(4, ao);*/
-            
+            albedo.bindTexture2D(0);
+            normal.bindTexture2D(1);
+            metallic.bindTexture2D(2);
+            roughness.bindTexture2D(3);
+            ao.bindTexture2D(4);
 
             glm::mat4 model = glm::mat4(1.0f);
             for (int row = 0; row < nrRows; ++row)

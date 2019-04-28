@@ -5,6 +5,74 @@ using namespace XEngine;
 using namespace Rendering;
 
 
+XEngine::Rendering::Skybox::Skybox()
+{
+    sky = (GeometryBuffer*)malloc(sizeof(GeometryBuffer));
+    tex = new Texture2D(mtextures);
+}
+
+XEngine::Rendering::Skybox::Skybox(Shader * skyshader)
+{
+    float skyboxVertices[] = {
+
+                 -1.0f,  1.0f, -1.0f,
+                 -1.0f, -1.0f, -1.0f,
+                  1.0f, -1.0f, -1.0f,
+                  1.0f, -1.0f, -1.0f,
+                  1.0f,  1.0f, -1.0f,
+                 -1.0f,  1.0f, -1.0f,
+
+                 -1.0f, -1.0f,  1.0f,
+                 -1.0f, -1.0f, -1.0f,
+                 -1.0f,  1.0f, -1.0f,
+                 -1.0f,  1.0f, -1.0f,
+                 -1.0f,  1.0f,  1.0f,
+                 -1.0f, -1.0f,  1.0f,
+
+                  1.0f, -1.0f, -1.0f,
+                  1.0f, -1.0f,  1.0f,
+                  1.0f,  1.0f,  1.0f,
+                  1.0f,  1.0f,  1.0f,
+                  1.0f,  1.0f, -1.0f,
+                  1.0f, -1.0f, -1.0f,
+
+                 -1.0f, -1.0f,  1.0f,
+                 -1.0f,  1.0f,  1.0f,
+                  1.0f,  1.0f,  1.0f,
+                  1.0f,  1.0f,  1.0f,
+                  1.0f, -1.0f,  1.0f,
+                 -1.0f, -1.0f,  1.0f,
+
+                 -1.0f,  1.0f, -1.0f,
+                  1.0f,  1.0f, -1.0f,
+                  1.0f,  1.0f,  1.0f,
+                  1.0f,  1.0f,  1.0f,
+                 -1.0f,  1.0f,  1.0f,
+                 -1.0f,  1.0f, -1.0f,
+
+                 -1.0f, -1.0f, -1.0f,
+                 -1.0f, -1.0f,  1.0f,
+                  1.0f, -1.0f, -1.0f,
+                  1.0f, -1.0f, -1.0f,
+                 -1.0f, -1.0f,  1.0f,
+                  1.0f, -1.0f,  1.0f
+    };
+
+    VAO = new VertexArray();
+
+    VAO->addBuffer(VBO, 0);
+}
+
+XEngine::Rendering::Skybox::~Skybox()
+{
+    
+        glDeleteVertexArrays(1, &sky->vao);
+        glDeleteBuffers(1, &sky->vbo);
+        free(sky);
+        delete(tex);
+    
+}
+
 void Skybox::createSkybox()
 {
     float skyboxVertices[] = {
@@ -52,15 +120,13 @@ void Skybox::createSkybox()
                   1.0f, -1.0f,  1.0f
     };
 
-    
-    
 
-    cub.textures.push_back("src/textures/right.jpg");
-    cub.textures.push_back("src/textures/left.jpg");
-    cub.textures.push_back("src/textures/top.jpg");
-    cub.textures.push_back("src/textures/bottom.jpg");
-    cub.textures.push_back("src/textures/front.jpg");
-    cub.textures.push_back("src/textures/back.jpg");
+    mtextures.push_back("src/textures/right.jpg");
+    mtextures.push_back("src/textures/left.jpg");
+    mtextures.push_back("src/textures/top.jpg");
+    mtextures.push_back("src/textures/bottom.jpg");
+    mtextures.push_back("src/textures/front.jpg");
+    mtextures.push_back("src/textures/back.jpg");
 
     
     unsigned int skyboxVAO, skyboxVBO;
@@ -75,7 +141,7 @@ void Skybox::createSkybox()
     sky->vao = skyboxVAO;
     sky->vbo = skyboxVBO;
 
-    cubemaptexture = tex->loadTextureCubemap(cub.textures);
+    cubemaptexture = tex->loadTextureCubemap(mtextures);
 
 }
 

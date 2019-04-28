@@ -17,74 +17,13 @@ namespace XEngine
         class Skybox
         {
         public:
-            Skybox()
-            {
-                sky = (GeometryBuffer*)malloc(sizeof(GeometryBuffer));
-                tex = new Texture2D(cub.textures);
-            }
-
-            Skybox(Shader *skyshader)
-            {
-                float skyboxVertices[] = {
-
-                 -1.0f,  1.0f, -1.0f,
-                 -1.0f, -1.0f, -1.0f,
-                  1.0f, -1.0f, -1.0f,
-                  1.0f, -1.0f, -1.0f,
-                  1.0f,  1.0f, -1.0f,
-                 -1.0f,  1.0f, -1.0f,
-
-                 -1.0f, -1.0f,  1.0f,
-                 -1.0f, -1.0f, -1.0f,
-                 -1.0f,  1.0f, -1.0f,
-                 -1.0f,  1.0f, -1.0f,
-                 -1.0f,  1.0f,  1.0f,
-                 -1.0f, -1.0f,  1.0f,
-
-                  1.0f, -1.0f, -1.0f,
-                  1.0f, -1.0f,  1.0f,
-                  1.0f,  1.0f,  1.0f,
-                  1.0f,  1.0f,  1.0f,
-                  1.0f,  1.0f, -1.0f,
-                  1.0f, -1.0f, -1.0f,
-
-                 -1.0f, -1.0f,  1.0f,
-                 -1.0f,  1.0f,  1.0f,
-                  1.0f,  1.0f,  1.0f,
-                  1.0f,  1.0f,  1.0f,
-                  1.0f, -1.0f,  1.0f,
-                 -1.0f, -1.0f,  1.0f,
-
-                 -1.0f,  1.0f, -1.0f,
-                  1.0f,  1.0f, -1.0f,
-                  1.0f,  1.0f,  1.0f,
-                  1.0f,  1.0f,  1.0f,
-                 -1.0f,  1.0f,  1.0f,
-                 -1.0f,  1.0f, -1.0f,
-
-                 -1.0f, -1.0f, -1.0f,
-                 -1.0f, -1.0f,  1.0f,
-                  1.0f, -1.0f, -1.0f,
-                  1.0f, -1.0f, -1.0f,
-                 -1.0f, -1.0f,  1.0f,
-                  1.0f, -1.0f,  1.0f
-                };
-
-                VAO = new VertexArray();
-
-                VAO->addBuffer(VBO, 0);
-
-            };
-            ~Skybox()
-            {
-                glDeleteVertexArrays(1, &sky->vao);
-                glDeleteBuffers(1, &sky->vbo);
-                free(sky);
-                delete(tex);
-            }
+            Skybox();
+            Skybox(Shader *skyshader);
+            ~Skybox();
 
             void createSkybox();
             void renderSkybox(Shader * shader, glm::mat4& v, glm::mat4& proj);
+            
             GeometryBuffer* getGeometryBuffer() { return sky; };
         private:
             GeometryBuffer *sky;
@@ -92,6 +31,7 @@ namespace XEngine
             VertexBuffer *VBO;
             Texture2D *tex;
             XEngine::Cubemap cub;
+            std::vector<std::string> mtextures;
             unsigned int cubemaptexture;
         };
 

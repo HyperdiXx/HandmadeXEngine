@@ -200,6 +200,8 @@
     <None Include="src\shaders\defshading.vs" />
     <None Include="src\shaders\depth.fs" />
     <None Include="src\shaders\depth.vs" />
+    <None Include="src\shaders\fbo.fs" />
+    <None Include="src\shaders\fbo.vs" />
     <None Include="src\shaders\gBuffer.fs" />
     <None Include="src\shaders\gBuffer.vs" />
     <None Include="src\shaders\light.fs" />
@@ -216,6 +218,8 @@
     <None Include="src\shaders\pbr.vs" />
     <None Include="src\shaders\simplemodel.fs" />
     <None Include="src\shaders\simplemodel.vs" />
+    <None Include="src\shaders\simpleshader.fs" />
+    <None Include="src\shaders\simpleshader.vs" />
     <None Include="src\shaders\slight.fs" />
     <None Include="src\shaders\slight.vs" />
     <None Include="src\shaders\text.fs" />

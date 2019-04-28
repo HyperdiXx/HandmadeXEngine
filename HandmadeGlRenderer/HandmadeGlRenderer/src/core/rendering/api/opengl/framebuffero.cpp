@@ -9,6 +9,10 @@ namespace XEngine
 {
     namespace Rendering
     {
+        FrameBuffer::FrameBuffer(int w, int h) : width(w), height(h)
+        {
+
+        }
 
         FrameBuffer::FrameBuffer(uint32 rboDepth)
         {
@@ -22,9 +26,9 @@ namespace XEngine
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
-        void FrameBuffer::bindFramebuffer(uint32 type, uint32 GBuffer)
+        void FrameBuffer::bindFramebuffer() const
         {
-            glBindFramebuffer(type, GBuffer);
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         }
 
         void FrameBuffer::blitFramebuffer()
@@ -37,6 +41,22 @@ namespace XEngine
 
 XEngine::Rendering::FrameBuffer::~FrameBuffer()
 {
+}
+
+void XEngine::Rendering::FrameBuffer::init()
+{
+    glGenFramebuffers(1, &fbo);
+    bindFramebuffer();
+
+    glGenTextures(1, &textureFBO);
+    glBindTexture(GL_TEXTURE_2D, textureFBO);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+   
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureFBO, 0);
 }
 
 

@@ -10,6 +10,7 @@ namespace XEngine
         void OpenGLScene2();
         void OpenGLScene3();
         void OpenGLScene4();
+        void OpenGLScene5();
 
         void DX11InitEngine();    
     };

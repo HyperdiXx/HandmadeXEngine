@@ -864,6 +864,7 @@ namespace XEngine
             XEngine::processInput(classicWindow.m_window, &camera, isUI);
 
             glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+            //glViewport(0, 0, WINDOWWIDTH * 2, WINDOWHEIGHT * 2);
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);
@@ -896,6 +897,7 @@ namespace XEngine
             scene1.drawScene();
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 

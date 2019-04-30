@@ -3,8 +3,12 @@
 
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+
+#include "model.h"
+
 #include "../types.h"
 #include <vector>
+#include <map>
 
 namespace XEngine
 {
@@ -21,6 +25,19 @@ namespace XEngine
     void renderQuad();
     std::vector<float> createPlane();
     std::vector<float> createVert();
+
+    class Geometry
+    {
+    public:
+        std::map<std::string, Assets::Model*> models;
+
+        std::string cube = "src/models/simple/cube.obj";
+        std::string sphere = "src/models/simple/sphere.obj";
+        std::string plane = "src/models/simple/plane.obj";
+
+    };
+
+
 
 
 }

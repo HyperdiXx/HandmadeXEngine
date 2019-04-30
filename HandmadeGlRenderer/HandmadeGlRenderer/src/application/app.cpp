@@ -190,55 +190,6 @@ namespace XEngine
         //Assets::Model room("src/models/room/fireplace_room.obj", false);
         //Assets::Model castlelow("src/models/rungholt/rungholt.obj", false);
 
-        Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
-
-        float quadVertices[] =
-        {
-            -1.0f,  1.0f,  0.0f, 1.0f,
-            -1.0f, -1.0f,  0.0f, 0.0f,
-             1.0f, -1.0f,  1.0f, 0.0f,
-
-            -1.0f,  1.0f,  0.0f, 1.0f,
-             1.0f, -1.0f,  1.0f, 0.0f,
-             1.0f,  1.0f,  1.0f, 1.0f
-        };
-
-     
-        unsigned int quadVAO, quadVBO;
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-
-        unsigned int framebuffer;
-        glGenFramebuffers(1, &framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-
-        unsigned int textureColorbuffer;
-        glGenTextures(1, &textureColorbuffer);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WINDOWWIDTH, WINDOWHEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
-        unsigned int depth;
-        glGenRenderbuffers(1, &depth);
-        glBindRenderbuffer(GL_RENDERBUFFER, depth);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WINDOWWIDTH, WINDOWHEIGHT);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        screenShader.enableShader();
-        screenShader.setInt("screenTexture", 0);
 
         real64 deltaTime = 0.0;
         real64 lastFrame = 0.0;
@@ -317,11 +268,7 @@ namespace XEngine
             //inp.detach();
             //inp.join();
 
-            glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-            glEnable(GL_DEPTH_TEST);
-
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+          
            
             if (isUI == true)
             {
@@ -387,17 +334,6 @@ namespace XEngine
             }
              
             text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDisable(GL_DEPTH_TEST);
-       
-            //glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            screenShader.enableShader();
-            glBindVertexArray(quadVAO);
-            glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
 
             classicwindow.update();
 
@@ -809,111 +745,55 @@ namespace XEngine
             
             classicwindow.update();
         }
-
+        
         myUi.shutdown();
         glfwTerminate();
     }
 
     void Application::OpenGLScene5()
     {
+        Rendering::WindowGL classicWindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
 
-        glfwInit();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwSetCursorPosCallback(classicWindow.m_window, mouseCallback);
+        glfwSetScrollCallback(classicWindow.m_window, scrollCallback);
+        glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-#ifdef __APPLE__
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
-#endif
-
-
-        GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "TESTFBO", NULL, NULL);
-        if (window == NULL)
-        {
-            std::cout << "Failed to create GLFW window" << std::endl;
-            glfwTerminate();
-        }
-        glfwMakeContextCurrent(window);
-        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-        glfwSetCursorPosCallback(window, mouseCallback);
-        
-
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            std::cout << "Failed to initialize GLAD" << std::endl;
-        }
-
-
-        Camera camera;
-
-        float deltaTime = 0.0f;
-        float lastFrame = 0.0f;
-
+        classicWindow.initStats();
 
         glEnable(GL_DEPTH_TEST);
 
-    
-        Shader shader("src/shaders/simpleshaders.vs", "src/shaders/simpleshaders.fs");
-       
-        float cubeVertices[] = 
+        Scene scene1("Scene5");
+
+        Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
+        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
+
+        //Assets::Model cube("src/models/simple/cube.obj", false);
+        //Assets::Model sphere("src/models/simple/sphere.obj", false);
+        Assets::Model plane("src/models/simple/plane.obj", false);
+        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+
+        ShaderBases &shdManager = ShaderBases::getInstance();
+
+        shdManager.addShader("model", &loading);
+        shdManager.addShader("screen", &loading);
+
+        Material testMat(shdManager.getShaderByName("model"));
+        Material testMat2(shdManager.getShaderByName("screen"));
+        Transform testTransform;
+
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
+
+
+        Entity mesh1(&plane, &testMat, &testTransform);
+        Entity mesh2(&secondmodel, &testMat, &testTransform);
+
+        scene1.addEntity(&mesh1);
+        scene1.addEntity(&mesh2);
+
+
+        float quadVertices[] =
         {
-         
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-        };
-        float planeVertices[] = {
-            
-             5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-            -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-
-             5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-             5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-        };
-        float quadVertices[] = 
-        { 
             -1.0f,  1.0f,  0.0f, 1.0f,
             -1.0f, -1.0f,  0.0f, 0.0f,
              1.0f, -1.0f,  1.0f, 0.0f,
@@ -923,27 +803,6 @@ namespace XEngine
              1.0f,  1.0f,  1.0f, 1.0f
         };
 
-        unsigned int cubeVAO, cubeVBO;
-        glGenVertexArrays(1, &cubeVAO);
-        glGenBuffers(1, &cubeVBO);
-        glBindVertexArray(cubeVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-
-        unsigned int planeVAO, planeVBO;
-        glGenVertexArrays(1, &planeVAO);
-        glGenBuffers(1, &planeVBO);
-        glBindVertexArray(planeVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
         unsigned int quadVAO, quadVBO;
         glGenVertexArrays(1, &quadVAO);
@@ -957,18 +816,10 @@ namespace XEngine
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
 
-        Texture2D cubeTex("src/textures/wood.png");
-        Texture2D floorTex("src/textures/wood.png");
-
-        shader.enableShader();
-        shader.setInt("texture1", 0);
-
-        
         unsigned int framebuffer;
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
-        
         unsigned int textureColorbuffer;
         glGenTextures(1, &textureColorbuffer);
         glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
@@ -976,7 +827,6 @@ namespace XEngine
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-        
 
         unsigned int depth;
         glGenRenderbuffers(1, &depth);
@@ -986,71 +836,86 @@ namespace XEngine
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-        glDrawBuffers(1, DrawBuffers);
+        screenShader.enableShader();
+        screenShader.setInt("screenTexture", 0);
+        
+        
+        real32 deltaTime = 0.0f;
+        real32 lastFrame = 0.0f;
 
+        glm::vec3 lightPos(0.0f, 3.0f, 3.0f);
+        glm::vec3 lightposfloor(0.0f, 4.0f, 0.0f);
 
-        while (!glfwWindowShouldClose(window))
+        glm::mat4 view = glm::mat4(1.0f);
+
+        bool isUi = false;
+
+        while (!classicWindow.isClosed())
         {
-            
-            float currentFrame = glfwGetTime();
-            deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
 
-            //processInput(window);
+            camera.speed = 10.0 * deltaTime;
+
+            real64 currFrame = glfwGetTime();
+
+            deltaTime = currFrame - lastFrame;
+            lastFrame = currFrame;
+
+
+            XEngine::processInput(classicWindow.m_window, &camera, isUI);
 
             glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-            glEnable(GL_DEPTH_TEST); 
-
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glEnable(GL_DEPTH_TEST);
 
-            shader.enableShader();
+            shdManager.getShaderByName("model")->enableShader();
+            view  = camera.getViewMatrix();
+
+            glm::mat4 viewproj = projection * view;
+
+            shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
+            shdManager.getShaderByName("model")->setVec3("lightPos", lightPos);
+            shdManager.getShaderByName("model")->setVec3("camPos", camera.camPos);
+
+
             glm::mat4 model = glm::mat4(1.0f);
-            glm::mat4 view = camera.getViewMatrix();
-            glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
-            shader.setMat4("view", view);
-            shader.setMat4("projection", projection);
+            model = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
+            model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 
-            glBindVertexArray(cubeVAO);
-            cubeTex.bindTexture2D(0);
+            glm::mat4 model2 = glm::mat4(1.0f);
+            model2 = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
+            model2 = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+            //mesh1.transf->setTranslation(glm::vec3(0.0f, -2.0f, -2.0f));
+            //mesh1.transf->setScale(glm::vec3(0.2f, 0.2f, 0.2f));
+            //loading.setMat4("model", model);
+            //castlelow.drawMesh(&loading);
 
-            model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-            shader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-            shader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            mesh1.material->getShader()->setMat4("model", model);
             
-            glBindVertexArray(planeVAO);
-            floorTex.bindTexture2D(1);
-            shader.setMat4("model", glm::mat4(1.0f));
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            glBindVertexArray(0);
+
+            scene1.drawScene();
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDisable(GL_DEPTH_TEST); 
-            
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            
+            screenShader.enableShader();
+            glBindVertexArray(quadVAO);
+            glDisable(GL_DEPTH_TEST);
+            glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
 
-            glfwSwapBuffers(window);
-            glfwPollEvents();
+            classicWindow.update();
         }
 
-      
-        glDeleteVertexArrays(1, &cubeVAO);
-        glDeleteVertexArrays(1, &planeVAO);
-        glDeleteVertexArrays(1, &quadVAO);
-        glDeleteBuffers(1, &cubeVBO);
-        glDeleteBuffers(1, &planeVBO);
-        glDeleteBuffers(1, &quadVBO);
+       
 
+        
+        
         glfwTerminate();
         
+
+
 
     }
 

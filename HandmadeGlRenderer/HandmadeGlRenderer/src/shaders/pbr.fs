@@ -1,6 +1,6 @@
 #version 330 core
 out vec4 FragColor;
-in vec2 TexCoords;
+in vec2 UV;
 in vec3 WorldPos;
 in vec3 Normal;
 
@@ -20,12 +20,12 @@ const float PI = 3.14159265359;
 
 vec3 getNormalFromMap()
 {
-    vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(normalMap, UV).xyz * 2.0 - 1.0;
 
     vec3 Q1  = dFdx(WorldPos);
     vec3 Q2  = dFdy(WorldPos);
-    vec2 st1 = dFdx(TexCoords);
-    vec2 st2 = dFdy(TexCoords);
+    vec2 st1 = dFdx(UV);
+    vec2 st2 = dFdy(UV);
 
     vec3 N   = normalize(Normal);
     vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
@@ -77,10 +77,10 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 
 void main()
 {		
-    vec3 albedo     = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
-    float metallic  = texture(metallicMap, TexCoords).r;
-    float roughness = texture(roughnessMap, TexCoords).r;
-    float ao        = texture(aoMap, TexCoords).r;
+    vec3 albedo     = pow(texture(albedoMap, UV).rgb, vec3(2.2));
+    float metallic  = texture(metallicMap, UV).r;
+    float roughness = texture(roughnessMap, UV).r;
+    float ao        = texture(aoMap, UV).r;
 
     vec3 N = getNormalFromMap();
     vec3 V = normalize(camPos - WorldPos);

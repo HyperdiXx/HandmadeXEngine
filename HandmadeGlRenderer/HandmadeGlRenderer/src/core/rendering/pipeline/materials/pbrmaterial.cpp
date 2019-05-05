@@ -18,7 +18,7 @@ void XEngine::Rendering::PBRMaterial::setTextureSpecular(Texture2D * tex)
 
 void XEngine::Rendering::PBRMaterial::setTextureRough(Texture2D * tex)
 {
-    mRoughnes = tex;
+    mRoughness = tex;
 }
 
 void XEngine::Rendering::PBRMaterial::setTextureAO(Texture2D * tex)

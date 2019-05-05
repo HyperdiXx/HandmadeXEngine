@@ -27,7 +27,7 @@ namespace XEngine
             inline Texture2D* getDiffuse() { return mDiffuse; }
             inline Texture2D* getNormal() { return mNormal; }
             inline Texture2D* getSpecular() { return mSpecular; }
-            inline Texture2D* getRougn() { return mRoughnes; }
+            inline Texture2D* getRougness() { return mRoughness; }
             inline Texture2D* getAO() { return mAO; }
 
         private:
@@ -36,7 +36,7 @@ namespace XEngine
             Texture2D *mDiffuse;
             Texture2D *mNormal;
             Texture2D *mSpecular;
-            Texture2D *mRoughnes;
+            Texture2D *mRoughness;
             Texture2D *mAO;
         };
     }

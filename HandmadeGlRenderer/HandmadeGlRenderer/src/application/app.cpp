@@ -911,9 +911,10 @@ namespace XEngine
         }
 
        
+        glDeleteFramebuffers(1, &framebuffer);
+        glDeleteRenderbuffers(1, &depth);
+        glDeleteTextures(1, &textureColorbuffer);
 
-        
-        
         glfwTerminate();
         
 

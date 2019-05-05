@@ -760,6 +760,7 @@ namespace XEngine
 
         classicWindow.initStats();
 
+
         glEnable(GL_DEPTH_TEST);
 
         Scene scene1("Scene5");
@@ -791,6 +792,10 @@ namespace XEngine
         scene1.addEntity(&mesh1);
         scene1.addEntity(&mesh2);
 
+        FrameBuffer fb;
+
+        fb.init();
+
 
         float quadVertices[] =
         {
@@ -815,26 +820,6 @@ namespace XEngine
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-
-        unsigned int framebuffer;
-        glGenFramebuffers(1, &framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-        unsigned int textureColorbuffer;
-        glGenTextures(1, &textureColorbuffer);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WINDOWWIDTH, WINDOWHEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
-        unsigned int depth;
-        glGenRenderbuffers(1, &depth);
-        glBindRenderbuffer(GL_RENDERBUFFER, depth);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WINDOWWIDTH, WINDOWHEIGHT);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         screenShader.enableShader();
         screenShader.setInt("screenTexture", 0);
@@ -863,8 +848,8 @@ namespace XEngine
 
             XEngine::processInput(classicWindow.m_window, &camera, isUI);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-            //glViewport(0, 0, WINDOWWIDTH * 2, WINDOWHEIGHT * 2);
+          
+            fb.bind();
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);
@@ -896,7 +881,7 @@ namespace XEngine
 
             scene1.drawScene();
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            fb.unbind();
             //glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
@@ -904,21 +889,16 @@ namespace XEngine
             screenShader.enableShader();
             glBindVertexArray(quadVAO);
             glDisable(GL_DEPTH_TEST);
-            glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+            glBindTexture(GL_TEXTURE_2D, fb.getColorTexture());
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
             classicWindow.update();
         }
 
        
-        glDeleteFramebuffers(1, &framebuffer);
-        glDeleteRenderbuffers(1, &depth);
-        glDeleteTextures(1, &textureColorbuffer);
-
+   
         glfwTerminate();
-        
-
-
+       
 
     }
 

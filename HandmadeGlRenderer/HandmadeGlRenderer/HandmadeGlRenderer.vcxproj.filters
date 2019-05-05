@@ -177,9 +177,6 @@
     <ClCompile Include="src\core\rendering\api\dx11\dxshader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\objects\Gbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\rendering\openglnew\forwardrender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -193,9 +190,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\objects\pbr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\rendering\pipeline\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\rendering\pipeline\shadersBase.cpp">
@@ -220,6 +214,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\objects\lights\spotLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\pipeline\materials\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\pipeline\materials\pbrmaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\pipeline\materials\basicmaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\pipeline\materials\bpmaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\shadowmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\gbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -557,9 +569,6 @@
     <ClInclude Include="src\core\rendering\api\dx12\dx12context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\objects\GBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\rendering\openglnew\forwardrender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -576,9 +585,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\RenderingType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\rendering\pipeline\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h">
@@ -606,6 +612,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\lights\spotLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\pipeline\materials\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\pipeline\shaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\pipeline\materials\pbrmaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\pipeline\materials\basicmaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\pipeline\materials\bpmaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\shadowmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\gbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

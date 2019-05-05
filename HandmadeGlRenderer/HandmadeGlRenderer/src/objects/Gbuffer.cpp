@@ -1,4 +1,4 @@
-#include "GBuffer.h"
+#include "gbuffer.h"
 
 XEngine::Rendering::Gbuffer::Gbuffer()
 {

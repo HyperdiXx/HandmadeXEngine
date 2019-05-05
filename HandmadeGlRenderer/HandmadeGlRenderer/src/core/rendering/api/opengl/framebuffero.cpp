@@ -58,6 +58,13 @@ namespace XEngine
             glBlitFramebuffer(0, 0, WINDOWWIDTH, WINDOWHEIGHT, 0, 0, WINDOWWIDTH, WINDOWHEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         }
 
+        void FrameBuffer::clear()
+        {
+            glDeleteFramebuffers(1, &fbo);
+            glDeleteRenderbuffers(1, &depthTexture);
+            glDeleteTextures(1, &colorTexture);
+        }
+
     }
 }
 

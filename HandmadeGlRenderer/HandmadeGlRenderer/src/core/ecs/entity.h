@@ -4,7 +4,7 @@
 #define ENTITY
 
 #include "../geometry/model.h"
-#include "../rendering/pipeline/material.h"
+#include "../rendering/pipeline/materials/basicmaterial.h"
 #include "../math/transforms.h"
 
 namespace XEngine
@@ -16,7 +16,7 @@ namespace XEngine
     {
     public:
         Entity() {};
-        Entity(Assets::Model *mesh, Rendering::Material *m, Math::Transform *tr)
+        Entity(Assets::Model *mesh, Rendering::BasicMaterial *m, Math::Transform *tr)
         {
             model = mesh;
             material = m;
@@ -24,7 +24,7 @@ namespace XEngine
         }
 
         Assets::Model *model;
-        Rendering::Material *material;
+        Rendering::BasicMaterial *material;
         Math::Transform *transf;
     };
 

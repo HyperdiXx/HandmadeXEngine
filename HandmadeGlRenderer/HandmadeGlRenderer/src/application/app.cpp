@@ -33,6 +33,7 @@
 #include "../core/rendering/scenes/scene.h"
 #include "../core/rendering/pipeline/shadersBase.h"
 
+
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include "crtdbg.h"
@@ -89,7 +90,7 @@ namespace XEngine
         shdManager.addShader("basic", &basicShader);
         shdManager.addShader("model", &loading);
    
-        Material testMat(shdManager.getShaderByName("model"));
+        BasicMaterial testMat(shdManager.getShaderByName("model"));
         Transform testTransform;
 
         glm::mat4 projection = glm::mat4(1.0f);
@@ -778,8 +779,8 @@ namespace XEngine
         shdManager.addShader("model", &loading);
         shdManager.addShader("screen", &loading);
 
-        Material testMat(shdManager.getShaderByName("model"));
-        Material testMat2(shdManager.getShaderByName("screen"));
+        BasicMaterial testMat(shdManager.getShaderByName("model"));
+        BasicMaterial testMat2(shdManager.getShaderByName("screen"));
         Transform testTransform;
 
         glm::mat4 projection = glm::mat4(1.0f);

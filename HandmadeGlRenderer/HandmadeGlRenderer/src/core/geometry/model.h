@@ -60,7 +60,7 @@ namespace XEngine
         };
 
 
-        class Model
+        class Model : public Component
         {
         public:
             Model() {};

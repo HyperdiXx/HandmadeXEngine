@@ -1,12 +1,13 @@
 #pragma once
 
+#include "../ecs/component.h"
 #include "../../xenpch.h"
 
 namespace XEngine
 {
     namespace Math
     {
-        class Transform
+        class Transform : public Component
         {
         public:
             Transform() {};

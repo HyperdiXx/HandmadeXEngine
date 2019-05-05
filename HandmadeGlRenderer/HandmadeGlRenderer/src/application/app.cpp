@@ -657,7 +657,6 @@ namespace XEngine
             glm::vec3(150.0f, 150.0f, 150.0f),
         };
 
-
         int nrRows = 7;
         int nrColumns = 7;
         float spacing = 2.5;
@@ -667,10 +666,9 @@ namespace XEngine
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
         shader.enableShader();
         shader.setMat4("projection", projection);
-    
-
+   
      
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+       // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
      
         while (!classicwindow.isClosed())
         {

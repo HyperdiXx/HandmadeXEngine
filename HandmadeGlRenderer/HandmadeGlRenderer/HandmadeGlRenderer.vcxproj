@@ -109,6 +109,7 @@
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
     <ClCompile Include="src\core\ecs\entitymanager.cpp" />
+    <ClCompile Include="src\core\geometry\assetmanager.cpp" />
     <ClCompile Include="src\core\math\transforms.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11context.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11indexbuffer.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="src\core\geometry\model.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shader.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shadertype.cpp" />
+    <ClCompile Include="src\core\utility\path.cpp" />
     <ClCompile Include="src\core\utility\stb_image.cpp" />
     <ClCompile Include="src\core\rendering\text.cpp" />
     <ClCompile Include="src\core\windowsystem\dx11.cpp" />
@@ -237,7 +239,9 @@
     <ClInclude Include="src\application\app.h" />
     <ClInclude Include="src\audio\audio.h" />
     <ClInclude Include="src\core\containers\stackll.h" />
+    <ClInclude Include="src\core\ecs\component.h" />
     <ClInclude Include="src\core\ecs\entitymanager.h" />
+    <ClInclude Include="src\core\geometry\assetmanager.h" />
     <ClInclude Include="src\core\math\transforms.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11context.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11indexbuffer.h" />
@@ -312,10 +316,12 @@
     <ClInclude Include="src\core\OpenGL\vao.h" />
     <ClInclude Include="src\core\rendering\pipeline\shader.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadertype.h" />
+    <ClInclude Include="src\core\utility\path.h" />
     <ClInclude Include="src\core\utility\stb_image.h" />
     <ClInclude Include="src\core\rendering\text.h" />
     <ClInclude Include="src\core\types.h" />
     <ClInclude Include="src\core\d3dx12.h" />
+    <ClInclude Include="src\core\utility\string.h" />
     <ClInclude Include="src\core\windowsystem\dx11.h" />
     <ClInclude Include="src\core\windowsystem\dx12.h" />
     <ClInclude Include="src\core\windowsystem\openglwnd.h" />
@@ -323,6 +329,10 @@
     <ClInclude Include="src\imguit\imgui_impl_dx11.h" />
     <ClInclude Include="src\imguit\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imguit\imgui_impl_win32.h" />
+    <ClInclude Include="src\objects\animation\animation.h" />
+    <ClInclude Include="src\objects\animation\bone.h" />
+    <ClInclude Include="src\objects\animation\keyframe.h" />
+    <ClInclude Include="src\objects\animation\skeleton.h" />
     <ClInclude Include="src\objects\gbuffer.h" />
     <ClInclude Include="src\objects\lights\dirLight.h" />
     <ClInclude Include="src\objects\lights\light.h" />

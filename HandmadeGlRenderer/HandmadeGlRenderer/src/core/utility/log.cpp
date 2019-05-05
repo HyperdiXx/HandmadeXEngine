@@ -3,39 +3,24 @@
 #include "../../xenpch.h"
 #include "../systems/filesystem.h"
 
-using namespace XEngine;
 
-//XEngine::Log& XEngine::getLog()
-//{
-//    return Instance;
-//}
 
-bool32 XEngine::openFile(Log *a)
+namespace XEngine
 {
-    std::wstring filename = FileSystemGetLogFolder() + L"\\Log.txt";
+    void Log::info(const std::string message) 
+    {
+        std::cout << "Info: " + message << std::endl;
+    }
 
-    a->logstream.open(filename.c_str());
+    void Log::debug(const std::string message) 
+    {
+        std::cout << "Debug: " + message << std::endl;
+    }
 
-    
-    return(true);
-
-}
-
-bool32 XEngine::closeFile(Log *a)
-{
-    return (true);
+    void Log::error(const std::string message)
+    {
+        std::cout << "Error: " + message << std::endl;
+    }
 }
 
 
-bool32 XEngine::writeToConsole(Log *i)
-{
-    std::cout << i->text << "\n";
-
-    return (true);
-}
-//
-//bool32 XEngine::writeToConsole(std::wstring& t)
-//{
-//    return bool32();
-//}
-//

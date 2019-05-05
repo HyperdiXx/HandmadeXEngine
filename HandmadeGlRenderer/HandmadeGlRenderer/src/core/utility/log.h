@@ -13,21 +13,14 @@
 
 namespace XEngine
 {
-    struct Log
+    class Log
     {
-        char* text;
-        std::wofstream logstream;
+    public:
+        static void info(const std::string message);
+        static void debug(const std::string message);
+        static void error(const std::string message);
     };
 
-    //static Log Instance;
-
-    //static Log& getLog();
-
-    bool32 openFile(Log * a);
-    bool32 closeFile(Log* a);
-
-    bool32 writeToConsole(Log* i);
-    //bool32 writeToConsole(std::wstring& t);
 }
 #endif // !LOG_H
 

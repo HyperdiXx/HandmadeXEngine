@@ -29,7 +29,7 @@ namespace XEngine
             GeometryBuffer *sky;
             VertexArray *VAO;
             VertexBuffer *VBO;
-            Texture2D *tex;
+            Cubemap *tex;
             XEngine::Cubemap cub;
             std::vector<std::string> mtextures;
             unsigned int cubemaptexture;

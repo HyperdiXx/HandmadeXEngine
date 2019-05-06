@@ -1,11 +1,47 @@
 
 #include "texture.h"
 
+#include <stb_image.h>
 
+#include "../utility/log.h"
 
 namespace XEngine
 {
-    uint32 Texture2D::loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)
+
+    bool loadTextureFromFileDir(const char* path, int& width, int &height, TextureType type, unsigned char* data)
+    {
+        int bpp;
+
+        switch (type)
+        {
+        case XEngine::COLOR:
+            data = stbi_load(path, &width, &height, &bpp, STBI_rgb_alpha);
+            break;
+        case XEngine::HDR:
+            data = stbi_load(path, &width, &height, &bpp, STBI_rgb_alpha);
+            break;
+        case XEngine::GREYSCALE:
+            data = stbi_load(path, &width, &height, &bpp, STBI_grey);
+            break;
+        default:
+            break;
+        }
+
+        if (!*data)
+        {
+            Log::error("Failed to load image data!");
+
+            return false;
+        }
+        
+        Log::debug("Loaded texture:" + std::to_string(width) + " " + std::to_string(height) + " " + std::to_string(bpp));
+        return true;
+
+    }
+
+
+
+    /*uint32 Texture2D::loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)
     {
         std::string filename = path;
         filename = dir + '/' + filename;
@@ -43,9 +79,125 @@ namespace XEngine
         }
 
         return mID;
+    }*/
+    
+    Texture::Texture(GLenum target) : target(target)
+    {
     }
 
-    uint32 Texture2D::loadTexture2D(const char* filename)
+    void Texture::init()
+    {
+        glGenTextures(1, &handle);
+        created = true;
+    }
+
+    void Texture::destroy()
+    {
+        if (!created)
+            return;
+        glDeleteTextures(1, &handle);
+        created = false;
+    }
+
+    void Texture::bind(const uint32 text)
+    {
+        if (!created)
+        {
+            Log::error("Cannot bind not inited texture!");
+            return;
+        }
+
+        glActiveTexture(GL_TEXTURE0 + text);
+        glBindTexture(target, handle);
+        lastBoundUnit = text;
+    }
+
+    void Texture::unbind()
+    {
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void Texture::setSampling(TextureSampling minFilter, TextureSampling magFilter, TextureSampling mipFilter)
+    {
+        if (!isBound())
+        {
+            bind(lastBoundUnit);
+        }
+
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, magFilter == NEAREST ? GL_NEAREST : GL_LINEAR);
+
+        if (mipFilter == NONE) {
+            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, minFilter == NEAREST ? GL_NEAREST : GL_LINEAR);
+        }
+        else if (mipFilter == NEAREST) {
+            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, minFilter == NEAREST ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_NEAREST);
+        }
+        else if (mipFilter == LINEAR) {
+            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, minFilter == NEAREST ? GL_NEAREST_MIPMAP_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
+        }
+    }
+
+    void Texture::setMipMapLevel(uint32 level)
+    {
+        if (!isBound())
+        {
+            bind(lastBoundUnit);
+        }
+
+        glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, level);
+    }
+
+    void Texture::generateMipmaps()
+    {
+        if (!isBound()) { bind(lastBoundUnit); }
+
+        Log::debug("MipMaps generating...");
+        glGenerateMipmap(target);
+    }
+
+    bool Texture::isBound() const
+    {
+        return true;
+    }
+
+
+    Texture2D::Texture2D() : Texture(GL_TEXTURE_2D)
+    {
+
+    }
+
+    bool Texture2D::loadFromFile(const char *path, TextureType type)
+    {
+        int width, height;
+        unsigned char* data = nullptr;
+        bool loaded = loadTextureFromFileDir(path, width, height, type, data);
+
+        if (!loaded) { return false; }
+
+        init();
+        bind(0);
+        
+        switch (type) {
+        case COLOR:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+            setData(width, height, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            break;
+        case GREYSCALE:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            setData(width, height, GL_R8, GL_RED, GL_UNSIGNED_BYTE, data);
+            break;
+        case HDR:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+            setData(width, height, GL_RGBA16F, GL_RGBA, GL_FLOAT, data);
+            break;
+        }
+
+        unbind();
+
+        return true;
+    }
+
+    /*uint32 Texture2D::loadTexture2D(const char* filename)
     {
         glGenTextures(1, &dataInRow);
 
@@ -87,9 +239,9 @@ namespace XEngine
         }
 
         return dataInRow;
-    }
+    }*/
 
-    uint32 Texture2D::loadTextureCubemap(std::vector<std::string> tex)
+    /*uint32 Texture2D::loadTextureCubemap(std::vector<std::string> tex)
     {
         unsigned int textureid;
         glGenTextures(1, &textureid);
@@ -115,12 +267,15 @@ namespace XEngine
 
         glTexParameteri(CUBETEXTURE, MIN_FILTER, LINEAR);
         glTexParameteri(CUBETEXTURE, MAG_FILTER, LINEAR);
-        glTexParameteri(CUBETEXTURE, WRAP_S, CLAMP_EDGE);
-        glTexParameteri(CUBETEXTURE, WRAP_T, CLAMP_EDGE);
-        glTexParameteri(CUBETEXTURE, WRAP_R, CLAMP_EDGE);
+        glTexParameteri(CUBETEXTURE, WRAP_S, CLAMP);
+        glTexParameteri(CUBETEXTURE, WRAP_T, CLAMP);
+        glTexParameteri(CUBETEXTURE, WRAP_R, CLAMP);
 
         return textureid;
-    }
+    }*/
+
+
+   
 
     uint32 Texture2D::loadTextureHDR(const char * filename)
     {
@@ -149,24 +304,133 @@ namespace XEngine
         return (hdrTexture);
 
     }
-    void Texture2D::bindTexture2D(uint16 n)
+
+    void Texture2D::setData(uint32 w, uint32 h, GLint intFormat, GLenum format, GLenum type, unsigned char * data)
     {
-        glActiveTexture(GL_TEXTURE0 + n);
-        glBindTexture(GL_TEXTURE_2D, dataInRow);
+        if (!created) { return; }
+
+        this->width = w;
+        this->height = h;
+
+        glTexImage2D(target, 0, intFormat, width, height, 0, format, type, data);
     }
 
-    void Texture2D::bindCubeTexture2D(uint16 n, uint32 tex)
+    void Texture2D::setWrappingMode(TextureWrapping swrap, TextureWrapping twrap)
     {
-        glActiveTexture(GL_TEXTURE0 + n);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+        if (!isBound()) { bind(lastBoundUnit); }
+
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, swrap);
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, twrap);
     }
 
+    Cubemap::Cubemap() : Texture(GL_TEXTURE_CUBE_MAP)
+    {
+    }
 
-    void Texture2D::setDepthFunc(int n)
+    bool Cubemap::loadFromFiles(std::vector<std::string> paths)
+    {
+        if (paths.size() != 6)
+            return false;
+
+        init();
+        bind(0);
+
+        for (int i = 0; i < paths.size(); ++i)
+        {
+            int width, height;
+            unsigned char* data = nullptr;
+            bool isLoaded = loadTextureFromFileDir(paths[i].c_str(), width, height, COLOR, data);
+            if (!isLoaded)
+            {
+                destroy();
+                return false;
+            }
+
+            setFace(face);
+            setData(width, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        }
+    
+        unbind();
+        return true;
+    }
+
+    void Cubemap::setData(uint32 resolution, GLint internalFormat, GLenum format, GLenum type, unsigned char *data)
+    {
+        this->resolution = resolution;
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internalFormat, resolution, resolution, 0, format, type, data);
+    }
+
+    void Cubemap::setFace(uint32 face)
+    {
+        this->face = face;
+    }
+
+    void Cubemap::setWrapping(TextureWrapping sWrapping, TextureWrapping tWrapping, TextureWrapping rWrapping)
+    {
+        if (!isBound()) { bind(lastBoundUnit); }
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sWrapping);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tWrapping);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, rWrapping);
+    }
+
+    void Cubemap::setDepthFunc(uint32 n)
     {
         glDepthFunc(n);
     }
 
-  
+    Texture3D::Texture3D() : Texture(GL_TEXTURE_3D)
+    {
+    }
+
+    bool Texture3D::loadFromFile(const char * path, TextureType type)
+    {
+        int width, height;
+        unsigned char *data = nullptr;
+        bool loaded = loadTextureFromFileDir(path, width, height, type, data);
+
+        if (!loaded) { return false; }
+
+        init();
+        bind(GL_TEXTURE0);
+
+        switch (type) {
+        case COLOR:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+            setData(height, height, height, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            break;
+        case GREYSCALE:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            setData(height, height, height, GL_R8, GL_RED, GL_UNSIGNED_BYTE, data);
+            break;
+        case HDR:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+            setData(height, height, height, GL_RGBA16F, GL_RGBA, GL_FLOAT, data);
+            break;
+        }
+
+        unbind();
+
+        return true;
+    }
+
+    void Texture3D::setData(uint32 width, uint32 height, uint32 depth, GLint internalFormat, GLenum format, GLenum type, unsigned char* data)
+    {
+        this->width = width;
+        this->height = height;
+        this->depth = depth;
+
+        glTexImage3D(target, 0, internalFormat, width, height, depth, 0, format, type, data);
+    }
+
+    void Texture3D::setWrapping(TextureWrapping sWrapping, TextureWrapping tWrapping, TextureWrapping rWrapping)
+    {
+        if (!isBound()) { bind(lastBoundUnit); }
+
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, sWrapping);
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, tWrapping);
+        glTexParameteri(target, GL_TEXTURE_WRAP_R, rWrapping);
+    }
+
 }
 

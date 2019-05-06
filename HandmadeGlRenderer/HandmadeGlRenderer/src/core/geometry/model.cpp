@@ -1,6 +1,7 @@
 
 
 #include "model.h"
+#include <stb_image.h>
 
 using namespace XEngine;
 using namespace Assets;
@@ -39,10 +40,10 @@ void Mesh::setupMesh()
 
 }
 
-Material Model::loadMaterial(aiMaterial* mat) 
+BPMaterialSpec Model::loadMaterial(aiMaterial* mat) 
 {
   
-    Material material;
+    BPMaterialSpec material;
     aiColor3D color(0.f, 0.f, 0.f);
     float shininess;
 

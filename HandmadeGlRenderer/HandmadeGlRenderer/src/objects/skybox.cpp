@@ -8,7 +8,7 @@ using namespace Rendering;
 XEngine::Rendering::Skybox::Skybox()
 {
     sky = (GeometryBuffer*)malloc(sizeof(GeometryBuffer));
-    tex = new Texture2D(mtextures);
+    tex = new Cubemap();
 }
 
 XEngine::Rendering::Skybox::Skybox(Shader * skyshader)
@@ -120,7 +120,7 @@ void Skybox::createSkybox()
                   1.0f, -1.0f,  1.0f
     };
 
-
+   
     mtextures.push_back("src/textures/right.jpg");
     mtextures.push_back("src/textures/left.jpg");
     mtextures.push_back("src/textures/top.jpg");
@@ -141,7 +141,8 @@ void Skybox::createSkybox()
     sky->vao = skyboxVAO;
     sky->vbo = skyboxVBO;
 
-    cubemaptexture = tex->loadTextureCubemap(mtextures);
+    //cubemaptexture = tex->loadTextureCubemap(mtextures);
+    tex->loadFromFiles(mtextures);
 
 }
 
@@ -154,7 +155,7 @@ void Skybox::renderSkybox(Shader *shader, glm::mat4& v, glm::mat4& proj)
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
     glBindVertexArray(sky->vao);
-    tex->bindCubeTexture2D(0, cubemaptexture);
+    tex->bind(cubemaptexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     tex->setDepthFunc(GL_LESS);

@@ -3,10 +3,12 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <stb_image.h>
 #include "../../xenpch.h"
 #include "../types.h"
 #include "../rendering/pipeline/shader.h"
+
+#include "../ecs/component.h"
+
 
 namespace XEngine
 {
@@ -28,7 +30,7 @@ namespace XEngine
             std::string type;
         };
 
-        struct Material
+        struct BPMaterialSpec
         {
             glm::vec3 dif;
             glm::vec3 spec;
@@ -85,7 +87,7 @@ namespace XEngine
 
         private:
             void loadModel(std::string const &path);
-            Material loadMaterial(aiMaterial* mat);
+            BPMaterialSpec loadMaterial(aiMaterial* mat);
             void processNode(aiNode *node, const aiScene* scene);
             Mesh processMesh(aiMesh *mesh, const aiScene* scene);
             uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma);

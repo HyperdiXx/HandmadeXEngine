@@ -1,15 +1,19 @@
 #pragma once
 
-#include "../RenderingType.h"
+#include "renderer3d.h"
 
 namespace XEngine
 {
     namespace Rendering
     {
-        class DefShading : public RenderingType
+        class DefShading : public Renderer3d
         {
         public:
-            DefShading();
+            DefShading() {};
+
+
+
+
         };
     }
 }

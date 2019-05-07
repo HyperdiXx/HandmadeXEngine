@@ -44,14 +44,16 @@ namespace XEngine
     public:
         Texture2D();
                
-        bool loadFromFile(const char* path, TextureType type);
+        int loadFromFile(const char* path, TextureType type);
+        //int load2dTexture(const char* filename, TextureType type);
+       
 
         //uint32 loadTexture2D(const char* filename);
         //uint32 loadTextureCubemap(std::vector<std::string> tex);
         uint32 loadTextureHDR(const char* filename);
         //uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma);
         
-        void setData(uint32 w, uint32 h, GLint intFormat, GLenum format, GLenum type, unsigned char* data);
+        void setData(uint32 w, uint32 h, GLint intFormat, GLenum format, GLenum type, void* data);
         void setWrappingMode(TextureWrapping swrap, TextureWrapping twrap);
 
 
@@ -71,7 +73,7 @@ namespace XEngine
 
         bool loadFromFile(const char* path, TextureType type);
 
-        void setData(uint32 width, uint32 height, uint32 depth, GLint internalFormat, GLenum format, GLenum type, unsigned char* data);
+        void setData(uint32 width, uint32 height, uint32 depth, GLint internalFormat, GLenum format, GLenum type, void* data);
         void setWrapping(TextureWrapping sWrapping, TextureWrapping tWrapping, TextureWrapping rWrapping);
 
         uint32 getWidth() const { return width; }
@@ -90,7 +92,7 @@ namespace XEngine
 
         bool loadFromFiles(std::vector<std::string> paths);
 
-        void setData(uint32 resolution, GLint internalFormat, GLenum format, GLenum type, unsigned char* data);
+        void setData(uint32 resolution, GLint internalFormat, GLenum format, GLenum type, void* data);
         void setFace(uint32 face);
         void setWrapping(TextureWrapping sWrapping, TextureWrapping tWrapping, TextureWrapping rWrapping);
 

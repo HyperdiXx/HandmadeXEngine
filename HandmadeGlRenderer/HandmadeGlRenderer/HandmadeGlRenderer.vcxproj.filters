@@ -590,9 +590,6 @@
     <ClInclude Include="src\objects\pbr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\rendering\RenderingType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>

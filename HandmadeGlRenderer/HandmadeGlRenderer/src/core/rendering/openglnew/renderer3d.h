@@ -1,21 +1,29 @@
 #pragma once
 
-#include <deque>
+
 
 #include "render3d.h"
-
+#include "../../cameras/camera.h"
 
 namespace XEngine
 {
     namespace Rendering
     {
-        class Renderer3d : Render3d
+        class Renderer3d
         {
         public:
-            void submit(const Renderable3d* renderObj);
-            void flush();
-        private:
-            std::deque<int> mRenderQ;
+
+            virtual bool init() = 0;
+            virtual void update() = 0;
+            virtual void renderScene() = 0;
+            virtual void renderMesh() = 0;
+
+            inline Camera* getActive() { return camera; };
+
+        protected:
+
+            Camera* camera;
+
         };
     }
 }

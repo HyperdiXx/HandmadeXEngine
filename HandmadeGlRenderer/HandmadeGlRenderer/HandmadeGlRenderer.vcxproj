@@ -287,7 +287,6 @@
     <ClInclude Include="src\core\rendering\pipeline\materials\pbrmaterial.h" />
     <ClInclude Include="src\core\rendering\pipeline\shaders.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h" />
-    <ClInclude Include="src\core\rendering\RenderingType.h" />
     <ClInclude Include="src\core\rendering\scenes\scene.h" />
     <ClInclude Include="src\core\rendering\scenes\stackscene.h" />
     <ClInclude Include="src\core\rendering\sprite.h" />

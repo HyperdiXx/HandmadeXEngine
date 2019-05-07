@@ -8,20 +8,21 @@
 namespace XEngine
 {
 
-    bool loadTextureFromFileDir(const char* path, int& width, int &height, TextureType type, unsigned char* data)
+    bool loadTextureFromFileDir(const char* path, int& width, int &height, TextureType type, int &bpp, void** data)
     {
-        int bpp;
+        //int bpp;
 
+        
         switch (type)
         {
         case XEngine::COLOR:
-            data = stbi_load(path, &width, &height, &bpp, STBI_rgb_alpha);
+            *data = stbi_load(path, &width, &height, &bpp, STBI_rgb_alpha);
             break;
         case XEngine::HDR:
-            data = stbi_load(path, &width, &height, &bpp, STBI_rgb_alpha);
+            *data = stbi_load(path, &width, &height, &bpp, STBI_rgb_alpha);
             break;
         case XEngine::GREYSCALE:
-            data = stbi_load(path, &width, &height, &bpp, STBI_grey);
+            *data = stbi_load(path, &width, &height, &bpp, STBI_grey);
             break;
         default:
             break;
@@ -35,7 +36,8 @@ namespace XEngine
         }
         
         Log::debug("Loaded texture:" + std::to_string(width) + " " + std::to_string(height) + " " + std::to_string(bpp));
-        return true;
+
+        return data;
 
     }
 
@@ -166,21 +168,22 @@ namespace XEngine
 
     }
 
-    bool Texture2D::loadFromFile(const char *path, TextureType type)
+    int Texture2D::loadFromFile(const char *path, TextureType type)
     {
-        int width, height;
-        unsigned char* data = nullptr;
-        bool loaded = loadTextureFromFileDir(path, width, height, type, data);
+        int width, height, channels;
+        void *data;
+        bool loaded = loadTextureFromFileDir(path, width, height, type, channels, &data);
 
         if (!loaded) { return false; }
 
         init();
+        
         bind(0);
         
         switch (type) {
         case COLOR:
             glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-            setData(width, height, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            setData(width, height, GL_SRGB8, GL_RGBA, GL_UNSIGNED_BYTE, data);
             break;
         case GREYSCALE:
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -192,10 +195,16 @@ namespace XEngine
             break;
         }
 
+        generateMipmaps();
+        setWrappingMode(REPEAT, REPEAT);
+        setSampling(LINEAR, LINEAR, LINEAR);
+
+        stbi_image_free(data);
         unbind();
 
-        return true;
+        return handle;
     }
+
 
     /*uint32 Texture2D::loadTexture2D(const char* filename)
     {
@@ -305,14 +314,14 @@ namespace XEngine
 
     }
 
-    void Texture2D::setData(uint32 w, uint32 h, GLint intFormat, GLenum format, GLenum type, unsigned char * data)
+    void Texture2D::setData(uint32 w, uint32 h, GLint intFormat, GLenum format, GLenum type, void * data)
     {
         if (!created) { return; }
 
         this->width = w;
         this->height = h;
 
-        glTexImage2D(target, 0, intFormat, width, height, 0, format, type, data);
+        glTexImage2D(target, 0, intFormat, w, h, 0, format, type, data);
     }
 
     void Texture2D::setWrappingMode(TextureWrapping swrap, TextureWrapping twrap)
@@ -337,9 +346,9 @@ namespace XEngine
 
         for (int i = 0; i < paths.size(); ++i)
         {
-            int width, height;
-            unsigned char* data = nullptr;
-            bool isLoaded = loadTextureFromFileDir(paths[i].c_str(), width, height, COLOR, data);
+            int width, height, channels;
+            void* data;
+            bool isLoaded = loadTextureFromFileDir(paths[i].c_str(), width, height, COLOR, channels, &data);
             if (!isLoaded)
             {
                 destroy();
@@ -354,7 +363,7 @@ namespace XEngine
         return true;
     }
 
-    void Cubemap::setData(uint32 resolution, GLint internalFormat, GLenum format, GLenum type, unsigned char *data)
+    void Cubemap::setData(uint32 resolution, GLint internalFormat, GLenum format, GLenum type, void *data)
     {
         this->resolution = resolution;
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internalFormat, resolution, resolution, 0, format, type, data);
@@ -385,9 +394,9 @@ namespace XEngine
 
     bool Texture3D::loadFromFile(const char * path, TextureType type)
     {
-        int width, height;
-        unsigned char *data = nullptr;
-        bool loaded = loadTextureFromFileDir(path, width, height, type, data);
+        int width, height, channels;
+        void *data;
+        bool loaded = loadTextureFromFileDir(path, width, height, type, channels, &data);
 
         if (!loaded) { return false; }
 
@@ -414,7 +423,7 @@ namespace XEngine
         return true;
     }
 
-    void Texture3D::setData(uint32 width, uint32 height, uint32 depth, GLint internalFormat, GLenum format, GLenum type, unsigned char* data)
+    void Texture3D::setData(uint32 width, uint32 height, uint32 depth, GLint internalFormat, GLenum format, GLenum type, void* data)
     {
         this->width = width;
         this->height = height;

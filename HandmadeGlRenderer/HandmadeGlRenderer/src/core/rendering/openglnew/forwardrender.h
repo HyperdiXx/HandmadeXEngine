@@ -1,15 +1,20 @@
 #pragma once
 
-#include "../RenderingType.h"
+#include "renderer3d.h"
 
 namespace XEngine
 {
     namespace Rendering
     {
-        class ForwardRendering : public RenderingType
+        class ForwardRendering : public Renderer3d
         {
         public:
-            ForwardRendering();
+            ForwardRendering() {};
+
+            bool init();
+            void update();
+            void renderScene();
+            void renderMesh();
 
         private:
 

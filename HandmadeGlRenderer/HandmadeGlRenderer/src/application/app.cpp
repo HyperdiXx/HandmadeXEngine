@@ -777,9 +777,7 @@ namespace XEngine
         Texture2D planeText;
 
         planeText.loadFromFile("src/textures/container.jpg", COLOR);
-        planeText.setWrappingMode(REPEAT, REPEAT);
-        planeText.setSampling(LINEAR, LINEAR, LINEAR);
-        planeText.generateMipmaps();
+
 
         unsigned int data = XEngine::Utils::loadTexture("src/textures/container.jpg");
 
@@ -957,15 +955,9 @@ namespace XEngine
             glm::mat4 mat3 = glm::mat4(1.0);
 
             lightShader.enableShader();
-           
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, planeText.getHandle());
-            
+             
             planeText.bind(0);
             
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, data);
-
             lightShader.setMat4("projection", projection);
             lightShader.setMat4("view", view);
 

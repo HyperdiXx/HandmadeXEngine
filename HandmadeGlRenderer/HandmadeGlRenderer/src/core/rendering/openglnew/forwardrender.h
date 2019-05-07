@@ -15,10 +15,11 @@ namespace XEngine
             void update();
             void renderScene();
             void renderMesh();
+            void renderQuad();
 
         private:
 
-
+             
         };
     }
 }

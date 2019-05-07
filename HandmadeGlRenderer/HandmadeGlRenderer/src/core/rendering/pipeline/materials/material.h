@@ -16,6 +16,7 @@ namespace XEngine
             virtual void setTexture(Texture2D *tex) = 0;
             virtual void setShader(Shader *shader) = 0;
            
+            virtual Shader* getShader() = 0;
 
         private:
 

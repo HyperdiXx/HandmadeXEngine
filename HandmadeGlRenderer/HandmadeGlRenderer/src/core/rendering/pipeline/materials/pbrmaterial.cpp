@@ -1,6 +1,16 @@
 #include "pbrmaterial.h"
 
 
+XEngine::Rendering::PBRMaterial::PBRMaterial(Shader * pbrShader, Texture2D * diffuse, Texture2D * normal, Texture2D * spec, Texture2D * roug) :
+    mShader(pbrShader), mDiffuse(diffuse), mNormal(normal), mSpecular(spec), mRoughness(roug)
+{
+
+}
+
+XEngine::Rendering::PBRMaterial::~PBRMaterial()
+{
+}
+
 void XEngine::Rendering::PBRMaterial::setTextureDiffuse(Texture2D * tex)
 {
     mDiffuse = tex;

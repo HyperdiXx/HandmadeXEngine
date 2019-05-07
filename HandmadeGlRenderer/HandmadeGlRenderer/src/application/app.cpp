@@ -36,6 +36,8 @@
 
 #include "../core/systems/textureload.h"
 
+#include "../core/geometry/assetmanager.h"
+
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include "crtdbg.h"
@@ -288,10 +290,6 @@ namespace XEngine
             view = camera.getViewMatrix();
 
             glm::mat4 viewproj = projection * view;
-
-            //loading.setMat4("viewproj", viewproj);
-            //loading.setVec3("lightPos", lightPos);
-            //loading.setVec3("camPos", camera.camPos);
             
             shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
             shdManager.getShaderByName("model")->setVec3("lightPos", lightPos);
@@ -763,6 +761,8 @@ namespace XEngine
 
         glEnable(GL_DEPTH_TEST);
 
+         
+
         Scene scene1("Scene5");
 
         Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
@@ -775,11 +775,7 @@ namespace XEngine
         Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
 
         Texture2D planeText;
-
         planeText.loadFromFile("src/textures/container.jpg", COLOR);
-
-
-        unsigned int data = XEngine::Utils::loadTexture("src/textures/container.jpg");
 
         ShaderBases &shdManager = ShaderBases::getInstance();
 
@@ -983,6 +979,8 @@ namespace XEngine
             classicWindow.update();
         }
 
+        glDeleteBuffers(1, &cubeVAO);
+        glDeleteBuffers(1, &cubeVBO);
        
    
         glfwTerminate();

@@ -16,6 +16,7 @@ namespace XEngine
             virtual bool init() = 0;
             virtual void update() = 0;
             virtual void renderScene() = 0;
+            virtual void renderQuad() = 0;
             virtual void renderMesh() = 0;
 
             inline Camera* getActive() { return camera; };

@@ -5,6 +5,8 @@
 
 #include "../geometry/model.h"
 #include "../rendering/pipeline/materials/basicmaterial.h"
+#include "../rendering/pipeline/materials/bpmaterial.h"
+#include "../rendering/pipeline/materials/pbrmaterial.h"
 #include "../math/transforms.h"
 
 namespace XEngine
@@ -23,8 +25,22 @@ namespace XEngine
             transf = tr;
         }
 
+        Entity(Assets::Model *mesh, Rendering::PBRMaterial *m, Math::Transform *tr)
+        {
+            model = mesh;
+            material = m;
+            transf = tr;
+        }
+
+        Entity(Assets::Model *mesh, Rendering::BPMaterial *m, Math::Transform *tr)
+        {
+            model = mesh;
+            material = m;
+            transf = tr;
+        }
+
         Assets::Model *model;
-        Rendering::BasicMaterial *material;
+        Rendering::Material *material;
         Math::Transform *transf;
     };
 

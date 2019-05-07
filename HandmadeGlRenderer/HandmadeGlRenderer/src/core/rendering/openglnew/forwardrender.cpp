@@ -21,3 +21,7 @@ void XEngine::Rendering::ForwardRendering::renderScene()
 void XEngine::Rendering::ForwardRendering::renderMesh()
 {
 }
+
+void XEngine::Rendering::ForwardRendering::renderQuad()
+{
+}

@@ -11,6 +11,7 @@ namespace XEngine
         {
         public:
             PBRMaterial() {};
+            PBRMaterial(Shader* pbrShader, Texture2D *diffuse, Texture2D* normal, Texture2D *spec, Texture2D *roug);
             ~PBRMaterial();
 
             

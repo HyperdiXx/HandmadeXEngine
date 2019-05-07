@@ -15,6 +15,34 @@ namespace XEngine
             return materials.size();
         }
 
+        Rendering::BasicMaterial * AssetManager::getMaterial(uint32 id)
+        {
+            return nullptr;
+        }
+
+        Rendering::BPMaterial * AssetManager::getBPMaterial(uint32 id)
+        {
+            return nullptr;
+        }
+
+        Rendering::PBRMaterial * AssetManager::getPBRMaterial(uint32 id)
+        {
+            return nullptr;
+        }
+
+        Model * AssetManager::getMesh(std::string id)
+        {
+            return nullptr;
+        }
+
+        void AssetManager::addMaterial(uint32 id, Rendering::BasicMaterial * material)
+        {
+        }
+
+        void AssetManager::addModel(std::string id, Model * mesh)
+        {
+        }
+
 
 
     }

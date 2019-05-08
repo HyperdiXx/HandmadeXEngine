@@ -181,6 +181,7 @@
     <ClCompile Include="src\objects\shadowmap.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
+    <ClCompile Include="src\objects\terrainutils\terrainmesh.cpp" />
     <ClCompile Include="src\objects\water.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -339,6 +340,7 @@
     <ClInclude Include="src\objects\lights\spotLight.h" />
     <ClInclude Include="src\objects\pbr.h" />
     <ClInclude Include="src\objects\shadowmap.h" />
+    <ClInclude Include="src\objects\terrainutils\terrainmesh.h" />
     <ClInclude Include="src\windowsystem\dx11.h" />
     <ClInclude Include="src\windowsystem\dx12.h" />
     <ClInclude Include="src\windowsystem\openglwnd.h" />

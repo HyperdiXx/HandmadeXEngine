@@ -308,6 +308,7 @@
     <None Include="src\shaders\simpleshader.fs" />
     <None Include="src\shaders\terrain.vs" />
     <None Include="src\shaders\terrain.fs" />
+    <None Include="src\shaders\simple2d.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

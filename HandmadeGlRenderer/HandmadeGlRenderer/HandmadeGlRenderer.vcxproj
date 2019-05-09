@@ -224,6 +224,7 @@
     <None Include="src\shaders\parallaxmapping.vs" />
     <None Include="src\shaders\pbr.fs" />
     <None Include="src\shaders\pbr.vs" />
+    <None Include="src\shaders\simple2d.vs" />
     <None Include="src\shaders\simplemodel.fs" />
     <None Include="src\shaders\simplemodel.vs" />
     <None Include="src\shaders\simpleshader.fs" />

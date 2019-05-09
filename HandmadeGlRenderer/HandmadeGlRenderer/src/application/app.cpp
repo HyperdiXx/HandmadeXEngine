@@ -272,6 +272,11 @@ namespace XEngine
 
             XEngine::processInput(classicwindow.m_window, &camera, isUI);
 
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+
             //std::thread inp(XEngine::processInput, wb.window, &cam);
             //inp.detach();
             //inp.join();
@@ -814,17 +819,37 @@ namespace XEngine
              1.0f,  1.0f,  1.0f, 1.0f
         };
 
+        float quadTest[] = 
+        {
+            -1.0f,  1.0f,  0.0f, 1.0f,
+            -1.0f, -1.0f,  0.0f, 0.0f,
+             1.0f, -1.0f,  1.0f, 0.0f,
+             1.0f,  1.0f,  1.0f, 1.0f
+        };
+
+        unsigned int ind[] = 
+        {
+            0, 1, 2,
+            2, 3, 0,
+        };
 
         unsigned int quadVAO, quadVBO;
         glGenVertexArrays(1, &quadVAO);
         glGenBuffers(1, &quadVBO);
         glBindVertexArray(quadVAO);
         glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadTest), &quadTest, GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+        unsigned int ibo;
+
+        glGenBuffers(1, &ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ind), ind, GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 
         float vertices[] = {
@@ -888,8 +913,8 @@ namespace XEngine
         glEnableVertexAttribArray(2);
 
       
-        /*screenShader.enableShader();
-        screenShader.setInt("screenTexture", 0);*/
+        screenShader.enableShader();
+        screenShader.setInt("screenTexture", 0);
         
         lightShader.enableShader();
         lightShader.setInt("texture1", 0);
@@ -971,13 +996,18 @@ namespace XEngine
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
+           */
+
             screenShader.enableShader();
             glBindVertexArray(quadVAO);
-            glDisable(GL_DEPTH_TEST);
+            
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+            //glDisable(GL_DEPTH_TEST);
             //planeText.bind(0);
-            glBindTexture(GL_TEXTURE_2D, fb.getColorTexture());
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            //planeText.unbind();*/
+            //glBindTexture(GL_TEXTURE_2D, fb.getColorTexture());
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            //glDrawArrays(GL_TRIANGLES, 0, 6);
+            //planeText.unbind();
 
             classicWindow.update();
         }

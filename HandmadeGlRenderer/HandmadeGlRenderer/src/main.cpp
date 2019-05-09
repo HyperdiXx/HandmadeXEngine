@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 
     Application *testapp = (Application*)malloc(sizeof(Application));
 #ifdef  OPENGL
-    testapp->OpenGLScene5();
+    testapp->terrainDemo();
 #else
     testapp->DX11InitEngine();
 #endif 

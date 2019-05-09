@@ -199,7 +199,9 @@ namespace XEngine
         setWrappingMode(REPEAT, REPEAT);
         setSampling(LINEAR, LINEAR, LINEAR);
 
-        stbi_image_free(data);
+        setPixel(data);
+
+        //stbi_image_free(data);
         unbind();
 
         return handle;
@@ -330,6 +332,17 @@ namespace XEngine
 
         glTexParameteri(target, GL_TEXTURE_WRAP_S, swrap);
         glTexParameteri(target, GL_TEXTURE_WRAP_T, twrap);
+    }
+
+    void Texture2D::setPixel(void * data)
+    {
+        mdata = data;
+    }
+
+
+    void* Texture2D::getPixel()
+    {
+        return mdata;
     }
 
     Cubemap::Cubemap() : Texture(GL_TEXTURE_CUBE_MAP)

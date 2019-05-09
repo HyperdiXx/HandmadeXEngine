@@ -11,6 +11,7 @@ namespace XEngine
         void OpenGLScene3();
         void OpenGLScene4();
         void OpenGLScene5();
+        void terrainDemo();
 
         void DX11InitEngine();    
     };

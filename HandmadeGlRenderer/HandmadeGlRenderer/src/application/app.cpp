@@ -38,6 +38,9 @@
 
 #include "../core/geometry/assetmanager.h"
 
+#include "../objects/terrain.h"
+
+
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include "crtdbg.h"
@@ -985,6 +988,206 @@ namespace XEngine
    
         glfwTerminate();
        
+
+    }
+
+
+    void Application::terrainDemo()
+    {
+        Rendering::WindowGL classicWindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
+
+        glfwSetCursorPosCallback(classicWindow.m_window, mouseCallback);
+        glfwSetScrollCallback(classicWindow.m_window, scrollCallback);
+        glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        classicWindow.initStats();
+
+        glEnable(GL_DEPTH_TEST);
+
+        Scene scene1("Scene5");
+
+        Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
+        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
+        Shader lightShader("src/shaders/simpleshader.vs", "src/shaders/simpleshader.fs");
+
+        //Assets::Model cube("src/models/simple/cube.obj", false);
+        //Assets::Model sphere("src/models/simple/sphere.obj", false);
+        Assets::Model plane("src/models/simple/plane.obj", false);
+        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
+
+        Texture2D mapHeight;
+        mapHeight.loadFromFile("src/textures/terrain/heightmap.png", COLOR);
+
+        Terrain::Terrain terrain;
+
+        terrain.init(251, 251, 0.5f);
+        terrain.generateHeightFromTexture(&mapHeight, 0.0f, 12.0f);
+        terrain.generateMesh();
+
+
+        Texture2D planeText;
+        planeText.loadFromFile("src/textures/container.jpg", COLOR);
+
+        ShaderBases &shdManager = ShaderBases::getInstance();
+
+        shdManager.addShader("model", &loading);
+        shdManager.addShader("screen", &screenShader);
+        //shdManager.addShader("cube", &lightShader);
+
+        BasicMaterial testMat(shdManager.getShaderByName("model"), &planeText);
+        BasicMaterial testMat2(shdManager.getShaderByName("screen"));
+        Transform testTransform;
+
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
+
+        Entity mesh1(&plane, &testMat, &testTransform);
+        Entity mesh2(&secondmodel, &testMat, &testTransform);
+
+        scene1.addEntity(&mesh1);
+        scene1.addEntity(&mesh2);
+
+        float vertices[] = {
+            // positions          // normals           // texture coords
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+        };
+        // first, configure the cube's VAO (and VBO)
+        unsigned int VBO, cubeVAO;
+        glGenVertexArrays(1, &cubeVAO);
+        glGenBuffers(1, &VBO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glBindVertexArray(cubeVAO);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+
+
+        lightShader.enableShader();
+        lightShader.setInt("texture1", 0);
+
+
+        real32 deltaTime = 0.0f;
+        real32 lastFrame = 0.0f;
+
+        glm::vec3 lightPos(0.0f, 3.0f, 3.0f);
+        glm::vec3 lightposfloor(0.0f, 4.0f, 0.0f);
+
+        glm::mat4 view = glm::mat4(1.0f);
+
+        bool isUi = false;
+
+        while (!classicWindow.isClosed())
+        {
+            camera.speed = 10.0 * deltaTime;
+
+            real64 currFrame = glfwGetTime();
+
+            deltaTime = currFrame - lastFrame;
+            lastFrame = currFrame;
+
+            XEngine::processInput(classicWindow.m_window, &camera, isUI);
+
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+            shdManager.getShaderByName("model")->enableShader();
+            view = camera.getViewMatrix();
+
+            glm::mat4 viewproj = projection * view;
+
+            shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
+            shdManager.getShaderByName("model")->setVec3("lightPos", lightPos);
+            shdManager.getShaderByName("model")->setVec3("camPos", camera.camPos);
+
+
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
+            model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+
+            glm::mat4 model2 = glm::mat4(1.0f);
+            model2 = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
+            model2 = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+ 
+
+
+            mesh1.material->getShader()->setMat4("model", model);
+
+            scene1.drawScene();
+
+            glm::mat4 mat3 = glm::mat4(1.0);
+
+            lightShader.enableShader();
+
+            planeText.bind(0);
+
+            lightShader.setMat4("projection", projection);
+            lightShader.setMat4("view", view);
+
+            lightShader.setMat4("model", mat3);
+
+            glBindVertexArray(cubeVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            terrain.render(view);
+
+            
+
+            classicWindow.update();
+        }
+
+
+
+
+        glfwTerminate();
+
 
     }
 

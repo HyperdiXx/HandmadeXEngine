@@ -1,5 +1,9 @@
 #include "terrainmesh.h"
 
+XEngine::Terrain::TerrainMesh::TerrainMesh()
+{
+}
+
 void XEngine::Terrain::TerrainMesh::init()
 {
     this->vertices = std::vector<glm::vec3>();

@@ -56,6 +56,8 @@ namespace XEngine
         void setData(uint32 w, uint32 h, GLint intFormat, GLenum format, GLenum type, void* data);
         void setWrappingMode(TextureWrapping swrap, TextureWrapping twrap);
 
+        void setPixel(void *data);
+        void* getPixel();
 
         uint32 getWidth() const { return width; }
 
@@ -64,6 +66,7 @@ namespace XEngine
     private:
         uint32 width;
         uint32 height;
+        void *mdata;
     };
 
     class Texture3D : public Texture

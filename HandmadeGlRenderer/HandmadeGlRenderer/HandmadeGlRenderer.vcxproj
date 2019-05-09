@@ -182,6 +182,7 @@
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
     <ClCompile Include="src\objects\terrainutils\terrainmesh.cpp" />
+    <ClCompile Include="src\objects\terrainutils\tile.cpp" />
     <ClCompile Include="src\objects\water.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +230,8 @@
     <None Include="src\shaders\simpleshader.vs" />
     <None Include="src\shaders\slight.fs" />
     <None Include="src\shaders\slight.vs" />
+    <None Include="src\shaders\terrain.fs" />
+    <None Include="src\shaders\terrain.vs" />
     <None Include="src\shaders\text.fs" />
     <None Include="src\shaders\text.vs" />
     <None Include="src\textures\container.jpg" />

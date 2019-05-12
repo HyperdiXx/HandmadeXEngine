@@ -181,7 +181,6 @@
     <ClCompile Include="src\objects\shadowmap.cpp" />
     <ClCompile Include="src\objects\skybox.cpp" />
     <ClCompile Include="src\objects\terrain.cpp" />
-    <ClCompile Include="src\objects\terrainutils\terrainmesh.cpp" />
     <ClCompile Include="src\objects\terrainutils\tile.cpp" />
     <ClCompile Include="src\objects\water.cpp" />
   </ItemGroup>
@@ -293,6 +292,7 @@
     <ClInclude Include="src\core\rendering\pipeline\shaders.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h" />
     <ClInclude Include="src\core\rendering\scenes\scene.h" />
+    <ClInclude Include="src\core\rendering\scenes\sceneObjects.h" />
     <ClInclude Include="src\core\rendering\scenes\stackscene.h" />
     <ClInclude Include="src\core\rendering\sprite.h" />
     <ClInclude Include="src\core\rendering\texture.h" />
@@ -344,7 +344,6 @@
     <ClInclude Include="src\objects\lights\spotLight.h" />
     <ClInclude Include="src\objects\pbr.h" />
     <ClInclude Include="src\objects\shadowmap.h" />
-    <ClInclude Include="src\objects\terrainutils\terrainmesh.h" />
     <ClInclude Include="src\windowsystem\dx11.h" />
     <ClInclude Include="src\windowsystem\dx12.h" />
     <ClInclude Include="src\windowsystem\openglwnd.h" />

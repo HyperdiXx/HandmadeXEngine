@@ -61,6 +61,42 @@ void Shader::disableShader()
     glUseProgram(0);
 }
 
+void Shader::linkPrograms()
+{
+    glLinkProgram(ID);
+
+    if (true) //TODO: implement error checking 
+    {
+        linked = true;
+        while (!shaders.empty())
+        {
+            glDeleteShader(shaders.back());
+            shaders.pop_back();
+        }
+    }
+    else
+    {
+    
+    }
+}
+
+Shader * Shader::addShader(Shader& shader)
+{
+    if (!isCompute) 
+    {
+        glAttachShader(ID, shader.getID());
+        if (shader.getName() == "compute")
+            isCompute = true;
+        this->shaders.push_back(shader.getID());
+    }
+    else 
+    {
+       
+    }
+
+    return this;
+}
+
 const GLchar * Shader::Win32GetFsName()
 {
     return (fs);

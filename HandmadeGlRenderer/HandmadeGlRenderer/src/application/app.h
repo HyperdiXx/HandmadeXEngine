@@ -13,6 +13,11 @@ namespace XEngine
         void OpenGLScene5();
         void terrainDemo();
 
+
+        void updateloop();
+        void render();
+
+
         void DX11InitEngine();    
     };
 

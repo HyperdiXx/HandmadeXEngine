@@ -29,6 +29,8 @@ public:
     void setupShaderFile();
     void enableShader();
     void disableShader();
+    void linkPrograms();
+    Shader* addShader(Shader &shader);
 
     const GLchar* Win32GetFsName();
     const GLchar* Win32GetVsName();
@@ -47,12 +49,17 @@ public:
     void setMat4(const std::string &name, const glm::mat4 &mat);
 
     uint32 getID() { return ID; };
-
+    std::string getName() { return name; }
 private:
     uint32 ID;
 
     const GLchar* vs;
     const GLchar* fs;
+
+    std::list<unsigned int> shaders;
+    std::string name;
+
+    bool linked, isCompute;
 };
 
 #endif // !SHADER

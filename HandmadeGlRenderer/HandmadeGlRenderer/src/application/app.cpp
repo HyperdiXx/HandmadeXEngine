@@ -38,6 +38,7 @@
 
 #include "../core/geometry/assetmanager.h"
 
+#include "../core/rendering/scenes/sceneObjects.h"
 #include "../objects/terrain.h"
 
 
@@ -769,8 +770,6 @@ namespace XEngine
 
         glEnable(GL_DEPTH_TEST);
 
-         
-
         Scene scene1("Scene5");
 
         Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
@@ -795,8 +794,10 @@ namespace XEngine
         BasicMaterial testMat2(shdManager.getShaderByName("screen"));
         Transform testTransform;
 
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
+        SceneObjects &sceneSetup = SceneObjects::getInstance();
+
+        sceneSetup.projMatrix = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
+        sceneSetup.cam = &camera;
 
         Entity mesh1(&plane, &testMat, &testTransform);
         Entity mesh2(&secondmodel, &testMat, &testTransform);
@@ -804,7 +805,7 @@ namespace XEngine
         scene1.addEntity(&mesh1);
         scene1.addEntity(&mesh2);
 
-        FrameBuffer fb;
+        //Terrain::Terrain ter(120);
 
         //fb.init();
 
@@ -912,9 +913,8 @@ namespace XEngine
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
-      
-        screenShader.enableShader();
-        screenShader.setInt("screenTexture", 0);
+        //screenShader.enableShader();
+        //screenShader.setInt("screenTexture", 0);
         
         lightShader.enableShader();
         lightShader.setInt("texture1", 0);
@@ -932,6 +932,7 @@ namespace XEngine
 
         while (!classicWindow.isClosed())
         {
+           
             camera.speed = 10.0 * deltaTime;
 
             real64 currFrame = glfwGetTime();
@@ -941,6 +942,8 @@ namespace XEngine
 
             XEngine::processInput(classicWindow.m_window, &camera, isUI);
           
+            //ter.updateTilesPositions();
+
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
@@ -949,15 +952,17 @@ namespace XEngine
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);*/
 
-            shdManager.getShaderByName("model")->enableShader();
-            view  = camera.getViewMatrix();
+            //ter.up = 1.0f;
+            //ter.render();
 
-            glm::mat4 viewproj = projection * view;
+            shdManager.getShaderByName("model")->enableShader();
+            view  = sceneSetup.cam->getViewMatrix();
+
+            glm::mat4 viewproj = sceneSetup.projMatrix * view;
 
             shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
             shdManager.getShaderByName("model")->setVec3("lightPos", lightPos);
-            shdManager.getShaderByName("model")->setVec3("camPos", camera.camPos);
-
+            shdManager.getShaderByName("model")->setVec3("camPos", sceneSetup.cam->camPos);
 
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
@@ -970,7 +975,6 @@ namespace XEngine
             //mesh1.transf->setScale(glm::vec3(0.2f, 0.2f, 0.2f));
             //loading.setMat4("model", model);
             //castlelow.drawMesh(&loading);
-
             
             mesh1.material->getShader()->setMat4("model", model);
             
@@ -982,14 +986,13 @@ namespace XEngine
              
             planeText.bind(0);
             
-            lightShader.setMat4("projection", projection);
+            lightShader.setMat4("projection", sceneSetup.projMatrix);
             lightShader.setMat4("view", view);
 
             lightShader.setMat4("model", mat3);
 
             glBindVertexArray(cubeVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
-
 
             /*fb.unbind();
             //glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
@@ -998,7 +1001,7 @@ namespace XEngine
 
            */
 
-            screenShader.enableShader();
+            /*screenShader.enableShader();
             glBindVertexArray(quadVAO);
             
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -1007,7 +1010,7 @@ namespace XEngine
             //glBindTexture(GL_TEXTURE_2D, fb.getColorTexture());
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             //glDrawArrays(GL_TRIANGLES, 0, 6);
-            //planeText.unbind();
+            //planeText.unbind();*/
 
             classicWindow.update();
         }
@@ -1047,13 +1050,6 @@ namespace XEngine
 
         Texture2D mapHeight;
         mapHeight.loadFromFile("src/textures/terrain/heightmap.png", COLOR);
-
-        Terrain::Terrain terrain;
-
-        terrain.init(251, 251, 0.5f);
-        terrain.generateHeightFromTexture(&mapHeight, 0.0f, 12.0f);
-        terrain.generateMesh();
-
 
         Texture2D planeText;
         planeText.loadFromFile("src/textures/container.jpg", COLOR);
@@ -1205,10 +1201,6 @@ namespace XEngine
             glBindVertexArray(cubeVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
-            terrain.render(view);
-
-            
 
             classicWindow.update();
         }

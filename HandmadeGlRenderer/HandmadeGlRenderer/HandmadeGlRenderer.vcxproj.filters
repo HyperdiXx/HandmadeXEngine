@@ -240,9 +240,6 @@
     <ClCompile Include="src\core\geometry\assetmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\objects\terrainutils\terrainmesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\objects\terrainutils\tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -671,7 +668,7 @@
     <ClInclude Include="src\objects\animation\keyframe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\objects\terrainutils\terrainmesh.h">
+    <ClInclude Include="src\core\rendering\scenes\sceneObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

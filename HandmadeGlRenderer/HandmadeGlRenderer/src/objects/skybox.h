@@ -8,6 +8,7 @@
 #include "../core/rendering/api/opengl/vertexarray.h"
 #include "../core/rendering/api/opengl/buffer.h"
 #include "../core/rendering/texture.h"
+#include "../core/rendering/api/opengl/framebuffero.h"
 
 
 namespace XEngine
@@ -35,7 +36,39 @@ namespace XEngine
             unsigned int cubemaptexture;
         };
 
+        struct colorPreset
+        {
+            glm::vec3 cloudColorBottom, skyColorTop, skyColorBottom, lightColor, fogColor;
+        };
 
+        class SkyboxProced
+        {
+        public:
+
+            SkyboxProced();
+            ~SkyboxProced();
+
+            void draw();
+            void update();
+
+            colorPreset DefaultPreset();
+            colorPreset SunsetPreset();
+            colorPreset SunsetPreset1();
+
+            void mixSkyColorPreset(float v, colorPreset p1, colorPreset p2);
+
+            unsigned int getSkyTexture() {
+                return skyboxFBO->getColorTexture();
+            }
+        private:
+            
+            //ScreenSpaceShader * skyboxShader;
+            Rendering::FrameBuffer * skyboxFBO;
+
+            colorPreset presetSunset, highSunPreset;
+            glm::vec3 skyColorTop, skyColorBottom;
+
+        };
     }
 }
 

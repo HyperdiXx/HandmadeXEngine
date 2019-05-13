@@ -80,7 +80,7 @@ void Shader::linkPrograms()
     }
 }
 
-Shader * Shader::addShader(Shader& shader)
+Shader * Shader::addShaderCompute(const GLchar* cs)
 {
     if (!isCompute) 
     {

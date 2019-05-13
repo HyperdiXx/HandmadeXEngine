@@ -30,7 +30,7 @@ public:
     void enableShader();
     void disableShader();
     void linkPrograms();
-    Shader* addShader(Shader &shader);
+    Shader* addShaderCompute(const GLchar* cs);
 
     const GLchar* Win32GetFsName();
     const GLchar* Win32GetVsName();

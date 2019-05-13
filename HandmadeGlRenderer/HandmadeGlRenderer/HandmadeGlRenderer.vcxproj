@@ -141,6 +141,7 @@
     <ClCompile Include="src\core\rendering\pipeline\materials\bpmaterial.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\materials\material.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\materials\pbrmaterial.cpp" />
+    <ClCompile Include="src\core\rendering\pipeline\screenspaceshader.cpp" />
     <ClCompile Include="src\core\rendering\pipeline\shadersBase.cpp" />
     <ClCompile Include="src\core\rendering\scenes\scene.cpp" />
     <ClCompile Include="src\core\rendering\scenes\stackscene.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="src\core\rendering\pipeline\materials\bpmaterial.h" />
     <ClInclude Include="src\core\rendering\pipeline\materials\material.h" />
     <ClInclude Include="src\core\rendering\pipeline\materials\pbrmaterial.h" />
+    <ClInclude Include="src\core\rendering\pipeline\screenspaceshader.h" />
     <ClInclude Include="src\core\rendering\pipeline\shaders.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h" />
     <ClInclude Include="src\core\rendering\scenes\scene.h" />

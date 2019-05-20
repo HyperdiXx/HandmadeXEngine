@@ -14,7 +14,7 @@ namespace XEngine
     using namespace Rendering;
     using namespace Math;
 
-    class Entity
+    class Entity : Component
     {
     public:
         Entity() {};

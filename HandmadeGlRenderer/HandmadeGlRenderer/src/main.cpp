@@ -13,10 +13,16 @@
         HDR, SSAO, PBR, IBL
         Spray Particles, Skinning
 
-        SceneManager, Stack Linked List, Materials, struct Entity, Scene, Transformation
+        SceneManager, Stack Linked List
 
         DX11 ...
         DX12 ...
+
+
+        Scene 1: Objects, plane, shadows, Dynamic dirLight, Spray Particles
+        Scene 2: PBR, IBL
+        Scene 3: Sky, Volumetric clouds, terrain
+
 */
 
 

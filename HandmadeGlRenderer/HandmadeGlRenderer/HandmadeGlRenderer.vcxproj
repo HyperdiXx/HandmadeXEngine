@@ -128,7 +128,7 @@
     <ClCompile Include="src\core\rendering\layers\scene2d.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\bathcrenderer.cpp" />
     <ClCompile Include="src\core\rendering\api\opengl\buffer.cpp" />
-    <ClCompile Include="src\core\rendering\api\opengl\framebuffero.cpp" />
+    <ClCompile Include="src\core\rendering\api\opengl\glframebuffer.cpp" />
     <ClCompile Include="src\core\rendering\api\opengl\indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\defferedrender.cpp" />
     <ClCompile Include="src\core\rendering\openglnew\forwardrender.cpp" />
@@ -248,6 +248,15 @@
     <ClInclude Include="src\core\ecs\entitymanager.h" />
     <ClInclude Include="src\core\geometry\assetmanager.h" />
     <ClInclude Include="src\core\math\transforms.h" />
+    <ClInclude Include="src\core\rendering\api\basic\context.h" />
+    <ClInclude Include="src\core\rendering\api\basic\framebuffer.h" />
+    <ClInclude Include="src\core\rendering\api\basic\framebufferdepth.h" />
+    <ClInclude Include="src\core\rendering\api\basic\indexbuffer.h" />
+    <ClInclude Include="src\core\rendering\api\basic\texture.h" />
+    <ClInclude Include="src\core\rendering\api\basic\texture3d.h" />
+    <ClInclude Include="src\core\rendering\api\basic\texturecube.h" />
+    <ClInclude Include="src\core\rendering\api\basic\vertexarray.h" />
+    <ClInclude Include="src\core\rendering\api\basic\vertexbuffer.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11context.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11indexbuffer.h" />
     <ClInclude Include="src\core\rendering\api\dx11\dx11vertexbuffer.h" />
@@ -273,7 +282,7 @@
     <ClInclude Include="src\core\rendering\layers\scene2d.h" />
     <ClInclude Include="src\core\rendering\openglnew\batchrenderer.h" />
     <ClInclude Include="src\core\rendering\api\opengl\buffer.h" />
-    <ClInclude Include="src\core\rendering\api\opengl\framebuffero.h" />
+    <ClInclude Include="src\core\rendering\api\opengl\glframebuffer.h" />
     <ClInclude Include="src\core\rendering\api\opengl\indexbuffer.h" />
     <ClInclude Include="src\core\rendering\openglnew\defferedrender.h" />
     <ClInclude Include="src\core\rendering\openglnew\forwardrender.h" />

@@ -168,9 +168,6 @@
     <ClCompile Include="src\core\rendering\api\opengl\indexbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\rendering\api\opengl\framebuffero.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\rendering\api\opengl\buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -244,6 +241,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\rendering\pipeline\screenspaceshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\rendering\api\opengl\glframebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -569,9 +569,6 @@
     <ClInclude Include="src\core\rendering\api\opengl\indexbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\rendering\api\opengl\framebuffero.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\rendering\api\opengl\buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -675,6 +672,36 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\pipeline\screenspaceshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\vertexbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\indexbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\vertexarray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\framebuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\framebufferdepth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\texture3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\basic\texturecube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\rendering\api\opengl\glframebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

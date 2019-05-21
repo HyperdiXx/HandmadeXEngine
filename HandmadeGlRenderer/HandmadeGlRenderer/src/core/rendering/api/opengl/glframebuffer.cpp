@@ -1,4 +1,4 @@
-#include "framebuffero.h"
+#include "glframebuffer.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -9,19 +9,19 @@ namespace XEngine
 {
     namespace Rendering
     {
-        FrameBuffer::FrameBuffer(int w, int h) : width(w), height(h)
+        GLFrameBuffer::GLFrameBuffer(int w, int h) : width(w), height(h)
         {
-
         }
 
-        FrameBuffer::~FrameBuffer()
+        GLFrameBuffer::~GLFrameBuffer()
         {
             glDeleteFramebuffers(1, &fbo);
             glDeleteRenderbuffers(1, &depthTexture);
             glDeleteTextures(1, &colorTexture);
         }
 
-        void FrameBuffer::init()
+
+        void GLFrameBuffer::init()
         {
             glGenFramebuffers(1, &fbo);
             bind();
@@ -43,28 +43,27 @@ namespace XEngine
             unbind();
         }
 
-        void FrameBuffer::bind() const
+        void GLFrameBuffer::bind() const
         {
             glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         }
 
-        void FrameBuffer::unbind() const
+        void GLFrameBuffer::unbind() const
         {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
     
-        void FrameBuffer::blitFramebuffer()
+        void GLFrameBuffer::blitFramebuffer()
         {
             glBlitFramebuffer(0, 0, WINDOWWIDTH, WINDOWHEIGHT, 0, 0, WINDOWWIDTH, WINDOWHEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         }
 
-        void FrameBuffer::clear()
+        void GLFrameBuffer::clear()
         {
             glDeleteFramebuffers(1, &fbo);
             glDeleteRenderbuffers(1, &depthTexture);
             glDeleteTextures(1, &colorTexture);
         }
-
     }
 }
 

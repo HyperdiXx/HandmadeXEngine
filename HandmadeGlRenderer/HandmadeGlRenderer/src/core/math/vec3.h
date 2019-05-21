@@ -87,7 +87,15 @@ namespace maths
             return *this;
         }
 
+        inline float dot(const vec3& a) const
+        {
+            return x * a.x + y * a.y + z * a.z;
+        }
 
+        inline vec3 cross(const vec3& a) const
+        {
+            return vec3(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x);
+        }
 
         friend std::ostream& operator<<(std::ostream& os, const vec3& v)
         {

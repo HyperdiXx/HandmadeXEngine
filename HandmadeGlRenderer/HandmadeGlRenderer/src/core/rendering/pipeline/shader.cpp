@@ -84,10 +84,10 @@ Shader * Shader::addShaderCompute(const GLchar* cs)
 {
     if (!isCompute) 
     {
-        glAttachShader(ID, shader.getID());
-        if (shader.getName() == "compute")
-            isCompute = true;
-        this->shaders.push_back(shader.getID());
+        //glAttachShader(ID, shader.getID());
+        //if (shader.getName() == "compute")
+         //   isCompute = true;
+        //this->shaders.push_back(shader.getID());
     }
     else 
     {

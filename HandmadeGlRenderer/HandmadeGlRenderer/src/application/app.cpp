@@ -28,7 +28,7 @@
 #include "../core/windowsystem/openglwnd.h"
 
 #include "../objects/GBuffer.h"
-#include "../core/rendering/api/opengl/framebuffero.h"
+#include "../core/rendering/api/opengl/glframebuffer.h"
 
 #include "../core/rendering/scenes/scene.h"
 #include "../core/rendering/pipeline/shadersBase.h"
@@ -84,7 +84,7 @@ namespace XEngine
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
-        FrameBuffer fbo(WINDOWWIDTH * 2, WINDOWHEIGHT * 2);
+        GLFrameBuffer fbo(WINDOWWIDTH * 2, WINDOWHEIGHT * 2);
 
         Scene scene1("Scene1");
 

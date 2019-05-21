@@ -168,7 +168,7 @@ XEngine::Rendering::SkyboxProced::SkyboxProced()
     skyColorBottom = glm::vec3(0.9, 0.9, 0.95);
 
     //skyboxShader = new ScreenSpaceShader("shaders/sky.frag");
-    skyboxFBO = new FrameBuffer(WINDOWWIDTH, WINDOWHEIGHT);
+    skyboxFBO = new GLFrameBuffer(WINDOWWIDTH, WINDOWHEIGHT);
 
     SunsetPreset1();
     DefaultPreset();
@@ -186,7 +186,7 @@ void XEngine::Rendering::SkyboxProced::draw()
     SceneObjects &scene = SceneObjects::getInstance();
     skyboxFBO->bind();
 
-    Shader& shader = skyboxShader->getShader();
+    /*Shader& shader = skyboxShader->getShader();
     shader.enableShader();
 
     shader.setVec2("resolution", glm::vec2(WINDOWWIDTH, WINDOWHEIGHT));
@@ -198,7 +198,7 @@ void XEngine::Rendering::SkyboxProced::draw()
     shader.setVec3("skyColorTop", skyColorTop);
     shader.setVec3("skyColorBottom", skyColorBottom);
 
-    skyboxShader->draw();
+    skyboxShader->draw();*/
 }
 
 void XEngine::Rendering::SkyboxProced::update()

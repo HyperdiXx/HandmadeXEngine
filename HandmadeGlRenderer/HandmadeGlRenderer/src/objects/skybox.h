@@ -8,7 +8,7 @@
 #include "../core/rendering/api/opengl/vertexarray.h"
 #include "../core/rendering/api/opengl/buffer.h"
 #include "../core/rendering/texture.h"
-#include "../core/rendering/api/opengl/framebuffero.h"
+#include "../core/rendering/api/opengl/glframebuffer.h"
 
 
 namespace XEngine
@@ -57,13 +57,14 @@ namespace XEngine
 
             void mixSkyColorPreset(float v, colorPreset p1, colorPreset p2);
 
-            unsigned int getSkyTexture() {
+            unsigned int getSkyTexture() 
+            {
                 return skyboxFBO->getColorTexture();
             }
         private:
             
             //ScreenSpaceShader * skyboxShader;
-            Rendering::FrameBuffer * skyboxFBO;
+            Rendering::GLFrameBuffer * skyboxFBO;
 
             colorPreset presetSunset, highSunPreset;
             glm::vec3 skyColorTop, skyColorBottom;

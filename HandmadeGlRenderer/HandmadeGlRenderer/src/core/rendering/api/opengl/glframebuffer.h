@@ -5,6 +5,7 @@
 
 #include "../../../types.h"
 #include "../../../../xenpch.h"
+#include "../basic/framebuffer.h"
 
 #include<unordered_map>
 
@@ -12,12 +13,11 @@ namespace XEngine
 {
     namespace Rendering
     {
-        class FrameBuffer
+        class GLFrameBuffer : public FrameBuffer
         {
         public:
-            FrameBuffer() {};
-            FrameBuffer(int w, int h);
-            ~FrameBuffer();
+            GLFrameBuffer(int w, int h);
+            ~GLFrameBuffer();
 
             void init();
 
@@ -28,29 +28,22 @@ namespace XEngine
             void clear();
 
             uint32 getFbo() const { return fbo; };
-            uint32 getWidth() const { return width; };
-            uint32 getHeight() const { return height; };
+            inline uint32 getWidth() const { return width; };
+            inline uint32 getHeight() const { return height; };
             uint32 getColorTexture() const { return colorTexture; };
             uint32 getDepthTexture() const { return depthTexture; };
          
             void createShadows();
         private:
-
-            FrameBuffer(const FrameBuffer& fr) = default;
-            FrameBuffer(FrameBuffer&& fr) = default;
+            GLFrameBuffer(const GLFrameBuffer& fr) = default;
+            GLFrameBuffer(GLFrameBuffer&& fr) = default;
         private:
             uint32 fbo;
             uint32 colorTexture;
             uint32 depthTexture;
             int width, height;
         };
-
     }
-    
-
 }
-
-
-
 #endif // !FBO
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../cameras/camera.h"
-#include "../../rendering/api/opengl/framebuffero.h"
+#include "../../rendering/api/opengl/glframebuffer.h"
 #include "../../../xenpch.h"
 
 

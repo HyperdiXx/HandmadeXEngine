@@ -9,7 +9,7 @@ namespace XEngine
         class DirLight : public Light
         {
         public:
-            DirLight(glm::vec3 d);
+            DirLight(glm::vec3 p, glm::vec4 c, glm::vec3 d);
 
             void setDir(glm::vec3 d);
 

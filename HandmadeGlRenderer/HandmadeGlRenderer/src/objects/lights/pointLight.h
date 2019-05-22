@@ -8,7 +8,8 @@ namespace XEngine
     {
         class PointLight : public Light
         {
-
+        public:
+            PointLight(glm::vec3 p, glm::vec4 c);
         };
     }
 }

@@ -50,7 +50,7 @@ XEngine::Terrain::Terrain::~Terrain()
 {
 }
 
-void XEngine::Terrain::Terrain::render()
+void XEngine::Terrain::Terrain::render(Rendering::ForwardRender *forwardRender)
 {
     SceneObjects &sceneSetup = SceneObjects::getInstance();
 
@@ -60,10 +60,10 @@ void XEngine::Terrain::Terrain::render()
         glEnable(GL_CLIP_DISTANCE0);
     }
     glm::mat4 gWorld = modelMatrix;
-    glm::mat4 gVP = sceneSetup.projMatrix * sceneSetup.cam->getViewMatrix();
+    glm::mat4 gVP = sceneSetup.projMatrix * forwardRender->getActiveCamera()->getViewMatrix();
 
     shad->enableShader();
-    shad->setVec3("gEyeWorldPos", sceneSetup.cam->camPos);
+    shad->setVec3("gEyeWorldPos", forwardRender->getActiveCamera()->camPos);
     shad->setMat4("gWorld", gWorld);
     shad->setMat4("gVP", gVP);
     shad->setFloat("gDispFactor", dispFactor);
@@ -73,7 +73,7 @@ void XEngine::Terrain::Terrain::render()
     shad->setVec4("clipPlane", clipPlane*up);
     shad->setVec3("u_LightColor", sceneSetup.lightColor);
     shad->setVec3("u_LightPosition", sceneSetup.lightPos);
-    shad->setVec3("u_ViewPosition", sceneSetup.cam->camPos);
+    shad->setVec3("u_ViewPosition", forwardRender->getActiveCamera()->camPos);
     shad->setVec3("fogColor", sceneSetup.fogColor);
     shad->setVec3("rockColor", rockColor);
    // shad->setVec3("seed", sceneSetup.seed);
@@ -115,11 +115,11 @@ void XEngine::Terrain::Terrain::render()
     up = 0.0;
 }
 
-void XEngine::Terrain::Terrain::updateTilesPositions()
+void XEngine::Terrain::Terrain::updateTilesPositions(Rendering::ForwardRender *forwardRender)
 {
     SceneObjects &sceneSetup = SceneObjects::getInstance();
 
-    glm::vec2 camPosition(sceneSetup.cam->camPos.x, sceneSetup.cam->camPos.z);
+    glm::vec2 camPosition(forwardRender->getActiveCamera()->camPos.x, forwardRender->getActiveCamera()->camPos.z);
     int whichTile = -1;
     int howManyTiles = 0;
 

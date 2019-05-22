@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../cameras/camera.h"
 #include "../../rendering/api/opengl/glframebuffer.h"
 #include "../../../xenpch.h"
 
@@ -16,7 +15,7 @@ namespace XEngine
         glm::vec3 lightDir;
         glm::vec3 fogColor;
         glm::mat4 projMatrix = glm::mat4(1.0f);
-        Camera *cam;
+
         Rendering::FrameBuffer *sceneFBO;
         bool wireframe = false;
     public:

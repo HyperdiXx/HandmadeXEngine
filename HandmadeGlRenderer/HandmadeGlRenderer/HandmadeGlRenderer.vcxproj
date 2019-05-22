@@ -108,6 +108,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application\app.cpp" />
+    <ClCompile Include="src\application\baseapp.cpp" />
+    <ClCompile Include="src\application\testapp.cpp" />
     <ClCompile Include="src\core\ecs\entitymanager.cpp" />
     <ClCompile Include="src\core\geometry\assetmanager.cpp" />
     <ClCompile Include="src\core\math\transforms.cpp" />
@@ -242,6 +244,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application\app.h" />
+    <ClInclude Include="src\application\baseapp.h" />
+    <ClInclude Include="src\application\testapp.h" />
     <ClInclude Include="src\audio\audio.h" />
     <ClInclude Include="src\core\containers\stackll.h" />
     <ClInclude Include="src\core\ecs\component.h" />
@@ -302,6 +306,7 @@
     <ClInclude Include="src\core\rendering\pipeline\screenspaceshader.h" />
     <ClInclude Include="src\core\rendering\pipeline\shaders.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h" />
+    <ClInclude Include="src\core\rendering\renderType.h" />
     <ClInclude Include="src\core\rendering\scenes\scene.h" />
     <ClInclude Include="src\core\rendering\scenes\sceneObjects.h" />
     <ClInclude Include="src\core\rendering\scenes\stackscene.h" />

@@ -21,6 +21,5 @@ namespace XEngine
         void DX11InitEngine();    
     };
 
-   
 
 }

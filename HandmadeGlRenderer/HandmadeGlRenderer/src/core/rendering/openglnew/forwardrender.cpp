@@ -1,6 +1,6 @@
 #include "forwardrender.h"
 
-bool XEngine::Rendering::ForwardRendering::init()
+bool XEngine::Rendering::ForwardRender::init()
 {
 
 
@@ -10,18 +10,20 @@ bool XEngine::Rendering::ForwardRendering::init()
     return true;
 }
 
-void XEngine::Rendering::ForwardRendering::update()
+void XEngine::Rendering::ForwardRender::update()
+{
+
+}
+
+void XEngine::Rendering::ForwardRender::renderScene(Scene *scene)
+{
+    scene->drawScene();
+}
+
+void XEngine::Rendering::ForwardRender::renderMesh()
 {
 }
 
-void XEngine::Rendering::ForwardRendering::renderScene()
-{
-}
-
-void XEngine::Rendering::ForwardRendering::renderMesh()
-{
-}
-
-void XEngine::Rendering::ForwardRendering::renderQuad()
+void XEngine::Rendering::ForwardRender::renderQuad()
 {
 }

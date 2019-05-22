@@ -13,7 +13,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-        struct Vertex
+        struct VertexSt
         {
             glm::vec3 pos;
             glm::vec2 uv;

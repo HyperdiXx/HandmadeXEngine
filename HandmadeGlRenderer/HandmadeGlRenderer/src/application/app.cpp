@@ -41,6 +41,8 @@
 #include "../core/rendering/scenes/sceneObjects.h"
 #include "../objects/terrain.h"
 
+#include "../core/rendering/openglnew/forwardrender.h"
+
 
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -61,6 +63,8 @@ namespace XEngine
 
 
     XEngine::Camera camera;
+    ForwardRender forwardRender;
+
 
     bool mouseStart = true;
     double lastX = WINDOWWIDTH / 2;
@@ -770,6 +774,7 @@ namespace XEngine
 
         glEnable(GL_DEPTH_TEST);
 
+       
         Scene scene1("Scene5");
 
         Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
@@ -797,8 +802,7 @@ namespace XEngine
         SceneObjects &sceneSetup = SceneObjects::getInstance();
 
         sceneSetup.projMatrix = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
-        sceneSetup.cam = &camera;
-
+        
         Entity mesh1(&plane, &testMat, &testTransform);
         Entity mesh2(&secondmodel, &testMat, &testTransform);
 
@@ -919,7 +923,6 @@ namespace XEngine
         lightShader.enableShader();
         lightShader.setInt("texture1", 0);
 
-
         real32 deltaTime = 0.0f;
         real32 lastFrame = 0.0f;
 
@@ -932,15 +935,14 @@ namespace XEngine
 
         while (!classicWindow.isClosed())
         {
-           
-            camera.speed = 10.0 * deltaTime;
-
+            forwardRender.getActiveCamera()->speed = 10.0 * deltaTime;
+        
             real64 currFrame = glfwGetTime();
 
             deltaTime = currFrame - lastFrame;
             lastFrame = currFrame;
 
-            XEngine::processInput(classicWindow.m_window, &camera, isUI);
+            XEngine::processInput(classicWindow.m_window, forwardRender.getActiveCamera(), isUI);
           
             //ter.updateTilesPositions();
 
@@ -956,13 +958,13 @@ namespace XEngine
             //ter.render();
 
             shdManager.getShaderByName("model")->enableShader();
-            view  = sceneSetup.cam->getViewMatrix();
+            view  = forwardRender.getActiveCamera()->getViewMatrix();
 
             glm::mat4 viewproj = sceneSetup.projMatrix * view;
 
             shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
             shdManager.getShaderByName("model")->setVec3("lightPos", lightPos);
-            shdManager.getShaderByName("model")->setVec3("camPos", sceneSetup.cam->camPos);
+            shdManager.getShaderByName("model")->setVec3("camPos", forwardRender.getActiveCamera()->camPos);
 
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
@@ -977,8 +979,9 @@ namespace XEngine
             //castlelow.drawMesh(&loading);
             
             mesh1.material->getShader()->setMat4("model", model);
-            
-            scene1.drawScene();
+
+            forwardRender.renderScene(&scene1);
+            //scene1.drawScene();
 
             glm::mat4 mat3 = glm::mat4(1.0);
 
@@ -1247,7 +1250,7 @@ namespace XEngine
         lastX = xpos;
         lastY = ypos;
 
-        camera.ProcessMouseMovement(xoffset, yoffset);
+        forwardRender.getActiveCamera()->ProcessMouseMovement(xoffset, yoffset);
 
     }
 

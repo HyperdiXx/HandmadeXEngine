@@ -4,6 +4,8 @@
 #define TERRAINH
 
 #include "../core/rendering/pipeline/materials/bpmaterial.h"
+#include "../core/rendering/openglnew/forwardrender.h"
+
 #include "../xenpch.h"
 
 
@@ -21,10 +23,10 @@ namespace XEngine
 
             Terrain(int grid);
             ~Terrain();
-            void render();
+            void render(ForwardRender *forwardRender);
             //void setGui();
 
-            void updateTilesPositions();
+            void updateTilesPositions(ForwardRender *forwardRender);
             void setPositionsArray(std::vector<glm::vec2> & pos);
             void initializePlaneVAO();
 

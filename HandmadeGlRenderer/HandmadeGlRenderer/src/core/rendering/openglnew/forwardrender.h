@@ -2,23 +2,25 @@
 
 #include "renderer3d.h"
 
+#include "../scenes/scene.h"
+
 namespace XEngine
 {
     namespace Rendering
     {
-        class ForwardRendering : public Renderer3d
+        class ForwardRender : public Renderer3d
         {
         public:
-            ForwardRendering() {};
+            ForwardRender() {};
 
             bool init();
             void update();
-            void renderScene();
+
+            void renderScene(Scene *scene);
             void renderMesh();
             void renderQuad();
 
         private:
-
              
         };
     }

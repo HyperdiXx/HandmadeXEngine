@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "../ecs/component.h"
 #include <vector>
 #include "../types.h"
 
@@ -25,7 +25,7 @@ namespace XEngine
         const float SENSITIVITY = 0.1f;
         const float ZOOM = 45.0f;
 
-        class Camera
+        class Camera : public Component
         {
         public:
             glm::vec3 camPos;
@@ -62,7 +62,7 @@ namespace XEngine
 
             glm::mat4 getViewMatrix();
 
-            void ProcessMouseMovement(real32 xoffset, real32 yoffset, real32 constrainPitch = true)
+            void mouseMove(real32 xoffset, real32 yoffset, real32 constrainPitch = true)
             {
                 xoffset *= camMouseSensitivity;
                 yoffset *= camMouseSensitivity;
@@ -81,7 +81,7 @@ namespace XEngine
                 updateCameraDir();
             }
 
-            void ProcessMouseScroll(real32 yoffset)
+            void mouseScroll(real32 yoffset)
             {
                 if (camZoom >= 1.0f && camZoom <= 45.0f)
                     camZoom -= yoffset;

@@ -19,10 +19,7 @@ namespace XEngine
     static uint32 sphereVAO = 0;
     static uint32 indexCount;
 
-    void renderCube();
-    void renderSphere();
-    void renderRect();
-    void renderQuad();
+ 
     std::vector<float> createPlane();
     std::vector<float> createVert();
 
@@ -34,6 +31,11 @@ namespace XEngine
         std::string cube = "src/models/simple/cube.obj";
         std::string sphere = "src/models/simple/sphere.obj";
         std::string plane = "src/models/simple/plane.obj";
+
+        static void renderCube();
+        static void renderSphere();
+        static void renderRect();
+        static void renderQuad();
 
     };
 

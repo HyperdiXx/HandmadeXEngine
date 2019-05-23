@@ -1250,13 +1250,13 @@ namespace XEngine
         lastX = xpos;
         lastY = ypos;
 
-        forwardRender.getActiveCamera()->ProcessMouseMovement(xoffset, yoffset);
+        forwardRender.getActiveCamera()->mouseMove(xoffset, yoffset);
 
     }
 
     void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
-        camera.ProcessMouseScroll(yoffset);
+        camera.mouseScroll(yoffset);
     }
 
 

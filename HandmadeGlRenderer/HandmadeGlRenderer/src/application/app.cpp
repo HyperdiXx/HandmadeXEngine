@@ -43,6 +43,9 @@
 
 #include "../core/rendering/openglnew/forwardrender.h"
 
+#include "../core/geometry/resources.h"
+#include "../objects/lights/dirLight.h"
+
 
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -595,7 +598,7 @@ namespace XEngine
             }
             shaderLightingPass.setVec3("camPos", camera.camPos);
 
-            renderQuad();
+            Geometry::renderQuad();
 
             glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
@@ -612,7 +615,7 @@ namespace XEngine
                 model = glm::scale(model, glm::vec3(0.125f));
                 shaderLightBox.setMat4("model", model);
                 shaderLightBox.setVec3("lightColor", lightColors[i]);
-                renderCube();
+                Geometry::renderCube();
             }
                                   
             classicwindow.update();
@@ -736,7 +739,7 @@ namespace XEngine
                         0.0f
                     ));
                     shader.setMat4("model", model);
-                    renderSphere();
+                    Geometry::renderSphere();
                 }
             }
 
@@ -751,7 +754,7 @@ namespace XEngine
                 model = glm::translate(model, newPos);
                 model = glm::scale(model, glm::vec3(0.5f));
                 shader.setMat4("model", model);
-                renderSphere();
+                Geometry::renderSphere();
             }
 
             
@@ -764,6 +767,8 @@ namespace XEngine
 
     void Application::OpenGLScene5()
     {
+        using namespace Assets;
+
         Rendering::WindowGL classicWindow("XEngine", WINDOWWIDTH, WINDOWHEIGHT);
 
         glfwSetCursorPosCallback(classicWindow.m_window, mouseCallback);
@@ -772,19 +777,19 @@ namespace XEngine
 
         classicWindow.initStats();
 
-        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);       
 
-       
+        Resources resources;
+        
+        Assets::Model *plane = Assets::AssetManager::getModel("First");
+        Assets::Model *secondmodel = Assets::AssetManager::getModel("Second");
+        Assets::Model *dragon = Assets::AssetManager::getModel("Dragon");
+
         Scene scene1("Scene5");
 
         Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
         Shader lightShader("src/shaders/simpleshader.vs", "src/shaders/simpleshader.fs");
-
-        //Assets::Model cube("src/models/simple/cube.obj", false);
-        //Assets::Model sphere("src/models/simple/sphere.obj", false);
-        Assets::Model plane("src/models/simple/plane.obj", false);
-        Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
 
         Texture2D planeText;
         planeText.loadFromFile("src/textures/container.jpg", COLOR);
@@ -803,8 +808,8 @@ namespace XEngine
 
         sceneSetup.projMatrix = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
         
-        Entity mesh1(&plane, &testMat, &testTransform);
-        Entity mesh2(&secondmodel, &testMat, &testTransform);
+        Entity mesh1(plane, &testMat, &testTransform);
+        Entity mesh2(secondmodel, &testMat, &testTransform);
 
         scene1.addEntity(&mesh1);
         scene1.addEntity(&mesh2);
@@ -923,24 +928,21 @@ namespace XEngine
         lightShader.enableShader();
         lightShader.setInt("texture1", 0);
 
-        real32 deltaTime = 0.0f;
-        real32 lastFrame = 0.0f;
-
-        glm::vec3 lightPos(0.0f, 3.0f, 3.0f);
-        glm::vec3 lightposfloor(0.0f, 4.0f, 0.0f);
-
+        DirLight light(glm::vec3(0.0f, 3.0f, 3.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        DirLight lightFloor(glm::vec3(0.0f, 4.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+   
         glm::mat4 view = glm::mat4(1.0f);
 
         bool isUi = false;
 
         while (!classicWindow.isClosed())
         {
-            forwardRender.getActiveCamera()->speed = 10.0 * deltaTime;
+            forwardRender.getActiveCamera()->speed = 10.0 * sceneSetup.deltaTime;
         
             real64 currFrame = glfwGetTime();
-
-            deltaTime = currFrame - lastFrame;
-            lastFrame = currFrame;
+            
+            sceneSetup.deltaTime = currFrame - sceneSetup.lastFrame;
+            sceneSetup.lastFrame = currFrame;
 
             XEngine::processInput(classicWindow.m_window, forwardRender.getActiveCamera(), isUI);
           
@@ -963,7 +965,7 @@ namespace XEngine
             glm::mat4 viewproj = sceneSetup.projMatrix * view;
 
             shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
-            shdManager.getShaderByName("model")->setVec3("lightPos", lightPos);
+            shdManager.getShaderByName("model")->setVec3("lightPos", light.getPos());
             shdManager.getShaderByName("model")->setVec3("camPos", forwardRender.getActiveCamera()->camPos);
 
             glm::mat4 model = glm::mat4(1.0f);

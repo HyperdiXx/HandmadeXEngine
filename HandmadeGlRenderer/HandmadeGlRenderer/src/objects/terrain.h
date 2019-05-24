@@ -5,6 +5,7 @@
 
 #include "../core/rendering/pipeline/materials/bpmaterial.h"
 #include "../core/rendering/openglnew/forwardrender.h"
+#include "lights/dirLight.h"
 
 #include "../xenpch.h"
 
@@ -91,6 +92,8 @@ namespace XEngine
             float getTessMultiplier() const { return tessMultiplier; }
 
         private:
+            
+            //Rendering::DirLight light(glm::vec3(0.0f, 3.0f, 3.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
             void deleteBuffer();
             int res;

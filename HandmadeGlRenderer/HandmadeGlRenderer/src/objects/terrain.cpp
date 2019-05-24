@@ -5,6 +5,8 @@
 
 XEngine::Terrain::Terrain::Terrain(int grid)
 {
+ 
+    
     glm::mat4 id;
     glm::mat4 scaleMatrix = glm::scale(id, glm::vec3(1.0, 0.0, 1.0));
     glm::mat4 positionMatrix = glm::translate(id, glm::vec3(0., 0.0, 0.));
@@ -71,8 +73,8 @@ void XEngine::Terrain::Terrain::render(Rendering::ForwardRender *forwardRender)
    // float waterHeight = (waterPtr ? waterPtr->getModelMatrix()[3][1] : 100.0);
     glm::vec4 clipPlane(0.0, 1.0, 0.0, -10.0f);
     shad->setVec4("clipPlane", clipPlane*up);
-    shad->setVec3("u_LightColor", sceneSetup.lightColor);
-    shad->setVec3("u_LightPosition", sceneSetup.lightPos);
+   // shad->setVec3("u_LightColor", light.getColor());
+    //shad->setVec3("u_LightPosition", light.getPos());
     shad->setVec3("u_ViewPosition", forwardRender->getActiveCamera()->camPos);
     shad->setVec3("fogColor", sceneSetup.fogColor);
     shad->setVec3("rockColor", rockColor);

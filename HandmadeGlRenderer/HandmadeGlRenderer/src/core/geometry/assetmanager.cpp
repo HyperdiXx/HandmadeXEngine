@@ -17,7 +17,7 @@ namespace XEngine
 
         Rendering::BasicMaterial * AssetManager::getMaterial(uint32 id)
         {
-            return nullptr;
+            return materials.at(id);
         }
 
         Rendering::BPMaterial * AssetManager::getBPMaterial(uint32 id)
@@ -30,17 +30,19 @@ namespace XEngine
             return nullptr;
         }
 
-        Model * AssetManager::getMesh(std::string id)
+        Model* AssetManager::getModel(std::string id)
         {
-            return nullptr;
+            return models.at(id);
         }
 
         void AssetManager::addMaterial(uint32 id, Rendering::BasicMaterial * material)
         {
+            materials[id] = material;
         }
 
-        void AssetManager::addModel(std::string id, Model * mesh)
+        void AssetManager::addModel(std::string id, Model *mesh)
         {
+            models[id] = mesh;
         }
 
 

@@ -205,7 +205,7 @@ void XEngine::Rendering::SkyboxProced::update()
 {
     SceneObjects &scene = SceneObjects::getInstance();
     auto sigmoid = [](float v) { return 1 / (1.0 + exp(8.0 - v * 40.0)); };
-    mixSkyColorPreset(sigmoid(scene.lightDir.y), highSunPreset, presetSunset);
+    //mixSkyColorPreset(sigmoid(scene.lightDir.y), highSunPreset, presetSunset);
 }
 
 colorPreset XEngine::Rendering::SkyboxProced::DefaultPreset()
@@ -267,7 +267,7 @@ void XEngine::Rendering::SkyboxProced::mixSkyColorPreset(float v, colorPreset p1
     //cloudColorBottom = p1.cloudColorBottom*a + p2.cloudColorBottom*b;
     skyColorTop = p1.skyColorTop*a + p2.skyColorTop*b;
     skyColorBottom = p1.skyColorBottom*a + p2.skyColorBottom*b;
-    scene.lightColor = p1.lightColor*a + p2.lightColor*b;
+    //scene.lightColor = p1.lightColor*a + p2.lightColor*b;
     scene.fogColor = p1.fogColor*a + p2.fogColor*b;
 }
 

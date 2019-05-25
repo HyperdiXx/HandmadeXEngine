@@ -9,6 +9,7 @@
 #include "../core/rendering/api/opengl/buffer.h"
 #include "../core/rendering/texture.h"
 #include "../core/rendering/api/opengl/glframebuffer.h"
+#include "../core/rendering/pipeline/screenspaceshader.h"
 
 
 namespace XEngine
@@ -63,7 +64,7 @@ namespace XEngine
             }
         private:
             
-            //ScreenSpaceShader * skyboxShader;
+            ScreenSpaceShader * skyboxShader;
             Rendering::GLFrameBuffer * skyboxFBO;
 
             colorPreset presetSunset, highSunPreset;

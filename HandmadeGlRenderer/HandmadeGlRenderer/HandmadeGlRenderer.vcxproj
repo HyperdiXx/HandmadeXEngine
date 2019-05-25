@@ -231,6 +231,7 @@
     <None Include="src\shaders\simplemodel.vs" />
     <None Include="src\shaders\simpleshader.fs" />
     <None Include="src\shaders\simpleshader.vs" />
+    <None Include="src\shaders\sky.fs" />
     <None Include="src\shaders\slight.fs" />
     <None Include="src\shaders\slight.vs" />
     <None Include="src\shaders\terrain.fs" />

@@ -315,6 +315,7 @@
     <None Include="src\shaders\terrain.vs" />
     <None Include="src\shaders\terrain.fs" />
     <None Include="src\shaders\simple2d.vs" />
+    <None Include="src\shaders\sky.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

@@ -6,7 +6,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-        /* class ScreenSpaceShader
+         class ScreenSpaceShader
          {
          public:
              ScreenSpaceShader(const char * fragmentPath);
@@ -42,7 +42,7 @@ namespace XEngine
              static bool initialized;
 
              void initializeQuad();
-         };*/
+         };
      }
     
 }

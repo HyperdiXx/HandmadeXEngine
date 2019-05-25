@@ -1,6 +1,6 @@
 #include "screenspaceshader.h"
 
-/*XEngine::Rendering::ScreenSpaceShader::ScreenSpaceShader(const char * fragmentPath)
+XEngine::Rendering::ScreenSpaceShader::ScreenSpaceShader(const char * fragmentPath)
 {
     initializeQuad();
     //shad = new Shader("shaders/screen.vert", fragmentPath);
@@ -47,4 +47,4 @@ void XEngine::Rendering::ScreenSpaceShader::initializeQuad()
         glEnableVertexAttribArray(1);
         ScreenSpaceShader::initialized = true;
     }
-}*/
+}

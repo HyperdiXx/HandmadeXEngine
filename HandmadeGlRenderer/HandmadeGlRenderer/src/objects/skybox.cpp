@@ -167,7 +167,7 @@ XEngine::Rendering::SkyboxProced::SkyboxProced()
     skyColorTop = glm::vec3(0.5, 0.7, 0.8)*1.05f;
     skyColorBottom = glm::vec3(0.9, 0.9, 0.95);
 
-    //skyboxShader = new ScreenSpaceShader("shaders/sky.frag");
+    skyboxShader = new ScreenSpaceShader("shaders/sky.frag");
     skyboxFBO = new GLFrameBuffer(WINDOWWIDTH, WINDOWHEIGHT);
 
     SunsetPreset1();

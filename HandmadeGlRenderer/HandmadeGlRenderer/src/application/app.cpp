@@ -93,13 +93,15 @@ namespace XEngine
 
         GLFrameBuffer fbo(WINDOWWIDTH * 2, WINDOWHEIGHT * 2);
 
+       
         Scene scene1("Scene1");
 
         Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
 
         Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
-       
+        Assets::Model grid("src/models/simple/plane.obj", false);
+
         ShaderBases &shdManager = ShaderBases::getInstance();
 
         shdManager.addShader("basic", &basicShader);
@@ -111,7 +113,7 @@ namespace XEngine
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
 
-        Entity mesh1(&secondmodel, &testMat, &testTransform);
+        Entity mesh1(&grid, &testMat, &testTransform);
       
         scene1.addEntity(&mesh1);
        
@@ -291,6 +293,7 @@ namespace XEngine
      
             if (isUI == true)
             {
+                
                 myUi.startUpdate();
                 glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
                 glfwSetCursorPosCallback(classicwindow.m_window, NULL);
@@ -773,22 +776,28 @@ namespace XEngine
 
         glfwSetCursorPosCallback(classicWindow.m_window, mouseCallback);
         glfwSetScrollCallback(classicWindow.m_window, scrollCallback);
-        glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        
+        //glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
         classicWindow.initStats();
+
+        XEngine::GLGUI myUi(classicWindow.m_window, 1);
 
         glEnable(GL_DEPTH_TEST);       
 
         Resources resources;
         
-        Assets::Model *plane = Assets::AssetManager::getModel("First");
-        Assets::Model *secondmodel = Assets::AssetManager::getModel("Second");
-        Assets::Model *dragon = Assets::AssetManager::getModel("Dragon");
+        Assets::Model castle("src/models/castle/castle.obj", false);
+
+        //Assets::Model *plane = Assets::AssetManager::getModel("Plane");
+        //Assets::Model *secondmodel = Assets::AssetManager::getModel("Second");
+        //Assets::Model *dragon = Assets::AssetManager::getModel("Erato");
 
         Scene scene1("Scene5");
 
         Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
+        Shader basicLightModel("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");
         Shader lightShader("src/shaders/simpleshader.vs", "src/shaders/simpleshader.fs");
 
         Texture2D planeText;
@@ -798,9 +807,11 @@ namespace XEngine
 
         shdManager.addShader("model", &loading);
         shdManager.addShader("screen", &screenShader);
-        //shdManager.addShader("cube", &lightShader);
+        shdManager.addShader("cube", &lightShader);
+        shdManager.addShader("shadowLight", &basicLightModel);
 
         BasicMaterial testMat(shdManager.getShaderByName("model"), &planeText);
+        BasicMaterial testMat3(shdManager.getShaderByName("shadowLight"));
         BasicMaterial testMat2(shdManager.getShaderByName("screen"));
         Transform testTransform;
 
@@ -808,11 +819,11 @@ namespace XEngine
 
         sceneSetup.projMatrix = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
         
-        Entity mesh1(plane, &testMat, &testTransform);
-        Entity mesh2(secondmodel, &testMat, &testTransform);
+        Entity mesh1(&castle, &testMat, &testTransform);
+        //Entity mesh2(&castle, &testMat, &testTransform);
 
         scene1.addEntity(&mesh1);
-        scene1.addEntity(&mesh2);
+        //scene1.addEntity(&mesh2);
 
         //Terrain::Terrain ter(120);
 
@@ -928,7 +939,7 @@ namespace XEngine
         lightShader.enableShader();
         lightShader.setInt("texture1", 0);
 
-        DirLight light(glm::vec3(0.0f, 3.0f, 3.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        DirLight light(glm::vec3(0.0f, 3.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
         DirLight lightFloor(glm::vec3(0.0f, 4.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
    
         glm::mat4 view = glm::mat4(1.0f);
@@ -948,9 +959,23 @@ namespace XEngine
           
             //ter.updateTilesPositions();
 
+            if (isUI)
+            {
+                myUi.startUpdate();
+                glfwSetCursorPosCallback(classicWindow.m_window, NULL);
+                glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            }
+            else
+            {
+                glfwSetCursorPosCallback(classicWindow.m_window, mouseCallback);
+                glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
+
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
+            
+
             /*fb.bind();
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -962,6 +987,8 @@ namespace XEngine
             shdManager.getShaderByName("model")->enableShader();
             view  = forwardRender.getActiveCamera()->getViewMatrix();
 
+            //light.setPos(sin(glfwGetTime()) * 3.0f, cos(glfwGetTime()) * 2.0f, 5.0 + cos(glfwGetTime())* 1.0f);
+          
             glm::mat4 viewproj = sceneSetup.projMatrix * view;
 
             shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
@@ -978,13 +1005,12 @@ namespace XEngine
             //mesh1.transf->setTranslation(glm::vec3(0.0f, -2.0f, -2.0f));
             //mesh1.transf->setScale(glm::vec3(0.2f, 0.2f, 0.2f));
             //loading.setMat4("model", model);
-            //castlelow.drawMesh(&loading);
+            //erato.drawMesh(&loading);
             
             mesh1.material->getShader()->setMat4("model", model);
 
             forwardRender.renderScene(&scene1);
-            //scene1.drawScene();
-
+           
             glm::mat4 mat3 = glm::mat4(1.0);
 
             lightShader.enableShader();
@@ -999,6 +1025,14 @@ namespace XEngine
             glBindVertexArray(cubeVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
+            glm::vec3 lightPos = light.getPos();
+
+            if (isUI)
+            {
+                myUi.setUIScene5(lightPos);
+                light.setPos(lightPos);
+            }
+            
             /*fb.unbind();
             //glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -1023,7 +1057,9 @@ namespace XEngine
         glDeleteBuffers(1, &cubeVAO);
         glDeleteBuffers(1, &cubeVBO);
        
-   
+        
+        myUi.shutdown();
+
         glfwTerminate();
        
 

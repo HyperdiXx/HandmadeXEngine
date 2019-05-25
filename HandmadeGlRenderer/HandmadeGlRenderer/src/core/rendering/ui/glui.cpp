@@ -63,11 +63,38 @@ void XEngine::GLGUI::update(glm::vec4& spritecol)
 
 }
 
-void XEngine::GLGUI::addEdit3()
+void XEngine::GLGUI::setUIScene5(glm::vec3 &pos)
+{
+    static bool show = true;
+
+   
+    ImGui::Begin("XEngine Editor");
+    ImGui::Text("Scene 1");
+
+    //ImGui::SliderInt("Octaves", &octaves, 1, 20);
+    ImGui::SliderFloat("Dir light position X", &pos.x, -100.0f, 100.0f);
+    ImGui::SliderFloat("Dir light position Y", &pos.y, -100.0f, 100.0f);
+    ImGui::SliderFloat("Dir light position Z", &pos.z, -100.0f, 100.0f);
+    //ImGui::SliderFloat("Displacement factor", &dispFactor, 0.0f, std::pow(32.f*32.f*32.f, 1 / power));
+    //ImGui::SliderFloat("Grass coverage", &grassCoverage, 0.0f, 1.f);
+    //ImGui::SliderFloat("Tessellation multiplier", &tessMultiplier, 0.1f, 5.f);
+    //ImGui::SliderFloat("Fog fall-off", &fogFalloff, 0.0f, 10.);
+    //ImGui::SliderFloat("Power", &power, 0.0f, 10.);
+
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+}
+
+/*void XEngine::GLGUI::addEdit3()
 {
     editLayer.push_back(0);
     
-}
+}*/
 
 void XEngine::GLGUI::shutdown()
 {

@@ -22,7 +22,7 @@ namespace XEngine
             delete secondmodel;
             delete cube;
             delete sphere;
-            delete dragon;
+            delete erato;
    
         }
 
@@ -34,14 +34,14 @@ namespace XEngine
             cube = new Model("src/models/simple/cube.obj", false);
             sphere = new Model("src/models/simple/sphere.obj", false);
 
-            //dragon = new Model("src/models/dragon.obj", false);
+            erato = new Model("src/models/erato/erato-1.obj", false);
             //sportCar = new Model("src/models/sportsCar.obj" , false);
 
-            AssetManager::addModel("First", plane);
+            AssetManager::addModel("Plane", plane);
             AssetManager::addModel("Second", secondmodel);
-            AssetManager::addModel("Third", cube);
-            AssetManager::addModel("Fourth", sphere);
-            //AssetManager::addModel("Dragon", dragon);
+            AssetManager::addModel("Cube", cube);
+            AssetManager::addModel("Sphere", sphere);
+            AssetManager::addModel("Erato", erato);
             
         }
 
@@ -56,7 +56,7 @@ namespace XEngine
         Model *secondmodel; 
         Model *cube;
         Model *sphere;
-        Model *dragon;
+        Model *erato;
 
     };
 }

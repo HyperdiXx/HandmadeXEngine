@@ -11,6 +11,7 @@ namespace XEngine
         public:
             Light(glm::vec3 p, glm::vec4 c);
 
+            void setPos(float x, float y, float z);
             void setPos(glm::vec3 p);
             void setColor(glm::vec4 c);
 

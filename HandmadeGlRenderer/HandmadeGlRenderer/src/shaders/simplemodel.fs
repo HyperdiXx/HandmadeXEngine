@@ -43,5 +43,5 @@ void main()
 	vec3 res = ambient + diffuse;
 
 	FragColor = vec4(res, 1.0);
-
+	//FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

@@ -23,6 +23,7 @@ namespace XEngine
             Skybox(Shader *skyshader);
             ~Skybox();
 
+
             void createSkybox();
             void renderSkybox(Shader * shader, glm::mat4& v, glm::mat4& proj);
             

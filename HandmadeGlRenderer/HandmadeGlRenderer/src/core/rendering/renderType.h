@@ -3,7 +3,7 @@
 
 namespace XEngine
 {
-    enum RenderAPI
+    enum class RenderAPI
     {
         OPENGL,
         DX11,

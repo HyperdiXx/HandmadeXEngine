@@ -2,7 +2,7 @@
 
 XEngine::Rendering::ScreenSpaceShader::ScreenSpaceShader(const char * fragmentPath)
 {
-    initializeQuad();
+    //initializeQuad();
     //shad = new Shader("shaders/screen.vert", fragmentPath);
     //shad = new Shader("ScreenQuad_" + getShaderName(fragmentPath));
 
@@ -13,10 +13,10 @@ XEngine::Rendering::ScreenSpaceShader::ScreenSpaceShader(const char * fragmentPa
 
 void XEngine::Rendering::ScreenSpaceShader::draw()
 {
-    drawQuad();
+    //drawQuad();
 }
 
-void XEngine::Rendering::ScreenSpaceShader::drawQuad()
+/*void XEngine::Rendering::ScreenSpaceShader::drawQuad()
 {
     glBindVertexArray(quadVAOSpace);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -47,4 +47,4 @@ void XEngine::Rendering::ScreenSpaceShader::initializeQuad()
         glEnableVertexAttribArray(1);
         ScreenSpaceShader::initialized = true;
     }
-}
+}*/

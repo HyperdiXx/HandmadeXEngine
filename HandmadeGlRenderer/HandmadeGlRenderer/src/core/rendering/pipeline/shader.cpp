@@ -10,8 +10,8 @@ void Shader::setupShaderFile()
  
     std::string fileVs = FileUtils::readFileEngine(vs);
     std::string fileFs = FileUtils::readFileEngine(fs);
-    const char* vShaderCode = fileVs.c_str();
-    const char * fShaderCode = fileFs.c_str();
+    const char *vShaderCode = fileVs.c_str();
+    const char *fShaderCode = fileFs.c_str();
 
     unsigned int vertex, fragment;
 

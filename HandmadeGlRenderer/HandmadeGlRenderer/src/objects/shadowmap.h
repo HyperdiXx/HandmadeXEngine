@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "../core/rendering/api/opengl/framebuffero.h"
+#include "../core/rendering/api/opengl/glframebuffer.h"
 
 namespace XEngine
 {

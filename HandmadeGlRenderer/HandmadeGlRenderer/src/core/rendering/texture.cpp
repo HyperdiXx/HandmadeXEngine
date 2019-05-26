@@ -128,13 +128,16 @@ namespace XEngine
 
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, magFilter == NEAREST ? GL_NEAREST : GL_LINEAR);
 
-        if (mipFilter == NONE) {
+        if (mipFilter == NONE) 
+        {
             glTexParameteri(target, GL_TEXTURE_MAG_FILTER, minFilter == NEAREST ? GL_NEAREST : GL_LINEAR);
         }
-        else if (mipFilter == NEAREST) {
+        else if (mipFilter == NEAREST) 
+        {
             glTexParameteri(target, GL_TEXTURE_MAG_FILTER, minFilter == NEAREST ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_NEAREST);
         }
-        else if (mipFilter == LINEAR) {
+        else if (mipFilter == LINEAR) 
+        {
             glTexParameteri(target, GL_TEXTURE_MAG_FILTER, minFilter == NEAREST ? GL_NEAREST_MIPMAP_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
         }
     }
@@ -286,8 +289,6 @@ namespace XEngine
     }*/
 
 
-   
-
     uint32 Texture2D::loadTextureHDR(const char * filename)
     {
         stbi_set_flip_vertically_on_load(true);
@@ -416,7 +417,8 @@ namespace XEngine
         init();
         bind(GL_TEXTURE0);
 
-        switch (type) {
+        switch (type) 
+        {
         case COLOR:
             glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
             setData(height, height, height, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, data);

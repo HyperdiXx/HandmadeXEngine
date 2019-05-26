@@ -63,18 +63,25 @@ void XEngine::GLGUI::update(glm::vec4& spritecol)
 
 }
 
-void XEngine::GLGUI::setUIScene5(glm::vec3 &pos)
+void XEngine::GLGUI::setUIScene5(glm::vec3 &pos, glm::vec4 &color)
 {
     static bool show = true;
 
-   
+    float col1[3] = { color.x, color.y, color.z };
+
     ImGui::Begin("XEngine Editor");
     ImGui::Text("Scene 1");
 
-    //ImGui::SliderInt("Octaves", &octaves, 1, 20);
     ImGui::SliderFloat("Dir light position X", &pos.x, -100.0f, 100.0f);
     ImGui::SliderFloat("Dir light position Y", &pos.y, -100.0f, 100.0f);
     ImGui::SliderFloat("Dir light position Z", &pos.z, -100.0f, 100.0f);
+
+    ImGui::ColorEdit3("Color edit", col1);
+    color.x = col1[0];
+    color.y = col1[1];
+    color.z = col1[2];
+
+  
     //ImGui::SliderFloat("Displacement factor", &dispFactor, 0.0f, std::pow(32.f*32.f*32.f, 1 / power));
     //ImGui::SliderFloat("Grass coverage", &grassCoverage, 0.0f, 1.f);
     //ImGui::SliderFloat("Tessellation multiplier", &tessMultiplier, 0.1f, 5.f);

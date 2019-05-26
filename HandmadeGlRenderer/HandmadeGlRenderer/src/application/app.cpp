@@ -34,7 +34,6 @@
 #include "../core/rendering/pipeline/shadersBase.h"
 
 
-#include "../core/systems/textureload.h"
 
 #include "../core/geometry/assetmanager.h"
 
@@ -46,6 +45,8 @@
 #include "../core/geometry/resources.h"
 #include "../objects/lights/dirLight.h"
 
+
+#include "../core/systems/textureload.h"
 
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -155,8 +156,8 @@ namespace XEngine
         //unsigned int nanosuuitalbedo = loadTexture("src/textures/arm_dif.png");
         //unsigned int nanosuuitalbedo2 = loadTexture("src/textures/arm_dif.png");
 
-        //XEngine::Rendering::Skybox sky;
-        //sky.createSkybox();
+        XEngine::Rendering::Skybox sky;
+        sky.createSkybox();
 
 
         dispShader.enableShader();
@@ -181,9 +182,6 @@ namespace XEngine
         Win32UseShader(&basicShader);
         setInt(&basicShader, "material.diffuse", 0);
         setInt(&basicShader, "material.specular", 1);
-
-        Win32UseShader(&cubeMap);
-        setInt(&cubeMap, "skybox", 0);
 
 
         Win32UseShader(&shadowShader);
@@ -343,7 +341,7 @@ namespace XEngine
 #endif
             renderer.flush();
 
-            //sky.renderSkybox(&cubeMap, view, projection);
+            sky.renderSkybox(&cubeMap, view, projection);
 
             if (isUI)
             {
@@ -391,6 +389,8 @@ namespace XEngine
         
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
 
+       
+
         //unsigned int diffuseT= Texture2D::loadTexture2D("src/textures/wood.png");
         //unsigned int containerT = Texture2D::loadTexture2D("src/textures/container2.png");
 
@@ -418,20 +418,126 @@ namespace XEngine
         Shader blurShader("src/shaders/blur.vs", "src/shaders/blur.fs");
         Shader bloomShader("src/shaders/bloom.vs", "src/shaders/bloom.fs");
         Shader mixedShader("src/shaders/blendingshader.vs", "src/shaders/blendingshader.fs");
+       
+  
+        Shader skyboxShader("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
 
-        blurShader.setupShaderFile();
-        bloomShader.setupShaderFile();
-        mixedShader.setupShaderFile();
+        
+        float skyboxVertices[] = 
+        {
+            -1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
 
+            -1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            -1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f
+        };
+
+        unsigned int skyboxVAO, skyboxVBO;
+        glGenVertexArrays(1, &skyboxVAO);
+        glGenBuffers(1, &skyboxVBO);
+        glBindVertexArray(skyboxVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+        std::vector<std::string> textyures;
+        
+        textyures.push_back("src/textures/right.jpg");
+        textyures.push_back("src/textures/left.jpg");
+        textyures.push_back("src/textures/top.jpg");
+        textyures.push_back("src/textures/bottom.jpg");
+        textyures.push_back("src/textures/front.jpg");
+        textyures.push_back("src/textures/back.jpg");
+        
+        //unsigned int cubemapTexture = Utils::loadCubemap(textyures);
+
+        unsigned int textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+        int width, height, nrChannels;
+        for (unsigned int i = 0; i < textyures.size(); i++)
+        {
+            unsigned char *data = stbi_load(textyures[i].c_str(), &width, &height, &nrChannels, 0);
+            if (data)
+            {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                stbi_image_free(data);
+            }
+            else
+            {
+                std::cout << "Cubemap texture failed to load at path: " << textyures[i] << std::endl;
+                stbi_image_free(data);
+            }
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        skyboxShader.enableShader();
+        skyboxShader.setInt("skybox", 0);
     
         while (!classicwindow.isClosed())
         {
             LOG("\rUpdate loop...");
 
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            glDepthFunc(GL_LEQUAL); 
+            skyboxShader.enableShader();
+            glm::mat4 model = glm::mat4(1.0f);
+            glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 100.0f);
+
+            glm::mat4 view = glm::mat4(glm::mat3(camera.getViewMatrix()));
+            skyboxShader.setMat4("view", view);
+            skyboxShader.setMat4("projection", projection);
+
+            glBindVertexArray(skyboxVAO);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(0);
+            glDepthFunc(GL_LESS);
 
             
             classicwindow.update();
@@ -783,8 +889,7 @@ namespace XEngine
 
         XEngine::GLGUI myUi(classicWindow.m_window, 1);
 
-        glEnable(GL_DEPTH_TEST);       
-
+       
         Resources resources;
         
         Assets::Model castle("src/models/castle/castle.obj", false);
@@ -799,6 +904,8 @@ namespace XEngine
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
         Shader basicLightModel("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");
         Shader lightShader("src/shaders/simpleshader.vs", "src/shaders/simpleshader.fs");
+        Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
+        Shader textShader("src/shaders/text.vs", "src/shaders/text.fs");
 
         Texture2D planeText;
         planeText.loadFromFile("src/textures/container.jpg", COLOR);
@@ -933,19 +1040,98 @@ namespace XEngine
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
+        float skyboxVertices[] = 
+        {      
+            -1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            -1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f
+        };
+
+        unsigned int skyboxVAO, skyboxVBO;
+        glGenVertexArrays(1, &skyboxVAO);
+        glGenBuffers(1, &skyboxVBO);
+        glBindVertexArray(skyboxVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+        //XEngine::Rendering::Skybox sky;
+
+        std::vector<std::string> mtextures;
+
+        mtextures.push_back("src/textures/right.jpg");
+        mtextures.push_back("src/textures/left.jpg");
+        mtextures.push_back("src/textures/top.jpg");
+        mtextures.push_back("src/textures/bottom.jpg");
+        mtextures.push_back("src/textures/front.jpg");
+        mtextures.push_back("src/textures/back.jpg");
+
+        unsigned int cubemapTexture = Utils::loadCubemapTest(mtextures);
+
         //screenShader.enableShader();
         //screenShader.setInt("screenTexture", 0);
-        
+           
         lightShader.enableShader();
         lightShader.setInt("texture1", 0);
 
-        DirLight light(glm::vec3(0.0f, 3.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        cubeMap.enableShader();
+        cubeMap.setInt("skybox", 0);
+
+        Clock clockm, time;
+        float ctime = 0;
+        unsigned int frames = 0;
+        int f = 0;
+
+        XEngine::Rendering::Font text1("src/fonts/arial.ttf", &textShader);
+
+        glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        DirLight light(glm::vec3(0.0f, 3.0f, -10.0f), lightColor);
         DirLight lightFloor(glm::vec3(0.0f, 4.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
    
         glm::mat4 view = glm::mat4(1.0f);
 
         bool isUi = false;
-
+        
         while (!classicWindow.isClosed())
         {
             forwardRender.getActiveCamera()->speed = 10.0 * sceneSetup.deltaTime;
@@ -955,10 +1141,12 @@ namespace XEngine
             sceneSetup.deltaTime = currFrame - sceneSetup.lastFrame;
             sceneSetup.lastFrame = currFrame;
 
-            XEngine::processInput(classicWindow.m_window, forwardRender.getActiveCamera(), isUI);
-          
-            //ter.updateTilesPositions();
+            XEngine::processInput(classicWindow.m_window, forwardRender.getActiveCamera(), isUI);          
 
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+      
             if (isUI)
             {
                 myUi.startUpdate();
@@ -970,11 +1158,6 @@ namespace XEngine
                 glfwSetCursorPosCallback(classicWindow.m_window, mouseCallback);
                 glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
-
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-            
 
             /*fb.bind();
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -994,6 +1177,7 @@ namespace XEngine
             shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
             shdManager.getShaderByName("model")->setVec3("lightPos", light.getPos());
             shdManager.getShaderByName("model")->setVec3("camPos", forwardRender.getActiveCamera()->camPos);
+            shdManager.getShaderByName("model")->setVec4("lightColor", lightColor);
 
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, -2.0f, -2.0f));
@@ -1023,15 +1207,7 @@ namespace XEngine
             lightShader.setMat4("model", mat3);
 
             glBindVertexArray(cubeVAO);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            glm::vec3 lightPos = light.getPos();
-
-            if (isUI)
-            {
-                myUi.setUIScene5(lightPos);
-                light.setPos(lightPos);
-            }
+            glDrawArrays(GL_TRIANGLES, 0, 36);           
             
             /*fb.unbind();
             //glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
@@ -1051,12 +1227,51 @@ namespace XEngine
             //glDrawArrays(GL_TRIANGLES, 0, 6);
             //planeText.unbind();*/
 
+            glm::vec3 lightPos = light.getPos();
+
+            glDepthFunc(GL_LEQUAL);  
+            cubeMap.enableShader();
+            view = glm::mat4(glm::mat3(view)); 
+            cubeMap.setMat4("view", view);
+            cubeMap.setMat4("projection", sceneSetup.projMatrix);
+            cubeMap.setInt("skybox", 0);
+
+            glBindVertexArray(skyboxVAO);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(0);
+
+            glDepthFunc(GL_LESS); 
+
+            text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+            if (isUI)
+            {
+                myUi.setUIScene5(lightPos, lightColor);
+                light.setPos(lightPos);
+                light.setColor(lightColor);
+            }
+
+
             classicWindow.update();
+
+            ++frames;
+
+            if (time.elapsed() - ctime > 1.0f)
+            {
+
+                f = frames;
+                frames = 0;
+                ctime += 1.0f;
+            }
+
         }
 
         glDeleteBuffers(1, &cubeVAO);
         glDeleteBuffers(1, &cubeVBO);
-       
+        glDeleteBuffers(1, &skyboxVAO);
+        glDeleteBuffers(1, &skyboxVBO);
         
         myUi.shutdown();
 

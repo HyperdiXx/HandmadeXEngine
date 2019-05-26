@@ -13,6 +13,7 @@ uniform sampler2D texture_normal1;
 uniform sampler2D texture_specular1;
 
 uniform vec3 lightPos;
+uniform vec4 lightColor;
 uniform vec3 camPos;
 
 void main()
@@ -42,6 +43,6 @@ void main()
 
 	vec3 res = ambient + diffuse;
 
-	FragColor = vec4(res, 1.0);
+	FragColor = vec4(res, 1.0) * lightColor;
 	//FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

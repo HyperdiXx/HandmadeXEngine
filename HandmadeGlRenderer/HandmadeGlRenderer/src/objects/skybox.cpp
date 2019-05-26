@@ -2,6 +2,7 @@
 
 #include "../core/rendering/scenes/sceneObjects.h"
 
+
 using namespace XEngine;
 using namespace Rendering;
 
@@ -9,7 +10,8 @@ using namespace Rendering;
 XEngine::Rendering::Skybox::Skybox()
 {
     sky = (GeometryBuffer*)malloc(sizeof(GeometryBuffer));
-    tex = new Cubemap();
+    //tex = new Cubemap();
+    createSkybox();
 }
 
 XEngine::Rendering::Skybox::Skybox(Shader * skyshader)
@@ -142,24 +144,26 @@ void Skybox::createSkybox()
     sky->vao = skyboxVAO;
     sky->vbo = skyboxVBO;
 
-    //cubemaptexture = tex->loadTextureCubemap(mtextures);
-    tex->loadFromFiles(mtextures);
+
+    //cubemaptexture = Utils::loadCubemap(mtextures);
+    //tex->loadFromFiles(mtextures);
 
 }
 
 
 void Skybox::renderSkybox(Shader *shader, glm::mat4& v, glm::mat4& proj)
 {
-    tex->setDepthFunc(GL_LEQUAL);
-    shader->enableShader();
+    glDepthFunc(GL_LEQUAL);
     v = glm::mat3(v);
+    shader->enableShader();
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
     glBindVertexArray(sky->vao);
-    tex->bind(cubemaptexture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemaptexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-    tex->setDepthFunc(GL_LESS);
+    glDepthFunc(GL_LESS);
 }
 
 XEngine::Rendering::SkyboxProced::SkyboxProced()

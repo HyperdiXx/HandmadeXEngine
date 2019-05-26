@@ -26,7 +26,7 @@ namespace XEngine
         void init(GLFWwindow* window, int theme);
         void startUpdate();
         void update(glm::vec4& spritecol);
-        void setUIScene5(glm::vec3 &pos);
+        void setUIScene5(glm::vec3 &pos, glm::vec4 &color);
         //void addEdit3();
         void shutdown();
 

@@ -38,8 +38,8 @@ namespace XEngine
 
          private:
              Shader *shad;
-             static unsigned int quadVAOSpace, quadVBOSpace;
-             static bool initialized;
+             //static unsigned int quadVAOSpace, quadVBOSpace;
+             //static bool initialized;
 
              void initializeQuad();
          };

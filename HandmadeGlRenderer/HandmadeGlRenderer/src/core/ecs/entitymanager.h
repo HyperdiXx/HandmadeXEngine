@@ -9,7 +9,7 @@ namespace XEngine
     public:
         void addEnitity(std::string name, Entity *ent);
         Entity* getEntitybyName(std::string name);
-        inline int getCount() const { return count; }
+        inline uint32 getCount() const { return count; }
 
     private:
         EntityManager() {};
@@ -18,7 +18,7 @@ namespace XEngine
 
     private:
         std::map<std::string, Entity*> mEntities;
-        int count;
+        uint32 count;
 
     public:
         static EntityManager& getInstance()

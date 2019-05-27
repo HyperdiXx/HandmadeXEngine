@@ -1244,7 +1244,7 @@ namespace XEngine
 
             glDepthFunc(GL_LESS); 
 
-            text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
 
             if (isUI)
             {

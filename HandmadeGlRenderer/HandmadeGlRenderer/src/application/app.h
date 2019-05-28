@@ -13,6 +13,8 @@ namespace XEngine
         void OpenGLScene5();
         void terrainDemo();
 
+        void pbr();
+
 
         void updateloop();
         void render();

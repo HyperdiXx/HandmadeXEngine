@@ -316,6 +316,16 @@
     <None Include="src\shaders\terrain.fs" />
     <None Include="src\shaders\simple2d.vs" />
     <None Include="src\shaders\sky.fs" />
+    <None Include="src\shaders\pbr\pbr.vs" />
+    <None Include="src\shaders\pbr\background.vs" />
+    <None Include="src\shaders\pbr\background.fs" />
+    <None Include="src\shaders\pbr\brdf.vs" />
+    <None Include="src\shaders\pbr\brdf.fs" />
+    <None Include="src\shaders\pbr\cubemap.vs" />
+    <None Include="src\shaders\pbr\equ_to_cubemap.fs" />
+    <None Include="src\shaders\pbr\irradiance.fs" />
+    <None Include="src\shaders\pbr\pbr.fs" />
+    <None Include="src\shaders\pbr\pref.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">

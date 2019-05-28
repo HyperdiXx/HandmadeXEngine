@@ -104,50 +104,41 @@ namespace XEngine
             return (hdrTexture);
         }
 
-
-        int loadTexture(const char* filename)
+        unsigned int loadTexture(char const * path)
         {
-            unsigned int textureid;
-            glGenTextures(1, &textureid);
+            unsigned int textureID;
+            glGenTextures(1, &textureID);
 
-            int width, height, nrChannels;
-
-            unsigned char* data = stbi_load(filename, &width, &height, &nrChannels, 0);
+            int width, height, nrComponents;
+            unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
             if (data)
             {
-                GLenum dataformat, internalF;
-                if (nrChannels == 1)
-                    dataformat = internalF = RED;
-                else if (nrChannels == 3)
-                {
-                    internalF = GL_SRGB;
-                    dataformat = RGB;
-                }
-                else if (nrChannels == 4)
-                {
-                    internalF = GL_SRGB_ALPHA;
-                    dataformat = RGBA;
-                }
+                GLenum format;
+                if (nrComponents == 1)
+                    format = GL_RED;
+                else if (nrComponents == 3)
+                    format = GL_RGB;
+                else if (nrComponents == 4)
+                    format = GL_RGBA;
 
-                glBindTexture(GL_TEXTURE_2D, textureid);
-                glTexImage2D(GL_TEXTURE_2D, 0, internalF, width, height, 0, dataformat, GL_UNSIGNED_BYTE, data);
+                glBindTexture(GL_TEXTURE_2D, textureID);
+                glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
                 glGenerateMipmap(GL_TEXTURE_2D);
 
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, REPEAT);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, LINEAR);
-
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
                 stbi_image_free(data);
             }
             else
             {
+                std::cout << "Texture failed to load at path: " << path << std::endl;
                 stbi_image_free(data);
             }
 
-            return textureid;
+            return textureID;
         }
 
         uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)

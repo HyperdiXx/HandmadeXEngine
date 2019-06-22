@@ -338,3 +338,4 @@ ASALocalRun/
 HandmadeGlRenderer/HandmadeGlRenderer/ClassDiagram.cd
 *.cd
 *.ini
+*.tlog

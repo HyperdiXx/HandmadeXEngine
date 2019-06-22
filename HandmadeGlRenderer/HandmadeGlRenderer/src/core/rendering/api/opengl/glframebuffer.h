@@ -32,8 +32,7 @@ namespace XEngine
             inline uint32 getHeight() const { return height; };
             uint32 getColorTexture() const { return colorTexture; };
             uint32 getDepthTexture() const { return depthTexture; };
-         
-            void createShadows();
+
         private:
             GLFrameBuffer(const GLFrameBuffer& fr) = default;
             GLFrameBuffer(GLFrameBuffer&& fr) = default;

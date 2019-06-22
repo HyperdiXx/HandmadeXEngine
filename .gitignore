@@ -336,3 +336,5 @@ ASALocalRun/
 *.idb
 *.ini
 HandmadeGlRenderer/HandmadeGlRenderer/ClassDiagram.cd
+*.cd
+*.ini

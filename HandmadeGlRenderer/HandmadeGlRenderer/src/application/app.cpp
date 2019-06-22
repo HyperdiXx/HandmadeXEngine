@@ -33,8 +33,6 @@
 #include "../core/rendering/scenes/scene.h"
 #include "../core/rendering/pipeline/shadersBase.h"
 
-
-
 #include "../core/geometry/assetmanager.h"
 
 #include "../core/rendering/scenes/sceneObjects.h"
@@ -47,6 +45,8 @@
 
 
 #include "../core/systems/textureload.h"
+
+#include "../objects/shadowmap.h"
 
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -889,7 +889,8 @@ namespace XEngine
 
         XEngine::GLGUI myUi(classicWindow.m_window, 1);
 
-       
+        
+
         Resources resources;
         
         Assets::Model castle("src/models/castle/castle.obj", false);
@@ -906,6 +907,7 @@ namespace XEngine
         Shader lightShader("src/shaders/simpleshader.vs", "src/shaders/simpleshader.fs");
         Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
         Shader textShader("src/shaders/text.vs", "src/shaders/text.fs");
+        
 
         Texture2D planeText;
         planeText.loadFromFile("src/textures/logo.png", COLOR);
@@ -936,6 +938,9 @@ namespace XEngine
 
         GLFrameBuffer fb(WINDOWWIDTH, WINDOWHEIGHT);
         fb.init();
+
+
+        //ShadowMap shadows(2048, 2048);
 
         glm::mat4 orho = glm::mat4(1.0f);
         glm::mat4 view = glm::mat4(1.0f);
@@ -1058,7 +1063,7 @@ namespace XEngine
             -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
             -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
         };
-        // first, configure the cube's VAO (and VBO)
+        
         unsigned int VBO, cubeVAO;
         glGenVertexArrays(1, &cubeVAO);
         glGenBuffers(1, &VBO);
@@ -1170,19 +1175,19 @@ namespace XEngine
         
         while (!classicWindow.isClosed())
         {
-            forwardRender.getActiveCamera()->speed = 10.0 * sceneSetup.deltaTime;
-        
+            forwardRender.getActiveCamera()->speed = 5.0f * sceneSetup.deltaTime;
+
             real64 currFrame = glfwGetTime();
-            
+
             sceneSetup.deltaTime = currFrame - sceneSetup.lastFrame;
             sceneSetup.lastFrame = currFrame;
 
-            XEngine::processInput(classicWindow.m_window, forwardRender.getActiveCamera(), isUI);          
+            XEngine::processInput(classicWindow.m_window, forwardRender.getActiveCamera(), isUI);
 
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-      
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             if (isUI)
             {
                 myUi.startUpdate();
@@ -1202,16 +1207,16 @@ namespace XEngine
                 glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
-            
+
 
             //ter.up = 1.0f;
             //ter.render();
 
             shdManager.getShaderByName("model")->enableShader();
-            view  = forwardRender.getActiveCamera()->getViewMatrix();
+            view = forwardRender.getActiveCamera()->getViewMatrix();
 
             //light.setPos(sin(glfwGetTime()) * 3.0f, cos(glfwGetTime()) * 2.0f, 5.0 + cos(glfwGetTime())* 1.0f);
-          
+
             glm::mat4 viewproj = sceneSetup.projMatrix * view;
 
             shdManager.getShaderByName("model")->setMat4("viewproj", viewproj);
@@ -1230,11 +1235,11 @@ namespace XEngine
             //mesh1.transf->setScale(glm::vec3(0.2f, 0.2f, 0.2f));
             //loading.setMat4("model", model);
             //erato.drawMesh(&loading);
-            
+
             mesh1.material->getShader()->setMat4("model", model);
 
             forwardRender.renderScene(&scene1);
-           
+
             glm::mat4 mat3 = glm::mat4(1.0);
 
             boxPos.x = 1.0f + sin(glfwGetTime()) * 5.0f;
@@ -1244,9 +1249,9 @@ namespace XEngine
 
 
             lightShader.enableShader();
-             
+
             planeText.bind(0);
-            
+
             lightShader.setMat4("projection", sceneSetup.projMatrix);
             lightShader.setMat4("view", view);
 
@@ -1271,12 +1276,12 @@ namespace XEngine
             renderer.end();
 #endif
             renderer.flush();
-     
+
             glm::vec3 lightPos = light.getPos();
 
-            glDepthFunc(GL_LEQUAL);  
+            glDepthFunc(GL_LEQUAL);
             cubeMap.enableShader();
-            view = glm::mat4(glm::mat3(view)); 
+            view = glm::mat4(glm::mat3(view));
             cubeMap.setMat4("view", view);
             cubeMap.setMat4("projection", sceneSetup.projMatrix);
             cubeMap.setInt("skybox", 0);
@@ -1287,7 +1292,7 @@ namespace XEngine
             glDrawArrays(GL_TRIANGLES, 0, 36);
             glBindVertexArray(0);
 
-            glDepthFunc(GL_LESS); 
+            glDepthFunc(GL_LESS);
 
             text1.updateText("FPS: " + std::to_string(f), 10.0f, 700.0f, 0.3f, glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -1316,7 +1321,7 @@ namespace XEngine
                 light.setPos(lightPos);
                 light.setColor(lightColor);
             }
-            
+
 
 
             classicWindow.update();
@@ -1542,35 +1547,10 @@ namespace XEngine
         glfwSetCursorPosCallback(classicWindow.m_window, mouseCallback);
         glfwSetScrollCallback(classicWindow.m_window, scrollCallback);
         glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        //glfwSetInputMode(classicwindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        //glfwSetInputMode(classicWindow.m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
         classicWindow.initStats();
 
-        /*glfwInit();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_SAMPLES, 4);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-        GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "XEngine", NULL, NULL);
-        glfwMakeContextCurrent(window);
-        if (window == NULL)
-        {
-            std::cout << "Failed to create GLFW window" << std::endl;
-            glfwTerminate();
-        }
-
-        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-        glfwSetCursorPosCallback(window, mouseCallback);
-        glfwSetScrollCallback(window, scrollCallback);
-
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            std::cout << "Failed to initialize GLAD" << std::endl;
-        }
-        */
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);

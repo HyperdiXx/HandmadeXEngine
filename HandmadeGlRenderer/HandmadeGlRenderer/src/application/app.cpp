@@ -888,9 +888,7 @@ namespace XEngine
         classicWindow.initStats();
 
         XEngine::GLGUI myUi(classicWindow.m_window, 1);
-
-        
-
+      
         Resources resources;
         
         Assets::Model castle("src/models/castle/castle.obj", false);

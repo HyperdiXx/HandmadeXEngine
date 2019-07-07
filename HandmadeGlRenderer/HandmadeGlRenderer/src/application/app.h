@@ -1,11 +1,12 @@
 #pragma once
 
+#ifndef APP_INIT
+#define APP_INIT
 
 namespace XEngine
 {
-    class Application
+    struct Application
     {
-    public:
         void OpenGLScene1();
         void OpenGLScene2();
         void OpenGLScene3();
@@ -15,13 +16,11 @@ namespace XEngine
 
         void pbr();
 
-
         void updateloop();
         void render();
 
-
         void DX11InitEngine();    
     };
-
-
 }
+
+#endif

@@ -7,6 +7,7 @@ in vec3 Normal;
 in vec3 TangentLightPos;
 in vec3 TangentViewPos;
 in vec3 TangentFragPos;
+in vec3 colorRes;
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_normal1;
@@ -27,7 +28,7 @@ void main()
 	vec3 spectex = vec3(texture(texture_specular1, UV));
 	normaltex = normalize(normaltex * 2.0 - 1.0);
 	
-	vec3 ambient = 0.1 * diftex;
+	vec3 ambient = 0.7 * diftex;
 
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(normaltex, lightDir), 0.0);
@@ -41,8 +42,8 @@ void main()
  
 	//vec3 colortotest = vec3(1.0, 0.0, 0.0);
 
-	vec3 res = ambient + diffuse;
+	vec3 res = ambient;
 
-	FragColor = vec4(res, 1.0) * lightColor;
+	FragColor = vec4(ambient, 1.0) * lightColor;
 	//FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

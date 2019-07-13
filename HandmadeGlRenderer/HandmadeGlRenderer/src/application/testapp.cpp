@@ -2,7 +2,9 @@
 
 XEngine::TestApp::TestApp(RenderAPI type)
 {
-
+    onStart();
+    onUpdate(1.0f);
+    onShutdown();
 }
 
 void XEngine::TestApp::onStart()

@@ -12,6 +12,7 @@ out vec3 Normal;
 out vec3 TangentLightPos;
 out vec3 TangentViewPos;
 out vec3 TangentFragPos;
+out vec3 colorRes;
 
 uniform mat4 model;
 uniform mat4 viewproj;
@@ -35,6 +36,8 @@ void main()
     //TangentFragPos  = TBN * FragPos;
 
 	Normal = normalMatrix * aNormal;
+
+	colorRes = vec3(1.0, 0.0, 0.0);
 
     gl_Position = viewproj * model* vec4(aPos, 1.0);
 }

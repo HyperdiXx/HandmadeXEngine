@@ -1,17 +1,31 @@
 @echo off
 
-set CompilerFlags=
-set LinkerFlags=
+set enginepath=E:\HandmadeXEngine\
 
-set Platform=win64
-set BuildFlag="%~1" 
-set BuildBase=build
-set buildDir=%BuildBase%%BuildFlag%
-if "%~2"=="x86" set buildDir=buildWin32
+set compilerFlags=
+set linkerFlags=
+
+set buildFlag=%~1 
+set buildBase=build
+
+if "%~2"==-x86 set platform=win32
+if "%~2"==-x64 set platform=win64
+
+set buildDir=%buildBase%%BuildFlag%
 
 IF NOT EXIST "%buildDir%" mkdir "%buildDir%"
 pushd "%buildDir%"" 
 
 mkdir data
 mkdir libs
+
+popd
+
+set dataDir=%enginepath%HandmadeGlRenderer\data
+set resDir=%enginepath%%buildDir%\data
+
+echo %enginepath%%buildDir%
+echo %dataDir%
+
+xcopy "%dataDir%" "%resDir%" /E /Q
 

@@ -1,30 +1,34 @@
 @echo off
 
-set enginepath=E:\HandmadeXEngine\
+set enginepath=%cd%
+set "projectName=XEngine"
 
 set compilerFlags=
 set linkerFlags=
 
-set buildFlag=%~1 
-set buildBase=build
+set "buildFlag=Release" 
+set "buildBase=%projectName%"
 
-if "%~2"==-x86 set platform=win32
-if "%~2"==-x64 set platform=win64
+set "platform=Win64"
 
-set buildDir=%buildBase%%BuildFlag%
+if "%~1"=="-debug" set "buildFlag=Debug"
+if "%~2"=="-x86" set "platform=Win32"
+
+set "buildDir=%buildBase%%BuildFlag%%platform%
 
 IF NOT EXIST "%buildDir%" mkdir "%buildDir%"
-pushd "%buildDir%"" 
+pushd "%buildDir%" 
 
+mkdir build
 mkdir data
 mkdir libs
 
 popd
 
-set dataDir=%enginepath%HandmadeGlRenderer\data
-set resDir=%enginepath%%buildDir%\data
+set "resDir=%enginepath%\%buildDir%\data"
+set "dataDir=%enginepath%\HandmadeGlRenderer\data"
 
-echo %enginepath%%buildDir%
+echo %resDir%
 echo %dataDir%
 
 xcopy "%dataDir%" "%resDir%" /E /Q

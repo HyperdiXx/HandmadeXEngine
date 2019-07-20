@@ -26,7 +26,7 @@ mkdir libs
 popd
 
 set "resDir=%enginepath%\%buildDir%\data"
-set "dataDir=%enginepath%\HandmadeGlRenderer\data"
+set "dataDir=%enginepath%\%projectName%\data"
 
 echo %resDir%
 echo %dataDir%

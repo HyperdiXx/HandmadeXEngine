@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{76BAC5B6-FDF0-4706-93B9-9B0C584FDF6E}</ProjectGuid>
+    <ProjectGuid>{48815F50-9AC5-47C7-A7E3-FF1B38114635}</ProjectGuid>
     <RootNamespace>HandmadeGlRenderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>XEngine</ProjectName>
@@ -44,8 +44,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\HandmadeXEngine\XEngine\XEngine\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\HandmadeXEngine\XEngine\XEngine\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)int\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -61,7 +61,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\HandmadeXEngine\XEngine\XEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -69,7 +69,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype.lib;assimp-vc140-mt.lib;glfw643.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\HandmadeXEngine\XEngine\XEngine\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <EntryPointName>vs_main</EntryPointName>

@@ -26,7 +26,10 @@
 ### API:
 - OpenGL
 - DX11
-- DX12 soon
+
+### Building Windows:
+
+buildTest.bat
 
 ![EngineTest](../master/test1image.png)
 ![EngineTest](../master/test2image.png)

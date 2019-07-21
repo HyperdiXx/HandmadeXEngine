@@ -18,7 +18,6 @@ namespace XEngine
     static uint32 quadVBO;
     static uint32 sphereVAO = 0;
     static uint32 indexCount;
-
  
     std::vector<float> createPlane();
     std::vector<float> createVert();
@@ -36,12 +35,7 @@ namespace XEngine
         static void renderSphere();
         static void renderRect();
         static void renderQuad();
-
     };
-
-
-
-
 }
 
 

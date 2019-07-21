@@ -166,7 +166,7 @@ namespace maths
 
         }
 
-        static vec3 project(const vec3& vect, const vec3& normal)
+        static vec3 projection(const vec3& vect, const vec3& normal)
         {
             return normal.normalize() * dot(vect, normal);
         }

@@ -4,7 +4,7 @@
 #include "vec4.h"
 #include "utils.h"
 
-namespace maths
+namespace Math
 {
     float toRadians(float degree);
     struct mat4

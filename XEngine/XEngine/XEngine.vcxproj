@@ -263,6 +263,7 @@
     <ClInclude Include="src\core\ecs\entitymanager.h" />
     <ClInclude Include="src\core\geometry\assetmanager.h" />
     <ClInclude Include="src\core\geometry\resources.h" />
+    <ClInclude Include="src\core\math\rect.h" />
     <ClInclude Include="src\core\math\transforms.h" />
     <ClInclude Include="src\core\rendering\api\basic\context.h" />
     <ClInclude Include="src\core\rendering\api\basic\framebuffer.h" />

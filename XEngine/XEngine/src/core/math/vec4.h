@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-namespace maths
+namespace Math
 {
     template<typename T>
     struct vec4

@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-namespace maths
+namespace Math
 {
     struct vec3
     {

@@ -1,7 +1,7 @@
 #include "mat4.h"
 #include "math.h"
 
-namespace maths
+namespace Math
 {
     mat4 mat4::translation(const vec3 &tran)
     {

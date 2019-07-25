@@ -6,7 +6,6 @@
 
 namespace Math
 {
-    float toRadians(float degree);
     struct mat4
     {
         union

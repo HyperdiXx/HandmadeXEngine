@@ -5,14 +5,15 @@
 
 #include <glad/glad.h>
 
-enum shadertypes
+namespace XEngine
 {
-    Vertex = GL_VERTEX_SHADER,
-    Geometry = GL_GEOMETRY_SHADER,
-    Fragment = GL_FRAGMENT_SHADER
-};
-
-
+    enum GLShaderType
+    {
+        VertexShader = GL_VERTEX_SHADER,
+        GeometryShader = GL_GEOMETRY_SHADER,
+        FragmentShader = GL_FRAGMENT_SHADER
+    };
+}
 #endif // !SHADER_TYPE
 
 

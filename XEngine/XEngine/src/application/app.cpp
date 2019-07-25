@@ -564,9 +564,9 @@ namespace XEngine
         Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
         Shader shaderLightBox("src/shaders/slight.vs", "src/shaders/slight.fs");
 
-        shaderGeometryPass.setupShaderFile();
-        shaderLightingPass.setupShaderFile();
-        shaderLightBox.setupShaderFile();
+        shaderGeometryPass.setupBasicShader();
+        shaderLightingPass.setupBasicShader();
+        shaderLightBox.setupBasicShader();
 
 
         Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
@@ -766,7 +766,7 @@ namespace XEngine
 
         Shader shader("src/shaders/pbr.vs", "src/shaders/pbr.fs");
 
-        shader.setupShaderFile();
+        shader.setupBasicShader();
 
         shader.enableShader();
         shader.setInt("albedoMap", 0);
@@ -898,7 +898,7 @@ namespace XEngine
         //Assets::Model *dragon = Assets::AssetManager::getModel("Erato");
 
         Scene scene1("Scene5");
-
+        
         Shader screenShader("src/shaders/fbo.vs", "src/shaders/fbo.fs");
         Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
         Shader basicLightModel("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");

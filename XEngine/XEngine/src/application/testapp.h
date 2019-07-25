@@ -17,11 +17,12 @@ namespace XEngine
         void onStart();
         void onDraw();
         void onUpdate(float dt);
+        void onPostUpdate();
         void onShutdown();
 
     private:
 
-        Camera camera;
+        bool32 isRunning;
         
 
     };

@@ -51,10 +51,10 @@ namespace Math
         inline static Quaternion rotate(const vec3& source, const vec3& dest, const vec3& r = vec3(0.0f, 0.0f, 0.0f));
         inline static Quaternion rotate(const vec3& vec, float angle);
         
-        inline static Quaternion rotateFast();
-        inline static Quaternion rotateFast();
-        inline static Quaternion rotateFast();
-        inline static Quaternion rotateFast();
+        inline static Quaternion rotateFast(const vec3& euler);
+        inline static Quaternion rotateFast(const mat4& matrix);
+        inline static Quaternion rotateFast(const vec3& vec, float angle);
+        inline static Quaternion rotateFast(const vec3& sour, const vec3& dest, const vec3& r = vec3(0.0f, 0.0f, 0.0f));
 
         //Convertion
         inline void convertToAxisAngle(vec3& vec, float& angle) const;

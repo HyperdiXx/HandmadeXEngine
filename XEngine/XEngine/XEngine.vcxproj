@@ -359,6 +359,7 @@
     <ClInclude Include="src\core\windowsystem\dx12.h" />
     <ClInclude Include="src\core\windowsystem\openglwnd.h" />
     <ClInclude Include="src\core\windowsystem\windowWin.h" />
+    <ClInclude Include="src\exportapi.h" />
     <ClInclude Include="src\imguit\imgui_impl_dx11.h" />
     <ClInclude Include="src\imguit\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imguit\imgui_impl_win32.h" />

@@ -1,5 +1,10 @@
 #pragma once
 
+#ifndef VEC3_H
+#define VEC3_H
+
+#include "mathexport.h"
+
 
 #include <stdio.h>
 #include <stdint.h>
@@ -8,9 +13,8 @@
 
 namespace Math
 {
-    struct vec3
+    struct MATH_API vec3
     {
-
         union
         {
             struct
@@ -163,7 +167,7 @@ namespace Math
 
         static vec3 slerp(const vec3& start, const vec3& end, float dt)
         {
-
+            return vec3();
         }
 
         static vec3 projection(const vec3& vect, const vec3& normal)
@@ -179,3 +183,4 @@ namespace Math
 
     };
 };
+#endif // !VEC3_H

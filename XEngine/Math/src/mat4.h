@@ -1,12 +1,15 @@
 #pragma once
 
+#ifndef MAT3_H
+#define MAT3_H
+
 #include "vec3.h"
 #include "vec4.h"
 #include "utils.h"
 
 namespace Math
 {
-    struct mat4
+    struct MATH_API mat4
     {
         union
         {
@@ -111,3 +114,4 @@ namespace Math
 
     };
 }
+#endif // !MAT3_H

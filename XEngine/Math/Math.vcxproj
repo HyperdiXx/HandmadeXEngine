@@ -82,6 +82,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>MATH_WINDOWS; MATH_BUILD_LIB; _WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -123,7 +124,8 @@
   <ItemGroup>
     <ClInclude Include="src\mat3.h" />
     <ClInclude Include="src\mat4.h" />
-    <ClInclude Include="src\math.h" />
+    <ClInclude Include="src\mathdll.h" />
+    <ClInclude Include="src\mathexport.h" />
     <ClInclude Include="src\quaternion.h" />
     <ClInclude Include="src\rect.h" />
     <ClInclude Include="src\utils.h" />
@@ -133,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\mat4.cpp" />
+    <ClCompile Include="src\quaternion.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

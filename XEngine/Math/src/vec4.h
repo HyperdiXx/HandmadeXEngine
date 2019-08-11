@@ -1,16 +1,19 @@
 #pragma once
 
+#ifndef VEC4_H
+#define VEC4_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <iostream>
 
+#include "mathexport.h"
 
 namespace Math
 {
     template<typename T>
-    struct vec4
+    struct MATH_API vec4
     {
-
         union
         {
             struct
@@ -142,4 +145,6 @@ namespace Math
 
     };
 };
+
+#endif // !VEC4_H
 

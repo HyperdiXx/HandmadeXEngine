@@ -1,9 +1,13 @@
 #pragma once
 
+#ifndef RECT_H
+#define RECT_H
+
+#include "mathexport.h"
 
 namespace Math
 {
-    class Rect
+    class MATH_API Rect
     {
     public:
 
@@ -48,5 +52,6 @@ namespace Math
 
     };
 }
+#endif // !RECT_H
 
-   
+

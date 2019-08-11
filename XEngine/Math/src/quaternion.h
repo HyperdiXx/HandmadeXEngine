@@ -1,7 +1,9 @@
 #pragma once
 
+#ifndef QUATERNION_H
+#define QUATERNION_H
+
 #include "mat4.h"
-#include "vec3.h"
 #include "utils.h"
 
 namespace Math
@@ -11,7 +13,7 @@ namespace Math
       *
       *
       */
-    class Quaternion
+    class MATH_API Quaternion
     {
     public:
         static const Quaternion identity;
@@ -25,10 +27,10 @@ namespace Math
             float data[4];
         };
 
-        inline Quaternion(const float *data);
-        inline Quaternion(float xV = 0.0f, float yVal = 0.0f, float zVal = 0.0f, float wVal = 1.0f);
-        inline Quaternion(const Quaternion& b);
-        inline const Quaternion& operator=(const Quaternion& b);
+        inline Quaternion(const float *data) {};
+        inline Quaternion(float xV = 0.0f, float yVal = 0.0f, float zVal = 0.0f, float wVal = 1.0f) {};
+        inline Quaternion(const Quaternion& b) {};
+        inline const Quaternion& operator=(const Quaternion& b) ;
         
         inline Quaternion& operator*=(const Quaternion& quat);
         inline Quaternion operator*(const Quaternion& q) const;
@@ -72,3 +74,4 @@ namespace Math
         inline void construct(const vec3& source, const vec3& dest, const vec3& r = vec3(0.0f, 0.0f, 0.0f));
     };
 }
+#endif // !QUATERNION_H

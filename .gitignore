@@ -335,9 +335,11 @@ ASALocalRun/
 *.tlog
 *.idb
 *.ini
-HandmadeGlRenderer/HandmadeGlRenderer/ClassDiagram.cd
+*.cd
 *.cd
 *.ini
 *.tlog
 *.exe
 *.dll
+*.exp
+*.lib

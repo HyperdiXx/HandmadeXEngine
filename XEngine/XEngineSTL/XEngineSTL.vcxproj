@@ -20,13 +20,13 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{8F481B9D-B899-49E3-B818-A04A1D65AFD0}</ProjectGuid>
-    <RootNamespace>Math</RootNamespace>
+    <ProjectGuid>{53272607-1563-4FE3-A524-A63CDD5EB299}</ProjectGuid>
+    <RootNamespace>XEngineSTL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -39,7 +39,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -69,12 +69,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Math\$(Configuration)\</OutDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Output\$(ProjectName)\bin$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)Output\$(ProjectName)\int$(Platform)\</IntDir>
+    <IncludePath>E:\HandmadeXEngine\XEngine\XEngineSTL\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -121,18 +119,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\mat3.h" />
-    <ClInclude Include="src\mat4.h" />
-    <ClInclude Include="src\math.h" />
-    <ClInclude Include="src\quaternion.h" />
-    <ClInclude Include="src\rect.h" />
-    <ClInclude Include="src\utils.h" />
-    <ClInclude Include="src\vec2.h" />
-    <ClInclude Include="src\vec3.h" />
-    <ClInclude Include="src\vec4.h" />
+    <ClInclude Include="inc\sort.h" />
+    <ClInclude Include="inc\types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\mat4.cpp" />
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

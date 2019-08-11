@@ -339,3 +339,5 @@ HandmadeGlRenderer/HandmadeGlRenderer/ClassDiagram.cd
 *.cd
 *.ini
 *.tlog
+*.exe
+*.dll

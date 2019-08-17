@@ -3,7 +3,7 @@
 
 namespace Math
 {
-    mat4 mat4::translation(const vec3 &tran)
+    mat4 mat4::translate(const vec3 &tran)
     {
         mat4 res(1.0f);
 
@@ -14,11 +14,11 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::rotation(float angle, const vec3 & axis)
+    mat4 mat4::rotate(float angle, const vec3 & axis)
     {
         mat4 res(1.0f);
 
-        float r = toRadians(angle);
+        float r = Utils::toRadians(angle);
         float c = cos(r);
         float s = sin(r);
 
@@ -52,5 +52,73 @@ namespace Math
 
         return (res);
     }
+
+    mat4 mat4::rotateX(float radians)
+    {
+        mat4 res = mat4::identity();
+
+        float cos = Utils::cos(radians);
+        float sin = Utils::sin(radians);
+
+        res.m22 = cos;
+        res.m23 = sin;
+        res.m32 = -sin;
+        res.m33 = cos;
+
+        return res;
+    }
+
+    mat4 mat4::rotateY(float radians)
+    {
+        mat4 res = mat4::identity();
+
+        float cos = Utils::cos(radians);
+        float sin = Utils::sin(radians);
+
+        res.m11 = cos;
+        res.m13 = -sin;
+        res.m31 = sin;
+        res.m33 = cos;
+
+        return res;
+    }
+
+    mat4 mat4::rotateZ(float radians)
+    {
+        mat4 res = mat4::identity();
+
+        float cos = Utils::cos(radians);
+        float sin = Utils::sin(radians);
+
+        res.m11 = cos;
+        res.m12 = sin;
+        res.m21 = -sin;
+        res.m22 = cos;
+
+        return res;
+    }
+
+    mat4 mat4::transform(const vec3 & translate, const vec3 & rotate, const vec3 & scale)
+    {
+        return mat4();
+    }
     
+    void mat4::setDiagonal(const vec4<float>& diagonal)
+    {
+        setDiagonal(diagonal.x, diagonal.y, diagonal.z, diagonal.z);
+    }
+
+    void mat4::setDiagonal(float m1, float m2, float m3)
+    {
+        setDiagonal(m1, m2, m3, 1.0f);
+    }
+
+    void mat4::setDiagonal(float r0, float r1, float r2, float r3)
+    {
+        m11 = r0;
+        m22 = r1;
+        m33 = r2;
+        m44 = r3;
+    }
+
 }

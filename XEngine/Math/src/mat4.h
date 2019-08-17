@@ -38,6 +38,20 @@ namespace Math
             elem[3 + 3 * 4] = iden;
         }
 
+        void set();
+        float getElem(int x, int y) const;
+
+        mat4 transpose() const;
+
+        mat4 inverse() const;
+
+        bool isZero() const;
+        bool isIdentity() const;
+
+        void setDiagonal(const vec4<float>& diagonal);
+        void setDiagonal(float r0, float r1, float r2, float r3);
+        void setDiagonal(float m1, float m2, float m3);
+
         static mat4 identity()
         {
             return mat4(1.0f);
@@ -85,7 +99,7 @@ namespace Math
         {
             mat4 res;
 
-            float q = 1.0f / tan(toRadians(0.5f * fov));
+            float q = 1.0f / tan(Utils::toRadians(0.5f * fov));
             float a = q / aspectratio;
             float b = (nearplane + farplane) / (nearplane - farplane);
             float c = (2.0f  * nearplane * farplane) / (nearplane - farplane);
@@ -98,9 +112,15 @@ namespace Math
             return res;
         }
 
-        static mat4 translation(const vec3 &tran);
-        static mat4 rotation(float angle, const vec3& axis);
+        static mat4 translate(const vec3 &tran);
+        static mat4 rotate(float angle, const vec3& axis);
         static mat4 scale(const vec3& scale);
+
+        static mat4 rotateX(float radians);
+        static mat4 rotateY(float radians);
+        static mat4 rotateZ(float radians);
+
+        static mat4 transform(const vec3& translate, const vec3& rotate, const vec3& scale);
 
         friend mat4 operator*(mat4& a, const mat4& b)
         {

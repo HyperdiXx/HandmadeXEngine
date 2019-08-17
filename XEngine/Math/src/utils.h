@@ -7,14 +7,31 @@ namespace Math
 {
 #define PI 3.14159265f
 
-    inline float toRadians(float degree)
+    class Utils
     {
-        return degree * (PI / 180.0f);
-    }
+    public:
 
-    inline float toDegrees(float radians)
-    {
-        return radians * (180.0f / PI);
-    }
+        inline static float toRadians(float degree)
+        {
+            return degree * (PI / 180.0f);
+        }
+
+        inline static float toDegrees(float radians)
+        {
+            return radians * (180.0f / PI);
+        }
+
+        inline static float sin(float radians)
+        {
+            return sinf(radians);
+        }
+
+        inline static float cos(float radians)
+        {
+            return cosf(radians);
+        }
+
+    };
+
 }
 

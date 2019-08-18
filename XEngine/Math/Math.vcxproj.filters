@@ -42,7 +42,7 @@
     <ClInclude Include="src\mathexport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\mathdll.h">
+    <ClInclude Include="src\xemath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

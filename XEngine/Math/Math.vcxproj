@@ -124,7 +124,7 @@
   <ItemGroup>
     <ClInclude Include="src\mat3.h" />
     <ClInclude Include="src\mat4.h" />
-    <ClInclude Include="src\mathdll.h" />
+    <ClInclude Include="src\xemath.h" />
     <ClInclude Include="src\mathexport.h" />
     <ClInclude Include="src\quaternion.h" />
     <ClInclude Include="src\rect.h" />

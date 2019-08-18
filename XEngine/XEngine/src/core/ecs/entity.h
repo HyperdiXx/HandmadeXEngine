@@ -7,7 +7,8 @@
 #include "../rendering/pipeline/materials/basicmaterial.h"
 #include "../rendering/pipeline/materials/bpmaterial.h"
 #include "../rendering/pipeline/materials/pbrmaterial.h"
-#include "../math/transforms.h"
+
+#include <xemath.h>
 
 namespace XEngine
 {

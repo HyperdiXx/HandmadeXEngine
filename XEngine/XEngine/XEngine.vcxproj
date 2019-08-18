@@ -46,8 +46,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>E:\HandmadeXEngine\XEngine\XEngine\inc;$(IncludePath)</IncludePath>
     <LibraryPath>E:\HandmadeXEngine\XEngine\XEngine\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)int\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)Output\$(ProjectName)\bin$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)Output\$(ProjectName)\int$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>E:\HandmadeXEngine\HandmadeGlRenderer\HandmadeGlRenderer\inc;$(IncludePath)</IncludePath>
@@ -61,8 +61,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\HandmadeXEngine\XEngine\XEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\HandmadeXEngine\XEngine\XEngine; $(SolutionDir)Math\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XENGINE_WINDOWS; XENGINE_LIB; MATH_WINDOWS; _CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
@@ -400,6 +400,14 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="src\fonts\arial.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Math\Math.vcxproj">
+      <Project>{8f481b9d-b899-49e3-b818-a04a1d65afd0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\XEngineSTL\XEngineSTL.vcxproj">
+      <Project>{53272607-1563-4fe3-a524-a63cdd5eb299}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

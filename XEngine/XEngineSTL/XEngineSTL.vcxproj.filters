@@ -21,6 +21,12 @@
     <ClInclude Include="inc\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\XEngineSTL\sort.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\XEngineSTL\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">

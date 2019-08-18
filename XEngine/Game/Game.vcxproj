@@ -79,6 +79,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>XENGINE_WINDOWS; MATH_WINDOWS; _MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -119,6 +120,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Math\Math.vcxproj">
+      <Project>{8f481b9d-b899-49e3-b818-a04a1d65afd0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\XEngineSTL\XEngineSTL.vcxproj">
+      <Project>{53272607-1563-4fe3-a524-a63cdd5eb299}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\XEngine\XEngine.vcxproj">
+      <Project>{48815f50-9ac5-47c7-a7e3-ff1b38114635}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

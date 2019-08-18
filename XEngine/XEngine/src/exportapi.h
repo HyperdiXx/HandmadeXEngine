@@ -1,9 +1,12 @@
 #pragma once
 
-#ifdef XENGINEOUT
-#define XENGINE_API __declspec(dllexport)
+#ifdef XENGINE_WINDOWS
+    #ifdef XENGINE_LIB
+        #define XENGINE_API __declspec(dllexport)
+    #else
+        #define XENGINE_API __declspec(dllimport)
+    #endif
 #else
-#define XENGINE_API __declspec(dllimport)
-
-#endif //  XEPORT
+    //LINUX....
+#endif
 

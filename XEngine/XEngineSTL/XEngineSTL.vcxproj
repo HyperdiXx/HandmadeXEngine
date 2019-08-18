@@ -121,6 +121,8 @@
   <ItemGroup>
     <ClInclude Include="inc\sort.h" />
     <ClInclude Include="inc\types.h" />
+    <ClInclude Include="inc\XEngineSTL\sort.h" />
+    <ClInclude Include="inc\XEngineSTL\types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />

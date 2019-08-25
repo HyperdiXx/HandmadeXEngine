@@ -14,12 +14,24 @@ namespace Math
         static const int ELEM_COUNT = 16;
         static const int ROW_COUNT = 4;
 
+        /*
+            Row-major matrixes
+
+
+        */
+
         union
         {
             struct
             {
                 // m[row][column]
-                float m11, m21, m31, m41, m12, m22, m32, m42, m13, m23, m33, m43, m14, m24, m34, m44;
+                //float m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33, m04, m14, m24, m34;
+
+                float m00, m01, m02, m03;
+                float m10, m11, m12, m13;
+                float m20, m21, m22, m23;
+                float m30, m31, m32, m33;
+
             };
             float	elem[16];
 
@@ -49,7 +61,8 @@ namespace Math
 
         int getIndex(int val) const;
 
-        mat4 transpose() const;
+        inline void zero();
+        inline void transpose() const;
 
         mat4 inverse() const;
 

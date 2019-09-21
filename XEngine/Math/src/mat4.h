@@ -15,7 +15,7 @@ namespace Math
         static const int32 ROW_COUNT = 4;
 
         /**
-         *   Row-major notation matrix 4x4 float val
+         *   Row-major notation matrix 4x4 real32 val
          *
          *   [m00, m01, m02, m03,
          *    m10, m11, m12, m13,
@@ -47,7 +47,7 @@ namespace Math
                 elem[i] = 0.0f;
         }
 
-        //Identity Constructor. Creates identity Matrix
+        //Creates identity Matrix
         mat4(real32 iden)
         {
             for (size_t i = 0; i < ELEM_COUNT; ++i)
@@ -59,6 +59,32 @@ namespace Math
             elem[3 + 3 * ROW_COUNT] = iden;
         }
 
+        mat4(real32 m00, real32 m01, real32 m02, real32 m03,
+             real32 m10, real32 m11, real32 m12, real32 m13,
+             real32 m20, real32 m21, real32 m22, real32 m23,
+             real32 m30, real32 m31, real32 m32, real32 m33)
+        {
+            elem[0] = m00;
+            elem[1] = m01;
+            elem[2] = m02;
+            elem[3] = m03;
+
+            elem[4] = m10;
+            elem[5] = m11;
+            elem[6] = m12;
+            elem[7] = m13;
+
+            elem[8] = m20;
+            elem[9] = m21;
+            elem[10] = m22;
+            elem[11] = m23;
+
+            elem[12] = m30;
+            elem[13] = m31;
+            elem[14] = m32;
+            elem[15] = m33;
+        }
+
         void set(int32 i, real32 val);
         void set(int32 i, int32 j, real32 val);
         real32 get(int32 i) const;
@@ -67,14 +93,13 @@ namespace Math
         int32 getIndex(int32 val) const;
 
         inline void zero();
-        inline mat4 transpose() const;
-
-        inline mat4* getTransposed();
+        inline void transpose();
+        inline mat4 getTransposed();
 
         inline mat4 invert() const;
         inline mat4 getInverted();
 
-        float determinant();
+        real32 determinant();
 
         bool isZero() const;
         bool isIdentity() const;
@@ -83,6 +108,19 @@ namespace Math
         void setDiagonal(real32 r0, real32 r1, real32 r2, real32 r3);
         void setDiagonal(real32 m1, real32 m2, real32 m3);
 
+        inline vec3 getTranslation() const { return vec3(m03, m13, m23); }
+        inline void setTranslation(const vec3& a) { m03 = a.x; m13 = a.y; m23 = a.z; }
+
+        void printElements() const
+        {
+            printf("\nMatrix 4x4\n");
+            for (size_t i = 0; i < ELEM_COUNT; i = i + 4)
+            {
+                printf("%f %f %f %f\n", elem[i], elem[i + 1], elem[i + 2], elem[i + 3]);
+            }
+            printf("\n");
+        }
+
         static mat4 identity()
         {
             return mat4(1.0f);
@@ -90,13 +128,13 @@ namespace Math
 
         mat4& mul(const mat4& a)
         {
-            float data[ELEM_COUNT];
+            real32 data[ELEM_COUNT];
 
             for (size_t y = 0; y < ROW_COUNT; ++y)
             {
                 for (size_t x = 0; x < ROW_COUNT; ++x)
                 {
-                    float s = 0.0f;
+                    real32 s = 0.0f;
                     for (size_t el = 0; el < ROW_COUNT; ++el)
                     {
                         s += elem[x + el * ROW_COUNT] * a.elem[el + y * ROW_COUNT];
@@ -110,7 +148,7 @@ namespace Math
             return *this;
         }
 
-        float operator[](int i) const;
+        real32 operator[](int i) const;
 
         bool operator==(const mat4& rhs) const;
 
@@ -128,13 +166,13 @@ namespace Math
 
         mat4 operator*=(const mat4& rhs);
 
-        mat4 operator*(const float scalar) const;
+        mat4 operator*(const real32 scalar) const;
 
-        mat4 operator*=(const float scalar);
+        mat4 operator*=(const real32 scalar);
         
-        vec4<float> operator*(const vec4<float> & r);
+        vec4<real32> operator*(const vec4<real32> & r);
 
-        static mat4 ortho(float left, float right, float top, float bottom, float nearplane, float farplane)
+        static mat4 ortho(real32 left, real32 right, real32 top, real32 bottom, real32 nearplane, real32 farplane)
         {
             mat4 res(1.0f);
 
@@ -150,14 +188,14 @@ namespace Math
 
         }
 
-        static mat4 perspective(float fov, float aspectratio, float nearplane, float farplane)
+        static mat4 perspective(real32 fov, real32 aspectratio, real32 nearplane, real32 farplane)
         {
             mat4 res;
 
-            float q = 1.0f / tan(Utils::toRadians(0.5f * fov));
-            float a = q / aspectratio;
-            float b = (nearplane + farplane) / (nearplane - farplane);
-            float c = (2.0f  * nearplane * farplane) / (nearplane - farplane);
+            real32 q = 1.0f / tan(Utils::toRadians(0.5f * fov));
+            real32 a = q / aspectratio;
+            real32 b = (nearplane + farplane) / (nearplane - farplane);
+            real32 c = (2.0f  * nearplane * farplane) / (nearplane - farplane);
             res.elem[0 + 0 * ROW_COUNT] = a;
             res.elem[1 + 1 * ROW_COUNT] = q;
             res.elem[2 + 2 * ROW_COUNT] = b;
@@ -168,16 +206,17 @@ namespace Math
         }
 
         static mat4 translate(const vec3 &tran);
-        static mat4 rotate(float angle, const vec3& axis);
+        static mat4 rotate(real32 angle, const vec3& axis);
         static mat4 scale(const vec3& scale);
 
         static mat4 rotateRes(const vec3& rotationVec);
-        static mat4 rotateX(float radians);
-        static mat4 rotateY(float radians);
-        static mat4 rotateZ(float radians);
+        static mat4 rotateX(real32 radians);
+        static mat4 rotateY(real32 radians);
+        static mat4 rotateZ(real32 radians);
 
-        static mat4 transform(const vec3& translate, const vec3& rotate, const vec3& scale);
+        static mat4 transform(const vec3& translate, const vec3& rotate, const vec3& scale);        
 
+        std::string toString() const;
     };
 }
 #endif // !MAT3_H

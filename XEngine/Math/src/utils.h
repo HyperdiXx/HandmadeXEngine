@@ -12,24 +12,31 @@ namespace Math
     {
     public:
 
-        inline static float toRadians(float degree)
+        inline static real32 toRadians(real32 degree)
         {
             return degree * (PI / 180.0f);
         }
 
-        inline static float toDegrees(float radians)
+        inline static real32 toDegrees(real32 radians)
         {
             return radians * (180.0f / PI);
         }
 
-        inline static float sin(float radians)
+        inline static real32 sin(real32 radians)
         {
             return sinf(radians);
         }
 
-        inline static float cos(float radians)
+        inline static real32 cos(real32 radians)
         {
             return cosf(radians);
+        }
+
+        inline void swap(real32 &a, real32 &b)
+        {
+            real32 tmp = a;
+            a = b;
+            b = tmp;
         }
 
     };

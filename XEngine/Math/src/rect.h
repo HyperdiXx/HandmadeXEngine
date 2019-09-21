@@ -12,13 +12,13 @@ namespace Math
     public:
 
         //left top point, width, height
-        float x, y, width, height;
+        real32 x, y, width, height;
 
         Rect() : x(0), y(0), width(0), height(0) {}
 
-        Rect(float xVal, float yVal, float wVal, float hVal) : x(xVal), y(yVal), width(wVal), height(hVal) {}
+        Rect(real32 xVal, real32 yVal, real32 wVal, real32 hVal) : x(xVal), y(yVal), width(wVal), height(hVal) {}
 
-        Rect(const vec2<float>& pos, const vec2<float>& size) : x(pos.x), y(pos.y), width(size.x), height(size.y) {}
+        Rect(const vec2<real32>& pos, const vec2<real32>& size) : x(pos.x), y(pos.y), width(size.x), height(size.y) {}
 
         Rect(const Rect& rr) : x(rr.x), y(rr.y), width(rr.width), height(rr.height) {}
         
@@ -27,7 +27,7 @@ namespace Math
             return x == rr.x && y == rr.y && width == rr.width && height == rr.height;
         }
 
-        inline void set(float xVal, float yVal, float wVal, float hVal)
+        inline void set(real32 xVal, real32 yVal, real32 wVal, real32 hVal)
         {
             x = xVal;
             y = yVal;
@@ -35,13 +35,13 @@ namespace Math
             height = hVal;
         }
 
-        inline void setPosition(float xVal, float yVal)
+        inline void setPosition(real32 xVal, real32 yVal)
         {
             x = xVal;
             y = yVal;
         }
 
-        inline void setSize(float wVal, float hVal)
+        inline void setSize(real32 wVal, real32 hVal)
         {
             width = wVal;
             height = hVal;

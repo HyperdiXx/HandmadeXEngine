@@ -1,23 +1,51 @@
 
 #include <xemath.h>
 
-void mat3addTest()
+#define AssertEquals(x, y) \
+    if((x) != (y)) { __debugbreak();}
+
+void mat3Test()
 {
     using namespace Math;
-
+   
     mat3 a(1.0f);
 
-   
+    vec3 test = a.getRow(0);
+    
+    a.setRow(1, new vec3(5.0f, 12.0f, 1.0f));
+
+    test = a.getRow(1);
 
     mat3 b(1.0f);
 
+
+    mat4 newtest(1.0f, 0.0f, 3.0f, 0.0f,
+                 0.0f, 1.0f, 0.0f, 0.0f, 
+                 4.0f, 0.0f, 1.0f, 0.0f,
+                 0.0f, 0.0f, 0.0f, 1.0f);
+
+    newtest.printElements();
+
+    newtest.transpose();
+
+    newtest.printElements();
+
+    mat3 mat3pr(1.0f);
+
+    mat3pr.printElements();
+
+    mat3 matpr2(1.0f, 2.0f, 3.0f,
+                0.0f, 1.0f, 0.0f,
+                4.0f, 0.0f, 1.0f);
+
+    matpr2.printElements();
 }
 
 int main()
 {
     using namespace Math;
 
-    mat3addTest();
+    mat3Test();
    
     int a = 5;
     int b = 10;

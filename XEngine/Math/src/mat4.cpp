@@ -74,12 +74,12 @@ namespace Math
         return rotateX(rotationVec.x) * rotateY(rotationVec.y) * rotateZ(rotationVec.z);
     }
 
-    mat4 mat4::rotateX(float radians)
+    mat4 mat4::rotateX(real32 radians)
     {
         mat4 res = mat4::identity();
 
-        float cos = Utils::cos(radians);
-        float sin = Utils::sin(radians);
+        real32 cos = Utils::cos(radians);
+        real32 sin = Utils::sin(radians);
 
         res.m22 = cos;
         res.m23 = sin;
@@ -89,12 +89,12 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::rotateY(float radians)
+    mat4 mat4::rotateY(real32 radians)
     {
         mat4 res = mat4::identity();
 
-        float cos = Utils::cos(radians);
-        float sin = Utils::sin(radians);
+        real32 cos = Utils::cos(radians);
+        real32 sin = Utils::sin(radians);
 
         res.m11 = cos;
         res.m13 = -sin;
@@ -104,12 +104,12 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::rotateZ(float radians)
+    mat4 mat4::rotateZ(real32 radians)
     {
         mat4 res = mat4::identity();
 
-        float cos = Utils::cos(radians);
-        float sin = Utils::sin(radians);
+        real32 cos = Utils::cos(radians);
+        real32 sin = Utils::sin(radians);
 
         res.m11 = cos;
         res.m12 = sin;
@@ -124,6 +124,21 @@ namespace Math
         return translate(matt) * rotateRes(matr) * scale(mats);
     }
     
+    inline mat4 mat4::invert() const
+    {
+        return mat4();
+    }
+
+    inline mat4 mat4::getInverted()
+    {
+        return mat4();
+    }
+
+    real32 mat4::determinant()
+    {
+        return real32();
+    }
+
     bool mat4::isZero() const
     {
         for (int i = 0; i < ELEM_COUNT; ++i) 
@@ -161,7 +176,7 @@ namespace Math
         m33 = r3;
     }
 
-    float mat4::operator[](int i) const
+    real32 mat4::operator[](int i) const
     {
         if(i > 0 || i < ELEM_COUNT - 1)
             return elem[i];
@@ -255,7 +270,7 @@ namespace Math
         return *this;
     }
 
-    vec4<float> mat4::operator*(const vec4<real32> & r)
+    vec4<real32> mat4::operator*(const vec4<real32> & r)
     {
         vec4<real32> res;
 
@@ -305,38 +320,36 @@ namespace Math
             elem[i] = 0.0f;
     }
 
-    mat4 mat4::transpose() const
+    inline void mat4::transpose()
+    {        
+        mat4 res = *this;
+
+        m00 = res.m00;
+        m01 = res.m10;
+        m02 = res.m20;
+        m03 = res.m30;
+        m10 = res.m01;
+        m11 = res.m11;
+        m12 = res.m21;
+        m13 = res.m31;
+        m20 = res.m02;
+        m21 = res.m12;
+        m22 = res.m22;
+        m23 = res.m32;
+        m30 = res.m03;
+        m31 = res.m13;
+        m32 = res.m23;
+        m33 = res.m33;
+    }
+
+    inline mat4 mat4::getTransposed()
     {
-        mat4 res = {*this};
-        
-        float temp = res.elem[1];
-        res.elem[1] = res.elem[4];
-        res.elem[2] = res.elem[8];
-        res.elem[3] = res.elem[12];
-        res.elem[6] = res.elem[9];
-        res.elem[7] = res.elem[13];
-        res.elem[11] = res.elem[14];
-
-        res.elem[14] = temp;
-
-        /*std::swap(res.elem[1], res.elem[4]);
-        std::swap(res.elem[2], res.elem[8]);
-        std::swap(res.elem[3], res.elem[12]);
-        std::swap(res.elem[6], res.elem[9]);
-        std::swap(res.elem[7], res.elem[13]);
-        std::swap(res.elem[11], res.elem[14]);*/
-
+        mat4 res(1.0f);
+        res.transpose();
         return res;
     }
 
-    inline mat4 *mat4::getTransposed()
-    {
-        mat4* res = new mat4(1.0f);
-        res->transpose();
-        return res;
-    }
-
-    float mat4::get(int32 i, int32 j) const
+    real32 mat4::get(int32 i, int32 j) const
     {
         int pos = i + j * ROW_COUNT;
 
@@ -346,4 +359,9 @@ namespace Math
         return false;
     }
 
+    std::string mat4::toString() const
+    {
+        std::string res;
+        return res;
+    }
 }

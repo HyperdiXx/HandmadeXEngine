@@ -57,7 +57,7 @@ namespace Math
             return !(*this == a);
         }
 
-        inline vec4& operator*(float value) const
+        inline vec4& operator*(real32 value) const
         {
             return vec4(x * value, y * value, z * value, w * value);
         }
@@ -98,31 +98,31 @@ namespace Math
             return *this;
         }
 
-        float normalize()
+        real32 normalize()
         {
-            float length = magnitude();
+            real32 length = magnitude();
             x /= length;
             y /= length;
             z /= length;
             w /= length;
         }
 
-        float magnitude() const 
+        real32 magnitude() const 
         {
             return sqrtf(sqrmagnitude());
         }
 
-        float sqrmagnitude() const
+        real32 sqrmagnitude() const
         {
             x * x + y * y + z * z + w * w;
         }
 
-        static float distance(const vec4& s, const vec4& e)
+        static real32 distance(const vec4& s, const vec4& e)
         {
             return (s - e).magnitude();
         }
 
-        static vec4 lerp(const vec4& start, const vec4& end, float t)
+        static vec4 lerp(const vec4& start, const vec4& end, real32 t)
         {
             return start * (1.0f - t) + end * t;
         }
@@ -132,7 +132,7 @@ namespace Math
             return vec4();
         }
 
-        static float dot(const vec4& a, const vec4& b)
+        static real32 dot(const vec4& a, const vec4& b)
         {
             return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
         }

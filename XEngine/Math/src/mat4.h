@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MAT3_H
-#define MAT3_H
+#ifndef MAT4_H
+#define MAT4_H
 
 #include "vec3.h"
 #include "vec4.h"
@@ -11,39 +11,44 @@ namespace Math
 {
     struct MATH_API mat4
     {
-        static const int ELEM_COUNT = 16;
-        static const int ROW_COUNT = 4;
+        static const int32 ELEM_COUNT = 16;
+        static const int32 ROW_COUNT = 4;
 
-        /*
-            Row-major matrixes
-
-
-        */
+        /**
+         *   Row-major notation matrix 4x4 float val
+         *
+         *   [m00, m01, m02, m03,
+         *    m10, m11, m12, m13,
+         *    m20, m21, m22, m23,
+         *    m30, m31, m32, m33]
+         */
 
         union
         {
             struct
             {
                 // m[row][column]
-                //float m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33, m04, m14, m24, m34;
-
-                float m00, m01, m02, m03;
-                float m10, m11, m12, m13;
-                float m20, m21, m22, m23;
-                float m30, m31, m32, m33;
+               
+                real32 m00, m01, m02, m03;
+                real32 m10, m11, m12, m13;
+                real32 m20, m21, m22, m23;
+                real32 m30, m31, m32, m33;
 
             };
-            float	elem[16];
+            real32	elem[16];
 
-            vec4<float> column[ROW_COUNT];
+            vec4<real32> column[ROW_COUNT];
         };
 
+        //Default Constructor. Creates Zero Matrix
         mat4()
         {
             for (size_t i = 0; i < ELEM_COUNT; ++i)
                 elem[i] = 0.0f;
         }
-        mat4(float iden)
+
+        //Identity Constructor. Creates identity Matrix
+        mat4(real32 iden)
         {
             for (size_t i = 0; i < ELEM_COUNT; ++i)
                 elem[i] = 0.0f;
@@ -54,26 +59,29 @@ namespace Math
             elem[3 + 3 * ROW_COUNT] = iden;
         }
 
-        void set(int i, float val);
-        void set(int i, int j, float val);
-        float get(int i) const;
-        float get(int i, int j) const;
+        void set(int32 i, real32 val);
+        void set(int32 i, int32 j, real32 val);
+        real32 get(int32 i) const;
+        real32 get(int32 i, int32 j) const;
 
-        int getIndex(int val) const;
+        int32 getIndex(int32 val) const;
 
         inline void zero();
-        inline void transpose() const;
+        inline mat4 transpose() const;
 
-        mat4 inverse() const;
+        inline mat4* getTransposed();
+
+        inline mat4 invert() const;
+        inline mat4 getInverted();
 
         float determinant();
 
         bool isZero() const;
         bool isIdentity() const;
    
-        void setDiagonal(const vec4<float>& diagonal);
-        void setDiagonal(float r0, float r1, float r2, float r3);
-        void setDiagonal(float m1, float m2, float m3);
+        void setDiagonal(const vec4<real32>& diagonal);
+        void setDiagonal(real32 r0, real32 r1, real32 r2, real32 r3);
+        void setDiagonal(real32 m1, real32 m2, real32 m3);
 
         static mat4 identity()
         {

@@ -1,10 +1,24 @@
 
 #include <xemath.h>
 
+void mat3addTest()
+{
+    using namespace Math;
+
+    mat3 a(1.0f);
+
+   
+
+    mat3 b(1.0f);
+
+}
 
 int main()
 {
     using namespace Math;
+
+    mat3addTest();
+   
     int a = 5;
     int b = 10;
 
@@ -62,6 +76,7 @@ int main()
         printf("%g", test2[i]);
     }
 
-
+    
     return 0;
 }
+

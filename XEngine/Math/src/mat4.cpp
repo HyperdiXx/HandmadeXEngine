@@ -1,6 +1,4 @@
 #include "mat4.h"
-#include "math.h"
-
 
 namespace Math
 {
@@ -32,18 +30,18 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::rotate(float angle, const vec3 & axis)
+    mat4 mat4::rotate(real32 angle, const vec3 & axis)
     {
         mat4 res(1.0f);
 
-        float r = Utils::toRadians(angle);
-        float c = cos(r);
-        float s = sin(r);
+        real32 r = Utils::toRadians(angle);
+        real32 c = cos(r);
+        real32 s = sin(r);
 
-        float x = axis.x;
-        float y = axis.y;
-        float z = axis.z;
-        float o = 1.0f - c;
+        real32 x = axis.x;
+        real32 y = axis.y;
+        real32 z = axis.z;
+        real32 o = 1.0f - c;
 
         res.elem[0 + 0 * 4] = x * o + c;
         res.elem[1 + 0 * 4] = y * x * o + z * s;
@@ -139,27 +137,28 @@ namespace Math
 
     bool mat4::isIdentity() const
     {
-
+        if (elem[0 + 0 * ROW_COUNT] == 1.0f && elem[1 + 1 * ROW_COUNT] == 1.0f && elem[2 + 2 * ROW_COUNT] == 1.0f)
+            return true;
 
         return false;
     }
 
-    void mat4::setDiagonal(const vec4<float>& diagonal)
+    void mat4::setDiagonal(const vec4<real32>& diagonal)
     {
         setDiagonal(diagonal.x, diagonal.y, diagonal.z, diagonal.z);
     }
 
-    void mat4::setDiagonal(float m1, float m2, float m3)
+    void mat4::setDiagonal(real32 m1, real32 m2, real32 m3)
     {
         setDiagonal(m1, m2, m3, 1.0f);
     }
 
-    void mat4::setDiagonal(float r0, float r1, float r2, float r3)
+    void mat4::setDiagonal(real32 r0, real32 r1, real32 r2, real32 r3)
     {
-        m11 = r0;
-        m22 = r1;
-        m33 = r2;
-        m44 = r3;
+        m00 = r0;
+        m11 = r1;
+        m22 = r2;
+        m33 = r3;
     }
 
     float mat4::operator[](int i) const
@@ -234,7 +233,7 @@ namespace Math
     }
 
 
-    mat4 mat4::operator*(const float scalar) const
+    mat4 mat4::operator*(const real32 scalar) const
     {
         mat4 res;
 
@@ -246,7 +245,7 @@ namespace Math
         return res;
     }
 
-    mat4 mat4::operator*=(const float scalar)
+    mat4 mat4::operator*=(const real32 scalar)
     {
         for (int i = 0; i < ELEM_COUNT; i++)
         {
@@ -256,9 +255,9 @@ namespace Math
         return *this;
     }
 
-    vec4<float> mat4::operator*(const vec4<float> & r)
+    vec4<float> mat4::operator*(const vec4<real32> & r)
     {
-        vec4<float> res;
+        vec4<real32> res;
 
         res.x = elem[0] * r.x + elem[1] * r.y + elem[2] * r.z + elem[3] * r.w;
         res.y = elem[4] * r.x + elem[5] * r.y + elem[6] * r.z + elem[7] * r.w;
@@ -268,13 +267,13 @@ namespace Math
         return res;
     }
 
-    void mat4::set(int i, float val)
+    void mat4::set(int32 i, real32 val)
     {
         if (i > 0 || i < ELEM_COUNT - 1)
             elem[i] = val;
     }
 
-    void mat4::set(int i, int j, float val)
+    void mat4::set(int32 i, int32 j, real32 val)
     {
         int pos = i + j * ROW_COUNT;
 
@@ -282,13 +281,14 @@ namespace Math
             elem[pos] = val;
     }
 
-    float mat4::get(int i) const
+    real32 mat4::get(int32 i) const
     {
         if(i > 0 || i < ELEM_COUNT - 1)
             return elem[i];
+        return 0.0f;
     }
 
-    int mat4::getIndex(int val) const 
+    int32 mat4::getIndex(int32 val) const 
     {
         for (int i = 0; i < ELEM_COUNT; ++i)
         {
@@ -299,21 +299,44 @@ namespace Math
         return false;
     }
 
+    inline void mat4::zero()
+    {
+        for (int i = 0; i < ELEM_COUNT; i++)
+            elem[i] = 0.0f;
+    }
+
     mat4 mat4::transpose() const
     {
         mat4 res = {*this};
         
-        std::swap(res.elem[1], res.elem[4]);
+        float temp = res.elem[1];
+        res.elem[1] = res.elem[4];
+        res.elem[2] = res.elem[8];
+        res.elem[3] = res.elem[12];
+        res.elem[6] = res.elem[9];
+        res.elem[7] = res.elem[13];
+        res.elem[11] = res.elem[14];
+
+        res.elem[14] = temp;
+
+        /*std::swap(res.elem[1], res.elem[4]);
         std::swap(res.elem[2], res.elem[8]);
         std::swap(res.elem[3], res.elem[12]);
         std::swap(res.elem[6], res.elem[9]);
         std::swap(res.elem[7], res.elem[13]);
-        std::swap(res.elem[11], res.elem[14]);
+        std::swap(res.elem[11], res.elem[14]);*/
 
         return res;
     }
 
-    float mat4::get(int i, int j) const
+    inline mat4 *mat4::getTransposed()
+    {
+        mat4* res = new mat4(1.0f);
+        res->transpose();
+        return res;
+    }
+
+    float mat4::get(int32 i, int32 j) const
     {
         int pos = i + j * ROW_COUNT;
 

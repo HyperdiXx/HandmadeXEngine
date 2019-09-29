@@ -125,12 +125,13 @@
     <ClInclude Include="src\mat3.h" />
     <ClInclude Include="src\mat4.h" />
     <ClInclude Include="src\types.h" />
+    <ClInclude Include="src\vec2f.h" />
     <ClInclude Include="src\xemath.h" />
     <ClInclude Include="src\mathexport.h" />
     <ClInclude Include="src\quaternion.h" />
     <ClInclude Include="src\rect.h" />
     <ClInclude Include="src\utils.h" />
-    <ClInclude Include="src\vec2.h" />
+    <ClInclude Include="src\vec2i.h" />
     <ClInclude Include="src\vec3.h" />
     <ClInclude Include="src\vec4.h" />
   </ItemGroup>

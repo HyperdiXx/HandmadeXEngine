@@ -7,10 +7,15 @@
 namespace Math
 {
 #define PI 3.14159265f
-
+   
     class Utils
     {
     public:
+
+        inline static real32 invSqrt()
+        {
+
+        }
 
         inline static real32 toRadians(real32 degree)
         {

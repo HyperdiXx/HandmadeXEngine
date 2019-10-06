@@ -18,7 +18,7 @@ namespace Math
 
         Rect(real32 xVal, real32 yVal, real32 wVal, real32 hVal) : x(xVal), y(yVal), width(wVal), height(hVal) {}
 
-        Rect(const vec2<real32>& pos, const vec2<real32>& size) : x(pos.x), y(pos.y), width(size.x), height(size.y) {}
+        Rect(const vec2f& pos, const vec2f& size) : x(pos.x), y(pos.y), width(size.x), height(size.y) {}
 
         Rect(const Rect& rr) : x(rr.x), y(rr.y), width(rr.width), height(rr.height) {}
         

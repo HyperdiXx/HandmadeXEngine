@@ -78,8 +78,8 @@ namespace Math
     {
         mat4 res = mat4::identity();
 
-        real32 cos = Utils::cos(radians);
-        real32 sin = Utils::sin(radians);
+        real32 cos = MathGeneral::Cos(radians);
+        real32 sin = MathGeneral::Sin(radians);
 
         res.m22 = cos;
         res.m23 = sin;
@@ -93,8 +93,8 @@ namespace Math
     {
         mat4 res = mat4::identity();
 
-        real32 cos = Utils::cos(radians);
-        real32 sin = Utils::sin(radians);
+        real32 cos = MathGeneral::Cos(radians);
+        real32 sin = MathGeneral::Sin(radians);
 
         res.m11 = cos;
         res.m13 = -sin;
@@ -108,8 +108,8 @@ namespace Math
     {
         mat4 res = mat4::identity();
 
-        real32 cos = Utils::cos(radians);
-        real32 sin = Utils::sin(radians);
+        real32 cos = MathGeneral::Cos(radians);
+        real32 sin = MathGeneral::Sin(radians);
 
         res.m11 = cos;
         res.m12 = sin;

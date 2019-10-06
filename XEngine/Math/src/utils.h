@@ -2,21 +2,18 @@
 
 #define _USE_MATH_DEFINES
 
-#include "types.h"
+#include "genericmath.h"
 
 namespace Math
 {
-#define PI 3.14159265f
-   
+#define PI 					(3.1415926535897932f)	
+#define SMALL_NUMBER		(1.e-8f)
+#define DELTA			    (0.00001f)
+
     class Utils
     {
     public:
-
-        inline static real32 invSqrt()
-        {
-
-        }
-
+        
         inline static real32 toRadians(real32 degree)
         {
             return degree * (PI / 180.0f);
@@ -27,23 +24,24 @@ namespace Math
             return radians * (180.0f / PI);
         }
 
-        inline static real32 sin(real32 radians)
-        {
-            return sinf(radians);
-        }
-
-        inline static real32 cos(real32 radians)
-        {
-            return cosf(radians);
-        }
-
-        inline void swap(real32 &a, real32 &b)
+        inline static void swap(real32 &a, real32 &b)
         {
             real32 tmp = a;
             a = b;
             b = tmp;
         }
 
+        template< class T >
+        constexpr inline static T max(const T a, const T b)
+        {
+            return (a >= b) ? a : b;
+        }
+
+        template< class T >
+        constexpr inline static T min(const T a, const T b)
+        {
+            return (a <= b) ? a : b;
+        }
     };
 
 }

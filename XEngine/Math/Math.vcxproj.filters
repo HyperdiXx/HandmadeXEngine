@@ -51,6 +51,9 @@
     <ClInclude Include="src\vec2i.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\genericmath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\mat4.cpp">

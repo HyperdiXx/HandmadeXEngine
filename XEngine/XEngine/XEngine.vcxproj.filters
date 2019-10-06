@@ -739,6 +739,9 @@
     <ClInclude Include="src\exportapi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\rendering\rhi\rhi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl" />

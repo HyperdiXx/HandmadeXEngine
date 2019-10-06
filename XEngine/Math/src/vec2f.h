@@ -201,7 +201,7 @@ namespace Math
 
         if (sqrS > SMALL_NUMBER)
         {
-            real32 s = Utils::invSqrt(sqrS);
+            real32 s = MathGeneral::InvSqrt(sqrS);
 
             x *= s;
             y *= s;

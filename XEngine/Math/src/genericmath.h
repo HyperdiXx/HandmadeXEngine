@@ -5,10 +5,11 @@
 
 #include "mathexport.h"
 #include "types.h"
+#include <random>
 
 namespace Math
 {
-    struct MathGeneral
+    struct MATH_API MathGeneral
     {
         inline static int32 truncToInt(real32 val)
         {

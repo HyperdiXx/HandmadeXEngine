@@ -320,6 +320,7 @@
     <ClInclude Include="src\core\rendering\pipeline\shaders.h" />
     <ClInclude Include="src\core\rendering\pipeline\shadersBase.h" />
     <ClInclude Include="src\core\rendering\renderType.h" />
+    <ClInclude Include="src\core\rendering\rhi\rhi.h" />
     <ClInclude Include="src\core\rendering\scenes\scene.h" />
     <ClInclude Include="src\core\rendering\scenes\sceneObjects.h" />
     <ClInclude Include="src\core\rendering\scenes\stackscene.h" />

@@ -4,6 +4,41 @@
 #define AssertEquals(x, y) \
     if((x) != (y)) { __debugbreak();}
 
+void maxTest()
+{
+    using namespace Math;
+
+    float a = 5.0f;
+    float b = 2.0f;
+
+    float res = Utils::max(a, b);
+
+    AssertEquals(a, res);
+}
+
+void minTest()
+{
+    using namespace Math;
+
+    float a = 5.0f;
+    float b = 2.0f;
+
+    float res = Utils::min(a, b);
+
+    AssertEquals(b, res);
+}
+
+void absTest()
+{
+    using namespace Math;
+
+    float a = -5.0f;
+
+    Utils::abs(a);
+
+    AssertEquals(5.0f, a);
+}
+
 void mat3Test()
 {
     using namespace Math;
@@ -44,6 +79,11 @@ void mat3Test()
 int main()
 {
     using namespace Math;
+
+    maxTest();
+    minTest();
+    absTest();
+
 
     mat3Test();
    

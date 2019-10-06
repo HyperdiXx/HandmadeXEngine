@@ -10,7 +10,7 @@ namespace Math
 #define SMALL_NUMBER		(1.e-8f)
 #define DELTA			    (0.00001f)
 
-    class Utils
+    class MATH_API Utils
     {
     public:
         
@@ -41,6 +41,12 @@ namespace Math
         constexpr inline static T min(const T a, const T b)
         {
             return (a <= b) ? a : b;
+        }
+
+        template< class T >
+        constexpr inline static T abs(const T a)
+        {
+            return (a >= 0) ? a : a *= -1;
         }
     };
 

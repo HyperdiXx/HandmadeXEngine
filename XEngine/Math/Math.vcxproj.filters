@@ -59,10 +59,10 @@
     <ClCompile Include="src\mat4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\quaternion.cpp">
+    <ClCompile Include="src\mat3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\mat3.cpp">
+    <ClCompile Include="src\quaternion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

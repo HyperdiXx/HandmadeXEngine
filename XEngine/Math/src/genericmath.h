@@ -9,6 +9,9 @@
 
 namespace Math
 {
+#define THRESH_QUAT_NORMALIZED 0.01f
+#define TOLERANCE 0.00000001f
+
     struct MATH_API MathGeneral
     {
         inline static int32 truncToInt(real32 val)
@@ -94,6 +97,11 @@ namespace Math
         inline static real32 Cos(real32 radians)
         {
             return cosf(radians);
+        }
+
+        inline static real32 Abs(real32 val)
+        {
+            return abs(val);
         }
 
         /** Inverse square root */

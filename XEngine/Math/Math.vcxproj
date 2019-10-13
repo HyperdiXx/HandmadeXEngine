@@ -45,7 +45,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -73,8 +73,12 @@
     <OutDir>$(SolutionDir)Math\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Output\$(ProjectName)\bin$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)Output\$(ProjectName)\int$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)\bin$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)\int$(Platform)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)\bin$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)\int$(Platform)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -82,7 +86,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>MATH_WINDOWS; MATH_BUILD_LIB; _WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions> MATH_WINDOWS; MATH_BUILD_LIB; _WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -115,6 +119,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>MATH_WINDOWS; MATH_BUILD_LIB;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -133,13 +138,16 @@
     <ClInclude Include="src\rect.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\vec2i.h" />
-    <ClInclude Include="src\vec3.h" />
-    <ClInclude Include="src\vec4.h" />
+    <ClInclude Include="src\vec3f.h" />
+    <ClInclude Include="src\vec4f.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\mat3.cpp" />
     <ClCompile Include="src\mat4.cpp" />
     <ClCompile Include="src\quaternion.cpp" />
+    <ClCompile Include="src\vec2f.cpp" />
+    <ClCompile Include="src\vec2i.cpp" />
+    <ClCompile Include="src\vec4f.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

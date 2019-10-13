@@ -39,15 +39,26 @@ void absTest()
     AssertEquals(5.0f, a);
 }
 
+void quaternionTest()
+{
+    using namespace Math;
+
+    Quaternion q1(0.0f, 0.0f, 0.0f, 1.0f);
+    Quaternion q2;
+
+    AssertEquals(q1, q2);
+
+}
+
 void mat3Test()
 {
     using namespace Math;
    
     mat3 a(1.0f);
-
-    vec3 test = a.getRow(0);
+    mat3 check;
+    vec3f test = a.getRow(0);
     
-    a.setRow(1, new vec3(5.0f, 12.0f, 1.0f));
+    a.setRow(1, new vec3f(5.0f, 12.0f, 1.0f));
 
     test = a.getRow(1);
 
@@ -83,6 +94,7 @@ int main()
     maxTest();
     minTest();
     absTest();
+    quaternionTest();
 
 
     mat3Test();
@@ -92,7 +104,7 @@ int main()
 
     int c = b & 1;
 
-    vec3 test(1.0f, 2.0f, 0.0f);
+    vec3f test(1.0f, 2.0f, 0.0f);
     mat4 test1(1.0f);
     mat4 test2(1.0f);
     mat4 test3(1.0f);

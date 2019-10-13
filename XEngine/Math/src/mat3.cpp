@@ -13,32 +13,32 @@ namespace Math
         return res;
     }
 
-    inline vec3 mat3::getDiagonal() const
+    inline vec3f mat3::getDiagonal() const
     {   
-        vec3 res;
+        vec3f res;
         res.set(elem[0 + 0 * ROW_COUNT], elem[1 + 1 * ROW_COUNT], elem[2 + 2 * ROW_COUNT]);
         return res;
     }
 
-    inline vec3 mat3::getTranslation() const
+    inline vec3f mat3::getTranslation() const
     {
-        vec3 res;
+        vec3f res;
 
         return res;
     }
 
-    inline vec3 mat3::getRow(int32 num) const
+    inline vec3f mat3::getRow(int32 num) const
     {
-        vec3 res;
+        vec3f res;
         if (num < 0 || num > ELEMENT_COUNT - 1)
-            return vec3(0.0f, 0.0f, 0.0f);
+            return vec3f(0.0f, 0.0f, 0.0f);
          
         res.set(elem[num * ROW_COUNT], elem[num * ROW_COUNT + 1], elem[num * ROW_COUNT + 2]);
 
         return res;
     }
 
-    inline void mat3::setRow(int32 num, vec3 *data)
+    inline void mat3::setRow(int32 num, vec3f *data)
     {
         if (num < 0 || num > ELEMENT_COUNT - 1)
             return;

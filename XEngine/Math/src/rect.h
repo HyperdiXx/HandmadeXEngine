@@ -7,10 +7,8 @@
 
 namespace Math
 {
-    class MATH_API Rect
+    struct MATH_API Rect
     {
-    public:
-
         //left top point, width, height
         real32 x, y, width, height;
 

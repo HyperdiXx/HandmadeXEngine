@@ -19,7 +19,7 @@ namespace Math
         return res;
     }
 
-    mat4 mat4::translate(const vec3 &tran)
+    mat4 mat4::translate(const vec3f &tran)
     {
         mat4 res(1.0f);
 
@@ -30,7 +30,7 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::rotate(real32 angle, const vec3 & axis)
+    mat4 mat4::rotate(real32 angle, const vec3f & axis)
     {
         mat4 res(1.0f);
 
@@ -58,7 +58,7 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::scale(const vec3 & scale)
+    mat4 mat4::scale(const vec3f& scale)
     {
         mat4 res(1.0f);
 
@@ -69,7 +69,7 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::rotateRes(const vec3 & rotationVec)
+    mat4 mat4::rotateRes(const vec3f & rotationVec)
     {
         return rotateX(rotationVec.x) * rotateY(rotationVec.y) * rotateZ(rotationVec.z);
     }
@@ -119,7 +119,7 @@ namespace Math
         return (res);
     }
 
-    mat4 mat4::transform(const vec3 & matt, const vec3 & matr, const vec3 & mats)
+    mat4 mat4::transform(const vec3f& matt, const vec3f& matr, const vec3f& mats)
     {
         return translate(matt) * rotateRes(matr) * scale(mats);
     }
@@ -158,7 +158,7 @@ namespace Math
         return false;
     }
 
-    void mat4::setDiagonal(const vec4<real32>& diagonal)
+    void mat4::setDiagonal(const vec4f& diagonal)
     {
         setDiagonal(diagonal.x, diagonal.y, diagonal.z, diagonal.z);
     }
@@ -192,6 +192,13 @@ namespace Math
         }
 
         return true;
+    }
+
+    mat4& mat4::operator=(const mat4 & rhs)
+    {
+        for (size_t i = 0; i < ELEM_COUNT; ++i)
+            elem[i] = rhs.elem[i];
+        return *this;
     }
 
     bool mat4::operator!=(const mat4 & r) const
@@ -270,15 +277,47 @@ namespace Math
         return *this;
     }
 
-    vec4<real32> mat4::operator*(const vec4<real32> & r)
+    /*vec4f mat4::operator*(const vec4f& r)
     {
-        vec4<real32> res;
+        vec4f res;
 
         res.x = elem[0] * r.x + elem[1] * r.y + elem[2] * r.z + elem[3] * r.w;
         res.y = elem[4] * r.x + elem[5] * r.y + elem[6] * r.z + elem[7] * r.w;
         res.z = elem[8] * r.x + elem[9] * r.y + elem[10] * r.z + elem[11] * r.w;
         res.w = elem[12] * r.x + elem[13] * r.y + elem[14] * r.z + elem[15] * r.w;
             
+        return res;
+    }*/
+
+    mat4 mat4::ortho(real32 left, real32 right, real32 top, real32 bottom, real32 nearplane, real32 farplane)
+    {
+        mat4 res(1.0f);
+
+        res.elem[0 + 0 * ROW_COUNT] = 2.0f / (right - left);
+        res.elem[1 + 1 * ROW_COUNT] = 2.0f / (top - bottom);
+        res.elem[2 + 2 * ROW_COUNT] = 2.0f / (nearplane - farplane);
+
+        res.elem[0 + 3 * ROW_COUNT] = (left + right) / (left - right);
+        res.elem[1 + 3 * ROW_COUNT] = (bottom + top) / (top - bottom);
+        res.elem[2 + 3 * ROW_COUNT] = (farplane + nearplane) / (farplane - nearplane);
+
+        return res;
+    }
+
+    mat4 mat4::perspective(real32 fov, real32 aspectratio, real32 nearplane, real32 farplane)
+    {
+        mat4 res;
+
+        real32 q = 1.0f / tan(Utils::toRadians(0.5f * fov));
+        real32 a = q / aspectratio;
+        real32 b = (nearplane + farplane) / (nearplane - farplane);
+        real32 c = (2.0f  * nearplane * farplane) / (nearplane - farplane);
+        res.elem[0 + 0 * ROW_COUNT] = a;
+        res.elem[1 + 1 * ROW_COUNT] = q;
+        res.elem[2 + 2 * ROW_COUNT] = b;
+        res.elem[3 + 2 * ROW_COUNT] = -1.0f;
+        res.elem[2 + 3 * ROW_COUNT] = c;
+
         return res;
     }
 

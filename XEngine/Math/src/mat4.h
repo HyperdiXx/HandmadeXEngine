@@ -3,8 +3,8 @@
 #ifndef MAT4_H
 #define MAT4_H
 
-#include "vec3.h"
-#include "vec4.h"
+#include "vec3f.h"
+#include "vec4f.h"
 #include "utils.h"
 
 namespace Math
@@ -37,7 +37,7 @@ namespace Math
             };
             real32	elem[16];
 
-            vec4<real32> column[ROW_COUNT];
+            vec4f column[ROW_COUNT];
         };
 
         //Default Constructor. Creates Zero Matrix
@@ -47,6 +47,18 @@ namespace Math
                 elem[i] = 0.0f;
         }
 
+        mat4(const mat4& mat)
+        {
+            for (size_t i = 0; i < ELEM_COUNT; ++i)
+                elem[i] = mat.elem[i];
+        }
+
+        mat4(mat4 && mat) noexcept
+        {
+            for (size_t i = 0; i < ELEM_COUNT; ++i)
+                elem[i] = mat.elem[i];
+        }
+        
         //Creates identity Matrix
         mat4(real32 iden)
         {
@@ -104,12 +116,12 @@ namespace Math
         bool isZero() const;
         bool isIdentity() const;
    
-        void setDiagonal(const vec4<real32>& diagonal);
+        void setDiagonal(const vec4f& diagonal);
         void setDiagonal(real32 r0, real32 r1, real32 r2, real32 r3);
         void setDiagonal(real32 m1, real32 m2, real32 m3);
 
-        inline vec3 getTranslation() const { return vec3(m03, m13, m23); }
-        inline void setTranslation(const vec3& a) { m03 = a.x; m13 = a.y; m23 = a.z; }
+        inline vec3f getTranslation() const { return vec3f(m03, m13, m23); }
+        inline void setTranslation(const vec3f& a) { m03 = a.x; m13 = a.y; m23 = a.z; }
 
         void printElements() const
         {
@@ -151,7 +163,7 @@ namespace Math
         real32 operator[](int i) const;
 
         bool operator==(const mat4& rhs) const;
-
+        mat4& operator=(const mat4& rhs);
         bool operator!=(const mat4& rhs) const;
 
         mat4 operator+(const mat4& rhs) const;
@@ -170,51 +182,22 @@ namespace Math
 
         mat4 operator*=(const real32 scalar);
         
-        vec4<real32> operator*(const vec4<real32> & r);
+        //vec4f operator*(const vec4f& r);
 
-        static mat4 ortho(real32 left, real32 right, real32 top, real32 bottom, real32 nearplane, real32 farplane)
-        {
-            mat4 res(1.0f);
+        static mat4 ortho(real32 left, real32 right, real32 top, real32 bottom, real32 nearplane, real32 farplane);
 
-            res.elem[0 + 0 * ROW_COUNT] = 2.0f / (right - left);
-            res.elem[1 + 1 * ROW_COUNT] = 2.0f / (top - bottom);
-            res.elem[2 + 2 * ROW_COUNT] = 2.0f / (nearplane - farplane);
+        static mat4 perspective(real32 fov, real32 aspectratio, real32 nearplane, real32 farplane);
+        
+        static mat4 translate(const vec3f &tran);
+        static mat4 rotate(real32 angle, const vec3f& axis);
+        static mat4 scale(const vec3f& scale);
 
-            res.elem[0 + 3 * ROW_COUNT] = (left + right) / (left - right);
-            res.elem[1 + 3 * ROW_COUNT] = (bottom + top) / (top - bottom);
-            res.elem[2 + 3 * ROW_COUNT] = (farplane + nearplane) / (farplane - nearplane);
-
-            return res;
-
-        }
-
-        static mat4 perspective(real32 fov, real32 aspectratio, real32 nearplane, real32 farplane)
-        {
-            mat4 res;
-
-            real32 q = 1.0f / tan(Utils::toRadians(0.5f * fov));
-            real32 a = q / aspectratio;
-            real32 b = (nearplane + farplane) / (nearplane - farplane);
-            real32 c = (2.0f  * nearplane * farplane) / (nearplane - farplane);
-            res.elem[0 + 0 * ROW_COUNT] = a;
-            res.elem[1 + 1 * ROW_COUNT] = q;
-            res.elem[2 + 2 * ROW_COUNT] = b;
-            res.elem[3 + 2 * ROW_COUNT] = -1.0f;
-            res.elem[2 + 3 * ROW_COUNT] = c;
-
-            return res;
-        }
-
-        static mat4 translate(const vec3 &tran);
-        static mat4 rotate(real32 angle, const vec3& axis);
-        static mat4 scale(const vec3& scale);
-
-        static mat4 rotateRes(const vec3& rotationVec);
+        static mat4 rotateRes(const vec3f& rotationVec);
         static mat4 rotateX(real32 radians);
         static mat4 rotateY(real32 radians);
         static mat4 rotateZ(real32 radians);
 
-        static mat4 transform(const vec3& translate, const vec3& rotate, const vec3& scale);        
+        static mat4 transform(const vec3f& translate, const vec3f& rotate, const vec3f& scale);        
 
         std::string toString() const;
     };

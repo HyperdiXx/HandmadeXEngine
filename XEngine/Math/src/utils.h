@@ -44,9 +44,9 @@ namespace Math
         }
 
         template< class T >
-        constexpr inline static T abs(const T a)
+        constexpr inline static T abs(T a)
         {
-            return (a >= 0) ? a : a *= -1;
+            return a >= 0 ? a : a *= -1;
         }
     };
 

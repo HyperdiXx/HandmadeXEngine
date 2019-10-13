@@ -7,6 +7,6 @@
         #define MATH_API __declspec(dllimport)
     #endif 
 #else
-    
+    // Define math
 #endif 
 

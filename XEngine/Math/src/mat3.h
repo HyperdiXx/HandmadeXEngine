@@ -3,8 +3,8 @@
 #ifndef MAT3_H
 #define MAT3_H
 
-#include "vec3.h"
-#include "vec4.h"
+#include "vec3f.h"
+#include "vec4f.h"
 #include "utils.h"
 
 
@@ -73,11 +73,11 @@ namespace Math
         inline void transpose() const;
         mat3 getTransposed();
 
-        inline vec3 getDiagonal() const;
-        inline vec3 getTranslation() const;
+        inline vec3f getDiagonal() const;
+        inline vec3f getTranslation() const;
 
-        inline vec3 getRow(int32 num) const;
-        inline void setRow(int32 num, vec3* data);
+        inline vec3f getRow(int32 num) const;
+        inline void setRow(int32 num, vec3f* data);
 
         void printElements() const
         {

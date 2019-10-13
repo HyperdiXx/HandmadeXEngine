@@ -5,6 +5,7 @@
 
 #include "mathexport.h"
 #include "types.h"
+
 #include <random>
 
 namespace Math
@@ -98,12 +99,7 @@ namespace Math
         {
             return cosf(radians);
         }
-
-        inline static real32 Abs(real32 val)
-        {
-            return abs(val);
-        }
-
+      
         /** Inverse square root */
         inline static real32 InvSqrt(real32 F)
         {

@@ -31,19 +31,24 @@
 //#include "xenpch.h"
 
 #define OPENGL
-
+#define WIN32_LEAN_AND_MEAN
 //#include <glad/glad.h>
+
+#include <windows.h>
+
 #include <GLFW/glfw3.h>
 //#include <glm/glm.hpp>
 //#include <glm/gtc/matrix_transform.hpp>
 //#include <glm/gtc/type_ptr.hpp>
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void 
+framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-int main(int argc, char** argv)
+int
+WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
 {
     //using namespace XEngine;
 
@@ -54,10 +59,10 @@ int main(int argc, char** argv)
     testapp->OpenGLScene5();
 #else
     testapp->DX11InitEngine();
-#endif 
+#endif
 
     free(testapp);*/
-    
+
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -79,7 +84,7 @@ int main(int argc, char** argv)
     {
         glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       
+
         glfwPollEvents();
         glfwSwapBuffers(m_window);
     }

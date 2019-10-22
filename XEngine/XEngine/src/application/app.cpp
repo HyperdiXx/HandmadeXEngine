@@ -109,12 +109,12 @@ namespace XEngine
         shdManager.addShader("model", &loading);
    
         BasicMaterial testMat(shdManager.getShaderByName("model"));
-        Transform testTransform;
+        //Transform testTransform;
 
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
 
-        Entity mesh1(&grid, &testMat, &testTransform);
+        Entity mesh1(&grid, &testMat);
       
         scene1.addEntity(&mesh1);
        
@@ -920,19 +920,17 @@ namespace XEngine
         BasicMaterial testMat(shdManager.getShaderByName("model"), &planeText);
         BasicMaterial testMat3(shdManager.getShaderByName("shadowLight"));
         BasicMaterial testMat2(shdManager.getShaderByName("screen"));
-        Transform testTransform;
+        //Transform testTransform;
 
         SceneObjects &sceneSetup = SceneObjects::getInstance();
 
         sceneSetup.projMatrix = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
         
-        Entity mesh1(&castle, &testMat, &testTransform);
+        Entity mesh1(&castle, &testMat);
         //Entity mesh2(&castle, &testMat, &testTransform);
 
         scene1.addEntity(&mesh1);
         //scene1.addEntity(&mesh2);
-
-        //Terrain::Terrain ter(120);
 
         GLFrameBuffer fb(WINDOWWIDTH, WINDOWHEIGHT);
         fb.init();
@@ -1386,13 +1384,13 @@ namespace XEngine
 
         BasicMaterial testMat(shdManager.getShaderByName("model"), &planeText);
         BasicMaterial testMat2(shdManager.getShaderByName("screen"));
-        Transform testTransform;
+        
 
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), (float)WINDOWWIDTH / (float)WINDOWHEIGHT, 0.1f, 1000.0f);
 
-        Entity mesh1(&plane, &testMat, &testTransform);
-        Entity mesh2(&secondmodel, &testMat, &testTransform);
+        Entity mesh1(&plane, &testMat);
+        Entity mesh2(&secondmodel, &testMat);
 
         scene1.addEntity(&mesh1);
         scene1.addEntity(&mesh2);

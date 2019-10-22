@@ -19,30 +19,26 @@ namespace XEngine
     {
     public:
         Entity() {};
-        Entity(Assets::Model *mesh, Rendering::BasicMaterial *m, Math::Transform *tr)
+        Entity(Assets::Model *mesh, Rendering::BasicMaterial *m)
         {
             model = mesh;
             material = m;
-            transf = tr;
         }
 
-        Entity(Assets::Model *mesh, Rendering::PBRMaterial *m, Math::Transform *tr)
+        Entity(Assets::Model *mesh, Rendering::PBRMaterial *m)
         {
             model = mesh;
             material = m;
-            transf = tr;
         }
 
-        Entity(Assets::Model *mesh, Rendering::BPMaterial *m, Math::Transform *tr)
+        Entity(Assets::Model *mesh, Rendering::BPMaterial *m)
         {
             model = mesh;
             material = m;
-            transf = tr;
         }
 
         Assets::Model *model;
         Rendering::Material *material;
-        Math::Transform *transf;
     };
 
 }

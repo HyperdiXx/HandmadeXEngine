@@ -112,7 +112,6 @@
     <ClCompile Include="src\application\testapp.cpp" />
     <ClCompile Include="src\core\ecs\entitymanager.cpp" />
     <ClCompile Include="src\core\geometry\assetmanager.cpp" />
-    <ClCompile Include="src\core\math\transforms.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11context.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11indexbuffer.cpp" />
     <ClCompile Include="src\core\rendering\api\dx11\dx11vertexbuffer.cpp" />
@@ -123,7 +122,6 @@
     <ClCompile Include="src\core\events\events.cpp" />
     <ClCompile Include="src\core\geometry\generator.cpp" />
     <ClCompile Include="src\core\events\input.cpp" />
-    <ClCompile Include="src\core\math\mat4.cpp" />
     <ClCompile Include="src\core\memory\allocator.cpp" />
     <ClCompile Include="src\core\rendering\batchsprite.cpp" />
     <ClCompile Include="src\core\rendering\layers\layer.cpp" />
@@ -337,13 +335,6 @@
     <ClInclude Include="src\core\utility\clock.h" />
     <ClInclude Include="src\core\utility\enstring.h" />
     <ClInclude Include="src\core\utility\log.h" />
-    <ClInclude Include="src\core\math\mat3.h" />
-    <ClInclude Include="src\core\math\mat4.h" />
-    <ClInclude Include="src\core\math\math.h" />
-    <ClInclude Include="src\core\math\quaternion.h" />
-    <ClInclude Include="src\core\math\vec2.h" />
-    <ClInclude Include="src\core\math\vec3.h" />
-    <ClInclude Include="src\core\math\vec4.h" />
     <ClInclude Include="src\core\geometry\model.h" />
     <ClInclude Include="src\core\OpenGL\framebuffero.h" />
     <ClInclude Include="src\core\OpenGL\indexbuffer.h" />
@@ -401,14 +392,6 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="src\fonts\arial.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Math\Math.vcxproj">
-      <Project>{8f481b9d-b899-49e3-b818-a04a1d65afd0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\XEngineSTL\XEngineSTL.vcxproj">
-      <Project>{53272607-1563-4fe3-a524-a63cdd5eb299}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

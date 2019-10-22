@@ -25,27 +25,66 @@
 
 */
 
+#include <iostream>
 
-
-#include <thread>
-#include <future>
-
-#include "application/app.h"
+//#include "application/app.h"
+//#include "xenpch.h"
 
 #define OPENGL
 
+//#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
+
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
 int main(int argc, char** argv)
 {
-    using namespace XEngine;
+    //using namespace XEngine;
 
-    Application *testapp = (Application*)malloc(sizeof(Application));
+    printf("Hello, world!!!\n");
+
+    /*Application *testapp = (Application*)malloc(sizeof(Application));
 #ifdef  OPENGL
     testapp->OpenGLScene5();
 #else
     testapp->DX11InitEngine();
 #endif 
 
-    free(testapp);
+    free(testapp);*/
+    
+
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
+    GLFWwindow* m_window = glfwCreateWindow(1280, 720, "XEngineTest", NULL, NULL);
+    if (m_window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return 1;
+    }
+    glfwMakeContextCurrent(m_window);
+    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
+    glfwSwapInterval(1);
+    while (!glfwWindowShouldClose(m_window))
+    {
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+       
+        glfwPollEvents();
+        glfwSwapBuffers(m_window);
+    }
+
+    glfwTerminate();
 
 
     return (0);

@@ -4,8 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEngine", "XEngine\XEngine.vcxproj", "{48815F50-9AC5-47C7-A7E3-FF1B38114635}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8F481B9D-B899-49E3-B818-A04A1D65AFD0} = {8F481B9D-B899-49E3-B818-A04A1D65AFD0}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Math", "Math\Math.vcxproj", "{8F481B9D-B899-49E3-B818-A04A1D65AFD0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Math", "math\Math.vcxproj", "{8F481B9D-B899-49E3-B818-A04A1D65AFD0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{5F6798D4-909E-4EBF-AF42-B960AC37F3EF}"
 	ProjectSection(ProjectDependencies) = postProject

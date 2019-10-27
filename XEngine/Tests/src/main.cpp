@@ -11,7 +11,7 @@ void maxTest()
     float a = 5.0f;
     float b = 2.0f;
 
-    float res = Utils::max(a, b);
+    float res = Utils::maxVal(a, b);
 
     AssertEquals(a, res);
 }
@@ -23,7 +23,7 @@ void minTest()
     float a = 5.0f;
     float b = 2.0f;
 
-    float res = Utils::min(a, b);
+    float res = Utils::minVal(a, b);
 
     AssertEquals(b, res);
 }

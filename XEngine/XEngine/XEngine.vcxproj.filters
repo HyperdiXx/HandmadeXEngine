@@ -81,9 +81,6 @@
     <ClCompile Include="src\objects\water.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\math\mat4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\rendering\openglnew\renderer2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -181,9 +178,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\rendering\openglnew\renderer3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\math\transforms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\objects\pbr.cpp">
@@ -306,7 +300,6 @@
     <None Include="src\shaders\slight.fs" />
     <None Include="src\shaders\pbr.vs" />
     <None Include="src\shaders\pbr.fs" />
-    <None Include="ClassDiagram.cd" />
     <None Include="src\shaders\clut.fs" />
     <None Include="src\shaders\fbo.vs" />
     <None Include="src\shaders\fbo.fs" />
@@ -368,27 +361,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xenpch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\vec3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\vec2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\vec4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\mat3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\mat4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\quaternion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\d3dx12.h">
@@ -455,9 +427,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\audio\audio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\systems\filefunc.h">
@@ -607,9 +576,6 @@
     <ClInclude Include="src\core\rendering\openglnew\renderer3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\math\transforms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\objects\pbr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -728,9 +694,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\geometry\resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\math\rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\rendering\pipeline\shaders.h">

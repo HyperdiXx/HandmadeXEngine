@@ -7,7 +7,7 @@
 
 #include <glad/glad.h>
 #include <gl/GL.h>
-#include "src/core/types.h"
+#include "../../types.h"
 
 #include "../api/opengl/indexbuffer.h"
 

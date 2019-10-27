@@ -37,6 +37,7 @@
 #include <windows.h>
 
 #include <GLFW/glfw3.h>
+#include <math/xemath.h>
 //#include <glm/glm.hpp>
 //#include <glm/gtc/matrix_transform.hpp>
 //#include <glm/gtc/type_ptr.hpp>
@@ -46,6 +47,7 @@ framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
+
 
 int
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
@@ -63,6 +65,22 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     free(testapp);*/
 
+    vec2f test;
+    mat4 matrix(1.0f);
+    if (matrix.isIdentity())
+    {
+        
+    }
+
+    
+    //test.set(1.0f, 0.0);
+
+    float r = test.length();
+
+    
+
+    
+    //float res = qyat.length();
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -94,5 +112,3 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     return (0);
 }
-
-

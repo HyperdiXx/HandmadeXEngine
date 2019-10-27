@@ -4,8 +4,8 @@
 #define SHADER
 
 
-#include "src/xenpch.h"
-#include "src/core/types.h"
+#include "../../../xenpch.h"
+#include "../../types.h"
 #include "shadertype.h"
 
 

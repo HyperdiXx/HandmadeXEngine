@@ -1,8 +1,5 @@
 #include "mat4.h"
 
-namespace Math
-{
-
     mat4 mat4::operator*(const mat4& rhs) const 
     {
         mat4 res = mat4::identity();
@@ -403,4 +400,3 @@ namespace Math
         std::string res;
         return res;
     }
-}

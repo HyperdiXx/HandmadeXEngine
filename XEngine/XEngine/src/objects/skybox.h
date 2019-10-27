@@ -3,8 +3,8 @@
 #ifndef SKYBOXH
 #define SKYBOXH
 
-#include "src/core/rendering/pipeline/shader.h"
-#include "src/core/rendering/openglnew/vao.h"
+#include "../core/rendering/pipeline/shader.h"
+#include "../core/rendering/openglnew/vao.h"
 #include "../core/rendering/api/opengl/vertexarray.h"
 #include "../core/rendering/api/opengl/buffer.h"
 #include "../core/rendering/texture.h"

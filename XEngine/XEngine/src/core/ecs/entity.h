@@ -8,12 +8,9 @@
 #include "../rendering/pipeline/materials/bpmaterial.h"
 #include "../rendering/pipeline/materials/pbrmaterial.h"
 
-#include <xemath.h>
-
 namespace XEngine
 {
     using namespace Rendering;
-    using namespace Math;
 
     class Entity
     {

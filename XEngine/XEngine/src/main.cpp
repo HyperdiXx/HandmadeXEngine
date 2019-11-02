@@ -54,8 +54,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 {
     //using namespace XEngine;
 
-    printf("Hello, world!!!\n");
-
     /*Application *testapp = (Application*)malloc(sizeof(Application));
 #ifdef  OPENGL
     testapp->OpenGLScene5();
@@ -67,20 +65,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     vec2f test;
     mat4 matrix(1.0f);
-    if (matrix.isIdentity())
-    {
-        
-    }
-
-    
-    //test.set(1.0f, 0.0);
-
+ 
     float r = test.length();
-
-    
-
-    
-    //float res = qyat.length();
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

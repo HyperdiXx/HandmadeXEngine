@@ -8,6 +8,9 @@
 #include <runtime/types.h>
 #include "shadertype.h"
 
+#include <math/mat4.h>
+#include <math/mat3.h>
+
 
 namespace XEngine
 {
@@ -39,7 +42,7 @@ namespace XEngine
         const GLchar* Win32GetVsName();
 
         void setBool(const std::string &name, bool value);
-        void setInt(const std::string &name, int value);
+        void setInt(const std::string &namee, int value);
         void setFloat(const std::string& name, float value);
         void setVec2(const std::string &name, const glm::vec2 &value);
         void setVec2(const std::string &name, float x, float y);
@@ -47,9 +50,8 @@ namespace XEngine
         void setVec3(const std::string &name, float x, float y, float z);
         void setVec4(const std::string &name, const glm::vec4 &value);
         void setVec4(const std::string &name, float x, float y, float z, float w);
-        void setMat2(const std::string &name, const glm::mat2 &mat);
-        void setMat3(const std::string &name, const glm::mat3 &mat);
-        void setMat4(const std::string &name, const glm::mat4 &mat);
+        void setMat3(const std::string &name, const mat3 &mat);
+        void setMat4(const std::string &name, const mat4 &mat);
 
         uint32 getID() { return ID; };
         std::string getName() { return name; }

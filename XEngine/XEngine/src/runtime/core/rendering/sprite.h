@@ -1,6 +1,6 @@
 #pragma once
 
-#include "openglnew/irenderable2d.h"
+#include "render/irenderable2d.h"
 
 namespace XEngine
 {

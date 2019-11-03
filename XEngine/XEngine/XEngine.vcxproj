@@ -63,7 +63,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)XEngine\src;$(SolutionDir)Math\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>XENGINE_WINDOWS; XENGINE_LIB; MATH_WINDOWS; _CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -108,7 +108,11 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\runtime\application\app.cpp" />
+    <ClCompile Include="src\runtime\application\baseapp.cpp" />
+    <ClCompile Include="src\runtime\application\testapp.cpp" />
     <ClCompile Include="src\runtime\core\cameras\camera.cpp" />
     <ClCompile Include="src\runtime\core\ecs\entitymanager.cpp" />
     <ClCompile Include="src\runtime\core\ecs\transforms.cpp" />
@@ -123,21 +127,20 @@
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dx11vertexbuffer.cpp" />
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dxshader.cpp" />
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dxtexture.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\opengl\buffer.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\opengl\glframebuffer.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\opengl\indexbuffer.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\opengl\vertexarray.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\GL\buffer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\GL\glframebuffer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\GL\indexbuffer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\GL\vertexarray.cpp" />
     <ClCompile Include="src\runtime\core\rendering\assets.cpp" />
     <ClCompile Include="src\runtime\core\rendering\batchsprite.cpp" />
     <ClCompile Include="src\runtime\core\rendering\layers\layer.cpp" />
     <ClCompile Include="src\runtime\core\rendering\layers\scene2d.cpp" />
     <ClCompile Include="src\runtime\core\rendering\layers\scenegraph.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\openglnew\bathcrenderer.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\openglnew\defferedrender.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\openglnew\forwardrender.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\openglnew\renderer2d.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\openglnew\renderer3d.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\openglnew\vao.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\render\bathcrenderer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\render\forwardrender.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\render\renderer2d.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\render\renderer3d.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\render\vao.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\basicmaterial.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\material.cpp" />
@@ -171,7 +174,6 @@
     <ClCompile Include="src\runtime\objects\pbr.cpp" />
     <ClCompile Include="src\runtime\objects\shadowmap.cpp" />
     <ClCompile Include="src\runtime\objects\skybox.cpp" />
-    <ClCompile Include="src\thirdparty\glad.c" />
     <ClCompile Include="src\thirdparty\imguit\imgui.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_demo.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_draw.cpp" />
@@ -267,15 +269,15 @@
     <ClInclude Include="src\runtime\core\geometry\resources.h" />
     <ClInclude Include="src\runtime\core\memory\allocator.h" />
     <ClInclude Include="src\runtime\core\memory\enmemory.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\context.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\framebuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\framebufferdepth.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\indexbuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\texture.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\texture3d.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\texturecube.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\vertexarray.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\basic\vertexbuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\context.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\framebuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\framebufferdepth.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\indexbuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\texture.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\texture3d.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\texturecube.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\vertexarray.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\vertexbuffer.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dx11context.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dx11indexbuffer.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dx11vertexbuffer.h" />
@@ -283,25 +285,25 @@
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dxtexture.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dxtypes.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx12\dx12context.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\buffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glframebuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\indexbuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\vertexarray.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\GL\buffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\GL\GL.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\GL\glframebuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\GL\indexbuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\GL\vertexarray.h" />
     <ClInclude Include="src\runtime\core\rendering\assets.h" />
     <ClInclude Include="src\runtime\core\rendering\batchsprite.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\layer.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\scene2d.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\scenegraph.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\batchrenderer.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\defferedrender.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\forwardrender.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\irenderable2d.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\irenderable3d.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\render2d.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\render3d.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\renderer2d.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\renderer3d.h" />
-    <ClInclude Include="src\runtime\core\rendering\openglnew\vao.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\batchrenderer.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\forwardrender.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\irenderable2d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\irenderable3d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\render2d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\render3d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\renderer2d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\renderer3d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\vao.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\basicmaterial.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\material.h" />
@@ -312,6 +314,7 @@
     <ClInclude Include="src\runtime\core\rendering\pipeline\shadersBase.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\shadertype.h" />
     <ClInclude Include="src\runtime\core\rendering\renderType.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\vertex.h" />
     <ClInclude Include="src\runtime\core\rendering\rhi\rhi.h" />
     <ClInclude Include="src\runtime\core\rendering\scenes\scene.h" />
     <ClInclude Include="src\runtime\core\rendering\scenes\sceneObjects.h" />

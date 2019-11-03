@@ -247,9 +247,9 @@ namespace XEngine
         shadersprite.enableShader();
         shadersprite.setMat4("projection", orho);
 
-        glm::vec4 spriteColor = glm::vec4(1.0, 0.0, 0.0, 1.0);
-        glm::vec4 spriteColor2 = glm::vec4(1.0, 1.0, 0.0, 1.0);
-        glm::vec4 spriteColor3 = glm::vec4(0.0, 1.0, 0.0, 1.0);
+        vec4f spriteColor = vec4f(1.0, 0.0, 0.0, 1.0);
+        vec4f spriteColor2 = vec4f(1.0, 1.0, 0.0, 1.0);
+        vec4f spriteColor3 = vec4f(0.0, 1.0, 0.0, 1.0);
 
         using namespace Rendering;
 

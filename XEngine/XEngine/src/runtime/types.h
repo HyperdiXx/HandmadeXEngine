@@ -4,6 +4,10 @@
 #include <math.h>
 #include <stdint.h>
 
+#if defined( __LINUX__ ) || defined( __OSX__ )
+    #include <sys/types.h>
+#endif
+
 #ifdef _WIN64
 
     #define Pi32 3.14159265359f

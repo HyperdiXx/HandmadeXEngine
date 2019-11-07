@@ -5,11 +5,10 @@
 
 #include <vector>
 
-#include <glad/glad.h>
 #include <gl/GL.h>
-#include "../../../types.h"
+#include <types.h>
 
-#include "../api/opengl/indexbuffer.h"
+#include "../api/gl/indexbuffer.h"
 
 struct VertexAO
 {

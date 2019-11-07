@@ -22,9 +22,13 @@ namespace XEngine
 
             virtual bool init() = 0;
             virtual void update() = 0;
-            virtual void renderScene(Scene *scene) = 0;
             virtual void renderQuad() = 0;
             virtual void renderMesh() = 0;
+
+            static void beginScene();
+            static void endScene();
+
+            static void add();
 
             inline Camera* getActiveCamera() { return camera; };
 

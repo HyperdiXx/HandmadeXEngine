@@ -210,18 +210,6 @@
     <ClCompile Include="src\runtime\application\testapp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\GL\buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\GL\glframebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\GL\indexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\GL\vertexarray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\render\bathcrenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -235,6 +223,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\render\vao.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\gl\buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\gl\glframebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\gl\indexbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\gl\vertexarray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -631,21 +631,6 @@
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dxtypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\GL\buffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\GL\glframebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\GL\indexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\GL\vertexarray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\GL\GL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\api\base\context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -701,6 +686,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\gl\buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\gl\GL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\gl\glframebuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\gl\indexbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\gl\vertexarray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\gl\glcontext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -57,16 +57,10 @@
     <ClCompile Include="src\runtime\objects\gbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\objects\pbr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\objects\shadowmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\objects\skybox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\cameras\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\ecs\entitymanager.cpp">
@@ -105,16 +99,10 @@
     <ClCompile Include="src\runtime\core\utility\path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\utility\stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\windowsystem\dx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\windowsystem\dx12.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\windowsystem\openglwnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\windowsystem\windowWin.cpp">
@@ -165,9 +153,6 @@
     <ClCompile Include="src\runtime\core\rendering\pipeline\screenspaceshader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\pipeline\shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\pipeline\shadersBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -216,25 +201,70 @@
     <ClCompile Include="src\runtime\core\rendering\render\forwardrender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\render\renderer2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\render\renderer3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\render\vao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\gl\buffer.cpp">
+    <ClCompile Include="src\runtime\core\rendering\render\render3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\gl\glframebuffer.cpp">
+    <ClCompile Include="src\runtime\core\rendering\render\render2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\gl\indexbuffer.cpp">
+    <ClCompile Include="src\runtime\core\cameras\orthographiccamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\gl\vertexarray.cpp">
+    <ClCompile Include="src\runtime\core\cameras\perspectivecamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\commands\rendercommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\base\vertexbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\base\indexbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\base\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\renderAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\base\texture2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\stb_image\stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glcontext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glframebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glindexbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glrenderapi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\gltexture2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glvertexarray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glvertexbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\windowsystem\winWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\windowsystem\openglwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -299,6 +329,7 @@
     <None Include="shaders\terrain.vs" />
     <None Include="shaders\text.fs" />
     <None Include="shaders\text.vs" />
+    <None Include="shaders\simple2d.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\imguit\imconfig.h">
@@ -421,16 +452,10 @@
     <ClInclude Include="src\runtime\objects\gbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\objects\pbr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\objects\shadowmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\objects\skybox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\cameras\camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\containers\vector.h">
@@ -499,16 +524,10 @@
     <ClInclude Include="src\runtime\core\utility\clock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\utility\enstring.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\utility\log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\utility\path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\utility\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\utility\string.h">
@@ -518,9 +537,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\windowsystem\dx12.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\windowsystem\openglwnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\windowsystem\windowWin.h">
@@ -536,9 +552,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\batchsprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\renderType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\sprite.h">
@@ -587,9 +600,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\pipeline\screenspaceshader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\pipeline\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\pipeline\shaders.h">
@@ -646,9 +656,6 @@
     <ClInclude Include="src\runtime\core\rendering\api\base\texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\base\texture3d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\api\base\texturecube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -664,46 +671,88 @@
     <ClInclude Include="src\runtime\core\rendering\render\forwardrender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\irenderable2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\irenderable3d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\render2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\render3d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\renderer2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\renderer3d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\vao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\gl\buffer.h">
+    <ClInclude Include="src\exportapi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\gl\GL.h">
+    <ClInclude Include="src\runtime\core\rendering\render\render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\gl\glframebuffer.h">
+    <ClInclude Include="src\runtime\core\rendering\render\render3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\gl\indexbuffer.h">
+    <ClInclude Include="src\runtime\core\rendering\render\render2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\gl\vertexarray.h">
+    <ClInclude Include="src\runtime\core\rendering\render\renderable3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\gl\glcontext.h">
+    <ClInclude Include="src\runtime\core\rendering\render\renderable2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\cameras\orthographiccamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\cameras\perspectivecamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\commands\rendercommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\renderAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\base\shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\memory\resourceobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\base\texture2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\stb_image\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glcontext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glframebuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glindexbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glrenderapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\gltexture2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glvertexarray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glvertexbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\opengl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\windowsystem\winWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\windowsystem\openglwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\application\test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

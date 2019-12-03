@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer3d.h"
+#include "render3d.h"
 
 #include "../scenes/scene.h"
 
@@ -8,7 +8,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-        class ForwardRender : public Renderer3d
+        class ForwardRender : public Render3D
         {
         public:
             ForwardRender() {};

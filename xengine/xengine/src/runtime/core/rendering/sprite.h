@@ -1,6 +1,6 @@
 #pragma once
 
-#include "render/irenderable2d.h"
+#include "render/renderable2d.h"
 
 namespace XEngine
 {
@@ -10,17 +10,16 @@ namespace XEngine
         {
         public:
 
-            Sprite(float x, float y, float w, float h, glm::vec4& color, Shader& shader);  
+            Sprite(float x, float y, float w, float h, vec4f& color, Shader& shader);  
             ~Sprite();
            
 
-            inline const VertexArray* getVAO() const { return mvertexArray; };
-            inline const IndexBuffer* getIBO() const { return mindexBuffer; };
+            inline const VertexBuffer* getVAO() const { return mVertexArray; };
+            inline const IndexBuffer* getIBO() const { return mIndexBuffer; };
             inline Shader& getShader() const { return mShader; };
         private:
-
-            VertexArray * mvertexArray;
-            IndexBuffer* mindexBuffer;
+            VertexBuffer * mVertexArray;
+            IndexBuffer* mIndexBuffer;
             Shader& mShader;
         };
     }

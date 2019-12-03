@@ -5,10 +5,10 @@
 
 #include <vector>
 
-#include <gl/GL.h>
-#include <types.h>
 
-#include "../api/gl/indexbuffer.h"
+#include <runtime/types.h>
+
+#include "../api/base/indexbuffer.h"
 
 struct VertexAO
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../ecs/component.h"
-#include <vec3f.h>
-#include <mat4.h>
+#include <math/vec3f.h>
+#include <math/mat4.h>
 
 namespace XEngine
 {

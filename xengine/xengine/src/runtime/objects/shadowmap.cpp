@@ -127,26 +127,26 @@ void XEngine::Rendering::ShadowMap::calculateMatrix()
 
 void XEngine::Rendering::ShadowMap::setShader()
 {
-    shadows->enableShader();
+    /*shadows->bind();
     shadows->setInt("diffuseTexture", 0);
     shadows->setInt("shadowMap", 1);
-
+    */
 
 }
 
 void XEngine::Rendering::ShadowMap::setShaderDepth(glm::mat4 projectiom, glm::mat4 view, glm::vec3 &pos, glm::vec3 lightPos, glm::mat4 &mat)
 {
-    shadows->enableShader();
+    /*shadows->enableShader();
     shadows->setMat4("projection", projectiom);
     shadows->setMat4("view", view);
     shadows->setVec3("viewPos", pos);
     shadows->setVec3("lightPos", lightPos);
-    shadows->setMat4("lightSpaceMatrix", mat);
+    shadows->setMat4("lightSpaceMatrix", mat);*/
 }
 
 void XEngine::Rendering::ShadowMap::updateShadows(glm::vec3 lightPos)
 {
-    glm::mat4 lightProjection, lightView;
+    /*glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
     float near_plane = 1.0f, far_plane = 7.5f;
    
@@ -154,9 +154,6 @@ void XEngine::Rendering::ShadowMap::updateShadows(glm::vec3 lightPos)
     lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
     
-    depthShader->enableShader();
-    depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
-  
-
+    depthShader->bind();
+    depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);*/
 }

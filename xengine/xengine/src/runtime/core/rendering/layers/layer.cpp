@@ -4,11 +4,11 @@ namespace XEngine
 {
     namespace Rendering
     {
-        Layer::Layer(Renderer2d* render, Shader* shader, glm::mat4 mat) : mRender(render), mShader(shader), mprojMat(mat)
+        Layer::Layer(Render2d* render, Shader* shader, glm::mat4 mat) : mRender(render), mShader(shader), mprojMat(mat)
         {
-            mShader->enableShader();
+            mShader->bind();
             mShader->setMat4("projection", mprojMat);
-            mShader->disableShader();
+            mShader->unbind();
         }
 
         Layer::~Layer()
@@ -28,15 +28,15 @@ namespace XEngine
 
         void Layer::render()
         {
-            mShader->enableShader();
+            mShader->bind();
             mShader->setMat4("projection", mprojMat);
 
-            for (const Renderable2d* renderableObj : mRenderables)
-                mRender->submit(renderableObj);
+            //for (const Renderable2d* renderableObj : mRenderables)
+            //    mRender->submit(renderableObj);
 
-            mRender->flush();
+            //mRender->add();
 
-            mShader->disableShader();
+            mShader->unbind();
         }
     }
 }

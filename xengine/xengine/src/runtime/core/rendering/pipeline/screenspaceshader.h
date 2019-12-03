@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shader.h"
+#include <runtime/core/rendering/api/base/shader.h>
 
 namespace XEngine
 {

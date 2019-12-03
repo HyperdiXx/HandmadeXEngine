@@ -1,16 +1,26 @@
 @echo off
 
+set mode=%1
 set app_name=xengine.exe
-set compiler_flags= -nologo -EHsc -Gm- -GR- -EHa- -Od -Oi -W4 -wd4018 -wd4201 -wd4100 -wd4505 -wd4701 -wd4189 -FC -Z7
-set linker_flags= -incremental:no -opt:ref winmm.lib gdi32.lib opengl32.lib user32.lib shell32.lib ..\..\xengine\lib\math.lib ..\..\xengine\lib\glfw643.lib
+set compiler_flags_debug= -Od -Z7
+set compiler_flags_release= -O2 
+set compiler_flags= -EHsc -Gm- -GR- -EHa- -Oi -W4 -wd4018 -wd4201 -wd4100 -wd4505 -wd4701 -wd4189 -FC 
+set linker_flags= -LTCG -incremental:no -opt:ref winmm.lib gdi32.lib opengl32.lib user32.lib shell32.lib ..\..\xengine\lib\math.lib ..\..\xengine\lib\glfw643.lib
 set includes= ..\..\xengine\inc
 set includesfiles= ..\..\xengine\src
 if not exist ..\out\xengine mkdir ..\out\xengine
 pushd ..\out\xengine
 
 REM 64-bit build
-del *.pdb > NUL 2> NUL
-cl /MD /I %includes% /I %includesfiles% %compiler_flags% ..\..\xengine\src\glad.c ..\..\xengine\src\main.cpp /link %linker_flags% /out:%app_name%
+del *.pdb > NUL  2> NUL
+
+if "%mode%" == "debug" (
+    cl /MD /I %includes% /I %includesfiles% %compiler_flags_debug% %compiler_flags% ..\..\xengine\src\glad.c ..\..\xengine\src\main.cpp /link %linker_flags% /out:%app_name%
+)
+
+if "%mode%" == "release" (
+    cl /MD /I %includes% /I %includesfiles% %compiler_flags_release% %compiler_flags% ..\..\xengine\src\glad.c ..\..\xengine\src\main.cpp /link %linker_flags% /out:%app_name%
+)
 
 if %ERRORLEVEL% == 0 (
    goto good
@@ -20,6 +30,7 @@ if %ERRORLEVEL% == 0 (
 	
 :good
    echo.
+   echo Config %mode%
    echo Compiled successfully
    echo Starting %app_name%
    start %app_name%

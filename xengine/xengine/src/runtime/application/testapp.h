@@ -1,30 +1,26 @@
 #pragma once
 
-#include "baseapp.h"
+#ifndef TESTAPP_H
+#define TESTAPP_H
 
-#include "../core/cameras/camera.h"
+#include <runtime/core/windowsystem/openglwindow.h>
 
 
-namespace XEngine
-{
-
-    class TestApp : public BaseApplication
+    class TestApp
     {
     public:
 
-        TestApp(RenderAPI type);
-
-        void onStart();
+        TestApp();
+        ~TestApp();
+        void run();
+      
         void onDraw();
         void onUpdate(float dt);
         void onPostUpdate();
         void onShutdown();
 
     private:
-
-        bool32 isRunning;
-        
-
+        XEngine::GLWindow *window = nullptr;
     };
 
-}
+#endif // !TESTAPP_H

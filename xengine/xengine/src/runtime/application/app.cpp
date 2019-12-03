@@ -7,8 +7,8 @@
 #include "../objects/skybox.h"
 #include "../core/utility/log.h"
 
-#include "../core/rendering/openglnew/renderer2d.h"
-#include "../core/rendering/openglnew/batchrenderer.h"
+#include "../core/rendering/render/render2d.h"
+#include "../core/rendering/render/batchrenderer.h"
 
 #include "../core/rendering/sprite.h"
 #include "../core/rendering/batchsprite.h"
@@ -18,16 +18,15 @@
 #include "../core/utility/clock.h"
 
 #include "../core/rendering/texture.h"
-#include "../core/rendering/pipeline/shader.h"
+#include "../core/rendering/api/base/shader.h"
 
 #include "../core/geometry/model.h"
 
 #include "../core/rendering/text.h"
 #include "../core/windowsystem/windowWin.h"
 
-#include "../core/windowsystem/openglwnd.h"
+#include "../core/windowsystem/openglwindow.h"
 
-#include "../objects/GBuffer.h"
 #include "../core/rendering/api/opengl/glframebuffer.h"
 
 #include "../core/rendering/scenes/scene.h"
@@ -37,7 +36,7 @@
 
 #include "../core/rendering/scenes/sceneObjects.h"
 
-#include "../core/rendering/openglnew/forwardrender.h"
+#include "../core/rendering/render/forwardrender.h"
 
 #include "../core/geometry/resources.h"
 #include "../objects/lights/dirLight.h"
@@ -58,14 +57,16 @@
 
 #define BATCH 0
 
-#ifdef _WIN64
+
+#ifdef XENGINE_WINDOWS_TEST
+
 namespace XEngine
 {
     void mouseCallback(GLFWwindow* window, double xpos, double ypos);
     void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-    XEngine::Camera camera;
+    XEngine::PerspectiveCamera camera;
     ForwardRender forwardRender;
 
 
@@ -90,22 +91,19 @@ namespace XEngine
         classicwindow.initStats();
 
         XEngine::GLGUI myUi(classicwindow.m_window, 1);
-
-        GLFrameBuffer fbo(WINDOWWIDTH * 2, WINDOWHEIGHT * 2);
-
-       
+ 
         Scene scene1("Scene1");
 
-        Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
-        Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
+        //Shader basicShader("src/shaders/basicShader.vs", "src/shaders/basicShader.fs");
+        //Shader loading("src/shaders/simplemodel.vs", "src/shaders/simplemodel.fs");
 
         Assets::Model secondmodel("src/models/nano/nanosuit.obj", false);
         Assets::Model grid("src/models/simple/plane.obj", false);
 
         ShaderBases &shdManager = ShaderBases::getInstance();
 
-        shdManager.addShader("basic", &basicShader);
-        shdManager.addShader("model", &loading);
+        //shdManager.addShader("basic", &basicShader);
+        //shdManager.addShader("model", &loading);
    
         BasicMaterial testMat(shdManager.getShaderByName("model"));
         //Transform testTransform;
@@ -117,23 +115,25 @@ namespace XEngine
       
         scene1.addEntity(&mesh1);
        
-        Shader lightShader("src/shaders/bloom.vs", "src/shaders/light.fs");
-        Shader cubeMap("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
-        Shader floorShader("src/shaders/lightPhongnew.vs", "src/shaders/lightPhongnew.fs");
-        Shader textShader("src/shaders/text.vs", "src/shaders/text.fs");
-        Shader lightMapShader("src/shaders/lightrender.vs", "src/shaders/lightrender.fs");
-        Shader depthMapQuad("src/shaders/depth.vs", "src/shaders/depth.fs");
-        Shader shadowShader("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");
-        Shader normalMappingShader("src/shaders/normalShader.vs", "src/shaders/normalShader.fs");
+       
 
-        Shader blurShader("src/shaders/blur.vs", "src/shaders/blur.fs");
-        Shader bloomShader("src/shaders/bloom.vs", "src/shaders/bloom.fs");
-        Shader mixedShader("src/shaders/blendingshader.vs", "src/shaders/blendingshader.fs");
+        Shader* lightShader = Shader::create("src/shaders/bloom.vs", "src/shaders/light.fs");
+        Shader* cubeMap = Shader::create("src/shaders/cubeMap.vs", "src/shaders/cubeMap.fs");
+        Shader* floorShader = Shader::create("src/shaders/lightPhongnew.vs", "src/shaders/lightPhongnew.fs");
+        Shader* textShader = Shader::create("src/shaders/text.vs", "src/shaders/text.fs");
+        Shader* lightMapShader = Shader::create("src/shaders/lightrender.vs", "src/shaders/lightrender.fs");
+        Shader* depthMapQuad = Shader::create("src/shaders/depth.vs", "src/shaders/depth.fs");
+        Shader* shadowShader = Shader::create("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");
+        Shader* normalMappingShader = Shader::create("src/shaders/normalShader.vs", "src/shaders/normalShader.fs");
 
-        Shader dispShader("src/shaders/parallaxmapping.vs", "src/shaders/parallaxmapping.fs");
+        Shader* blurShader = Shader::create("src/shaders/blur.vs", "src/shaders/blur.fs");
+        Shader* bloomShader = Shader::create("src/shaders/bloom.vs", "src/shaders/bloom.fs");
+        Shader* mixedShader = Shader::create("src/shaders/blendingshader.vs", "src/shaders/blendingshader.fs");
 
-        Shader shaderGeometryPass("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
-        Shader shaderLightingPass("src/shaders/defshading.vs", "src/shaders/defshading.fs");
+        Shader* dispShader = Shader::create("src/shaders/parallaxmapping.vs", "src/shaders/parallaxmapping.fs");
+
+        Shader* shaderGeometryPass = Shader::create("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
+        Shader* shaderLightingPass = Shader::create("src/shaders/gBuffer.vs", "src/shaders/gBuffer.fs");
         //Shader shaderLightBox = {}; ("8.1.deferred_light_box.vs", "8.1.deferred_light_box.fs");
 
         GeometryBuffer plane;
@@ -159,20 +159,20 @@ namespace XEngine
         sky.createSkybox();
 
 
-        dispShader.enableShader();
-        dispShader.setInt("diffuseMap", 0);
-        dispShader.setInt("normalMap", 1);
-        dispShader.setInt("depthMap", 2);
+        dispShader->bind();
+        dispShader->setInt("diffuseMap", 0);
+        dispShader->setInt("normalMap", 1);
+        dispShader->setInt("depthMap", 2);
 
-        shaderGeometryPass.enableShader();
-        shaderGeometryPass.setInt("tex1", 0);
-        shaderGeometryPass.setInt("tex2", 1);
+        shaderGeometryPass->bind();
+        shaderGeometryPass->setInt("tex1", 0);
+        shaderGeometryPass->setInt("tex2", 1);
 
-        cubeMap.enableShader();
-        cubeMap.setInt("skybox", 0);
+        cubeMap->bind();
+        cubeMap->setInt("skybox", 0);
 
-        floorShader.enableShader();
-        floorShader.setInt("floorTexture", 0);
+        floorShader->bind();
+        floorShader->setInt("floorTexture", 0);
 
         /*Win32UseShader(&normalMappingShader);
         setInt(&normalMappingShader, "diffuseMap", 0);
@@ -232,20 +232,20 @@ namespace XEngine
         unsigned int frames = 0;
         int f = 0;
 
-        XEngine::Rendering::Font text1("src/fonts/arial.ttf", &textShader);
+        Font text1("src/fonts/arial.ttf", textShader);
 
         glm::mat4 orho = glm::mat4(1.0f);
 
         orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
         glm::mat4 view = glm::mat4(1.0f);
        
-        Shader shadersprite("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
+        Shader* shadersprite = Shader::create("src/shaders/basic2d.vs", "src/shaders/basic2d.fs");
 
         glm::mat4 modelforsprite = glm::mat4(1.0f);
         modelforsprite = glm::translate(modelforsprite, glm::vec3(0.0f, 10.0f, 0.0f));
 
-        shadersprite.enableShader();
-        shadersprite.setMat4("projection", orho);
+        shadersprite->bind();
+        shadersprite->setMat4("projection", orho);
 
         vec4f spriteColor = vec4f(1.0, 0.0, 0.0, 1.0);
         vec4f spriteColor2 = vec4f(1.0, 1.0, 0.0, 1.0);
@@ -261,7 +261,7 @@ namespace XEngine
         Sprite testsprite(10, 10, 20, 20, spriteColor, shadersprite);
         Sprite testsprite2(30, 10, 20, 20, spriteColor2, shadersprite);
         Sprite testsprite3(50, 10, 20, 20, spriteColor3, shadersprite);
-        Renderer2d renderer;
+        Render2d renderer;
 #endif
 
       
@@ -302,7 +302,7 @@ namespace XEngine
             }
 
           
-            shdManager.getShaderByName("model")->enableShader();
+            shdManager.getShaderByName("model")->bind();
             view = camera.getViewMatrix();
 
             glm::mat4 viewproj = projection * view;
@@ -325,12 +325,12 @@ namespace XEngine
             scene1.drawScene();
 
 
-            shadersprite.enableShader();
-            shadersprite.setVec4("color", spriteColor);
+            shadersprite->bind();
+            shadersprite->setVec4("color", spriteColor);
 #if BATCH
             renderer.start();
 #endif
-            renderer.submit(&testsprite);
+            renderer.add(&testsprite);
             renderer.submit(&testsprite2);
             renderer.submit(&testsprite3);
             
@@ -1144,10 +1144,10 @@ namespace XEngine
         //screenShader.enableShader();
         //screenShader.setInt("screenTexture", 0);
            
-        lightShader.enableShader();
+        lightShader.bind();
         lightShader.setInt("texture1", 0);
 
-        cubeMap.enableShader();
+        cubeMap.bind();
         cubeMap.setInt("skybox", 0);
 
         Clock clockm, time;
@@ -2011,14 +2011,7 @@ namespace XEngine
     {
         camera.mouseScroll(yoffset);
     }
-
-
-
-
-
 }
-   
-
 #endif
 
 

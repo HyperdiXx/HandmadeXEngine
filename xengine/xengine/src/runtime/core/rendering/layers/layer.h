@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../openglnew/renderer2d.h"
-#include "../openglnew/irenderable2d.h"
+#include "../render/render2d.h"
+#include "../render/renderable2d.h"
 
 namespace XEngine
 {
@@ -10,7 +10,7 @@ namespace XEngine
         class Layer
         {
         protected:
-            Layer(Renderer2d* render, Shader* shader, glm::mat4 mat);
+            Layer(Render2d* render, Shader* shader, glm::mat4 mat);
         public:
             Layer()
             {
@@ -25,7 +25,7 @@ namespace XEngine
 
         protected:
             std::vector<Renderable2d*> mRenderables;
-            Renderer2d* mRender;
+            Render2d* mRender;
             Shader* mShader;
             glm::mat4 mprojMat;
         };

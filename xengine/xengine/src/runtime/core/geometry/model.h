@@ -6,9 +6,8 @@
 #include <math/vec3f.h>
 #include <math/vec2f.h>
 #include <runtime/types.h>
-#include "../rendering/pipeline/shader.h"
-
-#include "../ecs/component.h"
+#include <runtime/core/rendering/api/base/shader.h>
+#include <runtime/core/ecs/component.h>
 
 
 namespace XEngine
@@ -49,7 +48,7 @@ namespace XEngine
                 setupMesh();
             };
 
-            void renderMeshes(Shader *shader);
+            //void renderMeshes(Shader *shader);
 
             std::vector<VertexStruct> vertices;
             std::vector<uint32> indices;
@@ -74,11 +73,11 @@ namespace XEngine
                 loadModel(path);
             }
 
-            void drawMesh(Shader *shader)
+            /*void drawMesh(Shader *shader)
             {
                 for (unsigned int i = 0; i < meshes.size(); i++)
-                    meshes[i].renderMeshes(shader);
-            }
+                    meshes.at(i).renderMeshes(shader);
+            }*/
 
             std::vector<TextureStruct> texturesl;
             std::vector<Mesh> meshes;

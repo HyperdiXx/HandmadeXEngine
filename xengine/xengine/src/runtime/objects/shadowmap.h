@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../core/rendering/pipeline/shader.h"
-#include "../core/rendering/api/opengl/glframebuffer.h"
+#include "runtime/core/rendering/api/base/shader.h"
+#include <runtime/core/rendering/api/opengl/opengl.h>
 
 namespace XEngine
 {
@@ -13,13 +13,13 @@ namespace XEngine
             ShadowMap(int w, int h) 
             {
                 init(w, h);
-                shadows = new Shader("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");
-                depthShader = new Shader("src/shaders/lightrender.vs", "src/shaders/lightrender.fs");
+                //shadows = new Shader("src/shaders/basicshadows.vs", "src/shaders/basicshadows.fs");
+                //depthShader = new Shader("src/shaders/lightrender.vs", "src/shaders/lightrender.fs");
             };
             ~ShadowMap()
             {
-                delete shadows;
-                delete depthShader;
+                //delete shadows;
+                //delete depthShader;
             }
 
             void bind();
@@ -34,9 +34,9 @@ namespace XEngine
 
 
         private:
-            GLFrameBuffer *fb;
-            Shader *shadows;
-            Shader *depthShader;
+            //GLFrameBuffer *fb;
+            //Shader *shadows;
+            //Shader *depthShader;
             unsigned int depthMapFrame;
             unsigned int depthMap;
         };

@@ -3,11 +3,11 @@
 #ifndef TEXTURELOADH
 #define TEXTURELOADH
 
-#include <stb_image.h>
+#include <stb_image/stb_image.h>
 
-#include "../../xenpch.h"
+
+#include <runtime/types.h>
 #include "../rendering/texturetypes.h"
-#include "../types.h"
 
 namespace XEngine
 {

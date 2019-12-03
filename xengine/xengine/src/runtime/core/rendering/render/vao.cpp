@@ -3,7 +3,9 @@
 #include "vao.h"
 
 
-void addIndexBuffer(std::vector<unsigned int> indices)
+
+
+/*void addIndexBuffer(std::vector<unsigned int> indices)
 {
 
 }
@@ -114,3 +116,4 @@ void delGeometry(GeometryBuffer* b)
     glDeleteVertexArrays(1, &b->vao);
     glDeleteBuffers(1, &b->vbo);
 }
+*/

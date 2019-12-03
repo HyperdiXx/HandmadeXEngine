@@ -1,47 +1,52 @@
 #include "testapp.h"
 
-XEngine::TestApp::TestApp(RenderAPI type)
+
+TestApp::TestApp()
 {
-    onStart();
+    window = new XEngine::GLWindow("Game", 1280, 720);
 }
 
-void XEngine::TestApp::onStart()
+TestApp::~TestApp()
 {
-    isRunning = true;
+}
 
-    /**
-      * Setup all modules 
-      */
-
-
-
-    while (isRunning)
+void TestApp::run()
+{
+    if (window != nullptr)
     {
-        onUpdate(1.0f);
-        onDraw();
-        onPostUpdate();
+        while (!window->isClosed())
+        {
+            onUpdate(1.0f);
+            onDraw();
+            onPostUpdate();
+        }
     }
 
     onShutdown();
 }
 
-void XEngine::TestApp::onDraw()
+void TestApp::onDraw()
+{
+    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void TestApp::onUpdate(float dt)
 {
 
 }
 
-void XEngine::TestApp::onUpdate(float dt)
+void TestApp::onPostUpdate()
 {
-
+    window->update();
 }
 
-void XEngine::TestApp::onPostUpdate()
+
+void TestApp::onShutdown()
 {
-
+    if (window != nullptr)
+    {
+        delete window;
+        window = nullptr;
+    }
 }
-
-void XEngine::TestApp::onShutdown()
-{
-
-}
-

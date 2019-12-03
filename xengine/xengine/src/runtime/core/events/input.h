@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "../cameras/camera.h"
+#include "../cameras/perspectivecamera.h"
 
 namespace XEngine
 {
@@ -28,5 +28,5 @@ namespace XEngine
     bool onMouseButtonPressed(GLFWwindow* window, int key);
     bool onKeyboardPressed(GLFWwindow* window, int key);
 
-    void processInput(GLFWwindow* window, Camera *cam, bool& ui);
+    void processInput(GLFWwindow* window, PerspectiveCamera *cam, bool& ui);
 }

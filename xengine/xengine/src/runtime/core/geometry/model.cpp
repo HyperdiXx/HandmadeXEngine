@@ -1,7 +1,7 @@
 
 
 #include "model.h"
-#include <stb_image.h>
+#include <stb_image/stb_image.h>
 
 using namespace XEngine;
 using namespace Assets;
@@ -61,7 +61,7 @@ BPMaterialSpec Model::loadMaterial(aiMaterial* mat)
     return material;
 }
 
-void Mesh::renderMeshes(Shader * shader)
+/*void Mesh::renderMeshes(Shader* shader)
 {
     uint32 diffuseNr = 1;
     uint32 specularNr = 1;
@@ -90,7 +90,7 @@ void Mesh::renderMeshes(Shader * shader)
     glBindVertexArray(0);
 
     glActiveTexture(GL_TEXTURE0);
-}
+}*/
 
 void Model::loadModel(std::string const & path)
 {

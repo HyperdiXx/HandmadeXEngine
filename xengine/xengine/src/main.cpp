@@ -25,16 +25,15 @@
 
 */
 
-#include <iostream>
-
-
-#define OPENGL
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
-#include <xenpch.h>
 #include <math/xemath.h>
-
+#include <runtime/application/testapp.h>
+#include <runtime/application/test.h>
+#include <runtime/core/rendering/api/base/shader.h>
+#include <runtime/core/rendering/api/base/texture2d.h>
+#include <runtime/core/rendering/api/base/vertexbuffer.h>
 
 #define internal static
 
@@ -59,7 +58,7 @@ void initShader()
 {
 
 }
-
+ 
 internal GLFWwindow* 
 createWindow(const char* name)
 {
@@ -85,35 +84,82 @@ createWindow(const char* name)
 
 int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
-{
-    /*using namespace XEngine;
-
-    Application *testapp = (Application*)malloc(sizeof(Application));
-#ifdef  OPENGL
-    testapp->OpenGLScene5();
-#else
-    testapp->DX11InitEngine();
-#endif
-
-    free(testapp);*/
-
-    vec2f test;
-    mat4 matrix(1.0f);
- 
-    float r = test.length();
-    
+{    
     initGLFW(3);
 
-    GLFWwindow* m_window = createWindow("Game");
+    GLFWwindow* window = createWindow("XEngine");
 
-    while (!glfwWindowShouldClose(m_window))
+    using namespace XEngine::Rendering;
+    
+    Shader *triangleShader = Shader::create("shaders/simple2d.vs", "shaders/simple2d.fs");
+
+    //Texture2D *texture2D = Texture2D::create("engineassets/water-texture.jpg");
+    Texture2D *texture = Texture2D::create("engineassets/brickwall.jpg");
+    
+    real32 vertices[] =
     {
-        glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 
+         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 
+         -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 
+         -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  
+    };
 
+    real32 texCoords[] =
+    {
+        0.0f, 0.0f, 
+        1.0f, 0.0f, 
+        0.5f, 1.0f  
+    };
+
+    uint32 indices[] = 
+    {
+       0, 1, 3, 
+       1, 2, 3  
+    };
+
+    //VertexBuffer *vbuffer = VertexBuffer::init(vertices, 9);
+
+    uint32 vao, ebo;
+    uint32 vbo;
+
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
+
+    glBindVertexArray(vao);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    triangleShader->bind();
+    triangleShader->setInt("textureColor", 0);
+
+    while (!glfwWindowShouldClose(window))
+    {
+        glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        texture->bind();
+        triangleShader->bind();
+        
+        glBindVertexArray(vao);
+        
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
         glfwPollEvents();
-        glfwSwapBuffers(m_window);
+        glfwSwapBuffers(window);
     }
+
 
     glfwTerminate();
 

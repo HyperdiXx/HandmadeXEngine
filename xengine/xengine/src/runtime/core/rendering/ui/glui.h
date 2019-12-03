@@ -7,11 +7,10 @@
 
 #include <vector>
 
-#include <vec4f.h>
-#include <vec3f.h>
+#include <math/vec4f.h>
+#include <math/vec3f.h>
 
 #include <glad/glad.h>
-
 
 namespace XEngine
 {

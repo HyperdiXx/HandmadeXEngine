@@ -74,7 +74,7 @@ namespace XEngine
             orho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
 
 
-            shader->enableShader();
+            shader->bind();
             shader->setMat4("projection", orho);
 
         }
@@ -82,7 +82,7 @@ namespace XEngine
         void Font::updateText(const std::string& text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) const
         {
                 
-                mshader->enableShader();
+                mshader->bind();
                 mshader->setVec3("color", color);
                 glActiveTexture(GL_TEXTURE0);
                 glBindVertexArray(VAO);

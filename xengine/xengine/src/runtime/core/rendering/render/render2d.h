@@ -1,6 +1,9 @@
 #pragma once
 
-#include "irenderable2d.h"
+#ifndef RENDER2D_H
+#define RENDER2D_H
+
+#include "render.h"
 
 namespace XEngine
 {
@@ -8,9 +11,16 @@ namespace XEngine
     {
         class Render2d
         {
-        protected:
-            virtual void submit(const Renderable2d* renderObj) = 0;
-            virtual void flush() = 0;
+        public:
+            static void init();
+            static void beginScene();
+            static void endScene();
+
+            static void shutdown();
+
+        private:
+
         };
     }
 }
+#endif // !RENDER2D_H

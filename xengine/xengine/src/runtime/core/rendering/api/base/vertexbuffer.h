@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef VERTEXBUFFER_H
+#define VERTEXBUFFER_H
+
+#include <runtime/types.h>
 
 namespace XEngine
 {
@@ -8,16 +12,17 @@ namespace XEngine
         class VertexBuffer
         {
         public:
-            VertexBuffer();
+            virtual ~VertexBuffer() = default;
 
-            VertexBuffer();
+            virtual void bind() const = 0;
+            virtual void unbind() const = 0;
 
-            ~VertexBuffer();
-
-
+            static VertexBuffer* init(real32* vertices, uint32 size);
         private:
 
             int id;
         };
     }
 }
+
+#endif // !VERTEXBUFFER_H

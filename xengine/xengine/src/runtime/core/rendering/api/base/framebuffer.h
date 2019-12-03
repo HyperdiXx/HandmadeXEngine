@@ -15,6 +15,8 @@ namespace XEngine
             virtual void unbind() const = 0;
             virtual void blitFramebuffer() = 0;
 
+            virtual void readPixel() = 0;
+
             virtual void clear() = 0;
 
             virtual uint32 getWidth() const = 0;

@@ -1,6 +1,6 @@
 #pragma once
-
-#include "../core/rendering/renderType.h"
+#ifndef BASEAPP_H
+#define BASEAPP_H
 
 namespace XEngine
 {
@@ -8,13 +8,12 @@ namespace XEngine
     {
     public:
 
-        BaseApplication() {};
+        virtual ~BaseApplication() = default;
 
-        virtual void onStart() = 0;
         virtual void onUpdate(float dt) = 0;
         virtual void onPostUpdate() = 0;
         virtual void onDraw() = 0;
         virtual void onShutdown() = 0;
-
     };
 }
+#endif // !BASEAPP_H

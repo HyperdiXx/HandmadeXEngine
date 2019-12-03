@@ -1,7 +1,7 @@
 #pragma once
 
 #include <deque>
-#include "../api/opengl/buffer.h"
+#include "../api/base/vertexbuffer.h"
 #include "render2d.h"
 
 
@@ -27,15 +27,14 @@ namespace XEngine
             ~BatchRenderer2d()
             {
                 delete mIBO;
-                delete mBuf;
+                //delete mBuf;
                 glDeleteBuffers(1, &mVBO);
                 glDeleteBuffers(1, &mVAO);
             }
                 
             void start();
             void end();
-            void submit(const Renderable2d* renderObj) override;
-            void flush() override;
+
         private:
             void init();
         private:
@@ -43,7 +42,6 @@ namespace XEngine
             GLuint mVAO;
             GLuint mVBO;
             GLsizei mIndCount;
-            Vertex* mBuf;
         };
                                    
     }

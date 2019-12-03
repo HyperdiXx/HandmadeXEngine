@@ -1,0 +1,116 @@
+
+#include "openglwindow.h"
+
+#include <runtime/core/utility/log.h>
+
+#include <runtime/core/rendering/api/opengl/glcontext.h>
+
+namespace XEngine
+{
+    GLWindow::GLWindow(const char* n, uint32 width, uint32 height) :
+        m_name(n), m_width(width), m_height(height)
+    {
+        //LOG("XEngine v.0.0.1\n");
+
+        bindGLFW();
+
+        m_window = glfwCreateWindow(m_width, m_height, m_name, NULL, NULL);
+        if (m_window == NULL)
+        {
+            std::cout << "Failed to create GLFW window" << std::endl;
+            glfwTerminate();
+            return;
+        }
+
+        m_context = new Rendering::GLContext(m_window);
+        //glfwSetFramebufferSizeCallback(m_window, this->framebufferSizeCallback);
+        
+        glfwSwapInterval(1);
+
+        /*GLFWimage images[1];
+        images[0].pixels = stbi_load("src/textures/logo.png", &images[0].width, &images[0].height, 0, 4);
+        glfwSetWindowIcon(m_window, 1, images);
+        stbi_image_free(images[0].pixels);*/
+
+        //LOGSTRING("Render API : OpenGL", glGetString(GL_VERSION));
+        //LOGSTRING("Manufacturer: ", glGetString(GL_VENDOR));
+        //LOGSTRING("GLSL: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
+        //LOGSTRING("GPU: ", glGetString(GL_RENDERER));
+        //LOG("Engine init\n");
+    }
+
+    GLWindow::~GLWindow()
+    {
+        glfwTerminate();
+    }
+
+    void GLWindow::initStats()
+    {
+        setDepth();
+        setBlendFunc();
+        enableMultisample();
+        enableFramebufferSRGB();
+    }
+
+    void GLWindow::setDepth()
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    void GLWindow::setCullface()
+    {
+        glEnable(GL_CULL_FACE);
+    }
+
+    void GLWindow::setBlendFunc()
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    void GLWindow::enableMultisample()
+    {
+        glEnable(GL_MULTISAMPLE);
+    }
+
+    void GLWindow::enableFramebufferSRGB()
+    {
+        glEnable(GL_FRAMEBUFFER_SRGB);
+    }
+
+    void GLWindow::setVSYNC(bool set)
+    {
+        glfwSwapInterval(set);
+    }
+
+    void GLWindow::framebufferSizeCallback(GLFWwindow * window, int32 width, int32 height)
+    {
+        glViewport(0, 0, width, height);
+    }
+
+    void GLWindow::bindGLFW()
+    {
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_SAMPLES, 4);
+    }
+
+    void GLWindow::update() const
+    {
+        GLenum errors = glGetError();
+
+        if (errors != GL_NO_ERROR)
+            std::cout << "Error in " << errors << "\n";
+        
+        glfwPollEvents();
+        glfwSwapBuffers(m_window);        
+    }
+
+    bool32 GLWindow::isClosed()
+    {
+        return glfwWindowShouldClose(m_window);
+    }
+}
+

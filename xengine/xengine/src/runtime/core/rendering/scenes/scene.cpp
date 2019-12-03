@@ -23,6 +23,6 @@ void XEngine::Scene::delEntity(Entity *ent)
 
 void XEngine::Scene::drawScene()
 {
-    for (size_t i = 0; i < mEntity.size(); ++i)
-        mEntity[i]->model->drawMesh(mEntity[i]->material->getShader());
+    /*for (size_t i = 0; i < mEntity.size(); ++i)
+        mEntity[i]->model->drawMesh(mEntity[i]->material->getShader());*/
 }

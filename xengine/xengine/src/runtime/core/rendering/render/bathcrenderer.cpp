@@ -5,7 +5,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-        void BatchRenderer2d::start()
+        /*void BatchRenderer2d::start()
         {
             glBindBuffer(GL_ARRAY_BUFFER, mVBO);
             mBuf = (Vertex*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
@@ -90,7 +90,7 @@ namespace XEngine
 
             glBindVertexArray(0);
 
-
-        }
-    }
+            }
+            */   
+     }
 }

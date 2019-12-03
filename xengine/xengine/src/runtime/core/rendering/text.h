@@ -3,16 +3,10 @@
 #ifndef TEXTH
 #define TEXTH
 
-#include <ft2build.h>
-#include FT_FREETYPE_H  
-
-
-#include <glm/glm.hpp>
+#include <xenpch.h>
 
 #include "texture.h"
-#include "../rendering/pipeline/shader.h"
-
-#include <map>
+#include <runtime/core/rendering/api/base/shader.h>
 
 namespace ftgl {
     struct texture_atlas_t;

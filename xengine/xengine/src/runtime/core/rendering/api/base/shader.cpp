@@ -1,0 +1,25 @@
+#include "shader.h"
+
+#include <runtime/core/rendering/render/render.h>
+#include <runtime/core/rendering/api/opengl/glshader.h>
+
+namespace XEngine
+{
+    namespace Rendering
+    {
+
+        Shader * Shader::create(const std::string & filepath)
+        {
+            return nullptr;
+        }
+
+        Shader * Shader::create(const std::string & vertexSrc, const std::string & fragmentSrc)
+        {
+            switch (Render::getApi())
+            {
+                case RenderAPI::API::OpenGL: return new GLShader(vertexSrc, fragmentSrc);
+            }
+            return nullptr;
+        }
+    }
+}

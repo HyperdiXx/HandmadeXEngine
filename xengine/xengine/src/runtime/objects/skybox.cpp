@@ -61,9 +61,9 @@ XEngine::Rendering::Skybox::Skybox(Shader * skyshader)
                   1.0f, -1.0f,  1.0f
     };
 
-    VAO = new VertexArray();
+    //VAO = new VertexArray();
 
-    VAO->addBuffer(VBO, 0);
+    //VAO->addBuffer(VBO, 0);
 }
 
 XEngine::Rendering::Skybox::~Skybox()
@@ -155,7 +155,7 @@ void Skybox::renderSkybox(Shader *shader, glm::mat4& v, glm::mat4& proj)
 {
     glDepthFunc(GL_LEQUAL);
     v = glm::mat3(v);
-    shader->enableShader();
+    shader->bind();
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
     glBindVertexArray(sky->vao);
@@ -172,7 +172,7 @@ XEngine::Rendering::SkyboxProced::SkyboxProced()
     skyColorBottom = glm::vec3(0.9, 0.9, 0.95);
 
     skyboxShader = new ScreenSpaceShader("shaders/sky.frag");
-    skyboxFBO = new GLFrameBuffer(WINDOWWIDTH, WINDOWHEIGHT);
+    //skyboxFBO = new GLFrameBuffer(WINDOWWIDTH, WINDOWHEIGHT);
 
     SunsetPreset1();
     DefaultPreset();

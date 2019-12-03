@@ -15,7 +15,7 @@
     <ProjectGuid>{48815F50-9AC5-47C7-A7E3-FF1B38114635}</ProjectGuid>
     <RootNamespace>HandmadeGlRenderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>XEngine</ProjectName>
+    <ProjectName>xengine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -44,16 +44,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>E:\HandmadeXEngine\XEngine\XEngine\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\HandmadeXEngine\XEngine\XEngine\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)out\$(ProjectName)\bin$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)out\$(ProjectName)\int$(Platform)\</IntDir>
+    <IncludePath>$(SolutionDir)XEngine\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)XEngine\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)out\$(ProjectName)\$(Configuration)$(Platform)\bin\</OutDir>
+    <IntDir>$(SolutionDir)out\$(ProjectName)\$(Configuration)$(Platform)\int\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)XEngine\inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)XEngine\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)out\bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)out\int\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)out\$(ProjectName)\$(Configuration)$(Platform)\bin\</OutDir>
+    <IntDir>$(SolutionDir)out\$(ProjectName)\$(Configuration)$(Platform)\int\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -61,7 +61,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)XEngine\src;$(SolutionDir)Math\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)XEngine\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>XENGINE_WINDOWS; XENGINE_LIB; MATH_WINDOWS; _CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -87,7 +87,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)XEngine\inc;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)XEngine\src;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
@@ -108,12 +108,14 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="inc\stb_image\stb_image.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\runtime\application\app.cpp" />
     <ClCompile Include="src\runtime\application\baseapp.cpp" />
     <ClCompile Include="src\runtime\application\testapp.cpp" />
-    <ClCompile Include="src\runtime\core\cameras\camera.cpp" />
+    <ClCompile Include="src\runtime\core\cameras\perspectivecamera.cpp" />
+    <ClCompile Include="src\runtime\core\cameras\orthographiccamera.cpp" />
     <ClCompile Include="src\runtime\core\ecs\entitymanager.cpp" />
     <ClCompile Include="src\runtime\core\ecs\transforms.cpp" />
     <ClCompile Include="src\runtime\core\events\events.cpp" />
@@ -122,31 +124,40 @@
     <ClCompile Include="src\runtime\core\geometry\generator.cpp" />
     <ClCompile Include="src\runtime\core\geometry\model.cpp" />
     <ClCompile Include="src\runtime\core\memory\allocator.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\base\indexbuffer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\base\shader.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\base\texture2d.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\base\vertexbuffer.cpp" />
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dx11context.cpp" />
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dx11indexbuffer.cpp" />
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dx11vertexbuffer.cpp" />
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dxshader.cpp" />
     <ClCompile Include="src\runtime\core\rendering\api\dx11\dxtexture.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\gl\buffer.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\gl\glframebuffer.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\gl\indexbuffer.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\api\gl\vertexarray.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glcontext.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glrenderapi.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\gltexture2d.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glframebuffer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glindexbuffer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glvertexarray.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glshader.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\opengl\glvertexbuffer.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\api\renderAPI.cpp" />
     <ClCompile Include="src\runtime\core\rendering\assets.cpp" />
     <ClCompile Include="src\runtime\core\rendering\batchsprite.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\commands\rendercommand.cpp" />
     <ClCompile Include="src\runtime\core\rendering\layers\layer.cpp" />
     <ClCompile Include="src\runtime\core\rendering\layers\scene2d.cpp" />
     <ClCompile Include="src\runtime\core\rendering\layers\scenegraph.cpp" />
     <ClCompile Include="src\runtime\core\rendering\render\bathcrenderer.cpp" />
     <ClCompile Include="src\runtime\core\rendering\render\forwardrender.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\render\renderer2d.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\render\renderer3d.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\render\render2d.cpp" />
+    <ClCompile Include="src\runtime\core\rendering\render\render3d.cpp" />
     <ClCompile Include="src\runtime\core\rendering\render\vao.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\basicmaterial.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\material.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\screenspaceshader.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\pipeline\shader.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\shadersBase.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\shadertype.cpp" />
     <ClCompile Include="src\runtime\core\rendering\scenes\scene.cpp" />
@@ -161,17 +172,16 @@
     <ClCompile Include="src\runtime\core\systems\filesystem.cpp" />
     <ClCompile Include="src\runtime\core\utility\log.cpp" />
     <ClCompile Include="src\runtime\core\utility\path.cpp" />
-    <ClCompile Include="src\runtime\core\utility\stb_image.cpp" />
     <ClCompile Include="src\runtime\core\windowsystem\dx11.cpp" />
     <ClCompile Include="src\runtime\core\windowsystem\dx12.cpp" />
-    <ClCompile Include="src\runtime\core\windowsystem\openglwnd.cpp" />
+    <ClCompile Include="src\runtime\core\windowsystem\openglwindow.cpp" />
     <ClCompile Include="src\runtime\core\windowsystem\windowWin.cpp" />
+    <ClCompile Include="src\runtime\core\windowsystem\winWindow.cpp" />
     <ClCompile Include="src\runtime\objects\gbuffer.cpp" />
     <ClCompile Include="src\runtime\objects\lights\dirLight.cpp" />
     <ClCompile Include="src\runtime\objects\lights\light.cpp" />
     <ClCompile Include="src\runtime\objects\lights\pointLight.cpp" />
     <ClCompile Include="src\runtime\objects\lights\spotLight.cpp" />
-    <ClCompile Include="src\runtime\objects\pbr.cpp" />
     <ClCompile Include="src\runtime\objects\shadowmap.cpp" />
     <ClCompile Include="src\runtime\objects\skybox.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui.cpp" />
@@ -184,6 +194,7 @@
     <ClCompile Include="src\thirdparty\imguit\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\simple2d.fs" />
     <None Include="src\imguit\imgui.ini" />
     <None Include="src\models\barrels.fbx" />
     <None Include="shaders\basic2d.fs" />
@@ -246,11 +257,15 @@
     <None Include="src\thirdparty\imguit\imgui.ini" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\stb_image\stb_image.h" />
+    <ClInclude Include="src\exportapi.h" />
     <ClInclude Include="src\runtime\application\app.h" />
     <ClInclude Include="src\runtime\application\baseapp.h" />
+    <ClInclude Include="src\runtime\application\test.h" />
     <ClInclude Include="src\runtime\application\testapp.h" />
     <ClInclude Include="src\runtime\audio\audio.h" />
-    <ClInclude Include="src\runtime\core\cameras\camera.h" />
+    <ClInclude Include="src\runtime\core\cameras\perspectivecamera.h" />
+    <ClInclude Include="src\runtime\core\cameras\orthographiccamera.h" />
     <ClInclude Include="src\runtime\core\containers\stackll.h" />
     <ClInclude Include="src\runtime\core\containers\vector.h" />
     <ClInclude Include="src\runtime\core\d3dx12.h" />
@@ -269,12 +284,14 @@
     <ClInclude Include="src\runtime\core\geometry\resources.h" />
     <ClInclude Include="src\runtime\core\memory\allocator.h" />
     <ClInclude Include="src\runtime\core\memory\enmemory.h" />
+    <ClInclude Include="src\runtime\core\memory\resourceobject.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\context.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\framebuffer.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\framebufferdepth.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\indexbuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\shader.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\texture.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\base\texture3d.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\base\texture2d.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\texturecube.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\vertexarray.h" />
     <ClInclude Include="src\runtime\core\rendering\api\base\vertexbuffer.h" />
@@ -285,36 +302,38 @@
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dxtexture.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dxtypes.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx12\dx12context.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\gl\buffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\gl\GL.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\gl\glcontext.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\gl\glframebuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\gl\indexbuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\gl\vertexarray.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glrenderapi.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\gltexture2d.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glvertexbuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glcontext.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glframebuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glindexbuffer.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glvertexarray.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\glshader.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\opengl.h" />
     <ClInclude Include="src\runtime\core\rendering\assets.h" />
     <ClInclude Include="src\runtime\core\rendering\batchsprite.h" />
+    <ClInclude Include="src\runtime\core\rendering\commands\rendercommand.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\layer.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\scene2d.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\scenegraph.h" />
+    <ClInclude Include="src\runtime\core\rendering\api\renderAPI.h" />
     <ClInclude Include="src\runtime\core\rendering\render\batchrenderer.h" />
     <ClInclude Include="src\runtime\core\rendering\render\forwardrender.h" />
-    <ClInclude Include="src\runtime\core\rendering\render\irenderable2d.h" />
-    <ClInclude Include="src\runtime\core\rendering\render\irenderable3d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\renderable2d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\renderable3d.h" />
+    <ClInclude Include="src\runtime\core\rendering\render\render.h" />
     <ClInclude Include="src\runtime\core\rendering\render\render2d.h" />
     <ClInclude Include="src\runtime\core\rendering\render\render3d.h" />
-    <ClInclude Include="src\runtime\core\rendering\render\renderer2d.h" />
-    <ClInclude Include="src\runtime\core\rendering\render\renderer3d.h" />
     <ClInclude Include="src\runtime\core\rendering\render\vao.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\basicmaterial.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\material.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\screenspaceshader.h" />
-    <ClInclude Include="src\runtime\core\rendering\pipeline\shader.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\shaders.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\shadersBase.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\shadertype.h" />
-    <ClInclude Include="src\runtime\core\rendering\renderType.h" />
     <ClInclude Include="src\runtime\core\rendering\render\vertex.h" />
     <ClInclude Include="src\runtime\core\rendering\rhi\rhi.h" />
     <ClInclude Include="src\runtime\core\rendering\scenes\scene.h" />
@@ -332,15 +351,14 @@
     <ClInclude Include="src\runtime\core\systems\textureload.h" />
     <ClInclude Include="src\runtime\core\utility\assert.h" />
     <ClInclude Include="src\runtime\core\utility\clock.h" />
-    <ClInclude Include="src\runtime\core\utility\enstring.h" />
     <ClInclude Include="src\runtime\core\utility\log.h" />
     <ClInclude Include="src\runtime\core\utility\path.h" />
-    <ClInclude Include="src\runtime\core\utility\stb_image.h" />
     <ClInclude Include="src\runtime\core\utility\string.h" />
     <ClInclude Include="src\runtime\core\windowsystem\dx11.h" />
     <ClInclude Include="src\runtime\core\windowsystem\dx12.h" />
-    <ClInclude Include="src\runtime\core\windowsystem\openglwnd.h" />
+    <ClInclude Include="src\runtime\core\windowsystem\openglwindow.h" />
     <ClInclude Include="src\runtime\core\windowsystem\windowWin.h" />
+    <ClInclude Include="src\runtime\core\windowsystem\winWindow.h" />
     <ClInclude Include="src\runtime\objects\animation\animation.h" />
     <ClInclude Include="src\runtime\objects\animation\bone.h" />
     <ClInclude Include="src\runtime\objects\animation\keyframe.h" />
@@ -350,7 +368,6 @@
     <ClInclude Include="src\runtime\objects\lights\light.h" />
     <ClInclude Include="src\runtime\objects\lights\pointLight.h" />
     <ClInclude Include="src\runtime\objects\lights\spotLight.h" />
-    <ClInclude Include="src\runtime\objects\pbr.h" />
     <ClInclude Include="src\runtime\objects\shadowmap.h" />
     <ClInclude Include="src\runtime\objects\skybox.h" />
     <ClInclude Include="src\runtime\types.h" />

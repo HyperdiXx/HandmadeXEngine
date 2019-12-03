@@ -3,10 +3,10 @@
 #ifndef SKYBOXH
 #define SKYBOXH
 
-#include "../core/rendering/pipeline/shader.h"
-#include "../core/rendering/openglnew/vao.h"
-#include "../core/rendering/api/opengl/vertexarray.h"
-#include "../core/rendering/api/opengl/buffer.h"
+#include "../core/rendering/api/base/shader.h"
+#include "../core/rendering/render/vao.h"
+#include "../core/rendering/api/base/vertexarray.h"
+#include "../core/rendering/api/base/vertexbuffer.h"
 #include "../core/rendering/texture.h"
 #include "../core/rendering/api/opengl/glframebuffer.h"
 #include "../core/rendering/pipeline/screenspaceshader.h"
@@ -30,7 +30,7 @@ namespace XEngine
             GeometryBuffer* getGeometryBuffer() { return sky; };
         private:
             GeometryBuffer *sky;
-            VertexArray *VAO;
+            //VertexArray *VAO;
             VertexBuffer *VBO;
             Cubemap *tex;
             XEngine::Cubemap cub;

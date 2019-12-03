@@ -56,7 +56,7 @@ namespace XEngine
         return state == GLFW_RELEASE;
     }
 
-    void processInput(GLFWwindow *window, Camera *cam, bool& ui)
+    void processInput(GLFWwindow *window, PerspectiveCamera *cam, bool& ui)
     {
         //gInp.lock();
         if (onKeyboardPressed(window, GLFW_KEY_U))

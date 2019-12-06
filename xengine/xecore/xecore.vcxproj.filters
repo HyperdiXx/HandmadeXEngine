@@ -56,5 +56,14 @@
     <ClInclude Include="inc\utilsh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\stack_linked_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\assert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,12 +4,7 @@
 #define LINKED_LIST
 
 #include "utilsh.h"
-
-struct Node
-{
-    Node *next;
-    int32 data;
-};
+#include "node.h"
 
 class linked_list
 {    

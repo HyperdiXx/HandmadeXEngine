@@ -81,13 +81,16 @@
   <ItemGroup>
     <ClInclude Include="inc\allocator.h" />
     <ClInclude Include="inc\array.h" />
+    <ClInclude Include="inc\assert.h" />
     <ClInclude Include="inc\double_linked_list.h" />
     <ClInclude Include="inc\dyn_array.h" />
     <ClInclude Include="inc\fsinterface.h" />
     <ClInclude Include="inc\linear_allocator.h" />
     <ClInclude Include="inc\linked_list.h" />
     <ClInclude Include="inc\memory_allocate.h" />
+    <ClInclude Include="inc\node.h" />
     <ClInclude Include="inc\pool_allocator.h" />
+    <ClInclude Include="inc\stack_linked_list.h" />
     <ClInclude Include="inc\types.h" />
     <ClInclude Include="inc\utilsh.h" />
     <ClInclude Include="inc\xestring.h" />

@@ -152,6 +152,7 @@ public:
         return *this;
     }
 
+    // Modifies same object memory place
     xestring &substr(uint32 pos, uint32 count)
     {
         if (pos > len - 1 || count == 0)
@@ -168,7 +169,7 @@ public:
         data = new_str;
         return *this;
     }
-
+    
     void assign(const char *str)
     {
         if (data == str)

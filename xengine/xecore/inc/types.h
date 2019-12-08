@@ -3,17 +3,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#if defined _WIN64
-    #define WINDOWS
-#endif // _WIN64
-
-#if defined WINDOWS
-#include <stdint.h>
-#endif // WINDOWS
-
-#if defined( __LINUX__ ) || defined( __OSX__ )
-#include <sys/types.h>
-#endif
+#include "platform.h"
 
 typedef uint8_t uint8;
 typedef uint16_t uint16;

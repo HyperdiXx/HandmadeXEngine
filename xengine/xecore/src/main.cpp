@@ -16,13 +16,7 @@ int main(int argc, char **argv)
     char sym = str.find_at(6);
     char s = str[0];
 
-    std::cout << str << std::endl;
-  
-    str.erase(3);
-
-    str = str.substr(1, 3);
-
-    int a = 213;
+    std::cout << str << std::endl;  
 
     linked_list ll;
 
@@ -75,15 +69,28 @@ int main(int argc, char **argv)
 
     art.insert(1778, 1);
     
-    xedyn_array<int32> dyn_ar;
+    xedyn_array<int32> vector;
 
-    dyn_ar.push_back(1231);
-    dyn_ar.push_back(12);
-    dyn_ar.push_back(1);
-
-    for (int i = 0; i < dyn_ar.size(); i++)
+    for (int i = 0; i < 5; ++i)
     {
-        printf("%d\n", dyn_ar[i]);
+        vector.push_back(i);
+    }
+
+    vector.insert(2, 21284);
+
+    printf("Before pop\n");
+    for (uint32 i = 0; i < vector.size(); i++)
+    {
+        printf("%d\n", vector[i]);
+    }
+
+    vector.remove(21284);
+    vector.pop();
+
+    printf("After deleting\n");
+    for (uint32 i = 0; i < vector.size(); i++)
+    {
+        printf("%d\n", vector[i]);
     }
 
     int b = 3;

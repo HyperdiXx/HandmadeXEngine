@@ -3,7 +3,10 @@
 #ifndef ASSERT_H
 #define ASSERT_H
 
-#define assert(x) \
-        if(!x) 
+#define XECORE_DEBUG_BREAK() __debugbreak()
+
+// TODO: log 
+
+#define assert(x) if(!(x)) { XECORE_DEBUG_BREAK(); }
 
 #endif // !ASSERT_H

@@ -13,14 +13,15 @@
 class xestring
 {
 public:
+    
     xestring() = default;
-  
+
     xestring(char symbol)
     {
-        len = 1;
-        capacity = 8;
-        data = (char*)allocate_memory(capacity);
-        data[0] = 0x00;
+        m_size = 1;
+        m_capacity = 8;
+        m_data = (char*)allocate_memory(m_capacity);
+        m_data[0] = 0x00;
     }
 
     xestring(const char* str)
@@ -29,41 +30,41 @@ public:
 
         if (cur_len != 0)
         {
-            len = cur_len;
+            m_size = cur_len;
 
-            if (len < 8)
-                capacity = 8;
+            if (m_size < 8)
+                m_capacity = 8;
 
-            if (capacity < len)
-                capacity = len + 1;
+            if (m_capacity < m_size)
+                m_capacity = m_size + 1;
 
-            data = (char*)allocate_memory(capacity);
-            memcpy(data, str, len);
-            data[len] = 0x00;
+            m_data = (char*)allocate_memory(m_capacity);
+            memcpy(m_data, str, m_size);
+            m_data[m_size] = 0x00;
         }
         else
         {
-            len = 1;
-            capacity = 8;
-            data = (char*)allocate_memory(capacity);
-            data[0] = 0x00;
+            m_size = 1;
+            m_capacity = 8;
+            m_data = (char*)allocate_memory(m_capacity);
+            m_data[0] = 0x00;
         }
 
     }
 
     xestring(const xestring& rval)
     {
-        data = rval.data;
-        len = rval.len;
-        capacity = rval.capacity;
+        m_data = rval.m_data;
+        m_size = rval.m_size;
+        m_capacity = rval.m_capacity;
     }
 
     ~xestring()
     {
-        deallocate_memory(data);
-        data = nullptr;
-        len = 0;
-        capacity = 0;
+        deallocate_memory(m_data);
+        m_data = nullptr;
+        m_size = 0;
+        m_capacity = 0;
     }
 
     uint32 length(const char* data)
@@ -81,7 +82,7 @@ public:
         if (str != nullptr)
         {
             uint32 len = length(str);
-            memcpy(data, str, len);
+            memcpy(m_data, str, len);
         }
     }
 
@@ -97,16 +98,16 @@ public:
 
     char find_at(uint8 index)
     {
-        if (index >= 0 && index < len - 1)
-            return data[index];
+        if (index >= 0 && index < m_size - 1)
+            return m_data[index];
         return ' ';
     }
 
     uint32 index_of(char symbol)
     {
-        for (uint32 i = 0; i < len; i++)
+        for (uint32 i = 0; i < m_size; ++i)
         {
-            if (data[i] == symbol)
+            if (m_data[i] == symbol)
                 return i;
         }
         return 0;
@@ -114,11 +115,11 @@ public:
 
     bool32 find(char symbol)
     {
-        if (data != nullptr)
+        if (m_data != nullptr)
         {
-            for (uint32 i = 0; i < len; i++)
+            for (uint32 i = 0; i < m_size; ++i)
             {
-                if (data[i] == symbol)
+                if (m_data[i] == symbol)
                     return true;
             }
         }
@@ -131,9 +132,9 @@ public:
 
         if (str != nullptr)
         {
-            for (uint32 i = 0; i < len; i++)
+            for (uint32 i = 0; i < m_size; i++)
             {
-                if (data[i] == str[i])
+                if (m_data[i] == str[i])
                 {
 
                 }
@@ -144,35 +145,56 @@ public:
 
     xestring &erase(uint32 index)
     {
-        if (index > len - 1 || !len)
+        if (index > m_size - 1 || !m_size)
             return *this;
-        memmove(data + index, data + index + 1, len - index);
-        len--;
-        data[len] = 0x00;
+        memmove(m_data + index, m_data + index + 1, m_size - index);
+        m_data[m_size] = 0x00;
+        --m_size;
         return *this;
     }
 
     // Modifies same object memory place
     xestring &substr(uint32 pos, uint32 count)
     {
-        if (pos > len - 1 || count == 0)
+        if (pos > m_size - 1 || count == 0)
             return *this;
 
-        if (pos + count > len)
-            count = len - pos;
+        if (pos + count > m_size)
+            count = m_size - pos;
 
-        char *new_str = (char*)allocate_memory(capacity);
-        memcpy(new_str, data + pos, count);
-        len = count;
-        new_str[len] = 0x00;
-        deallocate_memory(data);
-        data = new_str;
+        char *new_str = (char*)allocate_memory(m_capacity);
+        memcpy(new_str, m_data + pos, count);
+        m_size = count;
+        new_str[m_size] = 0x00;
+        deallocate_memory(m_data);
+        m_data = new_str;
         return *this;
+    }
+
+    // TODO : dnt use it 
+    xestring *substr_val(uint32 pos, uint32 count)
+    {
+        xestring *res = new xestring();
+        
+        if (pos > res->m_size - 1 || count == 0)
+            return nullptr;
+
+        if (pos + count > res->m_size)
+            count = res->m_size - pos;
+
+        char *new_str = (char*)allocate_memory(res->m_capacity);
+        memcpy(new_str, res->m_data + pos, count);
+        res->m_size = count;
+        new_str[res->m_size] = 0x00;
+        deallocate_memory(res->m_data);
+        res->m_data = new_str;
+        
+        return res;
     }
     
     void assign(const char *str)
     {
-        if (data == str)
+        if (m_data == str)
             return;
 
         uint32 size = length(str);
@@ -195,73 +217,73 @@ public:
 
     char first() const
     {
-        return data[0];
+        return m_data[0];
     }
 
     bool32 is_empty()
     {
-        return len == 0;
+        return m_size == 0;
     }
 
     // TODO: write iterator
 
     char last() const
     {
-        if (!len)
-            return data[0];
-        return data[len - 1];
+        if (m_size <= 1)
+            return m_data[0];
+        return m_data[m_size - 1];
     }
 
     void clear_str()
     {
-        deallocate_memory(data);
-        data = nullptr;
-        len = 0;
-        capacity = 0;
+        deallocate_memory(m_data);
+        m_data = nullptr;
+        m_size = 0;
+        m_capacity = 0;
     }
 
     xestring& operator=(const xestring &str)
     {
-        data = str.data;
-        len = str.len;
-        capacity = str.capacity;
+        m_data = str.m_data;
+        m_size = str.m_size;
+        m_capacity = str.m_capacity;
         return *this;
     }
     
     char operator[](uint32 ind) const
     {
-        if (ind >= len)
+        if (ind >= m_size)
             throw 1;
-        return data[ind];
+        return m_data[ind];
     }
 
     char & operator[](uint32 index)
     {
-        if (index >= len)
+        if (index >= m_size)
             throw 1;
-        return data[index];
+        return m_data[index];
     }
 
     const char *c_str() const
     {
-        return data;
+        return m_data;
     }
 
     uint32 get_length() const
     {
-        return len;
+        return m_size;
     }
 
     uint32 get_capactiy() const
     {
-        return capacity;
+        return m_capacity;
     }
 
     friend std::ostream& operator<< (std::ostream& os, const xestring& str)
     {
-        if (str.len > 0)
+        if (str.m_size > 0)
         {
-            for (uint32 i = 0; i < str.len; i++)
+            for (uint32 i = 0; i < str.m_size; i++)
                 os << str[i];
         }
 
@@ -269,9 +291,9 @@ public:
     }
 
 private:   
-    char *data = nullptr;
-    uint32 len = 0;
-    uint32 capacity = 0;
+    char *m_data = nullptr;
+    uint32 m_size = 0;
+    uint32 m_capacity = 0;
 };
 
 

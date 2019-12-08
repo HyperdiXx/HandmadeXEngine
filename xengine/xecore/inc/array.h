@@ -4,6 +4,7 @@
 #define ARRAY_H
 
 #include "types.h"
+#include "assert.h"
 
 template <typename T>
 class xearray
@@ -90,15 +91,15 @@ void xearray<T>::pop()
 template <class T>
 T& xearray<T>::first()
 {
-    if(cur_size > 0)
-        return data[0];
+    assert(cur_size > 0);
+    return data[0];
 }
 
 template <class T>
 T& xearray<T>::last()
 {
-    if(cur_size > 0)
-        return data[cur_size - 1];
+    assert(cur_size > 0);
+    return data[cur_size - 1];
 }
 
 template <class T>

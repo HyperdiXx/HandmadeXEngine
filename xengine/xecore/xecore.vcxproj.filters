@@ -65,5 +65,14 @@
     <ClInclude Include="inc\assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\crt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\string_parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

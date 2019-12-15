@@ -12,7 +12,8 @@ class xedyn_array
 {
 public:
 
-    xedyn_array()
+    // TODO : refactor init of capacity and memory block at push_back 
+    xedyn_array() 
     {
         m_capacity = 8;
         m_cur_size = 0;
@@ -48,7 +49,7 @@ public:
     {
         if (m_cur_size >= m_capacity)
             resize();
-        memcpy(m_data + index + 1, m_data + index, sizeof(T) * (m_cur_size - index));
+        memmove(m_data + index + 1, m_data + index, sizeof(T) * (m_cur_size - index));
         m_data[index] = d;
         ++m_cur_size;
     }
@@ -87,6 +88,11 @@ public:
         }
     }
 
+    void emplace(uint32 index, const T &d)
+    {
+        
+    }
+
     void swap(xedyn_array<T> &rhs)
     {
         uint32 tmp = rhs.m_capacity;
@@ -101,6 +107,12 @@ public:
         rhs.m_data = m_data;
         m_data = t;
 
+    }
+
+    void reserve(uint32 scale)
+    {
+        m_capacity = m_capacity << scale;
+        m_data = (T*)realloc_memory(m_data, sizeof(T) * m_capacity);
     }
     
     void clear()
@@ -132,13 +144,13 @@ public:
 
     T& operator[](uint32 i)
     {
-        assert(i > 0 && i < m_cur_size - 1);
+        assert(i >= 0 && i <= m_cur_size - 1);
         return m_data[i];
     }
 
     const T& operator[](uint32 i) const
     {
-        assert(i > 0 && i < m_cur_size - 1);
+        assert(i >= 0 && i <= m_cur_size - 1);
         return m_data[i];
     }
     

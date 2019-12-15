@@ -11,7 +11,7 @@
 #include <memory.h>
 
 class xestring
-{
+{   
 public:
     
     xestring() = default;
@@ -54,9 +54,20 @@ public:
 
     xestring(const xestring& rval)
     {
-        m_data = rval.m_data;
         m_size = rval.m_size;
         m_capacity = rval.m_capacity;
+        m_data = (char*)allocate_memory(sizeof(char) * m_capacity);
+        memcpy(m_data, rval.m_data, m_capacity * sizeof(char));
+        m_data[m_size] = 0x00;
+    }
+
+    xestring(xestring&& rval)
+    {
+        m_size = rval.m_size;
+        m_capacity = rval.m_capacity;
+        m_data = rval.m_data;
+        rval.m_data = nullptr;
+        rval.m_size = 0;
     }
 
     ~xestring()
@@ -172,22 +183,22 @@ public:
     }
 
     // TODO : dnt use it 
-    xestring *substr_val(uint32 pos, uint32 count)
+    xestring substr_val(uint32 pos, uint32 count)
     {
-        xestring *res = new xestring();
+        xestring res;
         
-        if (pos > res->m_size - 1 || count == 0)
+        if (pos > res.m_size - 1 || count == 0)
             return nullptr;
 
-        if (pos + count > res->m_size)
-            count = res->m_size - pos;
+        if (pos + count > res.m_size)
+            count = res.m_size - pos;
 
-        char *new_str = (char*)allocate_memory(res->m_capacity);
-        memcpy(new_str, res->m_data + pos, count);
-        res->m_size = count;
-        new_str[res->m_size] = 0x00;
-        deallocate_memory(res->m_data);
-        res->m_data = new_str;
+        char *new_str = (char*)allocate_memory(res.m_capacity);
+        memcpy(new_str, res.m_data + pos, count);
+        res.m_size = count;
+        new_str[res.m_size] = 0x00;
+        deallocate_memory(res.m_data);
+        res.m_data = new_str;
         
         return res;
     }
@@ -269,6 +280,21 @@ public:
         return m_data;
     }
 
+    const char *data()
+    {
+        return m_data;
+    }
+
+    void decrease_pointer(uint32 pose)
+    {
+        m_data[pose]++;
+    }
+
+    void decrease_length(uint16 s)
+    {
+        m_size = m_size - s;
+    }
+
     uint32 get_length() const
     {
         return m_size;
@@ -290,8 +316,11 @@ public:
         return os;
     }
 
-private:   
+public:
     char *m_data = nullptr;
+
+private:
+   
     uint32 m_size = 0;
     uint32 m_capacity = 0;
 };

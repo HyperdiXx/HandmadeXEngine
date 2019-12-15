@@ -76,6 +76,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="inc\string_parser.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +97,8 @@
     <ClInclude Include="inc\string_parser.h" />
     <ClInclude Include="inc\types.h" />
     <ClInclude Include="inc\utilsh.h" />
+    <ClInclude Include="inc\xehash_map.h" />
+    <ClInclude Include="inc\xemap.h" />
     <ClInclude Include="inc\xestring.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -7,12 +7,20 @@
 #include <stack_linked_list.h>
 #include <array.h>
 #include <dyn_array.h>
+#include <xemap.h>
+
+#include <string_parser.h>
 
 int main(int argc, char **argv)
 {
     xestring str("config");
     xestring stringnull("");
+    xestring parsed_string("project xengine x64 release v01 project game x64 release project val fasihujbf fbahsjfb jhkfshak hfhajhskfh jksfah fkjha sjkfh kajsfh jkash jkfhaks hkj");
     
+    string_parser::skip_whitespaces(&parsed_string);
+
+    std::cout << parsed_string << "\n";
+
     char sym = str.find_at(6);
     char s = str[0];
 

@@ -1,12 +1,12 @@
-#include "vertexbuffer.h"
+#include "vertexarray.h"
 #include <runtime/core/rendering/render/render.h>
-#include <runtime/core/rendering/api/opengl/glvertexbuffer.h>
+#include <runtime/core/rendering/api/opengl/glvertexarray.h>
 
 namespace XEngine
 {
     namespace Rendering
     {
-        VertexBuffer *VertexBuffer::create(real32 *vertices, uint32 size)
+        VertexArray *VertexArray::create()
         {
             switch (Render::getApi())
             {
@@ -14,7 +14,7 @@ namespace XEngine
                 return nullptr;
                 break;
             case RenderAPI::API::OpenGL:
-                return new GLVertexBuffer(vertices, size);
+                return new GLVertexArray();
                 break;
             default:
                 // LOG: error
@@ -24,4 +24,3 @@ namespace XEngine
         }
     }
 }
-

@@ -1,38 +1,27 @@
 #pragma once
 
-#include "glvertexbuffer.h"
+#include <xenpch.h>
+#include <runtime/core/rendering/api/base/vertexarray.h>
 
 namespace XEngine
 {
     namespace Rendering
-    {
-        class GLVertexArray
+    {      
+        class GLVertexArray : public VertexArray
         {
         public:
-            GLVertexArray()
-            {
-                glGenVertexArrays(1, &mId);
-            }
+            GLVertexArray();
+            virtual ~GLVertexArray();
 
-            ~GLVertexArray()
-            {
-                for (size_t i = 0; i < mBuffer.size(); ++i)
-                {
-                    delete mBuffer[i];
-                }
+            virtual void addVertexBuffer(const VertexBuffer *vb) override;
+            virtual void setIndexBuffer(const IndexBuffer *ib) override;                      
 
-                glDeleteVertexArrays(1, &mId);
-            }
-
-            void addBuffer(GLVertexBuffer *buf, GLuint attribute);
-            void bind() const;
-            void unbind() const;
+            virtual void bind() const;
+            virtual void unbind() const;
 
         private:
             GLuint mId;
-            std::vector<GLVertexBuffer*> mBuffer;
+            std::vector<VertexBuffer*> mBuffer;
         };
-
     }
-
 }

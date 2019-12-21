@@ -34,17 +34,18 @@ namespace XEngine
             m_internalFormat = internalFormat;
             m_dataFormat = dataFormat;
 
-            glGenTextures(GL_TEXTURE_2D, &m_id);
+            glGenTextures(1, &m_id);
             glBindTexture(GL_TEXTURE_2D, m_id);            
          
-            glTexParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
             glTexParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+            glTexParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+          
             glTexImage2D(GL_TEXTURE_2D, 0, m_dataFormat, m_width, m_height, 0, m_dataFormat, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
+
             glBindTexture(GL_TEXTURE_2D, 0);
 
             stbi_image_free(image);
@@ -64,7 +65,7 @@ namespace XEngine
 
         void GLTexture2D::bind() const
         {
-            //glActiveTexture(GL_TEXTURE0 + m_id);
+            glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, m_id);
         }
     }

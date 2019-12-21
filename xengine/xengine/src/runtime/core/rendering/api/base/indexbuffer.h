@@ -17,9 +17,7 @@ namespace XEngine
             virtual void bind() const = 0;
             virtual void unbind() const = 0;
 
-            static IndexBuffer* init(uint32* indices, uint32 size);
-        private:
-            int id;
+            static IndexBuffer* create(uint32* indices, uint32 size);
         };
     }
 }

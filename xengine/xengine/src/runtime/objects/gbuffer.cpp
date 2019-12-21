@@ -42,7 +42,7 @@ void XEngine::Rendering::Gbuffer::init()
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth, 0);
 
     unsigned int drawBuffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers(ARRAYSIZE(drawBuffers), drawBuffers);
+    //glDrawBuffers(ARRAYSIZE(drawBuffers), drawBuffers);
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 

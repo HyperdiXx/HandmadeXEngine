@@ -27,10 +27,10 @@ namespace XEngine
             glShaderSource(fragment, 1, &fsFileCode, NULL);
             glCompileShader(fragment);
 
-            GLint status;
-            glGetShaderiv(vertex, GL_COMPILE_STATUS, &status);
+            GLint status_vertex;
+            glGetShaderiv(vertex, GL_COMPILE_STATUS, &status_vertex);
 
-            if (status != GL_TRUE)
+            if (status_vertex != GL_TRUE)
             {
                 GLint length;
                 glGetShaderiv(vertex, GL_INFO_LOG_LENGTH, &length);
@@ -38,6 +38,23 @@ namespace XEngine
                 GLchar* buffer = new GLchar[length];
                 GLint buflength;
                 glGetShaderInfoLog(vertex, length, &buflength, buffer);
+
+                printf("%s\n", buffer);
+
+                delete[] buffer;
+            }
+
+            GLint status_fragment;
+            glGetShaderiv(fragment, GL_COMPILE_STATUS, &status_fragment);
+
+            if (status_fragment != GL_TRUE)
+            {
+                GLint length;
+                glGetShaderiv(fragment, GL_INFO_LOG_LENGTH, &length);
+
+                GLchar* buffer = new GLchar[length];
+                GLint buflength;
+                glGetShaderInfoLog(fragment, length, &buflength, buffer);
 
                 printf("%s\n", buffer);
 

@@ -18,6 +18,9 @@ namespace XEngine
             switch (Render::getApi())
             {
                 case RenderAPI::API::OpenGL: return new GLShader(vertexSrc, fragmentSrc);
+                    break;
+                default:
+                    break;
             }
             return nullptr;
         }

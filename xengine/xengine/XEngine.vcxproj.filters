@@ -267,6 +267,9 @@
     <ClCompile Include="src\runtime\core\windowsystem\openglwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\base\vertexarray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\models\barrels.fbx" />

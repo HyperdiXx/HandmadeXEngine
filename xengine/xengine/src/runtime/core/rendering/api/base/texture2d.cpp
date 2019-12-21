@@ -13,6 +13,9 @@ namespace XEngine
             {
                 case RenderAPI::API::OpenGL: return new GLTexture2D(path);
                     break;
+                default:
+                    // Log : "Unsoppurted format!!!"
+                    break;
             }
 
             return nullptr;

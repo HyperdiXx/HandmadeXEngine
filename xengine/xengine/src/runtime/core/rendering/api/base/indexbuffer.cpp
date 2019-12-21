@@ -7,7 +7,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-        IndexBuffer * IndexBuffer::init(uint32* indices, uint32 size)
+        IndexBuffer * IndexBuffer::create(uint32* indices, uint32 size)
         {
             switch (Render::getApi())
             {

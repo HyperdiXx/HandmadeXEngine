@@ -2,22 +2,28 @@
 
 #include "opengl.h"
 
+#include <GLFW/glfw3.h>
+
 namespace XEngine
 {
     namespace Rendering
     {
-        GLContext::GLContext(GLFWwindow * window) : m_WindowHandle(window)
+        GLDeviceContext::GLDeviceContext(GLFWwindow * window) : m_window_handle(window)
         {
-            APIs::OpenGL::makeContext(m_WindowHandle);
+            glfwMakeContextCurrent(m_window_handle);
             int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
             // TODO: add logs and assets
+        }
+
+        void GLDeviceContext::init()
+        {
 
         }
 
-        void GLContext::swapBuffers()
+        void GLDeviceContext::swapBuffers()
         {
-            APIs::OpenGL::swapBuffers(m_WindowHandle);
+            glfwSwapBuffers(m_window_handle);
         }
     }
 }

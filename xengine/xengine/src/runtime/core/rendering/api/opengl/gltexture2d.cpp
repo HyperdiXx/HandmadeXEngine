@@ -37,12 +37,14 @@ namespace XEngine
             glGenTextures(1, &m_id);
             glBindTexture(GL_TEXTURE_2D, m_id);            
          
+            // Getting bug from here GL_INVALID_ENUM??? error 1280
+
+            glTexParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
             glTexParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-            glTexParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-          
             glTexImage2D(GL_TEXTURE_2D, 0, m_dataFormat, m_width, m_height, 0, m_dataFormat, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -60,12 +62,11 @@ namespace XEngine
         {
             uint32 bpp = m_dataFormat == GL_RGBA ? 4 : 3;
             glTexSubImage2D(m_id, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
-            //glTextureSubImage2D(m_id, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
         }
 
-        void GLTexture2D::bind() const
+        void GLTexture2D::bind(uint16 index) const
         {
-            glActiveTexture(GL_TEXTURE0);
+            glActiveTexture(GL_TEXTURE0 + index);
             glBindTexture(GL_TEXTURE_2D, m_id);
         }
     }

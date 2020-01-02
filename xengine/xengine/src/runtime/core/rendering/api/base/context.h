@@ -7,10 +7,13 @@ namespace XEngine
 {
     namespace Rendering
     {
-        class Context
+        class DeviceContext
         {
-        public:            
+        public:
+            virtual void init() = 0;
             virtual void swapBuffers() = 0;    
+
+            static DeviceContext *create(void *win);
         };
     }
 }

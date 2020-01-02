@@ -9,7 +9,7 @@ using namespace Rendering;
 
 XEngine::Rendering::Skybox::Skybox()
 {
-    sky = (GeometryBuffer*)malloc(sizeof(GeometryBuffer));
+    //sky = (GeometryBuffer*)malloc(sizeof(GeometryBuffer));
     //tex = new Cubemap();
     createSkybox();
 }
@@ -68,12 +68,10 @@ XEngine::Rendering::Skybox::Skybox(Shader * skyshader)
 
 XEngine::Rendering::Skybox::~Skybox()
 {
-    
-        glDeleteVertexArrays(1, &sky->vao);
-        glDeleteBuffers(1, &sky->vbo);
-        free(sky);
-        delete(tex);
-    
+    //glDeleteVertexArrays(1, &sky->vao);
+    //glDeleteBuffers(1, &sky->vbo);
+    //free(sky);
+    delete tex;    
 }
 
 void Skybox::createSkybox()
@@ -141,8 +139,8 @@ void Skybox::createSkybox()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    sky->vao = skyboxVAO;
-    sky->vbo = skyboxVBO;
+    //sky->vao = skyboxVAO;
+    //sky->vbo = skyboxVBO;
 
 
     //cubemaptexture = Utils::loadCubemap(mtextures);
@@ -158,7 +156,7 @@ void Skybox::renderSkybox(Shader *shader, glm::mat4& v, glm::mat4& proj)
     shader->bind();
     shader->setMat4("projection", proj);
     shader->setMat4("view", v);
-    glBindVertexArray(sky->vao);
+    //glBindVertexArray(sky->vao);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemaptexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -224,7 +222,7 @@ colorPreset XEngine::Rendering::SkyboxProced::DefaultPreset()
     preset.lightColor = glm::vec3(255, 255, 230) / 255.f;
     preset.fogColor = glm::vec3(0.5, 0.6, 0.7);
 
-    highSunPreset = preset;
+    //highSunPreset = preset;
 
     return preset;
 }
@@ -240,7 +238,7 @@ colorPreset XEngine::Rendering::SkyboxProced::SunsetPreset()
     preset.lightColor = glm::vec3(255, 171, 125) / 255.f;
     preset.fogColor = glm::vec3(85, 97, 120) / 255.f;
 
-    presetSunset = preset;
+    //presetSunset = preset;
 
     return preset;
 }
@@ -256,7 +254,7 @@ colorPreset XEngine::Rendering::SkyboxProced::SunsetPreset1()
     preset.lightColor = glm::vec3(255, 201, 201) / 255.f;
     preset.fogColor = glm::vec3(128, 153, 179) / 255.f;
 
-    presetSunset = preset;
+    //presetSunset = preset;
 
     return preset;
 }

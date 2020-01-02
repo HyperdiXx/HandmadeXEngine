@@ -3,41 +3,15 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <math/vec3f.h>
-#include <math/vec2f.h>
 #include <runtime/types.h>
 #include <runtime/core/rendering/api/base/shader.h>
 #include <runtime/core/ecs/component.h>
-
+#include "vertex.h"
 
 namespace XEngine
 {
     namespace Assets
-    {
-        struct VertexStruct
-        {
-            vec3f pos;
-            vec3f normal;
-            vec3f tangent;
-            vec3f bitangent;
-            vec2f uv;
-        };
-
-        struct TextureStruct
-        {
-            uint32 id;
-            std::string path;
-            std::string type;
-        };
-
-        struct BPMaterialSpec
-        {
-            vec3f dif;
-            vec3f spec;
-            vec3f ambient;
-            float shiness;
-        };
-
+    {       
         class Mesh
         {
         public:
@@ -56,9 +30,10 @@ namespace XEngine
 
 
         private:
-
-            uint32 VAO, VBO, EBO;
             void setupMesh();
+
+        private:
+            uint32 VAO, VBO, EBO;
         };
 
 
@@ -73,16 +48,10 @@ namespace XEngine
                 loadModel(path);
             }
 
-            /*void drawMesh(Shader *shader)
-            {
-                for (unsigned int i = 0; i < meshes.size(); i++)
-                    meshes.at(i).renderMeshes(shader);
-            }*/
-
             std::vector<TextureStruct> texturesl;
             std::vector<Mesh> meshes;
 
-            std::string dir;
+            std::string parent_dir;
             bool isGammaCorrected;
 
         private:
@@ -93,7 +62,6 @@ namespace XEngine
             uint32 loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma);
             std::vector<TextureStruct> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
         };
-
 
     }
 }

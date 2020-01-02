@@ -4,7 +4,6 @@
 #define SKYBOXH
 
 #include "../core/rendering/api/base/shader.h"
-#include "../core/rendering/render/vao.h"
 #include "../core/rendering/api/base/vertexarray.h"
 #include "../core/rendering/api/base/vertexbuffer.h"
 #include "../core/rendering/texture.h"
@@ -27,9 +26,8 @@ namespace XEngine
             void createSkybox();
             void renderSkybox(Shader * shader, glm::mat4& v, glm::mat4& proj);
             
-            GeometryBuffer* getGeometryBuffer() { return sky; };
+           
         private:
-            GeometryBuffer *sky;
             //VertexArray *VAO;
             VertexBuffer *VBO;
             Cubemap *tex;
@@ -68,7 +66,7 @@ namespace XEngine
             ScreenSpaceShader * skyboxShader;
             Rendering::GLFrameBuffer * skyboxFBO;
 
-            colorPreset presetSunset, highSunPreset;
+            //colorPreset presetSunset, highSunPreset;
             glm::vec3 skyColorTop, skyColorBottom;
 
         };

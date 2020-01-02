@@ -11,16 +11,17 @@ namespace XEngine
 {
     namespace Rendering
     {
-        class GLContext : public Context
+        class GLDeviceContext : public DeviceContext
         {
         public:
 
-            GLContext(GLFWwindow* window);
+            GLDeviceContext(GLFWwindow* window);
             
+            virtual void init() override;
             virtual void swapBuffers() override;
 
         private:
-            GLFWwindow* m_WindowHandle;
+            GLFWwindow* m_window_handle;
         };
     }
 }

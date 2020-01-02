@@ -9,7 +9,7 @@
 namespace XEngine
 {
     namespace Rendering
-    {
+    {        
         class VertexArray
         {
         public:
@@ -18,8 +18,8 @@ namespace XEngine
             virtual void bind() const = 0;
             virtual void unbind() const = 0;
 
-            virtual void addVertexBuffer(const VertexBuffer *vb) = 0;
-            virtual void setIndexBuffer(const IndexBuffer *ib) = 0;
+            virtual void add_vertex_buffer(VertexBuffer *vb) = 0;
+            virtual void set_index_buffer(IndexBuffer *ib) = 0;
 
             static VertexArray* create();
         };

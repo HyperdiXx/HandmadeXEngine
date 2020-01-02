@@ -15,9 +15,9 @@ namespace XEngine
 
         Shader * Shader::create(const std::string & vertexSrc, const std::string & fragmentSrc)
         {
-            switch (Render::getApi())
+            switch (Render::get_api())
             {
-                case RenderAPI::API::OpenGL: return new GLShader(vertexSrc, fragmentSrc);
+            case APIs::RenderAPI::API::OpenGL: return new GLShader(vertexSrc, fragmentSrc);
                     break;
                 default:
                     break;

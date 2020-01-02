@@ -13,15 +13,16 @@ namespace XEngine
             GLVertexArray();
             virtual ~GLVertexArray();
 
-            virtual void addVertexBuffer(const VertexBuffer *vb) override;
-            virtual void setIndexBuffer(const IndexBuffer *ib) override;                      
+            virtual void add_vertex_buffer(VertexBuffer *vb) override;
+            virtual void set_index_buffer(IndexBuffer *ib) override;                      
 
             virtual void bind() const;
-            virtual void unbind() const;
-
+            virtual void unbind() const;             
         private:
-            GLuint mId;
-            std::vector<VertexBuffer*> mBuffer;
+            GLuint m_id;
+            uint32 m_ibuffer_index = 0;
+            std::vector<VertexBuffer*> m_buffer;
+            IndexBuffer *m_ib;
         };
     }
 }

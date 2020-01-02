@@ -8,12 +8,12 @@ namespace XEngine
     {
         VertexBuffer *VertexBuffer::create(real32 *vertices, uint32 size)
         {
-            switch (Render::getApi())
+            switch (Render::get_api())
             {
-            case RenderAPI::API::None:
+            case APIs::RenderAPI::API::None:
                 return nullptr;
                 break;
-            case RenderAPI::API::OpenGL:
+            case APIs::RenderAPI::API::OpenGL:
                 return new GLVertexBuffer(vertices, size);
                 break;
             default:

@@ -93,6 +93,7 @@
     <ClInclude Include="inc\node.h" />
     <ClInclude Include="inc\platform.h" />
     <ClInclude Include="inc\pool_allocator.h" />
+    <ClInclude Include="inc\stack_allocator.h" />
     <ClInclude Include="inc\stack_linked_list.h" />
     <ClInclude Include="inc\string_parser.h" />
     <ClInclude Include="inc\types.h" />

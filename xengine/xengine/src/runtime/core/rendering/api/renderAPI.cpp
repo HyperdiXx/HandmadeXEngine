@@ -1,9 +1,22 @@
 #include "renderAPI.h"
 
-namespace XEngine
+#include <runtime/core/rendering/api/opengl/opengl.h> 
+
+namespace APIs
 {
-    namespace Rendering
+
+
+    RenderAPI::API RenderAPI::boundApi = RenderAPI::API::OpenGL;
+    
+    UniqPtr<APIs::RenderAPI> RenderAPI::create()
     {
-        RenderAPI::API boundApi = RenderAPI::API::OpenGL;
+        switch (boundApi)
+        {
+        case API::OpenGL: 
+            return create_ptr<OpenGL>();
+            break;
+        default:
+            break;
+        }
     }
 }

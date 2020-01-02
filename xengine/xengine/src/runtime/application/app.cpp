@@ -8,7 +8,6 @@
 #include "../core/utility/log.h"
 
 #include "../core/rendering/render/render2d.h"
-#include "../core/rendering/render/batchrenderer.h"
 
 #include "../core/rendering/sprite.h"
 #include "../core/rendering/batchsprite.h"

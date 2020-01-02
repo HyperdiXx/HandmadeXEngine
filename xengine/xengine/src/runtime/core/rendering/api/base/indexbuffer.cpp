@@ -9,9 +9,9 @@ namespace XEngine
     {
         IndexBuffer * IndexBuffer::create(uint32* indices, uint32 size)
         {
-            switch (Render::getApi())
+            switch (Render::get_api())
             {
-            case RenderAPI::API::OpenGL:
+            case APIs::RenderAPI::API::OpenGL:
                 return new GLIndexBuffer(indices, size);
                 break;
             default:

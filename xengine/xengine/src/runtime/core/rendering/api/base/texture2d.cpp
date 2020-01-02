@@ -9,9 +9,9 @@ namespace XEngine
     {
         Texture2D * Texture2D::create(const char * path)
         {
-            switch (Render::getApi())
+            switch (Render::get_api())
             {
-                case RenderAPI::API::OpenGL: return new GLTexture2D(path);
+            case APIs::RenderAPI::API::OpenGL: return new GLTexture2D(path);
                     break;
                 default:
                     // Log : "Unsoppurted format!!!"

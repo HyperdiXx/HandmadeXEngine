@@ -18,13 +18,10 @@ namespace XEngine
             virtual ~GLTexture2D();
 
             virtual void fillData(void* data, uint32 size) override;
-            virtual void bind() const override;
+            virtual void bind(uint16 index) const override;
 
             virtual uint32 getWidth() const override { return m_width; };
             virtual uint32 getHeight() const override { return m_height; };
-
-            
-
         private:
             const char* m_path;
             uint32 m_width;

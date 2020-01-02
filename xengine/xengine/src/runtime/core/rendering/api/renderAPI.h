@@ -7,34 +7,41 @@
 
 #include <math/vec4f.h>
 
-namespace XEngine
+namespace APIs
 {
-    namespace Rendering
-    {
+        template<typename T>
+        using UniqPtr = std::unique_ptr<T>;
+        template<typename T, typename ... Args>
+        constexpr UniqPtr<T> create_ptr(Args&& ... args)
+        {
+            return std::make_unique<T>(std::forward<Args>(args)...);
+        }
+
+
         class RenderAPI
         {
         public:
             enum class API
             {
-                None = 0, 
+                None = 0,
                 OpenGL = 1,
-                DX11 = 2, 
+                DX11 = 2,
                 DX12 = 3
             };
 
         public:
             virtual void init() = 0;
-            virtual void clear() = 0;
+            virtual void clear(int flags) = 0;
 
-            virtual void clearColor(real32 r, real32 g, real32 b, real32 a) = 0;
-            virtual void setViewport(int32 x, int32 y, int32 width, int32 height) = 0;
-                   
-            inline static API getAPI() { return API::OpenGL; }
+            virtual void clear_color(real32 r, real32 g, real32 b, real32 a) = 0;
+            virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) = 0;
+            
+            inline static API get_api() { return boundApi; }
+            
+            static UniqPtr<APIs::RenderAPI> create();
         private:
             static API boundApi;
         };
-    }
 }
-
 #endif // !RENDER_API_H
 

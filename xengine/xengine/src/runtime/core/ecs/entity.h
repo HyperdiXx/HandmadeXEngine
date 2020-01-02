@@ -3,44 +3,25 @@
 #ifndef ENTITY
 #define ENTITY
 
-#include "../geometry/model.h"
-#include "../rendering/pipeline/materials/basicmaterial.h"
-#include "../rendering/pipeline/materials/bpmaterial.h"
-#include "../rendering/pipeline/materials/pbrmaterial.h"
+#include "component.h"
+#include <runtime/types.h>
+#include <xenpch.h>
 
 namespace XEngine
-{
-    using namespace Rendering;
-
-    class Entity
+{ 
+    
+    struct Entity
     {
-    public:
-        Entity() {};
-
-        Entity(Assets::Model *mesh, Rendering::BasicMaterial *m)
-        {
-            model = mesh;
-            material = m;
-        }
-
-        Entity(Assets::Model *mesh, Rendering::PBRMaterial *m)
-        {
-            model = mesh;
-            material = m;
-        }
-
-        Entity(Assets::Model *mesh, Rendering::BPMaterial *m)
-        {
-            model = mesh;
-            material = m;
-        }
-
-        Assets::Model *model;
-        Rendering::Material *material;
+        uint32 id;
     };
 
+    /*Entity create_entity()
+    {
+        static Entity n = {};
+        n.id++;
+        return n;
+    }*/
+
 }
-
-
 #endif // !ENTITY
 

@@ -7,7 +7,7 @@ using namespace XEngine;
 using namespace Assets;
 
 void Mesh::setupMesh()
-{
+{  
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -35,9 +35,7 @@ void Mesh::setupMesh()
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(VertexStruct), (void*)offsetof(VertexStruct, bitangent));
 
-
     glBindVertexArray(0);
-
 }
 
 BPMaterialSpec Model::loadMaterial(aiMaterial* mat) 
@@ -94,37 +92,35 @@ BPMaterialSpec Model::loadMaterial(aiMaterial* mat)
 
 void Model::loadModel(std::string const & path)
 {
-
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
-        std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << "\n";
+        std::cout << "Error while loading model via Assimp" << importer.GetErrorString() << "\n";
         return;
     }
 
-    dir = path.substr(0, path.find_last_of('/'));
+    parent_dir = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode* node, const aiScene *scene)
 {
-    for (unsigned int i = 0; i < node->mNumMeshes; i++)
+    for (uint16 i = 0; i < node->mNumMeshes; i++)
     {
-        
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(mesh, scene));
     }
 
-    for (unsigned int i = 0; i < node->mNumChildren; i++)
+    for (uint16 i = 0; i < node->mNumChildren; i++)
     {
         processNode(node->mChildren[i], scene);
     }
 }
 
-Mesh Model::processMesh(aiMesh * mesh, const aiScene * scene)
+Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     std::vector<VertexStruct> vertices;
     std::vector<uint32> indices;
@@ -216,7 +212,7 @@ std::vector<TextureStruct> Model::loadMaterialTextures(aiMaterial * mat, aiTextu
         if (!skip)
         {
             TextureStruct texture;
-            texture.id = loadtexture2DFromDir(str.C_Str(), this->dir, false);
+            texture.id = loadtexture2DFromDir(str.C_Str(), this->parent_dir, false);
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);

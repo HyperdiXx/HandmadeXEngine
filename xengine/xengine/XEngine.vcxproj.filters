@@ -63,9 +63,6 @@
     <ClCompile Include="src\runtime\objects\skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\ecs\entitymanager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\ecs\transforms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -162,9 +159,6 @@
     <ClCompile Include="src\runtime\core\rendering\layers\layer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\layers\scene2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\layers\scenegraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -189,19 +183,10 @@
     <ClCompile Include="src\runtime\application\app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\application\baseapp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\application\testapp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\render\bathcrenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\render\forwardrender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\render\vao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\render\render3d.cpp">
@@ -246,9 +231,6 @@
     <ClCompile Include="src\runtime\core\rendering\api\opengl\glindexbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\api\opengl\glrenderapi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\api\opengl\glshader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -268,6 +250,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\api\base\vertexarray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\api\base\context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\render\render.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\rendering\render\glrender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\core\geometry\quad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -617,9 +611,6 @@
     <ClInclude Include="src\runtime\core\rendering\layers\layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\layers\scene2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\layers\scenegraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -668,13 +659,7 @@
     <ClInclude Include="src\runtime\core\rendering\api\base\vertexbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\batchrenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\forwardrender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\vao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\vertex.h">
@@ -731,9 +716,6 @@
     <ClInclude Include="src\runtime\core\rendering\api\opengl\glindexbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glrenderapi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\api\opengl\glshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -746,9 +728,6 @@
     <ClInclude Include="src\runtime\core\rendering\api\opengl\glvertexbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\opengl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\windowsystem\winWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -756,6 +735,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\application\test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\api\opengl\opengl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\render\glrender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\commands\quad_rendercommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\geometry\vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\commands\model_command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\commands\abstract_render_command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\geometry\quad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\ecs\renderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\runtime\core\rendering\commands\rendercommandexecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

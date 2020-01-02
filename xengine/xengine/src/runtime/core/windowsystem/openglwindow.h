@@ -27,6 +27,7 @@ namespace XEngine
         void setBlendFunc();
         void enableMultisample();
         void enableFramebufferSRGB();
+        void destroy();
 
         bool32 isClosed();
 
@@ -42,7 +43,7 @@ namespace XEngine
         
         const char* m_name;
         GLFWwindow* m_window;
-        Rendering::Context* m_context;
+        Rendering::DeviceContext* m_context;
         uint32 m_width, m_height;
         bool32 isRunning;
     };

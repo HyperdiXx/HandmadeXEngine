@@ -12,8 +12,7 @@ namespace XEngine
         class Texture2D : public Texture
         {
         public:
-
-            static Texture2D* create(const char* path);
+            static Texture2D *create(const char* path);
         };
     }
 }

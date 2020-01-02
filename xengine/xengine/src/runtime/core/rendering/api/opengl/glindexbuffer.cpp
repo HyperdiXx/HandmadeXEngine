@@ -6,21 +6,21 @@ namespace XEngine
 {
     namespace Rendering
     {
-        GLIndexBuffer::GLIndexBuffer(uint32 * data, uint32 size) : mElementCount(size)
+        GLIndexBuffer::GLIndexBuffer(uint32 * data, uint32 size) : m_element_count(size)
         {
-            glGenBuffers(1, &mID);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mID);
+            glGenBuffers(1, &m_id);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLuint), data, GL_STATIC_DRAW);
         }
 
         GLIndexBuffer::~GLIndexBuffer()
         {
-            glDeleteBuffers(1, &mID);
+            glDeleteBuffers(1, &m_id);
         }
 
         void GLIndexBuffer::bind() const
         {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mID);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
         }
 
         void GLIndexBuffer::unbind() const

@@ -8,10 +8,10 @@ namespace XEngine
     {
         using namespace Rendering;
 
-        switch (Render::getApi())
+        switch (Render::get_api())
         {
-        case RenderAPI::API::OpenGL:
-            
+        case APIs::RenderAPI::API::OpenGL:
+            break;
         default:
             break;
         }

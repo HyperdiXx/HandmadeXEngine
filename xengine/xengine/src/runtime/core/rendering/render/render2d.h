@@ -9,14 +9,12 @@ namespace XEngine
 {
     namespace Rendering
     {
-        class Render2d
+        class Render2d : public Render
         {
         public:
-            static void init();
-            static void beginScene();
-            static void endScene();
-
-            static void shutdown();
+            Render2d();
+           
+            void render_quad2D();
 
         private:
 

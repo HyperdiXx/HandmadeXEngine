@@ -8,12 +8,12 @@ namespace XEngine
     {
         VertexArray *VertexArray::create()
         {
-            switch (Render::getApi())
+            switch (Render::get_api())
             {
-            case RenderAPI::API::None:
+            case APIs::RenderAPI::API::None:
                 return nullptr;
                 break;
-            case RenderAPI::API::OpenGL:
+            case APIs::RenderAPI::API::OpenGL:
                 return new GLVertexArray();
                 break;
             default:

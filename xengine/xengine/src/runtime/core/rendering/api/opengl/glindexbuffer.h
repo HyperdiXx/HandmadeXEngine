@@ -19,10 +19,10 @@ namespace XEngine
             virtual void bind() const override;
             virtual void unbind() const override;
 
-            GLuint getCount() const { return mElementCount; };
+            GLuint getCount() const { return m_element_count; };
         private:
-            GLuint mID;
-            GLuint mElementCount;
+            GLuint m_id;
+            GLuint m_element_count;
         };
 
     }

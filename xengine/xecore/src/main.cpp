@@ -11,8 +11,24 @@
 
 #include <string_parser.h>
 
+#include "stack_allocator.h"
+
+void stack_allocator_test()
+{
+    StackAllocator* stack = new StackAllocator(1024);
+
+    void *m_block = stack->get_memory_block(256, 16);
+
+
+}
+
 int main(int argc, char **argv)
 {
+    stack_allocator_test();
+
+
+
+    ///////////////////////////////////
     xestring str("config");
     xestring stringnull("");
     xestring parsed_string("project xengine x64 release v01 project game x64 release project val fasihujbf fbahsjfb jhkfshak hfhajhskfh jksfah fkjha sjkfh kajsfh jkash jkfhaks hkj");

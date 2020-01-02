@@ -3,37 +3,34 @@
 #ifndef GL_H
 #define GL_H
 
+#include <runtime/core/rendering/api/renderAPI.h>
+
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 namespace APIs
 {
-    class OpenGL
+    class OpenGL : public RenderAPI
     {
     public:
-        static void clearColor(float r, float g, float b, float a)
+
+        virtual void init() override
+        {
+
+        }
+
+        virtual void clear(int flags) override
+        {
+            glClear(flags);
+        }
+
+        virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) override
+        {
+            glViewport(x, y, width, height);
+        }
+
+        virtual void clear_color(real32 r, real32 g, real32 b, real32 a) override
         {
             glClearColor(r, g, b, a);
-        }
-
-        static void makeContext(GLFWwindow *m_window)
-        {
-            glfwMakeContextCurrent(m_window);
-        }
-
-        static void bindBuffer()
-        {
-            //glBindBuffer();
-        }
-
-        static void swapBuffers(GLFWwindow *m_window)
-        {
-            glfwSwapBuffers(m_window);
-        }
-
-        static void bindTexture(int id)
-        {
-            glActiveTexture(id);
         }
     };
 }

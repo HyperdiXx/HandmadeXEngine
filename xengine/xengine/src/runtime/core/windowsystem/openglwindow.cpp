@@ -17,15 +17,15 @@ namespace XEngine
         m_window = glfwCreateWindow(m_width, m_height, m_name, NULL, NULL);
         if (m_window == NULL)
         {
-            std::cout << "Failed to create GLFW window" << std::endl;
+            Log::error("Failed to create window!!!");
             glfwTerminate();
             return;
         }
 
-        m_context = new Rendering::GLContext(m_window);
+        m_context = new Rendering::GLDeviceContext(m_window);
         //glfwSetFramebufferSizeCallback(m_window, this->framebufferSizeCallback);
         
-        glfwSwapInterval(1);
+        setVSYNC(1);
 
         /*GLFWimage images[1];
         images[0].pixels = stbi_load("src/textures/logo.png", &images[0].width, &images[0].height, 0, 4);
@@ -78,6 +78,11 @@ namespace XEngine
         glEnable(GL_FRAMEBUFFER_SRGB);
     }
 
+    void GLWindow::destroy()
+    {
+        glfwTerminate();
+    }
+
     void GLWindow::setVSYNC(bool set)
     {
         glfwSwapInterval(set);
@@ -103,7 +108,7 @@ namespace XEngine
 
         if (errors != GL_NO_ERROR)
             std::cout << "Error in " << errors << "\n";
-        
+                   
         glfwPollEvents();
         glfwSwapBuffers(m_window);        
     }

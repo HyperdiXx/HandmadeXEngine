@@ -32,8 +32,19 @@ namespace XEngine
             {
                 s_api->set_viewport(x, y, width, height);
             }
+
+            inline static void draw_arrays()
+            {
+                
+            }
+
+            inline static void draw_indexed(int mode, uint32 count, int type, void *indices)
+            {
+                s_api->draw_indexed(mode, count, type, indices);
+            }
+
         private:
-            static std::unique_ptr<APIs::RenderAPI> s_api;
+            static std::unique_ptr<APIs::RenderAPI> s_api;        
         };
     }
 }

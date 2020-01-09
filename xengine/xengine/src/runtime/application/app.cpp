@@ -7,8 +7,6 @@
 #include "../objects/skybox.h"
 #include "../core/utility/log.h"
 
-#include "../core/rendering/render/render2d.h"
-
 #include "../core/rendering/sprite.h"
 #include "../core/rendering/batchsprite.h"
 
@@ -34,8 +32,6 @@
 #include "../core/geometry/assetmanager.h"
 
 #include "../core/rendering/scenes/sceneObjects.h"
-
-#include "../core/rendering/render/forwardrender.h"
 
 #include "../core/geometry/resources.h"
 #include "../objects/lights/dirLight.h"

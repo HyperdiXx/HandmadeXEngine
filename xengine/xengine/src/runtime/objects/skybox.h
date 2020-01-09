@@ -3,13 +3,11 @@
 #ifndef SKYBOXH
 #define SKYBOXH
 
-#include "../core/rendering/api/base/shader.h"
-#include "../core/rendering/api/base/vertexarray.h"
-#include "../core/rendering/api/base/vertexbuffer.h"
-#include "../core/rendering/texture.h"
-#include "../core/rendering/api/opengl/glframebuffer.h"
-#include "../core/rendering/pipeline/screenspaceshader.h"
-
+#include <runtime/core/rendering/api/base/shader.h>
+#include <runtime/core/rendering/api/base/vertexarray.h>
+#include <runtime/core/rendering/api/base/vertexbuffer.h>
+#include <runtime/core/rendering/texture.h>
+#include <runtime/core/rendering/api/opengl/glframebuffer.h>
 
 namespace XEngine
 {
@@ -63,7 +61,7 @@ namespace XEngine
             }
         private:
             
-            ScreenSpaceShader * skyboxShader;
+            
             Rendering::GLFrameBuffer * skyboxFBO;
 
             //colorPreset presetSunset, highSunPreset;

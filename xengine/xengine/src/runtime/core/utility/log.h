@@ -8,9 +8,6 @@
 #include <fstream>
 #include <iostream>
 
-#define LOG(i) std::cout << i;
-#define LOGSTRING(a, b) std::cout << a << b << "\n";
-
 namespace XEngine
 {
     class Log

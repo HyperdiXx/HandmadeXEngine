@@ -93,9 +93,6 @@
     <ClCompile Include="src\runtime\core\utility\log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\utility\path.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\windowsystem\dx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -147,9 +144,6 @@
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\pipeline\screenspaceshader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\pipeline\shadersBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -184,15 +178,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\application\testapp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\render\forwardrender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\render\render3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\render\render2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\cameras\orthographiccamera.cpp">
@@ -524,9 +509,6 @@
     <ClInclude Include="src\runtime\core\utility\log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\utility\path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\utility\string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -596,9 +578,6 @@
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\pipeline\screenspaceshader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\pipeline\shaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -659,9 +638,6 @@
     <ClInclude Include="src\runtime\core\rendering\api\base\vertexbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\forwardrender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -669,12 +645,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\render3d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\render\render2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\render\renderable3d.h">

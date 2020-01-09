@@ -27,10 +27,6 @@ namespace XEngine
             virtual void setMat4(const std::string& name, const glm::mat4& value) = 0;
 
             virtual const std::string& getName() const = 0;
-
-            static Shader* create(const std::string& filepath);
-            static Shader* create(const std::string& vertexSrc, const std::string& fragmentSrc);
-
         private:
 
         };

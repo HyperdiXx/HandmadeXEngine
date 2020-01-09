@@ -4,7 +4,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-        Layer::Layer(Render2d* render, Shader* shader, glm::mat4 mat) : mRender(render), mShader(shader), mprojMat(mat)
+        Layer::Layer(Render* render, Shader* shader, glm::mat4 mat) : mRender(render), mShader(shader), mprojMat(mat)
         {
             mShader->bind();
             mShader->setMat4("projection", mprojMat);

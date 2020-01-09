@@ -25,8 +25,8 @@ namespace APIs
             {
                 None = 0,
                 OpenGL = 1,
-                DX11 = 2,
-                DX12 = 3
+                DirectX11 = 2,
+                DirectX12 = 3
             };
 
         public:
@@ -35,7 +35,8 @@ namespace APIs
 
             virtual void clear_color(real32 r, real32 g, real32 b, real32 a) = 0;
             virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) = 0;
-            
+            virtual void draw_indexed(int mode, uint32 count, int type, void *ind) = 0;
+
             inline static API get_api() { return boundApi; }
             
             static UniqPtr<APIs::RenderAPI> create();

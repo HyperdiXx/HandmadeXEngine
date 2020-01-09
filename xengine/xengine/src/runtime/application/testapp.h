@@ -11,6 +11,11 @@ namespace XEngine
 {
     class GLWindow;
 
+    namespace Geometry
+    {
+        class Quad;
+    }
+
     namespace Assets
     {
         class Model;
@@ -51,6 +56,7 @@ namespace XEngine
         Rendering::VertexArray *v_array = nullptr;
         Rendering::Render *render_instance = nullptr;
         Assets::Model *model = nullptr;
+        Geometry::Quad *quad = nullptr;
     };
 }
 #endif // !TESTAPP_H

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../render/render2d.h"
+#include <runtime/core/rendering/render/render.h>
 #include "../render/renderable2d.h"
 
 namespace XEngine
@@ -10,12 +10,10 @@ namespace XEngine
         class Layer
         {
         protected:
-            Layer(Render2d* render, Shader* shader, glm::mat4 mat);
+            Layer(Render* render, Shader* shader, glm::mat4 mat);
         public:
-            Layer()
-            {
-
-            }
+            Layer() {}
+            
             virtual ~Layer();
 
             virtual void add(Renderable2d *obj);
@@ -25,7 +23,7 @@ namespace XEngine
 
         protected:
             std::vector<Renderable2d*> mRenderables;
-            Render2d* mRender;
+            Render* mRender;
             Shader* mShader;
             glm::mat4 mprojMat;
         };

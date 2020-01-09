@@ -32,6 +32,11 @@ namespace APIs
         {
             glClearColor(r, g, b, a);
         }
+
+        virtual void draw_indexed(int mode, uint32 count, int type, void *ind) override
+        {
+            glDrawElements(mode, count, type, ind);
+        }      
     };
 }
 #endif // !GL

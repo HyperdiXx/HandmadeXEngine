@@ -5,6 +5,8 @@
 
 #include "rendercommand.h"
 
+#include <runtime/core/geometry/quad.h>
+
 namespace XEngine
 {
     namespace Rendering
@@ -12,20 +14,31 @@ namespace XEngine
         class QuadRenderCommand : public RenderCommand
         {
         public:
-            QuadRenderCommand(std::string name, RenderCommandType type) : m_name(name), m_type(type) {}
+            QuadRenderCommand(RenderCommandType type) : m_type(type) {}
             
+            void set(Geometry::Quad *quad, Shader *shader)
+            {
+                m_shader = shader;
+                m_quad = quad;
+            }
+
             virtual void execute()
             {
-                int a = 1234;
-                int b = a * 2;
-                int c = b;
+                m_shader->bind();
+
+                m_quad->get_vertex_array()->bind();
+
+                RenderCommand::draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+ 
+                m_quad->get_vertex_array()->unbind();
+
+                m_shader->unbind();
             };
 
-            inline std::string get_name() const { return m_name; }
-            
         private:
-            std::string m_name;
             RenderCommandType m_type;
+            Shader *m_shader;
+            Geometry::Quad* m_quad;            
         };
     }
 }

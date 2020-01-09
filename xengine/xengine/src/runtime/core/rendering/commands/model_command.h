@@ -5,6 +5,8 @@
 
 #include "rendercommand.h"
 
+#include <runtime/core/geometry/model.h>
+#include <glm/glm.hpp>
 namespace XEngine
 {
     namespace Rendering
@@ -12,20 +14,27 @@ namespace XEngine
         class ModelRenderCommand : public RenderCommand
         {
         public:
-            ModelRenderCommand(std::string name, RenderCommandType type) : m_name(name), m_type(type) {}
+            ModelRenderCommand(RenderCommandType type) : m_type(type) {}
             
+            void set(Assets::Model* model, Shader* shader, glm::mat4 matrix)
+            {
+                m_model = model;
+                m_shader = shader;
+                m_model_matrix = matrix;
+            }
+
             virtual void execute()
             {
-                int a = 1234;
-                int b = a * 2;
-                int c = b;
+                m_shader->bind();
+                
+                m_shader->unbind();
             };
 
-            inline std::string get_name() const { return m_name; }
-            
-        private:
-            std::string m_name;
+        private:           
+            glm::mat4 m_model_matrix = glm::mat4(1.0f);
             RenderCommandType m_type;
+            Assets::Model *m_model;
+            Shader *m_shader;
         };
     }
 }

@@ -2,6 +2,8 @@
 
 #include <runtime/core/rendering/commands/model_command.h>
 #include <runtime/core/rendering/commands/quad_rendercommand.h>
+#include <runtime/core/rendering/api/opengl/gltexture2d.h>
+#include <runtime/core/rendering/api/opengl/glshader.h>
 
 namespace XEngine
 {
@@ -22,14 +24,44 @@ namespace XEngine
             RenderCommand::set_viewport(x, y, width, height);
         }
 
-        void GLRender::draw_model(Assets::Model *model)
+        void GLRender::draw_model(Assets::Model *model, Shader *shader, glm::mat4 mat)
         {
-            add(new ModelRenderCommand("TestModel", RenderCommandType::MODEL));
+            ModelRenderCommand *render_command = new ModelRenderCommand(RenderCommandType::MODEL);
+            render_command->set(model, shader, mat);
+            add(render_command);
         }
 
-        void GLRender::draw_quad()
+        // TODO: add material with shader and texture
+        void GLRender::draw_quad(Geometry::Quad *quad, Shader *shader)
         {
-            add(new QuadRenderCommand("TestQuad", RenderCommandType::QUAD));
+            QuadRenderCommand *render_command = new QuadRenderCommand(RenderCommandType::QUAD);
+            render_command->set(quad, shader);
+            add(render_command);
+        }
+
+        Texture2D* GLRender::create_texture2D(const char *path)
+        {
+            return new GLTexture2D(path);
+        }
+        Shader * GLRender::create_shader(const char *vertex, const char *fragment)
+        {
+            return new GLShader(vertex, fragment);
+        }
+        FrameBuffer * GLRender::create_framebuffer()
+        {
+            return nullptr;
+        }
+        VertexBuffer * GLRender::create_vertex_buffer(real32 * vertices, uint32 size)
+        {
+            return nullptr;
+        }
+        IndexBuffer * GLRender::create_index_buffer(uint32 * indices, uint32 size)
+        {
+            return nullptr;
+        }
+        VertexArray * GLRender::create_vertex_array()
+        {
+            return nullptr;
         }
     }
 }

@@ -13,9 +13,24 @@ namespace XEngine
     class OrthoCamera;
     class RenderCommandExecutor;
 
+    namespace Rendering
+    {
+        class Shader;
+        class Texture2D;
+        class VertexBuffer;
+        class IndexBuffer;
+        class VertexArray;
+        class FrameBuffer;
+    };
+
     namespace Assets
     {
         class Model;
+    }
+
+    namespace Geometry
+    {
+        class Quad;
     }
 
     namespace Rendering
@@ -29,25 +44,28 @@ namespace XEngine
             virtual void clear_color(real32 r, real32 g, real32 b, real32 a) = 0;
             virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) = 0;
             
-            virtual void draw_model(Assets::Model *model) = 0;
-            virtual void draw_quad() = 0;
-
-            virtual void create_texture2D() = 0;
-            virtual void create_shader() = 0;
-            virtual void create_framebuffer() = 0;
+            virtual void draw_model(Assets::Model *model, Shader *m_shader, glm::mat4 mat) = 0;
+            virtual void draw_quad(Geometry::Quad *quad, Shader *m_shader) = 0;
             
             void start_execution();
             void end_execution();
 
             void add(RenderCommand *command);
 
+            virtual Texture2D* create_texture2D(const char *path) = 0;
+            virtual Shader* create_shader(const char* vertex, const char* fragment) = 0;
+            virtual FrameBuffer* create_framebuffer() = 0;
+            virtual VertexBuffer* create_vertex_buffer(real32 *vertices, uint32 size) = 0;
+            virtual IndexBuffer* create_index_buffer(uint32* indices, uint32 size) = 0;
+            virtual VertexArray* create_vertex_array() = 0;
+
             static APIs::RenderAPI::API get_api() { return APIs::RenderAPI::get_api(); }
 
-            static Render *create();
-
+            static Render* create();
         private:
             std::vector<RenderCommand*> m_commands;
-            RenderCommandExecutor *m_command_executor = nullptr;;
+            RenderCommandExecutor *m_command_executor = nullptr;
+            glm::mat4 m_world_matrix = glm::mat4(1.0f);
         };
     }
 }

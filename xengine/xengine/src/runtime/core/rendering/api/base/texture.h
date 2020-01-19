@@ -17,7 +17,10 @@ namespace XEngine
             virtual uint32 getHeight() const = 0;
 
             virtual void fillData(void* data, uint32 size) = 0;
-            virtual void bind(uint16 index) const = 0;           
+            virtual void activate_bind(uint16 index) const = 0;   
+            virtual void bind() const = 0;
+            virtual void unbind() const = 0;
+            virtual void activate(uint16 index) const = 0;
         };
     }
 }

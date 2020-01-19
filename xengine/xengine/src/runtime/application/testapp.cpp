@@ -9,8 +9,9 @@
 
 #include <runtime/core/rendering/render/render.h>
 
-#include <runtime/core/geometry/model.h>
-#include <runtime/core/geometry/quad.h>
+#include <runtime/geometry/model.h>
+#include <runtime/geometry/quad.h>
+#include <runtime/geometry/model_loader.h>
 
 namespace XEngine
 {
@@ -19,12 +20,16 @@ namespace XEngine
         window = new GLWindow("Game", 1280, 720);
 
         render_instance = Rendering::Render::create();
+        using namespace Rendering;
 
         triangle_shader = render_instance->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs");
+        
+        model_shader = render_instance->create_shader("shaders/model3d.vs", "shaders/model3d.fs");
+
         texture1 = render_instance->create_texture2D("engineassets/brickwall.jpg");
 
-        model = new Assets::Model("engineassets/nano/nanosuit.obj", false);        
-       
+        model = ModelLoader::load_model_from_file("engineassets/nano/nanosuit.obj");
+        
         // @Test
         real32 vertices_color[] =
         {
@@ -38,6 +43,12 @@ namespace XEngine
 
         triangle_shader->bind();
         triangle_shader->setInt("textureDiffuse", 0);
+
+        model_shader->bind();
+        model_shader->setInt("tex_diff", 0);
+       
+        //model_matrix = glm::rotate(model_matrix, glm::radians(15.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, -10.0f, -30.0f));
     }
 
     TestApp::~TestApp()
@@ -57,17 +68,15 @@ namespace XEngine
 
     void TestApp::onDraw()
     {
-        using namespace Rendering;
+        using namespace Rendering;        
         
-        render_instance->clear_color(0.0f, 1.0f, 0.0f, 1.0f);
+        render_instance->clear_color(0.9f, 0.9f, 0.9f, 1.0f);
         render_instance->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         render_instance->start_execution();
-
-        // Texture bind here, cause not setupped in command
-        texture1->bind(0);        
-        render_instance->draw_quad(quad, triangle_shader);
-
+       
+        render_instance->draw_model(model, model_shader, model_matrix);
+        
         render_instance->end_execution();
     }
 

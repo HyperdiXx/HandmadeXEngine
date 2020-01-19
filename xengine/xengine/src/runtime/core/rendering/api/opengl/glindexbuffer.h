@@ -13,7 +13,8 @@ namespace XEngine
         {
         public:
             GLIndexBuffer(uint32* data, uint32 size);
-           
+            GLIndexBuffer(std::vector<uint32> data, uint32 size);
+
             virtual ~GLIndexBuffer();
 
             virtual void bind() const override;

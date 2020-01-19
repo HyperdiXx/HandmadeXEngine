@@ -1,20 +1,37 @@
 #include "gltexture2d.h"
 
 #include <stb_image/stb_image.h>
-
+#include <runtime/core/utility/assert.h>
 
 namespace XEngine
 {
     namespace Rendering
     {
-        GLTexture2D::GLTexture2D(const char * path)
+        GLTexture2D::GLTexture2D(const char* path) : GLTexture2D(path, nullptr)
+        {         
+            
+        }
+
+        GLTexture2D::GLTexture2D(const char * path, const char* dir)
         {
-            m_path = path;
+            Assert(path != nullptr);
+            // @Optimize 
+            // @Insert own string implementation
+            if (dir)
+            {
+                std::string filename(path);
+                std::string dirname(dir);
+                filename = dirname + '/' + filename;
+                m_path = filename.c_str();
+            }
+            else
+                m_path = path;
+            
             int width, height, channels;
             stbi_set_flip_vertically_on_load(true);
-            stbi_uc* image = stbi_load(path, &width, &height, &channels, 0);
+            stbi_uc* image = stbi_load(m_path, &width, &height, &channels, 0);
            
-            // Assert
+            Assert(image != nullptr);
                 
             m_width = width;
             m_height = height;
@@ -37,14 +54,12 @@ namespace XEngine
             glGenTextures(1, &m_id);
             glBindTexture(GL_TEXTURE_2D, m_id);            
          
-            // Getting bug from here GL_INVALID_ENUM??? error 1280
-
-            glTexParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-            glTexParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+          
             glTexImage2D(GL_TEXTURE_2D, 0, m_dataFormat, m_width, m_height, 0, m_dataFormat, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -58,16 +73,36 @@ namespace XEngine
             glDeleteTextures(1, &m_id);
         }
 
+        void GLTexture2D::setup_for_load()
+        {
+
+        }
+
         void GLTexture2D::fillData(void * data, uint32 size)
         {
             uint32 bpp = m_dataFormat == GL_RGBA ? 4 : 3;
             glTexSubImage2D(m_id, 0, 0, 0, m_width, m_height, m_dataFormat, GL_UNSIGNED_BYTE, data);
         }
 
-        void GLTexture2D::bind(uint16 index) const
+        void GLTexture2D::activate_bind(uint16 index) const
         {
             glActiveTexture(GL_TEXTURE0 + index);
             glBindTexture(GL_TEXTURE_2D, m_id);
         }
+
+        void GLTexture2D::bind() const
+        {
+            glBindTexture(GL_TEXTURE_2D, m_id);
+        }
+
+        void GLTexture2D::unbind() const
+        {
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+
+        void GLTexture2D::activate(uint16 index) const
+        {
+            glActiveTexture(GL_TEXTURE0 + index);
+        }       
     }
 }

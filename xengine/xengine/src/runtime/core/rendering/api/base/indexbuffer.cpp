@@ -21,6 +21,21 @@ namespace XEngine
 
             return nullptr;
         }
+
+        IndexBuffer * IndexBuffer::create(std::vector<uint32> indices, uint32 size)
+        {
+            switch (Render::get_api())
+            {
+            case APIs::RenderAPI::API::OpenGL:
+                return new GLIndexBuffer(indices, size);
+                break;
+            default:
+                // LOG:
+                break;
+            }
+
+            return nullptr;
+        }
     }
 }
 

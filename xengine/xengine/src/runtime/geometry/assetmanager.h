@@ -1,12 +1,13 @@
 #pragma once
 
 #include "model.h"
-#include "../rendering/pipeline/materials/basicmaterial.h"
-#include "../rendering/pipeline/materials/bpmaterial.h"
-#include "../rendering/pipeline/materials/pbrmaterial.h"
-#include <unordered_map>
+#include <runtime/core/rendering/pipeline/materials/basicmaterial.h>
+#include <runtime/core/rendering/pipeline/materials/bpmaterial.h>
+#include "runtime/core/rendering/pipeline/materials/pbrmaterial.h"
 
 #include <runtime/types.h>
+#include <unordered_map>
+
 
 namespace XEngine
 {

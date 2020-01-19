@@ -2,6 +2,7 @@
 #include "glshader.h"
 
 #include <runtime/core/systems/filefunc.h>
+#include <runtime/core/utility/log.h>
 
 namespace XEngine
 {
@@ -39,7 +40,8 @@ namespace XEngine
                 GLint buflength;
                 glGetShaderInfoLog(vertex, length, &buflength, buffer);
 
-                printf("%s\n", buffer);
+                Log::error("Vertex shader error!!!");
+                Log::error(buffer);
 
                 delete[] buffer;
             }
@@ -55,8 +57,9 @@ namespace XEngine
                 GLchar* buffer = new GLchar[length];
                 GLint buflength;
                 glGetShaderInfoLog(fragment, length, &buflength, buffer);
-
-                printf("%s\n", buffer);
+                
+                Log::error("Fragment shader error!!!");
+                Log::error(buffer);
 
                 delete[] buffer;
             }

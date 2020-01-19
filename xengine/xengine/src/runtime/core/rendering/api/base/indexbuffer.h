@@ -3,6 +3,7 @@
 #ifndef INDEX_BUFFER_H
 #define INDEX_BUFFER_H
 
+#include <xenpch.h>
 #include <runtime/types.h>
 
 namespace XEngine
@@ -18,6 +19,7 @@ namespace XEngine
             virtual void unbind() const = 0;
 
             static IndexBuffer* create(uint32* indices, uint32 size);
+            static IndexBuffer* create(std::vector<uint32> indices, uint32 size);
         };
     }
 }

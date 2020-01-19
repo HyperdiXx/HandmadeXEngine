@@ -53,8 +53,6 @@ namespace XEngine
             updateCameraDir();
         }
 
-        glm::mat4 getViewMatrix();
-
         void mouseMove(real32 xoffset, real32 yoffset, real32 constrainPitch = true)
         {
             xoffset *= camMouseSensitivity;
@@ -65,6 +63,7 @@ namespace XEngine
 
             if (constrainPitch)
             {
+                // @ Add clamp
                 if (camPitch > 89.0f)
                     camPitch = 89.0f;
                 if (camPitch < -89.0f)
@@ -84,9 +83,13 @@ namespace XEngine
                 camZoom = 45.0f;
         }
 
+        glm::mat4 getProjectionMatrix();
+        glm::mat4 getViewMatrix();
+        
         inline const float getSpeed() const { return speed; };
     private:
-
+        bool32 m_is_setuped = false;
+        glm::mat4 m_projection = glm::mat4(1.0f);
         void updateCameraDir();
     };
 #endif

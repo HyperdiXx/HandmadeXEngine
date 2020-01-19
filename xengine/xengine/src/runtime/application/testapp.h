@@ -39,13 +39,14 @@ namespace XEngine
 
         void run();
 
-        void onUpdate(float dt);
-        void onDraw();       
-        void onPostUpdate();
-        void onShutdown();
+        virtual void onUpdate(float dt) override;
+        virtual void onDraw() override;       
+        virtual void onPostUpdate() override;
+        virtual void onShutdown() override;
 
     private:
         XEngine::GLWindow *window = nullptr;
+        Rendering::Render *render_instance = nullptr;
 
         Entity m_entity;
 
@@ -54,7 +55,10 @@ namespace XEngine
         Rendering::VertexBuffer *v_buffer = nullptr;
         Rendering::IndexBuffer *i_buffer = nullptr;
         Rendering::VertexArray *v_array = nullptr;
-        Rendering::Render *render_instance = nullptr;
+        Rendering::Shader *model_shader = nullptr;
+
+        glm::mat4 model_matrix = glm::mat4(1.0f);
+
         Assets::Model *model = nullptr;
         Geometry::Quad *quad = nullptr;
     };

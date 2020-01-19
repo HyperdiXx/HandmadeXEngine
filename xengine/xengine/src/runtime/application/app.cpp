@@ -3,7 +3,7 @@
 #include <thread>
 #include "app.h"
 
-#include "../core/geometry/generator.h"
+#include <runtime/geometry/generator.h>
 #include "../objects/skybox.h"
 #include "../core/utility/log.h"
 
@@ -17,7 +17,7 @@
 #include "../core/rendering/texture.h"
 #include "../core/rendering/api/base/shader.h"
 
-#include "../core/geometry/model.h"
+#include <runtime/geometry/model.h>
 
 #include "../core/rendering/text.h"
 #include "../core/windowsystem/windowWin.h"
@@ -29,11 +29,11 @@
 #include "../core/rendering/scenes/scene.h"
 #include "../core/rendering/pipeline/shadersBase.h"
 
-#include "../core/geometry/assetmanager.h"
+#include <runtime/geometry/assetmanager.h>
 
 #include "../core/rendering/scenes/sceneObjects.h"
 
-#include "../core/geometry/resources.h"
+#include <runtime/geometry/resources.h>
 #include "../objects/lights/dirLight.h"
 
 

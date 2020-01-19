@@ -5,7 +5,6 @@
 #include "../api/base/vertexbuffer.h"
 #include "../api/base/vertexarray.h"
 #include "../api/base/indexbuffer.h"
-#include "../pipeline/shader.h"
 #include "../texture.h"
 #include <xenpch.h>
 

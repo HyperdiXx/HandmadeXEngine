@@ -38,13 +38,10 @@
     int main()
     {
         using namespace XEngine;
+        
+        TestApp testapp;
 
-        TestApp *testapp = new TestApp();
-
-        testapp->run();
-
-        delete testapp;
-        testapp = nullptr;
+        testapp.run();
 
         return (0);
     }

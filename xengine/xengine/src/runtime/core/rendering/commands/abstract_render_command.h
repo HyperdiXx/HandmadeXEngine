@@ -17,11 +17,11 @@ namespace XEngine
             SPECIAL
         };
 
-        class AbstractRenderCommand
-        {
-        public:
-            virtual void execute() = 0;           
-        };
+        //class AbstractRenderCommand
+        //{
+        //public:
+        //    virtual void execute() = 0;           
+        //};
     }
 }
 #endif // !ABSTRACT_RENDER_COMMAND_H

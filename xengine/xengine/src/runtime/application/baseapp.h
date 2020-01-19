@@ -17,8 +17,6 @@ namespace XEngine
         virtual void onPostUpdate() = 0;
         virtual void onDraw() = 0;
         virtual void onShutdown() = 0;
-
-
     private:
 
 

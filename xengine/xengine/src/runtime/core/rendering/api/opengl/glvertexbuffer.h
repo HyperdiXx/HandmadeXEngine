@@ -10,7 +10,7 @@ namespace XEngine
         class GLVertexBuffer : public VertexBuffer
         {
         public:
-            GLVertexBuffer(real32 *vertices, uint32 size);          
+            GLVertexBuffer(real32 *vertices, uint32 size);
             virtual ~GLVertexBuffer();
             
             virtual void bind() const override;

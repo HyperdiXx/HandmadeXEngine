@@ -7,7 +7,6 @@ in vec3 Normal;
 in vec3 TangentLightPos;
 in vec3 TangentViewPos;
 in vec3 TangentFragPos;
-in vec3 colorRes;
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_normal1;
@@ -44,6 +43,6 @@ void main()
 
 	vec3 res = ambient;
 
-	FragColor = vec4(ambient, 1.0) * lightColor;
-	//FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	//FragColor = vec4(ambient, 1.0) * lightColor;
+	FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

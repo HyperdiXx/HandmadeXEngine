@@ -4,11 +4,9 @@
 #define QUAD_H
 
 #include <math/vec3f.h>
-#include <runtime/core/rendering/api/base/texture.h>
 #include <runtime/core/rendering/api/base/indexbuffer.h>
 #include <runtime/core/rendering/api/base/vertexbuffer.h>
 #include <runtime/core/rendering/api/base/vertexarray.h>
-
 
 namespace XEngine
 {
@@ -50,7 +48,6 @@ namespace XEngine
             };
             
             inline const Rendering::VertexArray *get_vertex_array() const { return m_vertex_array; }
-
 
         private:
 

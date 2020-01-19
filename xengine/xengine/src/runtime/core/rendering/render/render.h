@@ -5,6 +5,7 @@
 
 #include <runtime/core/rendering/api/renderAPI.h>
 #include <runtime/core/rendering/commands/rendercommand.h>
+#include <runtime/core/cameras/perspective_camera.h>
 
 #include <xenpch.h>
 
@@ -45,7 +46,9 @@ namespace XEngine
             virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) = 0;
             
             virtual void draw_model(Assets::Model *model, Shader *m_shader, glm::mat4 mat) = 0;
-            virtual void draw_quad(Geometry::Quad *quad, Shader *m_shader) = 0;
+
+            // Later setup only material
+            virtual void draw_quad(Geometry::Quad *quad, Shader *m_shader, Texture2D *texture) = 0;
             
             void start_execution();
             void end_execution();
@@ -59,9 +62,13 @@ namespace XEngine
             virtual IndexBuffer* create_index_buffer(uint32* indices, uint32 size) = 0;
             virtual VertexArray* create_vertex_array() = 0;
 
+            inline PerspectiveCamera& get_camera3D() { return m_camera3D; } 
+
             static APIs::RenderAPI::API get_api() { return APIs::RenderAPI::get_api(); }
 
             static Render* create();
+        protected:
+            PerspectiveCamera m_camera3D;
         private:
             std::vector<RenderCommand*> m_commands;
             RenderCommandExecutor *m_command_executor = nullptr;

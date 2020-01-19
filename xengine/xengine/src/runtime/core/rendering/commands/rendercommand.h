@@ -9,7 +9,7 @@ namespace XEngine
 {
     namespace Rendering
     {
-        class RenderCommand : public AbstractRenderCommand
+        class RenderCommand
         {
         public:
             
@@ -35,13 +35,15 @@ namespace XEngine
 
             inline static void draw_arrays()
             {
-                
+                s_api->draw_arrays();
             }
 
             inline static void draw_indexed(int mode, uint32 count, int type, void *indices)
             {
                 s_api->draw_indexed(mode, count, type, indices);
             }
+
+            virtual void execute() = 0;
 
         private:
             static std::unique_ptr<APIs::RenderAPI> s_api;        

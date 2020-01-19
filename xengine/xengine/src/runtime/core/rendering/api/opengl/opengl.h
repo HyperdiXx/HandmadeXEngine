@@ -36,7 +36,12 @@ namespace APIs
         virtual void draw_indexed(int mode, uint32 count, int type, void *ind) override
         {
             glDrawElements(mode, count, type, ind);
-        }      
+        }    
+
+        virtual void draw_arrays() override
+        {
+
+        }
     };
 }
 #endif // !GL

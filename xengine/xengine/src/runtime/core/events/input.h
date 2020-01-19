@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "../cameras/perspectivecamera.h"
+#include "../cameras/perspective_camera.h"
 
 namespace XEngine
 {

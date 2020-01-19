@@ -1,4 +1,4 @@
-#include "orthographiccamera.h"
+#include "ortho_camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

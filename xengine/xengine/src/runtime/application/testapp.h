@@ -56,6 +56,9 @@ namespace XEngine
         Rendering::IndexBuffer *i_buffer = nullptr;
         Rendering::VertexArray *v_array = nullptr;
         Rendering::Shader *model_shader = nullptr;
+        Rendering::Shader *solid_shader = nullptr;
+
+        GLui m_ui;
 
         glm::mat4 model_matrix = glm::mat4(1.0f);
 

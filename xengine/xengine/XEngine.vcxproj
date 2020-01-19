@@ -365,6 +365,7 @@
     <ClInclude Include="src\runtime\objects\lights\spotLight.h" />
     <ClInclude Include="src\runtime\objects\shadowmap.h" />
     <ClInclude Include="src\runtime\objects\skybox.h" />
+    <ClInclude Include="src\runtime\platforms\win32\platformwin32.h" />
     <ClInclude Include="src\runtime\types.h" />
     <ClInclude Include="src\thirdparty\imguit\imconfig.h" />
     <ClInclude Include="src\thirdparty\imguit\imgui.h" />

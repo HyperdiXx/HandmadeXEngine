@@ -46,6 +46,13 @@ namespace XEngine
             add(render_command);
         }
 
+        void GLRender::draw_quad(Geometry::Quad * quad, Shader * shader, glm::vec4 *color)
+        {
+            QuadRenderCommand *render_command = new QuadRenderCommand(RenderCommandType::QUAD);
+            render_command->set(quad, shader, color);
+            add(render_command);
+        }
+
         Texture2D* GLRender::create_texture2D(const char *path)
         {
             return new GLTexture2D(path);

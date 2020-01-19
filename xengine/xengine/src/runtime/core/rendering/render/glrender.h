@@ -19,6 +19,7 @@ namespace XEngine
 
             virtual void draw_model(Assets::Model *model, Shader *shader, glm::mat4 mat) override;
             virtual void draw_quad(Geometry::Quad *quad, Shader *shader, Texture2D *texture) override;
+            virtual void draw_quad(Geometry::Quad *quad, Shader *shader, glm::vec4 *color) override;
 
             virtual Texture2D* create_texture2D(const char *path) override;
             virtual Shader* create_shader(const char* vertex, const char* fragment) override;

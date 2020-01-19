@@ -24,11 +24,20 @@ namespace XEngine
                 m_texture = texture;
             }
 
+            void set(Geometry::Quad *quad, Shader *shader, glm::vec4* color)
+            {
+                m_shader = shader;
+                m_quad = quad;
+                m_color = *color;
+            }
+
             virtual void execute() override
             {
-                m_texture->activate_bind(0);
+                if(m_texture != nullptr)
+                    m_texture->activate_bind(0);
 
                 m_shader->bind();
+                m_shader->setVec4("u_color", m_color);
 
                 m_quad->get_vertex_array()->bind();
 
@@ -43,7 +52,8 @@ namespace XEngine
             RenderCommandType m_type;
             Shader *m_shader;
             Texture2D *m_texture;
-            Geometry::Quad* m_quad;            
+            Geometry::Quad* m_quad;
+            glm::vec4 m_color;
         };
     }
 }

@@ -10,7 +10,7 @@ namespace XEngine
     GLWindow::GLWindow(const char* n, uint32 width, uint32 height) :
         m_name(n), m_width(width), m_height(height)
     {
-        //LOG("XEngine v.0.0.1\n");
+        Log::info("XEngine init");
 
         bindGLFW();
 

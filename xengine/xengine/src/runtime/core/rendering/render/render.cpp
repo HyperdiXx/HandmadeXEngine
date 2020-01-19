@@ -13,8 +13,6 @@ namespace XEngine
         {
             // TODO : setup
 
-            // @move to GL Render device abst and setup here
-            glEnable(GL_DEPTH_TEST);
         }
 
         void Render::end_execution()
@@ -29,8 +27,6 @@ namespace XEngine
             }
 
             m_commands.clear();
-
-            glDisable(GL_DEPTH_TEST);
         }
 
         void Render::add(RenderCommand *command)

@@ -78,7 +78,7 @@ namespace XEngine
         class AnimatedModel
         {
         public:
-
+            Node *root;
         };
     }
 }

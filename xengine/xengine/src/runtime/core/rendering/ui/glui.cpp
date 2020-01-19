@@ -1,7 +1,10 @@
 #include "glui.h"
 
-void XEngine::GLGUI::init(GLFWwindow* window, int theme)
+#include <runtime/core/utility/log.h>
+
+void XEngine::GLui::init(GLFWwindow* window, int theme)
 {
+    m_window = window;
     glEnable(GL_DEPTH_TEST);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -12,24 +15,20 @@ void XEngine::GLGUI::init(GLFWwindow* window, int theme)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    if (theme == 1)
-    {
-        setDarkTheme();
-    }
-    else
-    {
-        setLightTheme();
-    }
+    if (theme == Style::DARK)    
+        set_dark_theme();
+    else    
+        set_light_theme();
 }
 
-void XEngine::GLGUI::startUpdate()
-{
+void XEngine::GLui::new_frame()
+{    
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
-void XEngine::GLGUI::update(vec4f& spritecol)
+void XEngine::GLui::update(vec4f& spritecol)
 {
     static bool show = true;
 
@@ -48,7 +47,6 @@ void XEngine::GLGUI::update(vec4f& spritecol)
         spritecol.z = col1[2];
     }
 
-
     if (ImGui::Button("Add color!"))
         editLayer.push_back(0);
 
@@ -57,11 +55,9 @@ void XEngine::GLGUI::update(vec4f& spritecol)
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-
 }
 
-void XEngine::GLGUI::setUIScene5(vec3f &pos, vec4f &color, unsigned int texture, vec4f &colo1, vec4f &clor2, vec4f color3, bool &pressed)
+void XEngine::GLui::setUIScene5(vec3f &pos, vec4f &color, unsigned int texture, vec4f &colo1, vec4f &clor2, vec4f color3, bool &pressed)
 {
     static bool show = true;
 
@@ -70,7 +66,6 @@ void XEngine::GLGUI::setUIScene5(vec3f &pos, vec4f &color, unsigned int texture,
     float col3[3] = { clor2.x, clor2.y, clor2.z };
     float col4[3] = { color3.x, color3.y, color3.z };
    
-
     ImGui::Begin("XEngine Editor");
     ImGui::Text("Scene 1");
 
@@ -111,30 +106,69 @@ void XEngine::GLGUI::setUIScene5(vec3f &pos, vec4f &color, unsigned int texture,
 
 }
 
-/*void XEngine::GLGUI::addEdit3()
-{
-    editLayer.push_back(0);
-    
-}*/
-
-void XEngine::GLGUI::shutdown()
+void XEngine::GLui::shutdown()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
 
-void XEngine::GLGUI::setDarkTheme()
+void XEngine::GLui::top_bar()
+{   
+    ImGui::ShowDemoWindow();
+
+    bool show_log = true;
+    bool *open = &show_log;
+    if (ImGui::BeginMainMenuBar())
+    {        
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open..", "Ctrl+O", false))            
+                Log::info("Pressed on menu bar!");
+
+            ImGui::EndMenu();
+        }
+        
+        if (ImGui::BeginMenu("Animation"))
+        {
+            if (ImGui::MenuItem("AnimTree", NULL, false))
+            {
+                Log::info("Pressed on animation tree window");
+                ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+                ImGui::Begin("Example: Log", open);
+                ImGui::End();
+            }
+            ImGui::EndMenu();
+        }
+        
+        if (ImGui::BeginMenu("Options"))
+        {
+            if (ImGui::MenuItem("Help", NULL, false))
+                Log::info("Pressed on help window");
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+    }
+}
+
+void XEngine::GLui::post_update()
+{
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void XEngine::GLui::set_dark_theme()
 {
     ImGui::StyleColorsDark();
 }
 
-void XEngine::GLGUI::setLightTheme()
+void XEngine::GLui::set_light_theme()
 {
     ImGui::StyleColorsLight();
 }
 
-void XEngine::GLGUI::setClassicTheme()
+void XEngine::GLui::set_classic_theme()
 {
     ImGui::StyleColorsClassic();
 }

@@ -740,6 +740,9 @@
     <ClInclude Include="src\runtime\animation\animated_model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\runtime\platforms\win32\platformwin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl" />

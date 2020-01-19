@@ -107,7 +107,8 @@ namespace XEngine
             else
                 vertex.uv = vec2f(0.0f, 0.0f);
 
-            if (aimesh->HasTangentsAndBitangents())
+            // @Note : not using tbn right now
+            /*if (aimesh->HasTangentsAndBitangents())
             {
                 vector.x = aimesh->mTangents[i].x;
                 vector.y = aimesh->mTangents[i].y;
@@ -118,7 +119,7 @@ namespace XEngine
                 vector.y = aimesh->mBitangents[i].y;
                 vector.z = aimesh->mBitangents[i].z;
                 //vertex.bitangent = vector;
-            }
+            }*/
 
             mesh->add_vertex(vertex);
         }
@@ -174,6 +175,8 @@ namespace XEngine
 
         model->parent_dir = path.substr(0, path.find_last_of('/'));
         model->root = parse_node(model, scene->mRootNode, scene);
+
+        Log::info("Static model " + model->root->name + " loaded!");
         
         return model;
     }
@@ -187,6 +190,8 @@ namespace XEngine
             
         }
 
+        Log::info("Animated model " + anim_model->root->name + " loaded!");
+
         return anim_model;
     }
 
@@ -195,6 +200,7 @@ namespace XEngine
         using namespace XEngine::Assets;
 
         Assimp::Importer importer;
+        // @FLip UV ???
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
@@ -212,7 +218,7 @@ namespace XEngine
         using namespace XEngine::Assets;
 
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             Log::error(importer.GetErrorString());

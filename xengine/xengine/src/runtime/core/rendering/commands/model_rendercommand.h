@@ -35,6 +35,9 @@ namespace XEngine
             {
                 using namespace Assets;
 
+                // @move to GL Render device abst and setup here
+                glEnable(GL_DEPTH_TEST);
+
                 m_shader->bind();
                 m_shader->setMat4("model", m_model_matrix);
                 m_shader->setMat4("viewproj", m_proj_matrix * m_view_matrix);
@@ -53,6 +56,10 @@ namespace XEngine
                 }
 
                 m_shader->unbind();
+
+
+                // @move to GL Render device abst and setup here
+                glDisable(GL_DEPTH_TEST);
             };
 
             void draw_mesh(Assets::Mesh* mesh)

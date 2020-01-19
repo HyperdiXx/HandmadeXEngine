@@ -33,7 +33,7 @@ namespace XEngine
 
         inline const uint32 getWidth() const { return m_width; };
         inline const uint32 getHeight() const { return m_height; };
-
+        inline GLFWwindow *get_wind_ptr() { return m_window; };
     private:      
         void setVSYNC(bool set);
         void bindGLFW();

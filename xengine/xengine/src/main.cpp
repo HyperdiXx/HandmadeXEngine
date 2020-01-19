@@ -52,13 +52,10 @@
     {
         using namespace XEngine;
 
-        TestApp *testapp = new TestApp();
+        TestApp testapp;
 
-        testapp->run();
-
-        delete testapp;
-        testapp = nullptr;
-
+        testapp.run();
+        
         return (0);
     }
 }

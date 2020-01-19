@@ -14,36 +14,38 @@
 
 namespace XEngine
 {
-    class GLGUI : public UserInterface
+    class GLui : public UserInterface
     {
     public:
-
-        GLGUI(GLFWwindow* win, int theme) : m_window(win)
+        GLui() {};
+        GLui(GLFWwindow* win, int theme)
         {
             init(win, theme);
         }
 
-        ~GLGUI()
-        {
-           
-        }
-
         void init(GLFWwindow* window, int theme);
-        void startUpdate();
-        void update(vec4f& spritecol);
         void setUIScene5(vec3f &pos, vec4f &color, unsigned int texture, vec4f &colo1, vec4f &clor2, vec4f color3, bool &pressed);
-        //void addEdit3();
+
+        void new_frame();
+        void update(vec4f& spritecol);
         void shutdown();
 
-        void setDarkTheme();
-        void setLightTheme();
-        void setClassicTheme();
+        void top_bar();
+        void post_update();
 
-
+        void set_dark_theme();
+        void set_light_theme();
+        void set_classic_theme();
     private:
         GLFWwindow* m_window;
         std::vector<int> editLayer;
-    };
+        
+        enum Style
+        {
+            WHITE,
+            DARK
+        };
+};
 }
 
 

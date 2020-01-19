@@ -4,6 +4,7 @@
 #define BASEAPP_H
 
 #include <runtime/core/rendering/render/render.h>
+#include <runtime/core/rendering/ui/glui.h>
 
 namespace XEngine
 {  

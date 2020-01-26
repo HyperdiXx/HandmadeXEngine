@@ -18,8 +18,7 @@ namespace XEngine
             virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) override;
 
             virtual void draw_model(Assets::Model *model, Shader *shader, glm::mat4 mat) override;
-            virtual void draw_quad(Geometry::Quad *quad, Shader *shader, Texture2D *texture) override;
-            virtual void draw_quad(Geometry::Quad *quad, Shader *shader, glm::vec4 *color) override;
+            virtual void draw_quad(Geometry::Quad *quad, BasicMaterial *material) override;
 
             virtual Texture2D* create_texture2D(const char *path) override;
             virtual Shader* create_shader(const char* vertex, const char* fragment) override;

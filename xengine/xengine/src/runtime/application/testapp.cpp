@@ -1,10 +1,9 @@
 #include "testapp.h"
 
-#include <runtime/core/rendering/api/base/texture2d.h>
+#include <runtime/core/rendering/pipeline/materials/basicmaterial.h>
 #include <runtime/core/rendering/api/base/vertexbuffer.h>
 #include <runtime/core/rendering/api/base/indexbuffer.h>
 #include <runtime/core/rendering/api/base/vertexarray.h>
-#include <runtime/core/rendering/api/base/shader.h>
 #include <runtime/core/windowsystem/openglwindow.h>
 
 #include <runtime/core/rendering/render/render.h>
@@ -12,6 +11,7 @@
 #include <runtime/geometry/model.h>
 #include <runtime/geometry/quad.h>
 #include <runtime/geometry/model_loader.h>
+
 
 namespace XEngine
 {
@@ -25,8 +25,14 @@ namespace XEngine
         triangle_shader = render_instance->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs");
         //solid_shader = render_instance->create_shader("shaders/simple2d.vs", "shaders/filledsimple2d.fs");
         model_shader = render_instance->create_shader("shaders/model3d.vs", "shaders/model3d.fs");
+        skeletal_shader = render_instance->create_shader("shaders/skeletal.vs", "shaders/model3d.fs");
 
         texture1 = render_instance->create_texture2D("engineassets/brickwall.jpg");
+
+        base_material = new Rendering::BasicMaterial();
+
+        base_material->set_texture2D(texture1);
+        base_material->set_shader(triangle_shader);
 
         model = ModelLoader::load_model_from_file("engineassets/nano/nanosuit.obj");
         
@@ -79,7 +85,8 @@ namespace XEngine
        
         render_instance->draw_model(model, model_shader, model_matrix);
         
-        //render_instance->draw_quad(quad, triangle_shader, texture1);
+        //render_instance->draw_quad(quad, base_material);
+        
         render_instance->end_execution();
 
         m_ui.new_frame();

@@ -8,6 +8,8 @@
 #include <runtime/core/rendering/api/base/vertexbuffer.h>
 #include <runtime/core/rendering/api/base/indexbuffer.h>
 
+#include <runtime/animation/animation.h>
+
 using namespace XEngine;
 using namespace Assets;
 using namespace Rendering;
@@ -42,18 +44,6 @@ void Mesh::setup_mesh()
     //glEnableVertexAttribArray(4);
     //glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(V3F_UV2F_N3F_T3F_BI3F), (void*)offsetof(V3F_UV2F_N3F_T3F_BI3F, bitangent));
 
-    /*for (uint32 i = 0; i < BONES_COUNT; i++)
-    {
-        glVertexAttribPointer(3 + i, 1, GL_FLOAT, GL_FALSE, sizeof(AnimVertex), (void*)(offsetof(AnimVertex, boneIDs) + sizeof(real32) * i));
-        glEnableVertexAttribArray(3 + i);
-    }
-
-    for (uint32 i = 0; i < BONES_COUNT; i++)
-    {
-        glVertexAttribPointer(9 + i, 1, GL_FLOAT, GL_FALSE, sizeof(AnimVertex), (void*)(offsetof(AnimVertex, weights) + sizeof(float) * i));
-        glEnableVertexAttribArray(9 + i);
-    }*/
-
     glBindVertexArray(0);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -80,37 +70,6 @@ BPMaterialSpec Model::loadMaterial(aiMaterial* mat)
     return material;
 }
 
-/*void Mesh::renderMeshes(Shader* shader)
-{
-    uint32 diffuseNr = 1;
-    uint32 specularNr = 1;
-    uint32 normalNr = 1;
-    uint32 heightNr = 1;
-    for (unsigned int i = 0; i < textures.size(); i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i); 
-        std::string number;
-        std::string name = textures[i].type;
-        if (name == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular")
-            number = std::to_string(specularNr++);
-        else if (name == "texture_normal")
-            number = std::to_string(normalNr++); 
-        else if (name == "texture_height")
-            number = std::to_string(heightNr++); 
-                                                 
-        glUniform1i(glGetUniformLocation(shader->getID(), (name + number).c_str()), i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
-    }
-
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-
-    glActiveTexture(GL_TEXTURE0);
-}*/
-
 void Mesh::add_vertex(StaticVertex vertex)
 {
     vertices.push_back(vertex);
@@ -120,7 +79,6 @@ void Mesh::add_index(uint32 ind)
 {
     indices.push_back(ind);
 }
-
 
 void Node::add_child(Node *child)
 {
@@ -168,44 +126,29 @@ std::vector<TextureWrapper> Model::loadMaterialTextures(aiMaterial *mat, aiTextu
     return textures;
 }
 
-/*uint32 Model::loadtexture2DFromDir(const std::string path, const std::string & dir, bool gamma)
+void XEngine::Assets::AnimatedMesh::add_weight(uint32 vert_index, uint32 bone_index, GLuint bone_id, GLfloat weight)
 {
-    std::string filename = path;
-    filename = dir + '/' + filename;
-
-    uint32 textureID;
-    glGenTextures(1, &textureID);
-
-    int width, height, sizechannels;
-
-    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &sizechannels, 0);
-    if (data)
-    {
-        GLenum format;
-        if (sizechannels == 1)
-            format = GL_RED;
-        else if (sizechannels == 3)
-            format = GL_RGB;
-        else if (sizechannels == 4)
-            format = GL_RGBA;
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
+    vertices[vert_index].boneIDs[bone_index] = bone_id;
+    vertices[vert_index].weights[bone_index] = weight;
 }
-*/
+
+void XEngine::Assets::AnimatedMesh::add_vertex(AnimVertex vertex)
+{
+    vertices.push_back(vertex);
+}
+
+void XEngine::Assets::AnimatedMesh::add_index(uint32 ind)
+{
+    indices.push_back(ind);
+}
+
+void XEngine::Assets::AnimatedModel::add_bone(std::shared_ptr<Bone> bone)
+{
+    
+}
+
+void XEngine::Assets::AnimatedModel::add_animation(Animation *animation)
+{
+    m_anim_map[animation->get_name()] = m_animations.size();
+    m_animations.emplace_back(std::move(animation));
+}

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "material.h"
+#include "basicmaterial.h"
 
 
 namespace XEngine
 {
     namespace Rendering
     {
-        class PBRMaterial : public Material
+        class PBRMaterial : public BasicMaterial
         {
         public:
             PBRMaterial() {};

@@ -29,6 +29,7 @@ namespace XEngine
         class IndexBuffer;
         class VertexArray;
         class Render;
+        class BasicMaterial;
     }
 
     class TestApp : public BaseApplication
@@ -57,6 +58,8 @@ namespace XEngine
         Rendering::VertexArray *v_array = nullptr;
         Rendering::Shader *model_shader = nullptr;
         Rendering::Shader *solid_shader = nullptr;
+        Rendering::Shader *skeletal_shader = nullptr;
+        Rendering::BasicMaterial *base_material = nullptr;
 
         GLui m_ui;
 

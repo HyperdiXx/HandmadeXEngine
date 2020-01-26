@@ -7,8 +7,53 @@
 #include <runtime/geometry/model.h>
 #include <runtime/core/rendering/api/base/texture2D.h>
 
+#include <runtime/animation/animation.h>
+#include <runtime/animation/key_frame.h>
+
 namespace XEngine
 {
+    glm::mat4 transposeAiMat4(aiMatrix4x4 ai_mat) 
+    {
+        glm::mat4 res;
+        
+        aiMatrix4x4 transposed = ai_mat.Transpose();
+ 
+        for (uint32 i = 0; i < 4; i++) 
+        {
+            for (uint32 j = 0; j < 4; j++)
+            {
+                res[i][j] = transposed[i][j];
+            }
+        }
+        return res;
+    }
+
+    void parse_bones(Assets::AnimatedModel *model, Assets::AnimatedMesh *mesh, aiMesh *ai_mesh)
+    {
+        using namespace Assets;
+        std::unordered_map<uint32, uint32> weight_count;
+
+        for (uint32 i = 0; i < ai_mesh->mNumBones; i++)
+        {
+            aiBone* cur_bone = ai_mesh->mBones[i];
+ 
+            std::shared_ptr<Bone> bone{ new Bone{cur_bone->mName.C_Str(), transposeAiMat4(cur_bone->mOffsetMatrix)} };
+
+            for (uint32 j = 0; j < cur_bone->mNumWeights; j++)
+            {
+                aiVertexWeight vert_weight = cur_bone->mWeights[j];
+                if (weight_count.find(vert_weight.mVertexId) == weight_count.end())
+                    weight_count[vert_weight.mVertexId] = 0;
+
+                if (weight_count[vert_weight.mVertexId] < 4) 
+                    mesh->add_weight(vert_weight.mVertexId, weight_count[vert_weight.mVertexId]++, i, vert_weight.mWeight);
+            }
+
+            model->add_bone(bone);
+            mesh->bones.push_back(bone);
+        }        
+    }
+
     std::vector<Assets::TextureWrapper> load_textures_from_material(Assets::Model *model, aiMaterial *material, aiTextureType type, std::string texture_type)
     {
         using namespace Assets;
@@ -44,6 +89,69 @@ namespace XEngine
         return textures;
     }
 
+    Assets::AnimNode *find_node(Assets::AnimNode*node, std::string &name)
+    {
+        if(name == node->name)
+            return node;
+
+        for (uint32 i = 0; i < node->nodes.size(); i++)
+        {
+            using namespace Assets;
+            AnimNode* nod = node->nodes[i];
+            auto n = find_node(nod, name);
+            if(n)
+                return n;
+        }
+        return nullptr;
+    }
+
+    void parse_animations(Assets::AnimatedModel *model, const aiScene *ai_scene)
+    {
+        for (uint32 i = 0; i < ai_scene->mNumAnimations; i++)
+        {
+            aiAnimation *ai_animation = ai_scene->mAnimations[i];
+
+            Animation *anim = new Animation();
+
+            anim->set_name(ai_animation->mName.C_Str());
+            anim->set_time(ai_animation->mTicksPerSecond);
+            anim->set_duration(ai_animation->mDuration);
+
+            for (uint32 j = 0; ai_animation->mNumChannels; j++)
+            {
+                aiNodeAnim* ai_channel = ai_animation->mChannels[j];
+
+                KeyFrame* frame = new KeyFrame();
+                frame->name = ai_channel->mNodeName.C_Str();
+
+                for (uint32 q = 0; q < ai_channel->mNumPositionKeys; q++)
+                {
+                    aiVectorKey ai_key = ai_channel->mPositionKeys[i];
+                    PositionKey p_key = { ai_key.mTime, { ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
+                    frame->add_position_key(p_key);
+                }
+
+                for (uint32 w = 0; w < ai_channel->mNumRotationKeys; w++)
+                {
+                    aiQuatKey ai_key = ai_channel->mRotationKeys[i];
+                    RotationKey r_key = { ai_key.mTime,{ ai_key.mValue.w, ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
+                    frame->add_rotation_key(r_key);
+                }
+
+                for (uint32 e = 0; e < ai_channel->mNumScalingKeys; e++)
+                {
+                    aiVectorKey ai_key = ai_channel->mScalingKeys[i];
+                    PositionKey s_key = { ai_key.mTime ,{ ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
+                    frame->add_scale_key(s_key);
+                }
+
+                anim->add_keyframe(frame);
+            }
+            
+            model->add_animation(anim);
+        }
+    }
+
     void parse_materials(Assets::Model *model, Assets::Mesh *mesh, aiMesh* ai_mesh, const aiScene *scene)
     {
         using namespace Assets;
@@ -66,6 +174,30 @@ namespace XEngine
             mesh->mesh_textures.push_back(normalMaps[i]);
     }
 
+    void mem_cpyvec(aiVector3D & aivec3, glm::vec3 &vec3)
+    {
+        memcpy(&vec3, &aivec3, sizeof(aivec3));
+    }
+
+    void mem_cpymatrix(aiMatrix4x4 & aimat, glm::mat4 &mat4)
+    {
+        memcpy(&mat4, &aimat, sizeof(aimat));
+        mat4 = glm::transpose(mat4);
+    }
+
+    void calc_weight(uint32 id, real32 weight, glm::ivec4& bone_id, glm::vec4& wts)
+    {
+        for (uint16 i = 0; i < 4; i++)
+        {
+            if (wts[i] == 0.0f)
+            {
+                wts[i] = weight;
+                bone_id[i] = id;
+                break;
+            }
+        }
+    }
+
     void parse_vert(Assets::Mesh* mesh, aiMesh *aimesh)
     {
         using namespace Assets;
@@ -81,6 +213,7 @@ namespace XEngine
 
             if (aimesh->HasPositions())
             {
+                // @SpeedUp: memcpy above
                 vector.x = aimesh->mVertices[i].x;
                 vector.y = aimesh->mVertices[i].y;
                 vector.z = aimesh->mVertices[i].z;
@@ -168,7 +301,7 @@ namespace XEngine
 
         return cur_node;
     }
-    
+
     Assets::Model* parse_static_model(const aiScene* scene, const std::string &path)
     {
         Assets::Model *model = new Assets::Model();
@@ -186,10 +319,8 @@ namespace XEngine
         Assets::AnimatedModel* anim_model = new Assets::AnimatedModel();
 
         if (scene->HasAnimations())
-        {
-            
-        }
-
+            parse_animations(anim_model, scene);
+                                    
         Log::info("Animated model " + anim_model->root->name + " loaded!");
 
         return anim_model;

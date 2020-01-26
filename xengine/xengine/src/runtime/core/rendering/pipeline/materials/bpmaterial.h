@@ -1,24 +1,23 @@
 #pragma once
 
-#include "material.h"
+#include "basicmaterial.h"
 
 namespace XEngine
 {
     namespace Rendering
     {
-        class BPMaterial : public Material
+        class BPMaterial : public BasicMaterial
         {
         public:
-            BPMaterial() {};
-            BPMaterial(Shader *shader, Texture2D *Diffuse, Texture2D* Normal, Texture2D* Spec);
+            BPMaterial(Shader *shader, Texture2D *diffuse, Texture2D* Normal, Texture2D* Spec) {};
             ~BPMaterial();
 
+            void set_normal_texture2D(Texture2D *texture);
+            void set_specular_texture2D(Texture2D *texture);
         private:
-            Shader *mShader;
-            Texture2D *mDiffuse;
-            Texture2D *mNormal;
-            Texture2D *mSpec;
-
+            Texture2D *m_diffuse;
+            Texture2D *m_normal;
+            Texture2D *m_spec;
         };
     }
 }

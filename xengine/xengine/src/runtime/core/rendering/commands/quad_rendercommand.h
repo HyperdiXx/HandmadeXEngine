@@ -7,6 +7,7 @@
 
 #include <runtime/geometry/quad.h>
 #include <runtime/core/rendering/api/base/texture2d.h>
+#include <runtime/core/rendering/pipeline/materials/basicmaterial.h>
 
 namespace XEngine
 {
@@ -17,27 +18,22 @@ namespace XEngine
         public:
             QuadRenderCommand(RenderCommandType type) : m_type(type) {}
             
-            void set(Geometry::Quad *quad, Shader *shader, Texture2D* texture)
+            void set(Geometry::Quad *quad, BasicMaterial *material)
             {
-                m_shader = shader;
                 m_quad = quad;
-                m_texture = texture;
+                m_material = material;
             }
-
-            void set(Geometry::Quad *quad, Shader *shader, glm::vec4* color)
-            {
-                m_shader = shader;
-                m_quad = quad;
-                m_color = *color;
-            }
-
+          
             virtual void execute() override
             {
-                if(m_texture != nullptr)
-                    m_texture->activate_bind(0);
+                Texture2D *texture = m_material->get_texture2D();
+                Shader *shader = m_material->get_shader();
+                
+                if(texture != nullptr)
+                    texture->activate_bind(0);
 
-                m_shader->bind();
-                m_shader->setVec4("u_color", m_color);
+                shader->bind();
+                shader->setVec4("u_color", m_color);
 
                 m_quad->get_vertex_array()->bind();
 
@@ -45,13 +41,12 @@ namespace XEngine
  
                 m_quad->get_vertex_array()->unbind();
 
-                m_shader->unbind();
+                shader->unbind();
             };
 
         private:
             RenderCommandType m_type;
-            Shader *m_shader;
-            Texture2D *m_texture;
+            BasicMaterial *m_material;
             Geometry::Quad* m_quad;
             glm::vec4 m_color;
         };

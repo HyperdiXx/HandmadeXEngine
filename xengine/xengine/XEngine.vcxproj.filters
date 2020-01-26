@@ -126,9 +126,6 @@
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\core\rendering\pipeline\materials\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -250,6 +247,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\animation\animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\animation\key_frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -551,9 +551,6 @@
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\pipeline\materials\material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -737,10 +734,10 @@
     <ClInclude Include="src\runtime\geometry\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\animation\animated_model.h">
+    <ClInclude Include="src\runtime\platforms\win32\platformwin32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\platforms\win32\platformwin32.h">
+    <ClInclude Include="src\runtime\animation\key_frame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

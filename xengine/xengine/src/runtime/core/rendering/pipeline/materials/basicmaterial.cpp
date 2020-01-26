@@ -11,12 +11,12 @@ XEngine::Rendering::BasicMaterial::BasicMaterial(Shader *shd, Texture2D *tex) : 
 {
 }
 
-void XEngine::Rendering::BasicMaterial::setTexture(Texture2D *tex)
+void XEngine::Rendering::BasicMaterial::set_texture2D(Texture2D *tex)
 {
     mTexture = tex;
 }
 
-void XEngine::Rendering::BasicMaterial::setShader(Shader *shader)
+void XEngine::Rendering::BasicMaterial::set_shader(Shader *shader)
 {
     mShader = shader;
 }

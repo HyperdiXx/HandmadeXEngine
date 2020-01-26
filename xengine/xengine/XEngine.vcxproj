@@ -112,6 +112,7 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\runtime\animation\animation.cpp" />
+    <ClCompile Include="src\runtime\animation\key_frame.cpp" />
     <ClCompile Include="src\runtime\application\app.cpp" />
     <ClCompile Include="src\runtime\application\testapp.cpp" />
     <ClCompile Include="src\runtime\core\cameras\perspective_camera.cpp" />
@@ -152,7 +153,6 @@
     <ClCompile Include="src\runtime\core\rendering\render\render.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\basicmaterial.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.cpp" />
-    <ClCompile Include="src\runtime\core\rendering\pipeline\materials\material.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\shadersBase.cpp" />
     <ClCompile Include="src\runtime\core\rendering\pipeline\shadertype.cpp" />
@@ -255,7 +255,7 @@
     <ClInclude Include="inc\stb_image\stb_image.h" />
     <ClInclude Include="src\exportapi.h" />
     <ClInclude Include="src\runtime\animation\animation.h" />
-    <ClInclude Include="src\runtime\animation\animated_model.h" />
+    <ClInclude Include="src\runtime\animation\key_frame.h" />
     <ClInclude Include="src\runtime\animation\skeleton.h" />
     <ClInclude Include="src\runtime\application\app.h" />
     <ClInclude Include="src\runtime\application\baseapp.h" />
@@ -327,7 +327,6 @@
     <ClInclude Include="src\runtime\core\rendering\render\render.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\basicmaterial.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\bpmaterial.h" />
-    <ClInclude Include="src\runtime\core\rendering\pipeline\materials\material.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\materials\pbrmaterial.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\shaders.h" />
     <ClInclude Include="src\runtime\core\rendering\pipeline\shadersBase.h" />

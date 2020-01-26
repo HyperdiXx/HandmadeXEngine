@@ -18,6 +18,7 @@ namespace XEngine
     {
         class Shader;
         class Texture2D;
+        class BasicMaterial;
         class VertexBuffer;
         class IndexBuffer;
         class VertexArray;
@@ -48,9 +49,8 @@ namespace XEngine
             virtual void draw_model(Assets::Model *model, Shader *m_shader, glm::mat4 mat) = 0;
 
             // Later setup only material
-            virtual void draw_quad(Geometry::Quad *quad, Shader *m_shader, Texture2D *texture) = 0;
-            virtual void draw_quad(Geometry::Quad *quad, Shader* m_shader, glm::vec4 *color) = 0;
-
+            virtual void draw_quad(Geometry::Quad *quad, BasicMaterial *material) = 0;
+            
             void start_execution();
             void end_execution();
 

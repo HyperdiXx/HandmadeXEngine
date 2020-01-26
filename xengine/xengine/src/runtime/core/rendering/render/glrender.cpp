@@ -39,17 +39,10 @@ namespace XEngine
         }
 
         // TODO: add material with shader and texture
-        void GLRender::draw_quad(Geometry::Quad *quad, Shader *shader, Texture2D *texture)
+        void GLRender::draw_quad(Geometry::Quad *quad, BasicMaterial *material)
         {
             QuadRenderCommand *render_command = new QuadRenderCommand(RenderCommandType::QUAD);
-            render_command->set(quad, shader, texture);
-            add(render_command);
-        }
-
-        void GLRender::draw_quad(Geometry::Quad * quad, Shader * shader, glm::vec4 *color)
-        {
-            QuadRenderCommand *render_command = new QuadRenderCommand(RenderCommandType::QUAD);
-            render_command->set(quad, shader, color);
+            render_command->set(quad, material);
             add(render_command);
         }
 

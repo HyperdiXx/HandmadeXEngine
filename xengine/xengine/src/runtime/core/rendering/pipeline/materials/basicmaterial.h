@@ -1,25 +1,34 @@
 #pragma once
 
-
-#include "material.h"
+#include <runtime/core/rendering/api/base/shader.h>
+#include <runtime/core/rendering/api/base/texture2d.h>
 
 namespace XEngine
 {
     namespace Rendering
     {
-        class BasicMaterial : public Material
+        class BasicMaterial
         {
         public:
+            BasicMaterial() {};
             BasicMaterial(Shader* shd);
             BasicMaterial(Shader* shd, Texture2D* tex);
 
-            void setTexture(Texture2D *tex);
-            void setShader(Shader *shader);
+            void set_texture2D(Texture2D *texture);
+            void set_shader(Shader *shader);
 
-            inline Shader* getShader() { return mShader; };
-            inline Texture2D* getTexture2D() { return mTexture; };
-            inline uint32 getId() const { return id; };
+            void set_int();
+            void set_vec2();
+            void set_vec3();
+            void set_vec4();
 
+            void set_mat3();
+            void set_mat4();
+
+
+            inline Shader* get_shader() { return mShader; };
+            inline Texture2D* get_texture2D() { return mTexture; };
+            inline uint32 get_id() const { return id; };
         private:
             uint32 id;
             Shader *mShader;

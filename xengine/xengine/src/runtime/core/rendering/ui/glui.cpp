@@ -115,8 +115,6 @@ void XEngine::GLui::shutdown()
 
 void XEngine::GLui::top_bar()
 {   
-    ImGui::ShowDemoWindow();
-
     bool show_log = true;
     bool *open = &show_log;
     if (ImGui::BeginMainMenuBar())

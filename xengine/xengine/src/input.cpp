@@ -4,12 +4,12 @@
 
 namespace XEngine
 {
-
+    // @Rewrite: No GLFW lib
     inline glm::vec2 getMousePos(GLFWwindow* window)
     {
         double xpos, ypos;
 
-        glfwGetCursorPos(window, &xpos, &ypos);
+        //glfwGetCursorPos(window, &xpos, &ypos);
 
         glm::vec2 ret = glm::vec2(xpos, ypos);
         
@@ -19,14 +19,14 @@ namespace XEngine
     inline float getMouseX(GLFWwindow* window)
     {
         double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
+        //glfwGetCursorPos(window, &xpos, &ypos);
         return (float)xpos;
     }
 
     inline float getMouseY(GLFWwindow* window)
     {
         double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
+        //glfwGetCursorPos(window, &xpos, &ypos);
         return (float)ypos;
     }
 
@@ -42,26 +42,29 @@ namespace XEngine
     
     bool onMouseButtonPressed(GLFWwindow* window, int key)
     {
-        auto state = glfwGetMouseButton(window, key);
-        return state == GLFW_PRESS || state == GLFW_REPEAT;
+        //auto state = glfwGetMouseButton(window, key);
+        //return state == GLFW_PRESS || state == GLFW_REPEAT;
+        return false;
     }
     
     bool onKeyboardPressed(GLFWwindow *window, int key)
     {
-        auto state = glfwGetKey(window, key);
-        return state == GLFW_PRESS || state == GLFW_REPEAT;
+        //auto state = glfwGetKey(window, key);
+        //return state == GLFW_PRESS || state == GLFW_REPEAT;
+        return false;
     }
 
     bool onKeyboardReleased(GLFWwindow *window, int key)
     {
-        auto state = glfwGetKey(window, key);
-        return state == GLFW_RELEASE;
+        //auto state = glfwGetKey(window, key);
+        //return state == GLFW_RELEASE;
+        return false;
     }
 
     void processInput(GLFWwindow *window, PerspectiveCamera *cam, bool& ui)
     {
         //gInp.lock();
-        if (onKeyboardPressed(window, GLFW_KEY_U))
+        /*if (onKeyboardPressed(window, GLFW_KEY_U))
         {
             ui = !ui;
         }
@@ -75,7 +78,7 @@ namespace XEngine
         if (onKeyboardPressed(window, GLFW_KEY_A))
             cam->camPos -= glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
         if (onKeyboardPressed(window, GLFW_KEY_D))
-            cam->camPos += glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;
+            cam->camPos += glm::normalize(glm::cross(cam->camTarget, cam->camUp)) * cam->speed;*/
         //gInp.unlock();
     }
 

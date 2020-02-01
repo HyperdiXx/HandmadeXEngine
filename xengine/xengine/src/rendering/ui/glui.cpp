@@ -1,10 +1,12 @@
 #include "glui.h"
-
+#ifdef _WIN32
+#define APIENTRY __stdcall
+#endif
+#include <glad/glad.h>
 #include <runtime/core/utility/log.h>
 
-void XEngine::GLui::init(GLFWwindow* window, int theme)
+void XEngine::GLui::init(int theme)
 {
-    m_window = window;
     glEnable(GL_DEPTH_TEST);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -12,7 +14,7 @@ void XEngine::GLui::init(GLFWwindow* window, int theme)
     (void)io;
 
     const char* glsl_version = "#version 330";
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    //ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     if (theme == Style::DARK)    
@@ -24,7 +26,7 @@ void XEngine::GLui::init(GLFWwindow* window, int theme)
 void XEngine::GLui::new_frame()
 {    
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
+    //ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
@@ -109,7 +111,7 @@ void XEngine::GLui::setUIScene5(vec3f &pos, vec4f &color, unsigned int texture, 
 void XEngine::GLui::shutdown()
 {
     ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
+    //ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
 

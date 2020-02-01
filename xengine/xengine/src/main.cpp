@@ -204,7 +204,8 @@ win32_init_gl(HWND window_handle, HINSTANCE h_instance)
 internal
 void win32_init_gl_loader()
 {
-    if (!gladLoadGL());
+    if (!gladLoadGL())
+        printf("Failed to init OpenGL loader!\n");
 }
 
 internal 

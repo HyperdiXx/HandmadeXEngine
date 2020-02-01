@@ -30,9 +30,6 @@
     <ClCompile Include="src\thirdparty\imguit\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\thirdparty\imguit\imgui_impl_glfw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\thirdparty\imguit\imgui_impl_opengl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -94,9 +91,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\windowsystem\winWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\windowsystem\openglwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\geometry\assetmanager.cpp">
@@ -383,9 +377,6 @@
     <ClInclude Include="src\thirdparty\imguit\imconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\thirdparty\imguit\imgui_impl_glfw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\thirdparty\imguit\imgui_impl_opengl3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -627,9 +618,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\windowsystem\winWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\windowsystem\openglwindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\application\test.h">

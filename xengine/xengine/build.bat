@@ -4,8 +4,8 @@ set mode=%1
 set app_name=xengine.exe
 set compiler_flags_debug= -Od -Z7
 set compiler_flags_release= -O2 
-set compiler_flags= -EHsc -Gm- -GR- -EHa- -Oi -W4 -wd4018 -wd4201 -wd4100 -wd4505 -wd4701 -wd4189 -FC 
-set linker_flags= -LTCG -incremental:no -opt:ref winmm.lib gdi32.lib opengl32.lib user32.lib shell32.lib ..\..\xengine\lib\math.lib ..\..\xengine\lib\glfw643.lib
+set compiler_flags= -EHsc -Gm- -GR- -EHa- -Oi -W4 -wd4018 -wd4201 -wd4100 -wd4505 -wd4701 -wd4189 -FC -D_CRT_SECURE_NO_WARNINGS
+set linker_flags= -incremental:no -opt:ref winmm.lib gdi32.lib opengl32.lib user32.lib shell32.lib ..\..\xengine\lib\math.lib
 set includes= ..\..\xengine\inc
 set includesfiles= ..\..\xengine\src
 if not exist ..\out\xengine mkdir ..\out\xengine

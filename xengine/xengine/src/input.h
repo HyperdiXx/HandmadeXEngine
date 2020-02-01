@@ -2,11 +2,11 @@
 
 #include <mutex>
 
-#include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
 
 namespace XEngine
 {
+    class GLFWwindow;
     class PerspectiveCamera;
 
     struct WINInput

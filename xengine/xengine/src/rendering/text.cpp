@@ -1,9 +1,5 @@
 #include "text.h"
 
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-#include <freetype/freetype.h>
-
 namespace XEngine
 {
     namespace Rendering

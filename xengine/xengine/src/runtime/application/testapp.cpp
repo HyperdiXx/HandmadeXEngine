@@ -6,8 +6,6 @@
 #include <rendering/api/base/vertexarray.h>
 #include <rendering/render/render.h>
 
-#include <runtime/core/windowsystem/openglwindow.h>
-
 #include <runtime/geometry/model.h>
 #include <runtime/geometry/quad.h>
 #include <runtime/geometry/model_loader.h>
@@ -17,7 +15,7 @@ namespace XEngine
 {
     TestApp::TestApp()
     {
-        window = new GLWindow("Game", 1280, 720);
+        //window = new GLWindow("Game", 1280, 720);
 
         render_instance = Rendering::Render::create();
         using namespace Rendering;
@@ -36,7 +34,7 @@ namespace XEngine
 
         model = ModelLoader::load_model_from_file("engineassets/nano/nanosuit.obj");
         
-        m_ui.init(window->get_wind_ptr(), 1);
+        //m_ui.init(window->get_wind_ptr(), 1);
 
         // @Test
         real32 vertices_color[] =
@@ -66,12 +64,12 @@ namespace XEngine
 
     void TestApp::run()
     {
-        while (!window->isClosed())
+        /*while (!window->isClosed())
         {
             onUpdate(1.0f);
             onDraw();
             onPostUpdate();
-        }
+        }*/
     }
 
     void TestApp::onDraw()
@@ -102,13 +100,13 @@ namespace XEngine
     void TestApp::onPostUpdate()
     {
         m_ui.post_update();
-        window->update();
+        //window->update();
     }
 
 
     void TestApp::onShutdown()
     {
         m_ui.shutdown();
-        window->destroy();
+        //window->destroy();
     }
 }

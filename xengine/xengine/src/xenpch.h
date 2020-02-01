@@ -7,8 +7,10 @@
 #include FT_FREETYPE_H  
 #define GLEW_STATIC
 
+#ifdef _WIN32
+    #define APIENTRY __stdcall
+#endif
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include <utility>
 #include <memory>

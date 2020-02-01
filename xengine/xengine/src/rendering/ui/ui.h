@@ -5,7 +5,6 @@
 
 #include <thirdparty/imguit/imgui.h>
 #include <thirdparty/imguit/imgui_impl_opengl3.h>
-#include <thirdparty/imguit/imgui_impl_glfw.h>
 
 namespace XEngine
 {

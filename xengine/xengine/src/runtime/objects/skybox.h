@@ -3,11 +3,11 @@
 #ifndef SKYBOXH
 #define SKYBOXH
 
-#include <runtime/core/rendering/api/base/shader.h>
-#include <runtime/core/rendering/api/base/vertexarray.h>
-#include <runtime/core/rendering/api/base/vertexbuffer.h>
-#include <runtime/core/rendering/texture.h>
-#include <runtime/core/rendering/api/opengl/glframebuffer.h>
+#include <rendering/api/base/shader.h>
+#include <rendering/api/base/vertexarray.h>
+#include <rendering/api/base/vertexbuffer.h>
+#include <rendering/texture.h>
+#include <rendering/api/opengl/glframebuffer.h>
 
 namespace XEngine
 {

@@ -4,9 +4,9 @@
 #define QUAD_H
 
 #include <math/vec3f.h>
-#include <runtime/core/rendering/api/base/indexbuffer.h>
-#include <runtime/core/rendering/api/base/vertexbuffer.h>
-#include <runtime/core/rendering/api/base/vertexarray.h>
+#include <rendering/api/base/indexbuffer.h>
+#include <rendering/api/base/vertexbuffer.h>
+#include <rendering/api/base/vertexarray.h>
 
 namespace XEngine
 {

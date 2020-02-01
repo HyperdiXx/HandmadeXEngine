@@ -3,8 +3,8 @@
 #ifndef BASEAPP_H
 #define BASEAPP_H
 
-#include <runtime/core/rendering/render/render.h>
-#include <runtime/core/rendering/ui/glui.h>
+#include <rendering/render/render.h>
+#include <rendering/ui/glui.h>
 
 namespace XEngine
 {  

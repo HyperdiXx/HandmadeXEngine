@@ -3,7 +3,7 @@
 
 #include <runtime/core/utility/log.h>
 
-#include <runtime/core/rendering/api/opengl/glcontext.h>
+#include <rendering/api/opengl/glcontext.h>
 
 namespace XEngine
 {
@@ -26,17 +26,6 @@ namespace XEngine
         //glfwSetFramebufferSizeCallback(m_window, this->framebufferSizeCallback);
         
         setVSYNC(1);
-
-        /*GLFWimage images[1];
-        images[0].pixels = stbi_load("src/textures/logo.png", &images[0].width, &images[0].height, 0, 4);
-        glfwSetWindowIcon(m_window, 1, images);
-        stbi_image_free(images[0].pixels);*/
-
-        //LOGSTRING("Render API : OpenGL", glGetString(GL_VERSION));
-        //LOGSTRING("Manufacturer: ", glGetString(GL_VENDOR));
-        //LOGSTRING("GLSL: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
-        //LOGSTRING("GPU: ", glGetString(GL_RENDERER));
-        //LOG("Engine init\n");
     }
 
     GLWindow::~GLWindow()

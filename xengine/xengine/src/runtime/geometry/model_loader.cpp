@@ -5,7 +5,7 @@
 #include <assimp/postprocess.h>
 
 #include <runtime/geometry/model.h>
-#include <runtime/core/rendering/api/base/texture2D.h>
+#include <rendering/api/base/texture2D.h>
 
 #include <runtime/animation/animation.h>
 #include <runtime/animation/key_frame.h>

@@ -4,7 +4,7 @@
 #define WINDOWWIN_H
 
 #include <xenpch.h>
-#include <runtime/types.h>
+#include <types.h>
 
 namespace XEngine
 {

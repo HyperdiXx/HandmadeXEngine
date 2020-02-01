@@ -1,6 +1,6 @@
 #include "skybox.h"
 
-#include "../core/rendering/scenes/sceneObjects.h"
+#include <rendering/scenes/sceneObjects.h>
 
 
 using namespace XEngine;

@@ -6,7 +6,7 @@
 #include <math/vec3f.h>
 #include <math/vec2f.h>
 
-#include <runtime/core/rendering/api/base/texture2d.h>
+#include <rendering/api/base/texture2d.h>
 
 namespace XEngine
 {

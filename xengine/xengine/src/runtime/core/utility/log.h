@@ -3,7 +3,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <runtime/types.h>
+#include <types.h>
 #include <string>
 #include <fstream>
 #include <iostream>

@@ -5,7 +5,7 @@
 
 #include "baseapp.h"
 
-#include <runtime/core/ecs/entity.h>
+#include <entity.h>
 
 namespace XEngine
 {

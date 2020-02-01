@@ -4,10 +4,10 @@
 #define INIT_H
 
 #include <xenpch.h>
-#include <runtime/types.h>
-#include <runtime/core/events/input.h>
-#include <runtime/core/cameras/perspective_camera.h>
-#include <runtime/core/rendering/api/base/context.h>
+#include <types.h>
+#include <input.h>
+#include <perspective_camera.h>
+#include <rendering/api/base/context.h>
 
 
 namespace XEngine

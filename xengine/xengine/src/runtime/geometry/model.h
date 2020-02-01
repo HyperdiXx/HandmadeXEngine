@@ -3,9 +3,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <runtime/types.h>
-#include <runtime/core/rendering/api/base/shader.h>
-#include <runtime/core/ecs/component.h>
+#include <types.h>
+#include <rendering/api/base/shader.h>
+#include <component.h>
 #include "vertex.h"
 
 

@@ -1,12 +1,12 @@
 #include "testapp.h"
 
-#include <runtime/core/rendering/pipeline/materials/basicmaterial.h>
-#include <runtime/core/rendering/api/base/vertexbuffer.h>
-#include <runtime/core/rendering/api/base/indexbuffer.h>
-#include <runtime/core/rendering/api/base/vertexarray.h>
-#include <runtime/core/windowsystem/openglwindow.h>
+#include <rendering/pipeline/materials/basicmaterial.h>
+#include <rendering/api/base/vertexbuffer.h>
+#include <rendering/api/base/indexbuffer.h>
+#include <rendering/api/base/vertexarray.h>
+#include <rendering/render/render.h>
 
-#include <runtime/core/rendering/render/render.h>
+#include <runtime/core/windowsystem/openglwindow.h>
 
 #include <runtime/geometry/model.h>
 #include <runtime/geometry/quad.h>

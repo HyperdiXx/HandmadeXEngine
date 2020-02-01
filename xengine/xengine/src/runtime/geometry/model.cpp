@@ -2,11 +2,11 @@
 
 #include "model.h"
 
-#include <runtime/core/rendering/api/base/texture2d.h>
-#include <runtime/core/rendering/render/render.h>
-#include <runtime/core/rendering/api/base/vertexarray.h>
-#include <runtime/core/rendering/api/base/vertexbuffer.h>
-#include <runtime/core/rendering/api/base/indexbuffer.h>
+#include <rendering/api/base/texture2d.h>
+#include <rendering/render/render.h>
+#include <rendering/api/base/vertexarray.h>
+#include <rendering/api/base/vertexbuffer.h>
+#include <rendering/api/base/indexbuffer.h>
 
 #include <runtime/animation/animation.h>
 

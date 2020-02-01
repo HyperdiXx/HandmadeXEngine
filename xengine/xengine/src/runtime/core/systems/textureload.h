@@ -5,9 +5,8 @@
 
 #include <stb_image/stb_image.h>
 
-
-#include <runtime/types.h>
-#include "../rendering/texturetypes.h"
+#include <types.h>
+#include <rendering/texturetypes.h>
 
 namespace XEngine
 {

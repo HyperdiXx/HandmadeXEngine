@@ -7,31 +7,31 @@
 #include "../objects/skybox.h"
 #include "../core/utility/log.h"
 
-#include "../core/rendering/sprite.h"
-#include "../core/rendering/batchsprite.h"
+#include <rendering/sprite.h>
+#include <rendering/batchsprite.h>
 
-#include "../core/rendering/ui/glui.h"
+#include <rendering/ui/glui.h>
 
 #include "../core/utility/clock.h"
 
-#include "../core/rendering/texture.h"
-#include "../core/rendering/api/base/shader.h"
+#include <rendering/texture.h>
+#include <rendering/api/base/shader.h>
 
 #include <runtime/geometry/model.h>
 
-#include "../core/rendering/text.h"
-#include "../core/windowsystem/windowWin.h"
+#include <rendering/text.h>
+#include <runtime/core/windowsystem/windowWin.h>
 
-#include "../core/windowsystem/openglwindow.h"
+#include <runtime/core/windowsystem/openglwindow.h>
 
-#include "../core/rendering/api/opengl/glframebuffer.h"
+#include <rendering/api/opengl/glframebuffer.h>
 
-#include "../core/rendering/scenes/scene.h"
-#include "../core/rendering/pipeline/shadersBase.h"
+#include <rendering/scenes/scene.h>
+#include <rendering/pipeline/shadersBase.h>
 
 #include <runtime/geometry/assetmanager.h>
 
-#include "../core/rendering/scenes/sceneObjects.h"
+#include <rendering/scenes/sceneObjects.h>
 
 #include <runtime/geometry/resources.h>
 #include "../objects/lights/dirLight.h"

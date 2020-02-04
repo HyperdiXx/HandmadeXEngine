@@ -14,6 +14,10 @@ pushd ..\out\xengine
 REM 64-bit build
 del *.pdb > NUL  2> NUL
 
+if "%mode%" == "" (
+    goto mode
+)
+
 if "%mode%" == "debug" (
     cl /MD /I %includes% /I %includesfiles% %compiler_flags_debug% %compiler_flags% ..\..\xengine\src\glad.c ..\..\xengine\src\main.cpp /link %linker_flags% /out:%app_name%
 )
@@ -39,12 +43,19 @@ if %ERRORLEVEL% == 0 (
 
 :bad
    echo.
-   echo Error on compile or linking
-   echo Error code %ERRORLEVEL%
+   echo Error: Compile or Linking
+   echo Error: Code %ERRORLEVEL%
    echo.
    goto end
-:end
-   
+
+:mode
+   echo.
+   echo Error: No build mode!
+   echo.
+   goto end
+
+:end	
+
 popd
 
 

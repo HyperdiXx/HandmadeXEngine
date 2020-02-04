@@ -1,3 +1,4 @@
-#pragma once
 
 
+#define internal static
+#define global static

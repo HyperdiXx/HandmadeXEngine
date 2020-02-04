@@ -186,7 +186,7 @@
     <ClCompile Include="src\thirdparty\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\transforms.cpp" />
     <ClCompile Include="src\xengine_gl.cpp" />
-    <ClCompile Include="src\xengine_rendering.cpp" />
+    <ClCompile Include="src\xengine_render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple2d.fs" />
@@ -329,7 +329,8 @@
     <ClInclude Include="src\transforms.h" />
     <ClInclude Include="src\types.h" />
     <ClInclude Include="src\vector.h" />
-    <ClInclude Include="src\xengine_rendering.h" />
+    <ClInclude Include="src\xengine_gl.h" />
+    <ClInclude Include="src\xengine_render.h" />
     <ClInclude Include="src\runtime\animation\animation.h" />
     <ClInclude Include="src\runtime\animation\key_frame.h" />
     <ClInclude Include="src\runtime\animation\skeleton.h" />
@@ -372,14 +373,9 @@
     <ClInclude Include="src\runtime\core\rendering\api\opengl\glshader.h" />
     <ClInclude Include="src\runtime\core\rendering\api\opengl\opengl.h" />
     <ClInclude Include="src\runtime\core\rendering\batchsprite.h" />
-    <ClInclude Include="src\runtime\core\rendering\commands\abstract_render_command.h" />
-    <ClInclude Include="src\runtime\core\rendering\commands\model_rendercommand.h" />
-    <ClInclude Include="src\runtime\core\rendering\commands\rendercommand.h" />
-    <ClInclude Include="src\runtime\core\rendering\commands\rendercommandexecutor.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\layer.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\scenegraph.h" />
     <ClInclude Include="src\runtime\core\rendering\api\renderAPI.h" />
-    <ClInclude Include="src\runtime\core\rendering\commands\quad_rendercommand.h" />
     <ClInclude Include="src\runtime\core\rendering\render\glrender.h" />
     <ClInclude Include="src\runtime\core\rendering\render\renderable2d.h" />
     <ClInclude Include="src\runtime\core\rendering\render\renderable3d.h" />
@@ -451,6 +447,7 @@
     <ClInclude Include="src\xengine_core.h" />
     <ClInclude Include="src\xengine_ecs.h" />
     <ClInclude Include="src\xengine_input.h" />
+    <ClInclude Include="src\xengine_render_device.h" />
     <ClInclude Include="src\xenpch.h" />
   </ItemGroup>
   <ItemGroup>

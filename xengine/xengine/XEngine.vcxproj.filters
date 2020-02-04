@@ -246,10 +246,10 @@
     <ClCompile Include="src\png.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\xengine_rendering.cpp">
+    <ClCompile Include="src\xengine_gl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\xengine_gl.cpp">
+    <ClCompile Include="src\xengine_render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -689,9 +689,6 @@
     <ClInclude Include="src\xengine_core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\xengine_rendering.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\rendering\api\renderAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -915,6 +912,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xengine_render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xengine_render_device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xengine_gl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

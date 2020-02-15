@@ -43,7 +43,7 @@ namespace XEngine
                 return new GLRender();
                 break;
             default:
-                Log::info("Unsupported API!!!");
+                //Log::info("Unsupported API!!!");
                 break;
             }
 

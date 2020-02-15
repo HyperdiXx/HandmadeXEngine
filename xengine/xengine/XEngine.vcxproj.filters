@@ -87,9 +87,6 @@
     <ClCompile Include="src\runtime\application\testapp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inc\stb_image\stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\windowsystem\winWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -246,10 +243,13 @@
     <ClCompile Include="src\png.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\xengine_gl.cpp">
+    <ClCompile Include="src\xe_graphics_device_gl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\xengine_render.cpp">
+    <ClCompile Include="src\xe_core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xe_render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -578,9 +578,6 @@
     <ClInclude Include="src\runtime\core\rendering\render\renderable2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\commands\rendercommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\rendering\api\renderAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -629,22 +626,10 @@
     <ClInclude Include="src\runtime\core\rendering\render\glrender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\commands\quad_rendercommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\geometry\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\commands\abstract_render_command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\geometry\quad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\commands\rendercommandexecutor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\rendering\commands\model_rendercommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\animation\animation.h">
@@ -680,13 +665,7 @@
     <ClInclude Include="src\runtime\animation\key_frame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\xengine_ecs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\xengine_input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\xengine_core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\api\renderAPI.h">
@@ -911,16 +890,31 @@
     <ClInclude Include="src\rendering\ui\ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\xengine_render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\xengine_render_device.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\xengine_gl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_graphics_device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_graphics_resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_graphics_device_gl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_ecs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

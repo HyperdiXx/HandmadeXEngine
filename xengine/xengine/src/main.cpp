@@ -25,34 +25,29 @@
 
 */
 
-#define WIN32_LEAN_AND_MEAN
 
+
+
+#include "xe_platform.h"
 #include <math/xemath.h>
-#include "xengine_render_device.h"
-#include "xengine_core.h"
-#include "xengine_render.h"
+#include "config.h"
+#include "xe_render.h"
+#include "xe_core.h"
+#include "xe_graphics_device_gl.h"
 #include "png.h"
 
-//#define STB_IMAGE_IMPLEMENTATION
-//#include <stb_image/stb_image.h>
-
-
+// ImGui
 #include <thirdparty/imguit/imgui.h>
 #include <thirdparty/imguit/imgui_impl_opengl3.h>
 #include <thirdparty/imguit/imgui_impl_win32.h>
 
 
-global int DEFAULT_WINDOW_WIDTH = 1280;
-global int DEFAULT_WINDOW_HEIGHT = 720;
 
-global bool is_open = true;
+#define internal static
 
-internal shader create_shader()
-{
+static bool is_open = true;
 
-}
-
-internal void 
+static void 
 win32_init_imgui(HWND window)
 {
     glEnable(GL_DEPTH_TEST);
@@ -136,77 +131,6 @@ top_bar()
     }
 }
 
-internal texture2D create_texture2D(const char* path)
-{
-    texture2D result = {};
-
-    int channels;
-    //stbi_set_flip_vertically_on_load(true);
-    //stbi_uc* image = stbi_load(path, &result.width, &result.height, &channels, 0);
-
-    void *image = 0;
-
-    GLenum internal_format = 0, data_format = 0;
-    if (channels == 4)
-    {
-        internal_format = GL_RGBA8;
-        data_format = GL_RGBA;
-    }
-    else if (channels == 3)
-    {
-        internal_format = GL_RGB8;
-        data_format = GL_RGB;
-    }
-
-    glGenTextures(1, &result.id);
-    glBindTexture(GL_TEXTURE_2D, result.id);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, data_format, result.width, result.height, 0, data_format, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    //stbi_image_free(image);
-
-    return result;
-}
-
-struct file
-{
-    uint32 size;
-    void *data;
-};
-
-file read_whole_file(const char *filename)
-{
-    file res = {};
-
-    FILE *op = fopen(filename, "rb");
-
-    if (op)
-    {
-        fseek(op, 0, SEEK_END);
-        res.size = ftell(op);
-        fseek(op, 0, SEEK_SET);
-
-        res.data = malloc(res.size);
-        fread(res.data, res.size, 1, op);
-        fclose(op);
-    }
-    else
-    {
-        printf("ERROR: Cant open file %s!\n", filename);
-    }
-
-    return res;
-}
-
 internal void
 swap_bytes(uint32* bytes)
 {     
@@ -218,7 +142,7 @@ swap_bytes(uint32* bytes)
 #define CONSUME(File, type) (type*)consume_size(File, sizeof(type))
 
 internal void* 
-consume_size(file *file, uint32 size)
+consume_size(xe_core::file *file, uint32 size)
 {
     void* res = 0;
 
@@ -237,11 +161,11 @@ consume_size(file *file, uint32 size)
 }
 
 internal void
-parse_png(file f)
+parse_png(xe_core::file f)
 {
     printf("PNG size: %d\n" , f.size);
 
-    file *read = &f;
+    xe_core::file *read = &f;
 
     png_head *pngheader = CONSUME(read, png_head);
 
@@ -291,7 +215,7 @@ void start_png_parser()
 
     fprintf(stdout, "Loading PNG %s...\n", read_filename);
 
-    file png_image = read_whole_file(read_filename);
+    xe_core::file png_image = xe_core::read_whole_file(read_filename);
 
     parse_png(png_image);
 }
@@ -391,7 +315,7 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
 
 int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
-{
+{ 
     WNDCLASS window = {};
 
     window.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -401,21 +325,48 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     if (RegisterClass(&window))
     {
-        HWND window_handle = CreateWindowEx(0, window.lpszClassName,
+        HWND window_handle = xe_platform::get_window_handle();
+
+        window_handle = CreateWindowEx(0, window.lpszClassName,
                                             "Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                             CW_USEDEFAULT, CW_USEDEFAULT,
-                                            DEFAULT_WINDOW_WIDTH,
-                                            DEFAULT_WINDOW_HEIGHT,
+                                            WINDOWS_WIDTH,
+                                            WINDOWS_HEIGHT,
                                             0, 0, instance, 0);
 
         if (window_handle)
         {
             HDC dc = GetDC(window_handle);
-            win32_init_gl(window_handle, instance);
+
+            using namespace xe_graphics;
+            using namespace xe_render;
+            
+            graphics_device *device = new graphics_device_gl(window_handle, false);
+            set_device(device);
+
             win32_init_gl_loader();
             win32_init_imgui(window_handle);
+           
+            texture2D diff_texture;
+           
+            init_render();
 
-            //texture2D diff_texture = create_texture2D("engineassets/get.png");
+            quad quad_test = {};
+
+            create_quad(&quad_test);
+
+            device->create_texture2D("engineassets/get.png", &diff_texture);            
+
+            shader *simple_shader = get_simple_shader();
+            shader *model_shader = get_model_shader();
+
+            device->bind_shader(simple_shader);
+            
+            //triangle_shader->setInt("textureDiffuse", 0);
+
+            device->bind_shader(model_shader);
+
+            //model_shader->setInt("tex_diff", 0);
 
             while (is_open)
             {
@@ -426,13 +377,14 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                     DispatchMessage(&message);
                 }
 
-                glClearColor(0.9f, 0.9f, 0.9f, 0.0f);
-                glClear(GL_COLOR_BUFFER_BIT);
+                device->clear_color(0.9f, 0.9f, 0.9f, 1.0f);
+                device->clear(GL_COLOR_BUFFER_BIT);
 
                 win32_imgui_new_frame();
+                
                 top_bar();
 
-                ImGui::ShowDemoWindow();
+                //ImGui::ShowDemoWindow();
 
                 win32_ingui_post_update();
 

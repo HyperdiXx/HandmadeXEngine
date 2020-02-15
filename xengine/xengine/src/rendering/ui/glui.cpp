@@ -124,7 +124,7 @@ void XEngine::GLui::top_bar()
         if (ImGui::BeginMenu("File"))
         {
             if (ImGui::MenuItem("Open..", "Ctrl+O", false))            
-                Log::info("Pressed on menu bar!");
+                //Log::info("Pressed on menu bar!");
 
             ImGui::EndMenu();
         }
@@ -133,7 +133,7 @@ void XEngine::GLui::top_bar()
         {
             if (ImGui::MenuItem("AnimTree", NULL, false))
             {
-                Log::info("Pressed on animation tree window");
+                //Log::info("Pressed on animation tree window");
                 ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
                 ImGui::Begin("Example: Log", open);
                 ImGui::End();
@@ -144,7 +144,7 @@ void XEngine::GLui::top_bar()
         if (ImGui::BeginMenu("Options"))
         {
             if (ImGui::MenuItem("Help", NULL, false))
-                Log::info("Pressed on help window");
+                //Log::info("Pressed on help window");
             ImGui::EndMenu();
         }
 

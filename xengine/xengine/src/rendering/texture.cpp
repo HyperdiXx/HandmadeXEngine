@@ -30,12 +30,12 @@ namespace XEngine
 
         if (!*data)
         {
-            Log::error("Failed to load image data!");
+            //Log::error("Failed to load image data!");
 
             return false;
         }
         
-        Log::debug("Loaded texture:" + std::to_string(width) + " " + std::to_string(height) + " " + std::to_string(bpp));
+        //og::debug("Loaded texture:" + std::to_string(width) + " " + std::to_string(height) + " " + std::to_string(bpp));
 
         return data;
 
@@ -105,7 +105,7 @@ namespace XEngine
     {
         if (!created)
         {
-            Log::error("Cannot bind not inited texture!");
+            //Log::error("Cannot bind not inited texture!");
             return;
         }
 
@@ -156,7 +156,7 @@ namespace XEngine
     {
         if (!isBound()) { bind(lastBoundUnit); }
 
-        Log::debug("MipMaps generating...");
+        //Log::debug("MipMaps generating...");
         glGenerateMipmap(target);
     }
 

@@ -1,21 +1,20 @@
 #include "log.h"
 
-#include <xenpch.h>
-#include <runtime/core/systems/filefunc.h>
+#include <stdio.h>
 
-namespace XEngine
+namespace xe_utility
 {
-    void Log::info(const std::string& message) 
+    void info(const std::string& message) 
     {
         std::cout << "Info: " + message << "\n";
     }
 
-    void Log::debug(const std::string& message) 
+    void debug(const std::string& message) 
     {
         std::cout << "Debug: " + message << "\n";
     }
 
-    void Log::error(const std::string& message)
+    void error(const std::string& message)
     {
         std::cout << "Error: " + message << "\n";
     }

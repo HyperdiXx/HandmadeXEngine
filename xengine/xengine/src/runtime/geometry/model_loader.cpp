@@ -309,7 +309,7 @@ namespace XEngine
         model->parent_dir = path.substr(0, path.find_last_of('/'));
         model->root = parse_node(model, scene->mRootNode, scene);
 
-        Log::info("Static model " + model->root->name + " loaded!");
+        //Log::info("Static model " + model->root->name + " loaded!");
         
         return model;
     }
@@ -321,7 +321,7 @@ namespace XEngine
         if (scene->HasAnimations())
             parse_animations(anim_model, scene);
                                     
-        Log::info("Animated model " + anim_model->root->name + " loaded!");
+        //Log::info("Animated model " + anim_model->root->name + " loaded!");
 
         return anim_model;
     }
@@ -335,7 +335,7 @@ namespace XEngine
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            Log::error(importer.GetErrorString());
+            //Log::error(importer.GetErrorString());
             return nullptr;
         }
 
@@ -352,7 +352,7 @@ namespace XEngine
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            Log::error(importer.GetErrorString());
+            //Log::error(importer.GetErrorString());
             return nullptr;
         }
 

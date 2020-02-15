@@ -40,9 +40,7 @@ namespace XEngine
                 GLint buflength;
                 glGetShaderInfoLog(vertex, length, &buflength, buffer);
 
-                Log::error("Vertex shader error!!!");
-                Log::error(buffer);
-
+                
                 delete[] buffer;
             }
 
@@ -57,10 +55,7 @@ namespace XEngine
                 GLchar* buffer = new GLchar[length];
                 GLint buflength;
                 glGetShaderInfoLog(fragment, length, &buflength, buffer);
-                
-                Log::error("Fragment shader error!!!");
-                Log::error(buffer);
-
+               
                 delete[] buffer;
             }
 

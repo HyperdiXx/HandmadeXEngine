@@ -108,7 +108,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="inc\stb_image\stb_image.cpp" />
     <ClCompile Include="src\allocator.cpp" />
     <ClCompile Include="src\events.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -185,8 +184,9 @@
     <ClCompile Include="src\thirdparty\imguit\imgui_impl_win32.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\transforms.cpp" />
-    <ClCompile Include="src\xengine_gl.cpp" />
-    <ClCompile Include="src\xengine_render.cpp" />
+    <ClCompile Include="src\xe_core.cpp" />
+    <ClCompile Include="src\xe_render.cpp" />
+    <ClCompile Include="src\xe_graphics_device_gl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple2d.fs" />
@@ -255,6 +255,7 @@
     <ClInclude Include="inc\stb_image\stb_image.h" />
     <ClInclude Include="src\allocator.h" />
     <ClInclude Include="src\component.h" />
+    <ClInclude Include="src\config.h" />
     <ClInclude Include="src\d3dx12.h" />
     <ClInclude Include="src\enmemory.h" />
     <ClInclude Include="src\entity.h" />
@@ -267,7 +268,6 @@
     <ClInclude Include="src\mouse_event.h" />
     <ClInclude Include="src\ortho_camera.h" />
     <ClInclude Include="src\perspective_camera.h" />
-    <ClInclude Include="src\platform.h" />
     <ClInclude Include="src\png.h" />
     <ClInclude Include="src\renderable.h" />
     <ClInclude Include="src\rendering\api\base\context.h" />
@@ -329,8 +329,13 @@
     <ClInclude Include="src\transforms.h" />
     <ClInclude Include="src\types.h" />
     <ClInclude Include="src\vector.h" />
+    <ClInclude Include="src\xe_ecs.h" />
+    <ClInclude Include="src\xe_graphics_device.h" />
+    <ClInclude Include="src\xe_graphics_device_gl.h" />
+    <ClInclude Include="src\xe_graphics_resource.h" />
+    <ClInclude Include="src\xe_platform.h" />
     <ClInclude Include="src\xengine_gl.h" />
-    <ClInclude Include="src\xengine_render.h" />
+    <ClInclude Include="src\xe_render.h" />
     <ClInclude Include="src\runtime\animation\animation.h" />
     <ClInclude Include="src\runtime\animation\key_frame.h" />
     <ClInclude Include="src\runtime\animation\skeleton.h" />
@@ -444,10 +449,8 @@
     <ClInclude Include="src\objects\terrain.h" />
     <ClInclude Include="src\objects\terrainutils\tile.h" />
     <ClInclude Include="src\objects\water.h" />
-    <ClInclude Include="src\xengine_core.h" />
-    <ClInclude Include="src\xengine_ecs.h" />
+    <ClInclude Include="src\xe_core.h" />
     <ClInclude Include="src\xengine_input.h" />
-    <ClInclude Include="src\xengine_render_device.h" />
     <ClInclude Include="src\xenpch.h" />
   </ItemGroup>
   <ItemGroup>

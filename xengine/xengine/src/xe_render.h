@@ -19,7 +19,8 @@ namespace xe_render
     xe_graphics::shader* get_model_shader();
 
     bool32 create_quad(xe_graphics::quad *q);
-
+    
+    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
 
 
 

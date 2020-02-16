@@ -48,18 +48,17 @@ namespace xe_graphics
 
     struct buffer_element
     {
-        std::string m_name; // own string impl 
-        ElementType m_type;
-        uint32 m_size;
-        uint32 m_offset;
-
-        /*BufferElement(const std::string& name, ElementType type)
+        std::string name; // own string impl 
+        ElementType type;
+        uint32 size;
+        uint32 offset = 0;
+        
+        buffer_element(const std::string& name , ElementType type)
         {
-            m_name = name;
-            m_type = type;
-            m_size = type_sizeof(type);
-            m_offset = 0;
-        }*/
+            this->name = name;
+            this->type = type;
+            this->size = type_sizeof(type);
+        }
 
         uint32 type_sizeof(ElementType type)
         {
@@ -96,7 +95,7 @@ namespace xe_graphics
 
         uint32 element_type_count()
         {
-            switch (m_type)
+            switch (type)
             {
             case ElementType::None:
                 return 0;
@@ -149,9 +148,9 @@ namespace xe_graphics
 
     struct quad
     {
-        xe_graphics::vertex_buffer vertex_buffer;
-        xe_graphics::index_buffer index_buffer;
-        xe_graphics::vertex_array vertex_array;
+        xe_graphics::vertex_buffer *vertex_buffer;
+        xe_graphics::index_buffer *index_buffer;
+        xe_graphics::vertex_array *vertex_array;
     };
 }
 #endif

@@ -41,7 +41,8 @@
 #include <thirdparty/imguit/imgui_impl_opengl3.h>
 #include <thirdparty/imguit/imgui_impl_win32.h>
 
-
+static int WINDOW_WIDTH_SIZE = 1280;
+static int WINDOW_HEIGHT_SIZE = 720;
 
 #define internal static
 
@@ -50,7 +51,6 @@ static bool is_open = true;
 static void 
 win32_init_imgui(HWND window)
 {
-    glEnable(GL_DEPTH_TEST);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -82,7 +82,7 @@ win32_imgui_shutdown()
 }
 
 internal void
-win32_ingui_post_update()
+win32_imgui_post_update()
 {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -234,16 +234,21 @@ int main()
 #endif
 
 internal void
-win32_init_gl(HWND window_handle, HINSTANCE h_instance)
+win32_init_gl(HWND window_handle)
 {
     HDC window_dc = GetDC(window_handle);
 
     PIXELFORMATDESCRIPTOR pixel_format_descriptor = {};
+    memset(&pixel_format_descriptor, 0, sizeof(pixel_format_descriptor));
     pixel_format_descriptor.nSize = sizeof(pixel_format_descriptor);
     pixel_format_descriptor.nVersion = 1;
     pixel_format_descriptor.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
     pixel_format_descriptor.cColorBits = 32;
+    pixel_format_descriptor.cRedBits = 8;
+    pixel_format_descriptor.cGreenBits = 8;
+    pixel_format_descriptor.cBlueBits = 8;
     pixel_format_descriptor.cAlphaBits = 8;
+    pixel_format_descriptor.cDepthBits = 24;
     pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
 
     int pixel_format_index = ChoosePixelFormat(window_dc, &pixel_format_descriptor);
@@ -252,9 +257,9 @@ win32_init_gl(HWND window_handle, HINSTANCE h_instance)
     SetPixelFormat(window_dc, pixel_format_index, &sug_pixel_format);
 
     HGLRC gl_render_context = wglCreateContext(window_dc);
-    if (wglMakeCurrent(window_dc, gl_render_context))
+    if (!wglMakeCurrent(window_dc, gl_render_context))
     {
-
+        printf("Failed to init GLCOntext");
     }
 
     ReleaseDC(window_handle, window_dc);
@@ -298,6 +303,8 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
         } break;
         case WM_SIZE:
         {
+            WINDOW_WIDTH_SIZE = LOWORD(l_param);
+            WINDOW_HEIGHT_SIZE = HIWORD(l_param);
             OutputDebugStringA("Resizing window\n");
         } break;
         case WM_ACTIVATEAPP:
@@ -330,8 +337,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         window_handle = CreateWindowEx(0, window.lpszClassName,
                                             "Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                             CW_USEDEFAULT, CW_USEDEFAULT,
-                                            WINDOWS_WIDTH,
-                                            WINDOWS_HEIGHT,
+                                            WINDOW_WIDTH_SIZE,
+                                            WINDOW_HEIGHT_SIZE,
                                             0, 0, instance, 0);
 
         if (window_handle)
@@ -347,26 +354,21 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             win32_init_gl_loader();
             win32_init_imgui(window_handle);
            
-            texture2D diff_texture;
-           
             init_render();
 
-            quad quad_test = {};
-
-            create_quad(&quad_test);
-
-            device->create_texture2D("engineassets/get.png", &diff_texture);            
-
+            texture2D diff_texture;
+            device->create_texture2D("engineassets/get.png", &diff_texture);
+ 
             shader *simple_shader = get_simple_shader();
             shader *model_shader = get_model_shader();
 
+            quad quad_test = {};
+            create_quad(&quad_test);
+
             device->bind_shader(simple_shader);
-            
-            //triangle_shader->setInt("textureDiffuse", 0);
+            device->set_int("texture_diff", 0, simple_shader);
 
-            device->bind_shader(model_shader);
-
-            //model_shader->setInt("tex_diff", 0);
+            using namespace xe_render;
 
             while (is_open)
             {
@@ -376,24 +378,37 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                     TranslateMessage(&message);
                     DispatchMessage(&message);
                 }
-
+                
                 device->clear_color(0.9f, 0.9f, 0.9f, 1.0f);
-                device->clear(GL_COLOR_BUFFER_BIT);
+                device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+              
+                draw_quad(&quad_test, simple_shader, &diff_texture);
+
+                GLenum err;
+                while ((err = glGetError()) != GL_NO_ERROR)
+                {
+                    const char* erro_char = (const char*)err;
+                }
 
                 win32_imgui_new_frame();
                 
-                top_bar();
+                top_bar(); 
+               
+                ImGui::ShowDemoWindow();
 
-                //ImGui::ShowDemoWindow();
-
-                win32_ingui_post_update();
+                win32_imgui_post_update();
 
                 SwapBuffers(dc);
             }
         }
+
+        win32_imgui_shutdown();
+        wglMakeCurrent(0, 0);
+
+        DestroyWindow(window_handle);
     }
 
-    win32_imgui_shutdown();
-
+    
+   
     return (0);
 }

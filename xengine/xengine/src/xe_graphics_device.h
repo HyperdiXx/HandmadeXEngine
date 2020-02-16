@@ -3,6 +3,7 @@
 #include <rendering/api/renderAPI.h>
 #include <xe_graphics_resource.h>
 
+#include <glm/glm.hpp>
 #include <types.h>
 
 namespace xe_graphics
@@ -25,6 +26,24 @@ namespace xe_graphics
         virtual void bind_buffer(const index_buffer *ib) = 0;
         virtual void bind_vertex_array(const vertex_array *va) = 0;
         virtual void bind_framebuffer(const framebuffer *fbo) = 0;
+        
+        virtual void unbind_texture2d() = 0;
+        virtual void unbind_vertex_array() = 0;
+        virtual void unbind_shader() = 0;
+
+        // shader
+        virtual void set_bool(const std::string &name, bool value, shader *shd) = 0;
+        virtual void set_int(const std::string &namee, int32 value, shader* shd) = 0;
+        virtual void set_float(const std::string& name, real32 value, shader* shd) = 0;
+        virtual void set_vec2(const std::string &name, const glm::vec2 &value, shader* shd) = 0;
+        virtual void set_vec2(const std::string &name, real32 x, real32 y, shader* shd) = 0;
+        virtual void set_vec3(const std::string &name, const glm::vec3 &value, shader* shd) = 0;
+        virtual void set_vec3(const std::string &name, real32 x, real32 y, real32 z, shader* shd) = 0;
+        virtual void set_vec4(const std::string &name, const glm::vec4 &value, shader* shd) = 0;
+        virtual void set_vec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, shader* shd) = 0;
+        virtual void set_mat2(const std::string &name, const glm::mat2 &mat, shader* shd) = 0;
+        virtual void set_mat3(const std::string &name, const glm::mat3 &mat, shader* shd) = 0;
+        virtual void set_mat4(const std::string &name, const glm::mat4 &mat, shader* shd) = 0;
 
         //virtual void draw_model(Assets::Model *model, Shader *m_shader, glm::mat4 mat) = 0;
         //virtual void draw_quad(Geometry::Quad *quad, BasicMaterial *material) = 0;

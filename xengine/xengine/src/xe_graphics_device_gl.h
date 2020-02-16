@@ -26,10 +26,27 @@ namespace xe_graphics
         void bind_vertex_array(const vertex_array *va) override;
         void bind_framebuffer(const framebuffer *fbo) override;
 
+        void unbind_texture2d() override;
+        void unbind_vertex_array() override;
+        void unbind_shader() override;
+
+        void set_bool(const std::string &name, bool value, shader *shd) override;
+        void set_int(const std::string &namee, int32 value, shader *shd) override;
+        void set_float(const std::string& name, real32 value, shader *shd) override;
+        void set_vec2(const std::string &name, const glm::vec2 &value, shader *shd) override;
+        void set_vec2(const std::string &name, real32 x, real32 y, shader *shd) override;
+        void set_vec3(const std::string &name, const glm::vec3 &value, shader *shd) override;
+        void set_vec3(const std::string &name, real32 x, real32 y, real32 z, shader *shd) override;
+        void set_vec4(const std::string &name, const glm::vec4 &value, shader *shd) override;
+        void set_vec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, shader *shd) override;
+        void set_mat2(const std::string &name, const glm::mat2 &mat, shader *shd) override;
+        void set_mat3(const std::string &name, const glm::mat3 &mat, shader *shd) override;
+        void set_mat4(const std::string &name, const glm::mat4 &mat, shader *shd) override;
+
         bool create_texture2D(const char *path, texture2D *texture) override;
         bool create_shader(const char* vertex, const char* fragment, shader *shader) override;
         bool create_framebuffer(framebuffer *fbo) override;
-        bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) override;
+        bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) override;        
         bool create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) override;
         bool create_vertex_array(vertex_array *va) override;
         bool create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) override;

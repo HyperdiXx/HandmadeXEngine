@@ -65,7 +65,7 @@ void xe_graphics::graphics_device_gl::set_viewport(int32 x, int32 y, int32 width
 
 void xe_graphics::graphics_device_gl::draw_array()
 {
-
+    //glDrawArrays();
 }
 
 void xe_graphics::graphics_device_gl::draw_indexed(int mode, uint32 count, int type, void * ind)
@@ -73,41 +73,133 @@ void xe_graphics::graphics_device_gl::draw_indexed(int mode, uint32 count, int t
     glDrawElements(mode, count, type, ind);
 }
 
-void xe_graphics::graphics_device_gl::bind_texture2d(const texture2D * tetxture)
+void xe_graphics::graphics_device_gl::bind_texture2d(const texture2D *texture)
 {
+    if (last_bound_unit != texture->id)
+    {
+        glActiveTexture(GL_TEXTURE0 + 0);
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+        last_bound_unit = texture->id;
+    }
+
 }
 
-void xe_graphics::graphics_device_gl::bind_shader(const shader * shader)
+void xe_graphics::graphics_device_gl::bind_shader(const shader *shader)
 {
+    glUseProgram(shader->id);
 }
 
-void xe_graphics::graphics_device_gl::bind_buffer(const vertex_buffer * vb)
+void xe_graphics::graphics_device_gl::bind_buffer(const vertex_buffer *vb)
 {
-    if (last_bound_unit != vb->id)    
+    if (last_bound_unit != vb->id)
+    {
         glBindBuffer(GL_ARRAY_BUFFER, vb->id);
-    
+        last_bound_unit = vb->id;
+    }
+        
 }
 
-void xe_graphics::graphics_device_gl::bind_buffer(const index_buffer * ib)
+void xe_graphics::graphics_device_gl::bind_buffer(const index_buffer *ib)
 {
     if (last_bound_unit != ib->id)
+    {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-
+        last_bound_unit = ib->id;
+    }
+      
 }
 
-void xe_graphics::graphics_device_gl::bind_vertex_array(const vertex_array * va)
+void xe_graphics::graphics_device_gl::bind_vertex_array(const vertex_array *va)
 {
     if (last_bound_unit != va->id)
+    {
         glBindVertexArray(va->id);
+        last_bound_unit = va->id;
+    }
 }
 
-void xe_graphics::graphics_device_gl::bind_framebuffer(const framebuffer * fbo)
+void xe_graphics::graphics_device_gl::bind_framebuffer(const framebuffer *fbo)
 {
     if (last_bound_unit != fbo->id)
         glBindFramebuffer(GL_FRAMEBUFFER, fbo->id);
 }
 
-bool xe_graphics::graphics_device_gl::create_texture2D(const char * path, texture2D *texture)
+void xe_graphics::graphics_device_gl::unbind_texture2d()
+{
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void xe_graphics::graphics_device_gl::unbind_vertex_array()
+{
+    glBindVertexArray(0);
+}
+
+void xe_graphics::graphics_device_gl::unbind_shader()
+{
+    glUseProgram(0);
+}
+
+void xe_graphics::graphics_device_gl::set_bool(const std::string & name, bool value, shader *shd)
+{
+    glUniform1i(glGetUniformLocation(shd->id, name.c_str()), (int)value);
+}
+
+void xe_graphics::graphics_device_gl::set_int(const std::string & name, int32 value, shader* shd)
+{
+    glUniform1i(glGetUniformLocation(shd->id, name.c_str()), value);
+}
+
+void xe_graphics::graphics_device_gl::set_float(const std::string & name, real32 value, shader *shd)
+{
+    glUniform1f(glGetUniformLocation(shd->id, name.c_str()), value);
+}
+
+void xe_graphics::graphics_device_gl::set_vec2(const std::string & name, const glm::vec2 & value, shader *shd)
+{
+    glUniform2fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+}
+
+void xe_graphics::graphics_device_gl::set_vec2(const std::string & name, real32 x, real32 y, shader *shd)
+{
+    glUniform2f(glGetUniformLocation(shd->id, name.c_str()), x, y);
+}
+
+void xe_graphics::graphics_device_gl::set_vec3(const std::string & name, const glm::vec3 & value, shader *shd)
+{
+    glUniform3fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+}
+
+void xe_graphics::graphics_device_gl::set_vec3(const std::string & name, real32 x, real32 y, real32 z, shader *shd)
+{
+    glUniform3f(glGetUniformLocation(shd->id, name.c_str()), x, y, z);
+}
+
+void xe_graphics::graphics_device_gl::set_vec4(const std::string & name, const glm::vec4 & value, shader *shd)
+{
+    glUniform4fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+}
+
+void xe_graphics::graphics_device_gl::set_vec4(const std::string & name, real32 x, real32 y, real32 z, real32 w, shader *shd)
+{
+    glUniform4f(glGetUniformLocation(shd->id, name.c_str()), x, y, z, w);
+}
+
+void xe_graphics::graphics_device_gl::set_mat2(const std::string & name, const glm::mat2 & mat, shader *shd)
+{
+    glUniformMatrix2fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void xe_graphics::graphics_device_gl::set_mat3(const std::string & name, const glm::mat3 & mat, shader *shd)
+{
+    glUniformMatrix3fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void xe_graphics::graphics_device_gl::set_mat4(const std::string & name, const glm::mat4 & mat, shader *shd)
+{
+    glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, texture2D *texture)
 {
     int channels;
     
@@ -148,7 +240,7 @@ bool xe_graphics::graphics_device_gl::create_texture2D(const char * path, textur
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, const char *fragment_code, shader * shd)
+bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, const char *fragment_code, shader *shd)
 {
     xe_core::file file_vs = xe_core::read_whole_file(vertex_code);
     xe_core::file file_fs = xe_core::read_whole_file(fragment_code);
@@ -220,9 +312,11 @@ bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, con
 
 bool xe_graphics::graphics_device_gl::create_framebuffer(framebuffer *fbo)
 {
+    glGenFramebuffers(1, (GLuint*)fbo->id);
 
     return false;
 }
+
 
 bool xe_graphics::graphics_device_gl::create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb)
 {
@@ -244,7 +338,7 @@ bool xe_graphics::graphics_device_gl::create_index_buffer(uint32 *indices, uint3
 
     glGenBuffers(1, (GLuint*)&ib->id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLshort), ib->data, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
 
     if (ib->data)
         return true;
@@ -255,7 +349,7 @@ bool xe_graphics::graphics_device_gl::create_index_buffer(uint32 *indices, uint3
 bool xe_graphics::graphics_device_gl::create_vertex_array(vertex_array *va)
 {
     glGenVertexArrays(1, (GLuint*)&va->id);
-
+    
     return true;
 }
 
@@ -263,13 +357,15 @@ bool xe_graphics::graphics_device_gl::create_buffer_layout(std::initializer_list
 {  
     buf_layout->elements = element;
 
+    uint32 offset = 0;
+    buf_layout->stride = 0;
+
     for (int i = 0; i < buf_layout->elements.size(); i++)
     {
-        uint32 offset = 0;
-        auto cur_element = buf_layout->elements.at(i);
-        cur_element.m_offset = offset;
-        offset += cur_element.m_size;
-        buf_layout->stride += cur_element.m_size;
+        auto element = buf_layout->elements.at(i);
+        element.offset = offset;
+        offset += element.size;
+        buf_layout->stride += element.size;
     }
 
     return true;
@@ -277,7 +373,7 @@ bool xe_graphics::graphics_device_gl::create_buffer_layout(std::initializer_list
 
 bool xe_graphics::graphics_device_gl::set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout)
 {
-    
+    vb->layout = *buf_layout;
 
     return true;
 }
@@ -294,10 +390,10 @@ bool xe_graphics::graphics_device_gl::add_vertex_buffer(vertex_array *va, vertex
     {
         auto cur_element = buffer_layout.elements.at(i);
         glEnableVertexAttribArray(va->ibuffer_index);
-        glVertexAttribPointer(va->ibuffer_index, cur_element.element_type_count(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (void*)cur_element.m_offset);
+        glVertexAttribPointer(va->ibuffer_index, cur_element.element_type_count(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (void*)cur_element.offset);
         va->ibuffer_index++;
     }
-    
+  
     va->buffers.push_back(vb);
 
     return false;
@@ -311,6 +407,7 @@ bool xe_graphics::graphics_device_gl::set_index_buffer(vertex_array *va, index_b
         glBindVertexArray(va->id);
         bind_buffer(ib);
         va->ib = ib;
+        return true;
     }
 
     return false;

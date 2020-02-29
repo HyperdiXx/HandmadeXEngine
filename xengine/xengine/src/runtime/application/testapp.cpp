@@ -32,7 +32,7 @@ namespace XEngine
         base_material->set_texture2D(texture1);
         base_material->set_shader(triangle_shader);
 
-        model = ModelLoader::load_model_from_file("engineassets/nano/nanosuit.obj");
+        //model = load_model_from_file("engineassets/nano/nanosuit.obj");
         
         //m_ui.init(window->get_wind_ptr(), 1);
 

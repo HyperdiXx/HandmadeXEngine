@@ -6,12 +6,10 @@
 #include <types.h>
 #include <rendering/api/base/shader.h>
 #include <component.h>
-#include "vertex.h"
 
-
-namespace XEngine
+namespace xe_graphics_assets
 {
-    namespace Rendering
+    /*namespace Rendering
     {
         class Texture2D;
         class VertexBuffer;
@@ -28,7 +26,7 @@ namespace XEngine
         public:
             Mesh() {};
 
-            Mesh(std::vector<StaticVertex> vert, std::vector<uint32> ind, std::vector<TextureWrapper> text)
+            Mesh(std::vector<static_vertex> vert, std::vector<uint32> ind, std::vector<TextureWrapper> text)
                 : vertices(vert), indices(ind), mesh_textures(text)
             {
                 setup_mesh();
@@ -127,5 +125,5 @@ namespace XEngine
             std::unordered_map<std::string, size_t> m_anim_map;
             std::vector<std::unique_ptr<Animation>> m_animations;
         };
-    }
+    }*/
 }

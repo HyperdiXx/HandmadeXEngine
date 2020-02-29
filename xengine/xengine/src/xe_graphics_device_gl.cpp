@@ -73,15 +73,32 @@ void xe_graphics::graphics_device_gl::draw_indexed(int mode, uint32 count, int t
     glDrawElements(mode, count, type, ind);
 }
 
-void xe_graphics::graphics_device_gl::bind_texture2d(const texture2D *texture)
+void xe_graphics::graphics_device_gl::activate_bind_texture2d(const texture2D * texture)
 {
-    if (last_bound_unit != texture->id)
+    if (last_bound_unit_texture != texture->id)
     {
         glActiveTexture(GL_TEXTURE0 + 0);
         glBindTexture(GL_TEXTURE_2D, texture->id);
-        last_bound_unit = texture->id;
+        last_bound_unit_texture = texture->id;
     }
+}
 
+void xe_graphics::graphics_device_gl::activate_texture2d(uint32 index)
+{
+    //if (last_activated_texture != index)
+    //{
+        glActiveTexture(GL_TEXTURE0 + index);
+        last_activated_texture = index;
+    //}
+}
+
+void xe_graphics::graphics_device_gl::bind_texture2d(const texture2D *texture)
+{
+    //if (last_bound_unit_texture != texture->id)
+    //{
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+        last_bound_unit_texture = texture->id;
+    //}
 }
 
 void xe_graphics::graphics_device_gl::bind_shader(const shader *shader)
@@ -91,37 +108,38 @@ void xe_graphics::graphics_device_gl::bind_shader(const shader *shader)
 
 void xe_graphics::graphics_device_gl::bind_buffer(const vertex_buffer *vb)
 {
-    if (last_bound_unit != vb->id)
-    {
+    //if (last_bound_unit_vbuffer != vb->id)
+    //{
         glBindBuffer(GL_ARRAY_BUFFER, vb->id);
-        last_bound_unit = vb->id;
-    }
-        
+        last_bound_unit_vbuffer = vb->id;
+    //}        
 }
 
 void xe_graphics::graphics_device_gl::bind_buffer(const index_buffer *ib)
 {
-    if (last_bound_unit != ib->id)
-    {
+    //if (last_bound_unit_ibuffer != ib->id)
+    //{
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-        last_bound_unit = ib->id;
-    }
-      
+        last_bound_unit_ibuffer = ib->id;
+    //}      
 }
 
 void xe_graphics::graphics_device_gl::bind_vertex_array(const vertex_array *va)
 {
-    if (last_bound_unit != va->id)
-    {
+    //if (last_bound_unit_vao != va->id)
+    //s{
         glBindVertexArray(va->id);
-        last_bound_unit = va->id;
-    }
+        last_bound_unit_vao = va->id;
+    //}
 }
 
 void xe_graphics::graphics_device_gl::bind_framebuffer(const framebuffer *fbo)
 {
-    if (last_bound_unit != fbo->id)
+    if (last_bound_unit_fbo != fbo->id)
+    {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo->id);
+        last_bound_unit_fbo = fbo->id;
+    }
 }
 
 void xe_graphics::graphics_device_gl::unbind_texture2d()
@@ -154,7 +172,7 @@ void xe_graphics::graphics_device_gl::set_float(const std::string & name, real32
     glUniform1f(glGetUniformLocation(shd->id, name.c_str()), value);
 }
 
-void xe_graphics::graphics_device_gl::set_vec2(const std::string & name, const glm::vec2 & value, shader *shd)
+void xe_graphics::graphics_device_gl::set_vec2(const std::string & name, const glm::vec2& value, shader *shd)
 {
     glUniform2fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
 }
@@ -164,7 +182,7 @@ void xe_graphics::graphics_device_gl::set_vec2(const std::string & name, real32 
     glUniform2f(glGetUniformLocation(shd->id, name.c_str()), x, y);
 }
 
-void xe_graphics::graphics_device_gl::set_vec3(const std::string & name, const glm::vec3 & value, shader *shd)
+void xe_graphics::graphics_device_gl::set_vec3(const std::string & name, const glm::vec3& value, shader *shd)
 {
     glUniform3fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
 }
@@ -189,7 +207,7 @@ void xe_graphics::graphics_device_gl::set_mat2(const std::string & name, const g
     glUniformMatrix2fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void xe_graphics::graphics_device_gl::set_mat3(const std::string & name, const glm::mat3 & mat, shader *shd)
+void xe_graphics::graphics_device_gl::set_mat3(const std::string & name, const glm::mat3& mat, shader *shd)
 {
     glUniformMatrix3fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
@@ -201,10 +219,28 @@ void xe_graphics::graphics_device_gl::set_mat4(const std::string & name, const g
 
 bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, texture2D *texture)
 {
+    return create_texture2D(path, nullptr, texture);
+}
+
+bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, const char *dir, texture2D *texture)
+{
+    const char *path_res;
+
+    if (dir)
+    {
+        std::string filename(path);
+        std::string dirname(dir);
+        filename = dirname + '/' + filename;
+        path_res = filename.c_str();
+    }
+    else
+        path_res = path;
+
+
     int channels;
     
     stbi_set_flip_vertically_on_load(true);
-    stbi_uc* image = stbi_load(path, &texture->width, &texture->height, &channels, 0);
+    stbi_uc* image = stbi_load(path_res, &texture->desc.width, &texture->desc.height, &channels, 0);
 
     if (!image)
         return false;
@@ -227,10 +263,11 @@ bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, data_format, texture->width, texture->height, 0, data_format, GL_UNSIGNED_BYTE, image);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glTexImage2D(GL_TEXTURE_2D, 0, data_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -411,6 +448,11 @@ bool xe_graphics::graphics_device_gl::set_index_buffer(vertex_array *va, index_b
     }
 
     return false;
+}
+
+void xe_graphics::graphics_device_gl::destroy_texture2D(texture2D * tex)
+{
+    glDeleteTextures(1, (GLuint*)&tex->id);
 }
 
 void xe_graphics::graphics_device_gl::start_execution()

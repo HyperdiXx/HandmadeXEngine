@@ -3,22 +3,60 @@
 #ifndef XENGINE_ECS_H
 #define XENGINE_ECS_H
 
-
 #include <glm/glm.hpp>
 
+#include "xe_graphics_resource.h"
+#include "xe_assets.h"
+
+#include <vector>
+
 namespace xe_ecs
-{   
-    //uint32_t entity;
+{
+    static uint32_t id_create = 0;
 
-    //static const uint32_t unset = 0;
-
-    //static uint32_t create_entity()
-    //{
-    //    return entity++;
-    //}
-
-    struct transform_component
+    class component
     {
+    public:
+        virtual ~component() {};
+    };
+
+    class entity
+    {
+    public:
+
+        entity()
+        {
+            components.reserve(16);
+            id = id_create++;
+        }
+
+        template<class T>
+        inline T* find_component()
+        {
+            for (int i = 0; i < components.size(); ++i)
+            {
+                component *comp = components[i];
+
+                if (dynamic_cast<T*>(comp))
+                    return dynamic_cast<T*>(comp);
+            }
+
+            return nullptr;
+        }
+        
+        void add_component(component *comp)
+        {
+            components.push_back(comp);
+        }
+
+    private:
+        uint32_t id;
+        std::vector<component*> components;
+    };
+
+    class transform_component : public component
+    {
+    public:
         glm::vec3 position;
         glm::vec3 rotation;
         glm::vec3 scale;
@@ -26,8 +64,29 @@ namespace xe_ecs
         glm::mat4 model = glm::mat4(1.0f);
     };
 
-    struct camera_component
-    {       
+    
+    class update_component : public component
+    {
+    public:
+
+        void update(float dt);
+    
+    };
+
+    class quad_component : public component
+    {
+    public:
+        xe_graphics::quad *quad_mesh;
+    };
+
+    class mesh_component : public component
+    {
+    public:
+        //xe_assets::model *model_asset;
+    };
+
+    class camera2d_component : public component
+    {
         float width = 0.0f;
         float height = 0.0f;
         float fov = 60.0f;
@@ -45,6 +104,17 @@ namespace xe_ecs
         void setup_projection(float n, float f, float w, float h, float fov);
         void update_camera();
         void transform_camera(transform_component& transform);
+    };
+
+
+    class camera3d_component : public component
+    {
+
+    };
+
+    struct material_component : public component
+    {
+
     };
 }
 #endif

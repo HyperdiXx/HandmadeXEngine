@@ -5,7 +5,7 @@
 
 #include "rendercommand.h"
 
-#include <runtime/geometry/model.h>
+#include "xe_assets.h"
 #include <glm/glm.hpp>
 
 namespace XEngine
@@ -18,9 +18,9 @@ namespace XEngine
             ModelRenderCommand(RenderCommandType type) : m_type(type) {}
             
             // @Info: set as material later on
-            void set(Assets::Model* model, Shader* shader, glm::mat4& matrix)
+            void set(xe_assets::model* mod, xe_graphics::shader* shader, glm::mat4& matrix)
             {
-                m_model = model;
+                m_model = mod;
                 m_shader = shader;
                 m_model_matrix = matrix;
             }
@@ -33,37 +33,45 @@ namespace XEngine
 
             virtual void execute()
             {
-                using namespace Assets;
+                xe_graphics::graphics_device *device = xe_render::get_device();
 
                 // @move to GL Render device abst and setup here
                 glEnable(GL_DEPTH_TEST);
 
-                m_shader->bind();
-                m_shader->setMat4("model", m_model_matrix);
-                m_shader->setMat4("viewproj", m_proj_matrix * m_view_matrix);
+                device->bind_shader(m_shader);
+                device->set_mat4("model", m_model_matrix, m_shader);
+                device->set_mat4("viewproj", m_proj_matrix * m_view_matrix, m_shader);
+                
+                //m_shader->bind();
+                //m_shader->setMat4("model", m_model_matrix);
+                //m_shader->setMat4("viewproj", m_proj_matrix * m_view_matrix);
 
-                Node* root = m_model->root;
+                xe_assets::node *root = m_model->root;
 
                 for (uint32 i = 0; i < root->children.size(); i++)
                 {
-                    Node* curr_node = root->children[i];
+                    xe_assets::node* curr_node = root->children[i];
 
                     for (uint32 j = 0; j < curr_node->meshes.size(); j++)
                     {
-                        Mesh *cur_mesh = curr_node->meshes.at(j);
+                        xe_assets::mesh *cur_mesh = curr_node->meshes.at(j);
                         draw_mesh(cur_mesh);
                     }  
                 }
 
-                m_shader->unbind();
+                device->unbind_shader();
+
+                //m_shader->unbind();
 
 
                 // @move to GL Render device abst and setup here
                 glDisable(GL_DEPTH_TEST);
             };
 
-            void draw_mesh(Assets::Mesh* mesh)
+            void draw_mesh(xe_assets::mesh* mesh)
             {
+                xe_graphics::graphics_device *device = xe_render::get_device();
+
                 uint32 diffuseN = 1;
                 uint32 normalN = 1;
                 uint32 specularN = 1;
@@ -71,8 +79,8 @@ namespace XEngine
                 for (uint32 i = 0; i < mesh->mesh_textures.size(); i++)
                 {
                     // @Refactor!!!
-                    Texture2D *mesh_texture = mesh->mesh_textures[i].texture;                   
-                    mesh_texture->activate(i);
+                    xe_graphics::texture2D *mesh_texture = mesh->mesh_textures[i].texture;                   
+                    //mesh_texture->activate(i);
 
                     std::string name = mesh->mesh_textures[i].type;
                     std::string num;
@@ -84,13 +92,13 @@ namespace XEngine
                     else if (name == "tex_spec")
                         num = std::to_string(specularN++);
 
-                    m_shader->setInt((name + num).c_str(), i);
-                    mesh_texture->bind();
+                    device->set_int((name + num).c_str(), i, m_shader);
+                    //mesh_texture->bind();
                 }
 
                 if (mesh->vertices.size() > 0)
                 {
-                    glBindVertexArray(mesh->get_vao());
+                    //glBindVertexArray(mesh->get_vao());
                     RenderCommand::draw_indexed(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
                     glBindVertexArray(0);
                 }           
@@ -102,8 +110,8 @@ namespace XEngine
             glm::mat4 m_view_matrix = glm::mat4(1.0f);
             glm::mat4 m_proj_matrix = glm::mat4(1.0f);
             RenderCommandType m_type;
-            Assets::Model *m_model;
-            Shader *m_shader;
+            xe_assets::model *m_model;
+            xe_graphics::shader *m_shader;
         };
     }
 }

@@ -184,9 +184,11 @@
     <ClCompile Include="src\thirdparty\imguit\imgui_impl_win32.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_widgets.cpp" />
     <ClCompile Include="src\transforms.cpp" />
+    <ClCompile Include="src\xe_assets.cpp" />
     <ClCompile Include="src\xe_core.cpp" />
     <ClCompile Include="src\xe_render.cpp" />
     <ClCompile Include="src\xe_graphics_device_gl.cpp" />
+    <ClCompile Include="src\xe_render_pass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple2d.fs" />
@@ -329,10 +331,12 @@
     <ClInclude Include="src\transforms.h" />
     <ClInclude Include="src\types.h" />
     <ClInclude Include="src\vector.h" />
+    <ClInclude Include="src\xe_assets.h" />
     <ClInclude Include="src\xe_ecs.h" />
     <ClInclude Include="src\xe_graphics_device.h" />
     <ClInclude Include="src\xe_graphics_device_gl.h" />
     <ClInclude Include="src\xe_graphics_resource.h" />
+    <ClInclude Include="src\xe_graphics_res_desc.h" />
     <ClInclude Include="src\xe_platform.h" />
     <ClInclude Include="src\xengine_gl.h" />
     <ClInclude Include="src\xe_render.h" />
@@ -415,7 +419,6 @@
     <ClInclude Include="src\runtime\core\windowsystem\winWindow.h" />
     <ClInclude Include="src\runtime\geometry\quad.h" />
     <ClInclude Include="src\runtime\geometry\resources.h" />
-    <ClInclude Include="src\runtime\geometry\vertex.h" />
     <ClInclude Include="src\runtime\objects\gbuffer.h" />
     <ClInclude Include="src\runtime\objects\lights\dirLight.h" />
     <ClInclude Include="src\runtime\objects\lights\light.h" />
@@ -452,6 +455,7 @@
     <ClInclude Include="src\xe_core.h" />
     <ClInclude Include="src\xengine_input.h" />
     <ClInclude Include="src\xenpch.h" />
+    <ClInclude Include="src\xe_render_pass.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl">

@@ -13,12 +13,14 @@
 
 #include <glm/glm.hpp>
 
+#include "config.h"
+
 namespace XEngine
 {
     class OrthoCamera : public Component
     {
     public:
-        OrthoCamera(real32 left, real32 right, real32 bottom, real32 top);
+        OrthoCamera(real32 left = 0.0f, real32 right = WINDOWS_WIDTH, real32 bottom = 0.0f, real32 top = WINDOWS_HEIGHT);
 
         void calculateProjection(real32 left, real32 right, real32 bottom, real32 top);
 

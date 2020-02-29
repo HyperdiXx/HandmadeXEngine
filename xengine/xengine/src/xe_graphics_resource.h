@@ -3,34 +3,39 @@
 #ifndef XENGINE_GRAPHICS_RESOURCES_H
 #define XENGINE_GRAPHICS_RESOURCES_H
 
+#include <vector>
+
+#include "xe_graphics_res_desc.h"
+
+#include <glm/glm.hpp>
+
 namespace xe_graphics
 {
     class graphics_device;
 
     struct texture2D
     {
-        int id;
-        int width;
-        int height;
+        uint32 id;
+        texture_desc desc;
     };
 
     struct shader
     {
-        int id;
+        uint32 id;
     };
    
     struct index_buffer
     {
-        int id;
+        uint32 id;
         uint32 *data;
     };
 
     struct framebuffer
     {
-        int id;
+        uint32 id;
     };
 
-    enum class ElementType
+    enum ElementType
     {
         None,
         Bool,
@@ -132,15 +137,22 @@ namespace xe_graphics
 
     struct vertex_buffer
     {
-        int id;
+        uint32 id;
         uint32 element_count;
         buffer_layout layout;
         real32 *data;
     };
    
+    struct texture_wrapper
+    {
+        texture2D *texture = nullptr;
+        std::string path;
+        std::string type;
+    };
+
     struct vertex_array
     {
-        int id;
+        uint32 id;
         uint32 ibuffer_index = 0;
         std::vector<vertex_buffer*> buffers;
         index_buffer *ib;

@@ -14,7 +14,7 @@ using namespace XEngine;
 using namespace Assets;
 using namespace Rendering;
 
-void Mesh::setup_mesh()
+/*void Mesh::setup_mesh()
 {     
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -151,4 +151,4 @@ void XEngine::Assets::AnimatedModel::add_animation(Animation *animation)
 {
     m_anim_map[animation->get_name()] = m_animations.size();
     m_animations.emplace_back(std::move(animation));
-}
+}*/

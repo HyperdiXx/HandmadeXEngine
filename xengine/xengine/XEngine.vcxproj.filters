@@ -252,6 +252,12 @@
     <ClCompile Include="src\xe_render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\xe_render_pass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xe_assets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\models\barrels.fbx" />
@@ -656,9 +662,6 @@
     <ClInclude Include="src\runtime\geometry\resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\geometry\vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\platforms\win32\platformwin32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -915,6 +918,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xe_render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_graphics_res_desc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_render_pass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_assets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

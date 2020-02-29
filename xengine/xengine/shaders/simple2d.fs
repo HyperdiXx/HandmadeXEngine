@@ -8,4 +8,5 @@ uniform sampler2D texture_diff;
 void main()
 {
     frag_color = texture(texture_diff, uv);
+    //frag_color = vec4(1.0, 0.0, 0.0, 1.0);
 } 

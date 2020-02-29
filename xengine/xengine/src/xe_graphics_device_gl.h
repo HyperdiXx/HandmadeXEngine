@@ -18,7 +18,9 @@ namespace xe_graphics
         void set_viewport(int32 x, int32 y, int32 width, int32 height) override;
         void draw_array() override;
         void draw_indexed(int mode, uint32 count, int type, void *ind) override;
-
+       
+        void activate_bind_texture2d(const texture2D *texture) override;
+        void activate_texture2d(uint32 index) override;
         void bind_texture2d(const texture2D *tetxture) override;
         void bind_shader(const shader *shader) override;
         void bind_buffer(const vertex_buffer *vb) override;
@@ -44,6 +46,7 @@ namespace xe_graphics
         void set_mat4(const std::string &name, const glm::mat4 &mat, shader *shd) override;
 
         bool create_texture2D(const char *path, texture2D *texture) override;
+        bool create_texture2D(const char *path, const char *dir, texture2D *texture) override;
         bool create_shader(const char* vertex, const char* fragment, shader *shader) override;
         bool create_framebuffer(framebuffer *fbo) override;
         bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) override;        
@@ -54,10 +57,17 @@ namespace xe_graphics
         bool add_vertex_buffer(vertex_array *va, vertex_buffer *vb) override;
         bool set_index_buffer(vertex_array *va, index_buffer *ib) override;
 
+        void destroy_texture2D(texture2D *tex) override;
+
         void start_execution() override;
         void end_execution() override;
     private:
-        uint32 last_bound_unit;
+        uint32 last_bound_unit_texture;
+        uint32 last_activated_texture;
+        uint32 last_bound_unit_vao;
+        uint32 last_bound_unit_vbuffer;
+        uint32 last_bound_unit_ibuffer;
+        uint32 last_bound_unit_fbo;
     };
 }
 

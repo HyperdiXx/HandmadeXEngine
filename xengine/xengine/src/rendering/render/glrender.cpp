@@ -33,8 +33,8 @@ namespace XEngine
             glm::mat4 projection = m_camera3D.getProjectionMatrix();
 
             ModelRenderCommand *render_command = new ModelRenderCommand(RenderCommandType::MODEL);
-            render_command->set(model, shader, mat);
-            render_command->set_view_projection(view, projection);
+            //render_command->set(model, shader, mat);
+            //render_command->set_view_projection(view, projection);
             add(render_command);
         }
 

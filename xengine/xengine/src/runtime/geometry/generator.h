@@ -18,7 +18,7 @@ namespace XEngine
     class Geometry
     {
     public:
-        std::map<std::string, Assets::Model*> models;
+        //std::map<std::string, Assets::Model*> models;
 
         std::string cube = "src/models/simple/cube.obj";
         std::string sphere = "src/models/simple/sphere.obj";

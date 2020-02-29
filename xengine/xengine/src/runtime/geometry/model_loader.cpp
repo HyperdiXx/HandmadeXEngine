@@ -12,7 +12,7 @@
 
 namespace XEngine
 {
-    glm::mat4 transposeAiMat4(aiMatrix4x4 ai_mat) 
+    /*glm::mat4 transposeAiMat4(aiMatrix4x4 ai_mat) 
     {
         glm::mat4 res;
         
@@ -128,7 +128,7 @@ namespace XEngine
                 {
                     aiVectorKey ai_key = ai_channel->mPositionKeys[i];
                     PositionKey p_key = { ai_key.mTime, { ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
-                    frame->add_position_key(p_key);
+                    //frame->add_position_key(p_key);
                 }
 
                 for (uint32 w = 0; w < ai_channel->mNumRotationKeys; w++)
@@ -252,7 +252,7 @@ namespace XEngine
                 vector.y = aimesh->mBitangents[i].y;
                 vector.z = aimesh->mBitangents[i].z;
                 //vertex.bitangent = vector;
-            }*/
+            }
 
             mesh->add_vertex(vertex);
         }
@@ -359,5 +359,5 @@ namespace XEngine
         Assets::AnimatedModel*result = parse_anim_model(scene);
 
         return result;
-    }
+    }*/
 };

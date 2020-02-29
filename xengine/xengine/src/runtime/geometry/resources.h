@@ -15,15 +15,9 @@ namespace XEngine
             initTextures();
         }
 
-
         ~Resources()
         {
-            delete plane;
-            delete secondmodel;
-            delete cube;
-            delete sphere;
-            delete erato;
-   
+            
         }
 
         // @Refactor!!!
@@ -52,11 +46,10 @@ namespace XEngine
 
     private:
 
-        Model *plane;
-        Model *secondmodel; 
-        Model *cube;
-        Model *sphere;
-        Model *erato;
-
+        //Model *plane;
+        //Model *secondmodel; 
+        //Model *cube;
+        //Model *sphere;
+        //Model *erato;
     };
 }

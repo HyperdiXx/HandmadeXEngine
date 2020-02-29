@@ -1,13 +1,15 @@
 #pragma once
 
 #include <rendering/api/renderAPI.h>
-#include <xe_graphics_resource.h>
+#include "xe_graphics_resource.h"
 
 #include <glm/glm.hpp>
 #include <types.h>
 
 namespace xe_graphics
 {
+    class render_pass;
+
     class graphics_device
     {
 
@@ -20,7 +22,9 @@ namespace xe_graphics
         virtual void draw_array() = 0;
         virtual void draw_indexed(int mode, uint32 count, int type, void *ind) = 0;
 
-        virtual void bind_texture2d(const texture2D *tetxture) = 0;
+        virtual void activate_bind_texture2d(const texture2D *texture) = 0;
+        virtual void activate_texture2d(uint32 index) = 0;
+        virtual void bind_texture2d(const texture2D *texture) = 0;
         virtual void bind_shader(const shader *shader) = 0;
         virtual void bind_buffer(const vertex_buffer *vb) = 0;
         virtual void bind_buffer(const index_buffer *ib) = 0;
@@ -52,6 +56,7 @@ namespace xe_graphics
         virtual void end_execution() = 0;
        
         virtual bool create_texture2D(const char *path, texture2D* texture) = 0;
+        virtual bool create_texture2D(const char *path, const char* dir, texture2D* texture) = 0;
         virtual bool create_shader(const char* vertex, const char* fragment, shader* shader) = 0;
         virtual bool create_framebuffer(framebuffer *fbo) = 0;
         virtual bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) = 0;
@@ -61,6 +66,8 @@ namespace xe_graphics
         virtual bool set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout) = 0;
         virtual bool add_vertex_buffer(vertex_array *va, vertex_buffer *vb) = 0;
         virtual bool set_index_buffer(vertex_array *va, index_buffer *ib) = 0;
+
+        virtual void destroy_texture2D(texture2D *tex) = 0;
 
         inline int get_screen_width() const { return screen_width; }
         inline int get_screen_height() const { return screen_height; }
@@ -75,5 +82,8 @@ namespace xe_graphics
         
         bool32 fullscreen= false;
         bool32 vsync = true;
+
+        
+
     };
 }

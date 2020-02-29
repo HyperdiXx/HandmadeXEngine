@@ -32,6 +32,7 @@
 #include <math/xemath.h>
 #include "config.h"
 #include "xe_render.h"
+#include "xe_render_pass.h"
 #include "xe_core.h"
 #include "xe_graphics_device_gl.h"
 #include "png.h"
@@ -305,6 +306,11 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
         {
             WINDOW_WIDTH_SIZE = LOWORD(l_param);
             WINDOW_HEIGHT_SIZE = HIWORD(l_param);
+            
+            xe_graphics::graphics_device *device = xe_render::get_device();
+            if(device != nullptr)
+                device->set_viewport(0, 0, WINDOW_WIDTH_SIZE, WINDOW_HEIGHT_SIZE);
+            
             OutputDebugStringA("Resizing window\n");
         } break;
         case WM_ACTIVATEAPP:
@@ -350,23 +356,18 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             
             graphics_device *device = new graphics_device_gl(window_handle, false);
             set_device(device);
-
             win32_init_gl_loader();
             win32_init_imgui(window_handle);
-           
+
             init_render();
 
-            texture2D diff_texture;
-            device->create_texture2D("engineassets/get.png", &diff_texture);
- 
-            shader *simple_shader = get_simple_shader();
-            shader *model_shader = get_model_shader();
+            render_pass *base_render_pass = new render_pass2D();
+            set_render_pass(base_render_pass);
 
-            quad quad_test = {};
-            create_quad(&quad_test);
+            base_render_pass->init();
 
-            device->bind_shader(simple_shader);
-            device->set_int("texture_diff", 0, simple_shader);
+            render_pass3D *main_render_pass = new render_pass3D();
+            main_render_pass->init();
 
             using namespace xe_render;
 
@@ -382,8 +383,10 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 device->clear_color(0.9f, 0.9f, 0.9f, 1.0f);
                 device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
               
-                draw_quad(&quad_test, simple_shader, &diff_texture);
-
+                main_render_pass->render();                
+   
+                base_render_pass->render();
+   
                 GLenum err;
                 while ((err = glGetError()) != GL_NO_ERROR)
                 {
@@ -392,10 +395,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
                 win32_imgui_new_frame();
                 
-                top_bar(); 
-               
-                ImGui::ShowDemoWindow();
-
+                top_bar();                
+              
                 win32_imgui_post_update();
 
                 SwapBuffers(dc);

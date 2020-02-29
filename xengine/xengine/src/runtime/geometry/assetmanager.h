@@ -20,14 +20,14 @@ namespace XEngine
             static Rendering::BasicMaterial* getMaterial(uint32 id);
             static Rendering::BPMaterial* getBPMaterial(uint32 id);
             static Rendering::PBRMaterial* getPBRMaterial(uint32 id);
-            static Model* getModel(std::string id);
+            //static Model* getModel(std::string id);
             static void addMaterial(uint32 id, Rendering::BasicMaterial* material);
-            static void addModel(std::string id, Model *mesh);
+            //static void addModel(std::string id, Model *mesh);
         private:
             static std::unordered_map<uint32, Rendering::BasicMaterial*> materials;
             static std::unordered_map<uint32, Rendering::BPMaterial*> bpmaterials;
             static std::unordered_map<uint32, Rendering::PBRMaterial*> pbrmaterials;
-            static std::unordered_map<std::string, Model*> models;
+            //static std::unordered_map<std::string, Model*> models;
         };
     }
    

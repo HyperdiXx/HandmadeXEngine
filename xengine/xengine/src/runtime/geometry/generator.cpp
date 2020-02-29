@@ -163,13 +163,13 @@ namespace XEngine
                 {
                     float xSegment = (float)x / (float)64;
                     float ySegment = (float)y / (float)64;
-                    float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-                    float yPos = std::cos(ySegment * PI);
-                    float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                    //float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                    //float yPos = std::cos(ySegment * PI);
+                    //float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 
-                    positions.push_back(glm::vec3(xPos, yPos, zPos));
-                    uv.push_back(glm::vec2(xSegment, ySegment));
-                    normals.push_back(glm::vec3(xPos, yPos, zPos));
+                    //positions.push_back(glm::vec3(xPos, yPos, zPos));
+                    //uv.push_back(glm::vec2(xSegment, ySegment));
+                    //normals.push_back(glm::vec3(xPos, yPos, zPos));
                 }
             }
 

@@ -4,8 +4,11 @@ layout (location = 1) in vec2 aUV;
 
 out vec2 uv;
 
+uniform mat4 model;
+uniform mat4 viewproj;
+
 void main()
 {
 	uv = aUV; 
-	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);
+	gl_Position = viewproj * model * vec4(aPos, 1.0f);
 }

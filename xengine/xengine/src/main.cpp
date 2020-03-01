@@ -369,6 +369,12 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             render_pass3D *main_render_pass = new render_pass3D();
             main_render_pass->init();
 
+            vec4f clear_color = {};
+
+            clear_color.x = 0.9f;
+            clear_color.y = 0.9f;
+            clear_color.z = 0.9f;
+
             using namespace xe_render;
 
             while (is_open)
@@ -379,13 +385,14 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                     TranslateMessage(&message);
                     DispatchMessage(&message);
                 }
-                
-                device->clear_color(0.9f, 0.9f, 0.9f, 1.0f);
+               
+                device->clear_color(clear_color.x, clear_color.y, clear_color.z, 1.0f);
                 device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
               
+                main_render_pass->update(1.0f);
                 main_render_pass->render();                
-   
-                base_render_pass->render();
+                
+                //base_render_pass->render();
    
                 GLenum err;
                 while ((err = glGetError()) != GL_NO_ERROR)

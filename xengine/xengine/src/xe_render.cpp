@@ -163,8 +163,7 @@ namespace xe_render
     {
         xe_graphics::graphics_device *device = xe_render::get_device();
 
-        // @move to GL Render device abst and setup here
-        glEnable(GL_DEPTH_TEST);
+        device->enable(GL_DEPTH_TEST);
 
         glm::mat4 model_matrix = glm::mat4(1.0f);
 
@@ -193,8 +192,7 @@ namespace xe_render
 
         device->unbind_shader();
 
-        // @move to GL Render device abst and setup here
-        glDisable(GL_DEPTH_TEST);
+        device->disable(GL_DEPTH_TEST);
     }
 
     void draw_mesh(xe_assets::mesh *msh, xe_graphics::shader *shd)
@@ -229,7 +227,7 @@ namespace xe_render
         {
             glBindVertexArray(msh->vao);
             device->draw_indexed(GL_TRIANGLES, msh->indices.size(), GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
+            //glBindVertexArray(0);
         }
     }
 }

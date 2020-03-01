@@ -186,6 +186,7 @@
     <ClCompile Include="src\transforms.cpp" />
     <ClCompile Include="src\xe_assets.cpp" />
     <ClCompile Include="src\xe_core.cpp" />
+    <ClCompile Include="src\xe_input.cpp" />
     <ClCompile Include="src\xe_render.cpp" />
     <ClCompile Include="src\xe_graphics_device_gl.cpp" />
     <ClCompile Include="src\xe_render_pass.cpp" />
@@ -337,6 +338,7 @@
     <ClInclude Include="src\xe_graphics_device_gl.h" />
     <ClInclude Include="src\xe_graphics_resource.h" />
     <ClInclude Include="src\xe_graphics_res_desc.h" />
+    <ClInclude Include="src\xe_input.h" />
     <ClInclude Include="src\xe_platform.h" />
     <ClInclude Include="src\xengine_gl.h" />
     <ClInclude Include="src\xe_render.h" />

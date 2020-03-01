@@ -1,6 +1,7 @@
 #include "xe_render_pass.h"
 #include "xe_render.h"
 #include "xe_assets.h"
+#include "xe_input.h"
 
 using namespace xe_ecs;
 
@@ -117,4 +118,23 @@ void xe_graphics::render_pass3D::render()
 
 void xe_graphics::render_pass3D::update(float dt)
 {
+    if (xe_input::pressed(xe_input::KEYBOARD_W))
+    {
+        camera3D.camPos -= 2.0f * glm::vec3(0.0f, 0.0f, 1.0f);
+    }
+
+    if (xe_input::pressed(xe_input::KEYBOARD_S))
+    {
+        camera3D.camPos += 2.0f * glm::vec3(0.0f, 0.0f, 1.0f);
+    }
+
+    if (xe_input::pressed(xe_input::KEYBOARD_A))
+    {
+        camera3D.camPos -= 2.0f * glm::vec3(1.0f, 0.0f, 0.0f);
+    }
+
+    if (xe_input::pressed(xe_input::KEYBOARD_D))
+    {
+        camera3D.camPos += 2.0f * glm::vec3(1.0f, 0.0f, 0.0f);
+    }
 }

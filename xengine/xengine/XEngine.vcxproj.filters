@@ -258,6 +258,9 @@
     <ClCompile Include="src\xe_assets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\xe_input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\models\barrels.fbx" />
@@ -927,6 +930,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xe_assets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

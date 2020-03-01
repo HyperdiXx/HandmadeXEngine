@@ -63,24 +63,34 @@ void xe_graphics::graphics_device_gl::set_viewport(int32 x, int32 y, int32 width
     glViewport(x, y, width, height);
 }
 
-void xe_graphics::graphics_device_gl::draw_array()
+void xe_graphics::graphics_device_gl::enable(int type)
 {
-    //glDrawArrays();
+    glEnable(type);
 }
 
-void xe_graphics::graphics_device_gl::draw_indexed(int mode, uint32 count, int type, void * ind)
+void xe_graphics::graphics_device_gl::disable(int type)
+{
+    glDisable(type);
+}
+
+void xe_graphics::graphics_device_gl::draw_array(int mode, uint32 first, uint32 count)
+{
+    glDrawArrays(mode, first, count);
+}
+
+void xe_graphics::graphics_device_gl::draw_indexed(int mode, uint32 count, int type, void *ind)
 {
     glDrawElements(mode, count, type, ind);
 }
 
 void xe_graphics::graphics_device_gl::activate_bind_texture2d(const texture2D * texture)
 {
-    if (last_bound_unit_texture != texture->id)
-    {
+    //if (last_bound_unit_texture != texture->id)
+    //{
         glActiveTexture(GL_TEXTURE0 + 0);
         glBindTexture(GL_TEXTURE_2D, texture->id);
         last_bound_unit_texture = texture->id;
-    }
+    //}
 }
 
 void xe_graphics::graphics_device_gl::activate_texture2d(uint32 index)
@@ -101,11 +111,6 @@ void xe_graphics::graphics_device_gl::bind_texture2d(const texture2D *texture)
     //}
 }
 
-void xe_graphics::graphics_device_gl::bind_shader(const shader *shader)
-{
-    glUseProgram(shader->id);
-}
-
 void xe_graphics::graphics_device_gl::bind_buffer(const vertex_buffer *vb)
 {
     //if (last_bound_unit_vbuffer != vb->id)
@@ -122,6 +127,11 @@ void xe_graphics::graphics_device_gl::bind_buffer(const index_buffer *ib)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
         last_bound_unit_ibuffer = ib->id;
     //}      
+}
+
+void xe_graphics::graphics_device_gl::bind_shader(const shader *shader)
+{
+    glUseProgram(shader->id);
 }
 
 void xe_graphics::graphics_device_gl::bind_vertex_array(const vertex_array *va)

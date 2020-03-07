@@ -32,7 +32,8 @@ namespace xe_graphics
 
     struct framebuffer
     {
-        uint32 id;
+        uint32 fbo_id;
+        uint32 rb_id;
         std::vector<texture2D*> color_textures;
         texture2D *depth_texture;
         texture2D *stencil_texture;

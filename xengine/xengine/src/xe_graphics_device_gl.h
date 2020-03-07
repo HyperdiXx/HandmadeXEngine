@@ -29,12 +29,14 @@ namespace xe_graphics
         void bind_buffer(const index_buffer *ib) override;
         void bind_vertex_array(const vertex_array *va) override;
         void bind_framebuffer(const framebuffer *fbo) override;
+        void bind_renderbuffer(const framebuffer *fbo) override;
         void bind_for_read(const framebuffer *fbo) override;
         void bind_for_write(const framebuffer *fbo) override;
 
         void add_color_texture2D(texture2D *texture, uint32 color_attachment_id, framebuffer *fbo) override;
         void add_depth_texture2D(texture2D *depth, framebuffer *fbo) override;
         void add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo) override;
+        void set_depth_buffer_attachment(const framebuffer *fbo) override;
         void set_texture2D(uint32 type, texture2D *texture) override;
 
         void check_framebuffer() override;
@@ -42,6 +44,7 @@ namespace xe_graphics
         void unbind_texture2d() override;
         void unbind_vertex_array() override;
         void unbind_shader() override;
+        void unbind_framebuffer() override;
 
         void set_bool(const std::string &name, bool value, shader *shd) override;
         void set_int(const std::string &namee, int32 value, shader *shd) override;
@@ -58,8 +61,10 @@ namespace xe_graphics
 
         bool create_texture2D(const char *path, texture2D *texture) override;
         bool create_texture2D(const char *path, const char *dir, texture2D *texture) override;
+        bool create_texture2D(uint32 width, uint32 height, texture2D* texture) override;
         bool create_shader(const char* vertex, const char* fragment, shader *shader) override;
-        bool create_framebuffer(framebuffer *fbo) override;
+        bool create_framebuffer(const uint32 count, framebuffer *fbo) override;
+        bool create_render_buffer(const uint32 count, framebuffer *fbo) override;
         bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) override;        
         bool create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) override;
         bool create_vertex_array(vertex_array *va) override;
@@ -80,6 +85,7 @@ namespace xe_graphics
         uint32 last_bound_unit_vbuffer;
         uint32 last_bound_unit_ibuffer;
         uint32 last_bound_unit_fbo;
+        uint32 last_bound_unit_shader;
     };
 }
 

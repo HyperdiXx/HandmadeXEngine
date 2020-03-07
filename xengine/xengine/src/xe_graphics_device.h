@@ -32,12 +32,14 @@ namespace xe_graphics
         virtual void bind_buffer(const index_buffer *ib) = 0;
         virtual void bind_vertex_array(const vertex_array *va) = 0;
         virtual void bind_framebuffer(const framebuffer *fbo) = 0;
+        virtual void bind_renderbuffer(const framebuffer *fbo) = 0;
         virtual void bind_for_read(const framebuffer *fbo) = 0;
         virtual void bind_for_write(const framebuffer *fbo) = 0;
 
         virtual void add_color_texture2D(texture2D *texture, uint32 color_attachment_id, framebuffer *fbo) = 0;
         virtual void add_depth_texture2D(texture2D *depth, framebuffer *fbo) = 0;
         virtual void add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo) = 0;
+        virtual void set_depth_buffer_attachment(const framebuffer *fbo) = 0;
         virtual void set_texture2D(uint32 type, texture2D *texture) = 0;
 
         virtual void check_framebuffer() = 0;
@@ -45,6 +47,7 @@ namespace xe_graphics
         virtual void unbind_texture2d() = 0;
         virtual void unbind_vertex_array() = 0;
         virtual void unbind_shader() = 0;
+        virtual void unbind_framebuffer() = 0;
 
         // shader
         virtual void set_bool(const std::string &name, bool value, shader *shd) = 0;
@@ -68,8 +71,10 @@ namespace xe_graphics
        
         virtual bool create_texture2D(const char *path, texture2D* texture) = 0;
         virtual bool create_texture2D(const char *path, const char* dir, texture2D* texture) = 0;
+        virtual bool create_texture2D(uint32 width, uint32 height, texture2D* texture) = 0;
         virtual bool create_shader(const char* vertex, const char* fragment, shader* shader) = 0;
-        virtual bool create_framebuffer(framebuffer *fbo) = 0;
+        virtual bool create_framebuffer(const uint32 count, framebuffer *fbo) = 0;
+        virtual bool create_render_buffer(const uint32 count, framebuffer *fbo) = 0;
         virtual bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) = 0;
         virtual bool create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) = 0;
         virtual bool create_vertex_array(vertex_array *va) = 0;

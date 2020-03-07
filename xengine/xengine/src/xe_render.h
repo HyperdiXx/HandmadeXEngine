@@ -9,6 +9,8 @@ namespace xe_ecs
 {
     class camera2d_component;
     class camera3d_component;
+    class dir_light;
+    class transform_component;
 }
 
 namespace xe_assets
@@ -49,5 +51,7 @@ namespace xe_render
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4& mod, XEngine::OrthoCamera *cam);
     void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, XEngine::PerspectiveCamera* camera);
     void draw_mesh(xe_assets::mesh *mshs, xe_graphics::shader *shd);
+
+    void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform);
 }
 #endif // !XENGINE_RENDERING_H

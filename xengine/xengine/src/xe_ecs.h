@@ -63,8 +63,7 @@ namespace xe_ecs
 
         glm::mat4 model = glm::mat4(1.0f);
     };
-
-    
+   
     class update_component : public component
     {
     public:
@@ -85,8 +84,10 @@ namespace xe_ecs
         //xe_assets::model *model_asset;
     };
 
+    
     class camera2d_component : public component
     {
+    public:
         float width = 0.0f;
         float height = 0.0f;
         float fov = 60.0f;
@@ -106,20 +107,42 @@ namespace xe_ecs
 
     class camera3d_component : public component
     {
+    public:
         float near_plane;
         float far_plane;
 
         void setup_projection();
-        void update();
+        void update_input();
 
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
         glm::vec3 pos = glm::vec3(0.0f, 0.0f, 1.0f);
         glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
     };
 
-    struct material_component : public component
+    class material_component : public component
     {
+    public:
 
     };
+
+    class spot_light : public component
+    {
+    public:
+
+    };
+
+    class point_light : public component
+    {
+    public:
+    };
+
+    class dir_light : public component
+    {
+    public:
+        real32 entensity;
+        glm::vec3 color;
+    };
+
+
 }
 #endif

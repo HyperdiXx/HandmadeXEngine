@@ -12,6 +12,6 @@ uniform mat4 model;
 void main()
 {
     uv = iUV;
-    vec4 world_pos = model * vec4(iPos, 1.0);
+    vec3 world_pos = (model * vec4(iPos, 1.0)).xyz;
     gl_Position = mvp * vec4(iPos, 1.0);
 }

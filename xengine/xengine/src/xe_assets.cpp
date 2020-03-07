@@ -1,6 +1,7 @@
 #include "xe_assets.h"
 
 #include "runtime/core/utility/log.h"
+
 #include <glad/glad.h>
 
 namespace xe_assets
@@ -21,7 +22,7 @@ namespace xe_assets
         return res;
     }
 
-    void parse_bones(anim_model * animmodel, anim_mesh * mesh, aiMesh * ai_mesh)
+    void parse_bones(anim_model *animmodel, anim_mesh *mesh, aiMesh *ai_mesh)
     {
         std::unordered_map<uint32, uint32> weight_count;
 
@@ -311,7 +312,7 @@ namespace xe_assets
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            //Log::error(importer.GetErrorString());
+            xe_utility::error(importer.GetErrorString());
             return nullptr;
         }
 
@@ -331,7 +332,7 @@ namespace xe_assets
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            //Log::error(importer.GetErrorString());
+            xe_utility::error(importer.GetErrorString());
             return nullptr;
         }
 

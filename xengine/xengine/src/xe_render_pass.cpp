@@ -98,9 +98,29 @@ void xe_graphics::render_pass3D::init()
     mesh_component *mesh = ent.find_component<mesh_component>();
     //mesh->model_asset = xe_assets::load_model_from_file("engineassets/nano/nanosuit.obj");
     model = xe_assets::load_model_from_file("engineassets/nano/nanosuit.obj");
-    
-    //model_matrix = glm::rotate(model_matrix, glm::radians(15.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    //model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, -10.0f, -20.0f));
+
+    dir_light *dl = new dir_light();
+    dl->color = glm::vec3(0.7f, 0.0f, 0.0f);
+    dl->entensity = 0.9f;
+
+    transform_component *light_transform = new transform_component();
+    light_transform->position = glm::vec3(0.0f, 2.0f, 2.0f);
+
+    light_ent.add_component(dl);
+    light_ent.add_component(light_transform);
+
+    device->create_texture2D(1280, 720, &color_texture);
+   
+    device->create_framebuffer(1, &fbo);  
+    device->bind_framebuffer(&fbo);
+    device->bind_for_write(&fbo);
+    device->create_render_buffer(1, &fbo);
+
+    device->add_color_texture2D(&color_texture, 0, &fbo);
+    device->add_depth_texture2D(1280, 720, &fbo);
+
+    device->check_framebuffer();
+    device->unbind_framebuffer();
 }
 
 void xe_graphics::render_pass3D::clear()
@@ -122,7 +142,18 @@ void xe_graphics::render_pass3D::render()
 {
     graphics_device *device = xe_render::get_device(); 
     XEngine::PerspectiveCamera cam = get_camera3d();
+
+    dir_light *light = light_ent.find_component<dir_light>();
+    transform_component *transform = light_ent.find_component<transform_component>();
+
+    //device->bind_framebuffer(&fbo);
+
+    if(light)
+        xe_render::apply_dir_light(model_shader, light, transform);
+    
     xe_render::draw_model(model, model_shader, &cam);
+
+    //device->unbind_framebuffer();
 }
 
 void xe_graphics::render_pass3D::update(float dt)
@@ -146,6 +177,13 @@ void xe_graphics::render_pass3D::update(float dt)
     {
         camera3D.camPos += 2.0f * glm::vec3(1.0f, 0.0f, 0.0f);
     }
+
+    transform_component *light_transform = light_ent.find_component<transform_component>();
+
+    if (light_transform)
+    {
+        //light_transform->position += 1.1f * glm::vec3(1.0f, 0.0f, 0.0f);        
+    }        
 }
 
 void xe_graphics::gamma_correction_pass::init()
@@ -156,6 +194,7 @@ void xe_graphics::gamma_correction_pass::init()
 
 void xe_graphics::gamma_correction_pass::clear()
 {
+
 }
 
 void xe_graphics::gamma_correction_pass::load_resources()
@@ -165,22 +204,22 @@ void xe_graphics::gamma_correction_pass::load_resources()
 
 void xe_graphics::gamma_correction_pass::unload_resources()
 {
+
 }
 
 void xe_graphics::gamma_correction_pass::render()
 {
     graphics_device *device = xe_render::get_device();
 
-
     device->bind_shader(gmshd);
     //device->set_int("tex_diff", 0, gmshd);
     
     xe_render::draw_full_quad();
-    
 
     device->unbind_shader();
 }
 
 void xe_graphics::gamma_correction_pass::update(float dt)
 {
+
 }

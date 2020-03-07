@@ -87,81 +87,82 @@ void xe_graphics::graphics_device_gl::draw_indexed(int mode, uint32 count, int t
 
 void xe_graphics::graphics_device_gl::activate_bind_texture2d(const texture2D * texture)
 {
-    //if (last_bound_unit_texture != texture->id)
-    //{
+    if (last_bound_unit_texture != texture->id)
+    {
         glActiveTexture(GL_TEXTURE0 + 0);
         glBindTexture(GL_TEXTURE_2D, texture->id);
         last_bound_unit_texture = texture->id;
-    //}
+    }
 }
 
 void xe_graphics::graphics_device_gl::activate_texture2d(uint32 index)
 {
-    //if (last_activated_texture != index)
-    //{
-        glActiveTexture(GL_TEXTURE0 + index);
-        last_activated_texture = index;
-    //}
+    glActiveTexture(GL_TEXTURE0 + index);    
 }
 
 void xe_graphics::graphics_device_gl::bind_texture2d(const texture2D *texture)
 {
-    //if (last_bound_unit_texture != texture->id)
-    //{
+    if (last_bound_unit_texture != texture->id)
+    {
         glBindTexture(GL_TEXTURE_2D, texture->id);
         last_bound_unit_texture = texture->id;
-    //}
+    }
 }
 
 void xe_graphics::graphics_device_gl::bind_buffer(const vertex_buffer *vb)
 {
-    //if (last_bound_unit_vbuffer != vb->id)
-    //{
+    if (last_bound_unit_vbuffer != vb->id)
+    {
         glBindBuffer(GL_ARRAY_BUFFER, vb->id);
         last_bound_unit_vbuffer = vb->id;
-    //}        
+    }        
 }
 
 void xe_graphics::graphics_device_gl::bind_buffer(const index_buffer *ib)
 {
-    //if (last_bound_unit_ibuffer != ib->id)
-    //{
+    if (last_bound_unit_ibuffer != ib->id)
+    {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
         last_bound_unit_ibuffer = ib->id;
-    //}      
+    }      
 }
 
 void xe_graphics::graphics_device_gl::bind_shader(const shader *shader)
 {
-    glUseProgram(shader->id);
+    if (last_bound_unit_shader != shader->id)
+    {
+        glUseProgram(shader->id);
+        last_bound_unit_shader = shader->id;
+    }
 }
 
 void xe_graphics::graphics_device_gl::bind_vertex_array(const vertex_array *va)
 {
-    //if (last_bound_unit_vao != va->id)
-    //s{
-        glBindVertexArray(va->id);
-        last_bound_unit_vao = va->id;
-    //}
+    glBindVertexArray(va->id);          
 }
 
 void xe_graphics::graphics_device_gl::bind_framebuffer(const framebuffer *fbo)
 {
-    if (last_bound_unit_fbo != fbo->id)
+    if (last_bound_unit_fbo != fbo->fbo_id)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo->id);
-        last_bound_unit_fbo = fbo->id;
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo_id);
+        last_bound_unit_fbo = fbo->fbo_id;
     }
 }
 
-void xe_graphics::graphics_device_gl::bind_for_read(const framebuffer * fbo)
+void xe_graphics::graphics_device_gl::bind_renderbuffer(const framebuffer *fbo)
 {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->id);
+    glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb_id);
+}
+
+void xe_graphics::graphics_device_gl::bind_for_read(const framebuffer *fbo)
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->fbo_id);
 }
 
 void xe_graphics::graphics_device_gl::bind_for_write(const framebuffer *fbo)
 {
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->id);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->fbo_id);
 }
 
 void xe_graphics::graphics_device_gl::add_color_texture2D(texture2D *texture, uint32 color_attachment_id, framebuffer *fbo)
@@ -171,18 +172,45 @@ void xe_graphics::graphics_device_gl::add_color_texture2D(texture2D *texture, ui
 
     GLuint type_of_tex = GL_COLOR_ATTACHMENT0 + color_attachment_id;
 
-    fbo->color_textures[color_attachment_id] = texture;
+    fbo->color_textures.push_back(texture);
+    texture2D *color_texture = fbo->color_textures[color_attachment_id];
+
     set_texture2D(type_of_tex, texture);
     fbo->buffers.push_back(type_of_tex);
     glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());
 }
 
-void xe_graphics::graphics_device_gl::add_depth_texture2D(texture2D * depth, framebuffer * fbo)
+void xe_graphics::graphics_device_gl::add_depth_texture2D(texture2D *depth, framebuffer *fbo)
 {
+    fbo->depth_texture = depth;
+    bind_renderbuffer(fbo);
+    set_depth_buffer_attachment(fbo);
 }
 
-void xe_graphics::graphics_device_gl::add_depth_texture2D(uint32 w, uint32 h, framebuffer * fbo)
+void xe_graphics::graphics_device_gl::add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo)
 {
+    if (!fbo->depth_texture)
+    {
+        fbo->depth_texture = new texture2D();
+        fbo->depth_texture->desc.width = w;
+        fbo->depth_texture->desc.height = h;
+        fbo->depth_texture->desc.type = TEXTURE_2D;
+
+        glGenTextures(1, &fbo->depth_texture->id);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, fbo->depth_texture->id, 0);
+    }
+
+    bind_renderbuffer(fbo);
+    set_depth_buffer_attachment(fbo);
+}
+
+void xe_graphics::graphics_device_gl::set_depth_buffer_attachment(const framebuffer * fbo)
+{
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
 }
 
 void xe_graphics::graphics_device_gl::set_texture2D(uint32 type, texture2D *texture)
@@ -196,34 +224,53 @@ void xe_graphics::graphics_device_gl::check_framebuffer()
 
     if(error != GL_FRAMEBUFFER_COMPLETE)
     {
-        // Log::error during framebuffer setup;
+        xe_utility::error("during framebuffer setup");
 
         switch (error)
         {
         case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+            xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+            xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
             break;
-
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+            xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+            xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+            xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+            xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
+            break;
         }
     }
-
-    
 }
 
 void xe_graphics::graphics_device_gl::unbind_texture2d()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
+    last_bound_unit_texture = 0;
 }
 
 void xe_graphics::graphics_device_gl::unbind_vertex_array()
 {
     glBindVertexArray(0);
+    last_bound_unit_vao = 0;
 }
 
 void xe_graphics::graphics_device_gl::unbind_shader()
 {
     glUseProgram(0);
+}
+
+void xe_graphics::graphics_device_gl::unbind_framebuffer()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    last_bound_unit_fbo = 0;
 }
 
 void xe_graphics::graphics_device_gl::set_bool(const std::string & name, bool value, shader *shd)
@@ -326,7 +373,7 @@ bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, const c
         data_format = GL_RGB;
     }
 
-    glGenTextures(1, (GLuint*)&texture->id);
+    glGenTextures(1, &texture->id);
     glBindTexture(GL_TEXTURE_2D, texture->id);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -342,6 +389,26 @@ bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, const c
     glBindTexture(GL_TEXTURE_2D, 0);
 
     stbi_image_free(image);
+
+    return true;
+}
+
+bool xe_graphics::graphics_device_gl::create_texture2D(uint32 width, uint32 height, texture2D *texture)
+{
+    texture->desc.width = width;
+    texture->desc.height = height;
+    texture->desc.type = TEXTURE_2D;
+
+    glGenTextures(1, &texture->id);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     return true;
 }
@@ -416,19 +483,25 @@ bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, con
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_framebuffer(framebuffer *fbo)
+bool xe_graphics::graphics_device_gl::create_framebuffer(uint32 count, framebuffer *fbo)
 {
-    glGenFramebuffers(1, (GLuint*)fbo->id);
-
-    return false;
+    glGenFramebuffers(count, &fbo->fbo_id);
+    
+    return true;
 }
 
+bool xe_graphics::graphics_device_gl::create_render_buffer(uint32 count, framebuffer *fbo)
+{
+    glGenRenderbuffers(count, &fbo->rb_id);
+
+    return true;
+}
 
 bool xe_graphics::graphics_device_gl::create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb)
 {
     vb->data = vertices;
 
-    glGenBuffers(1, (GLuint*)&vb->id);
+    glGenBuffers(1, &vb->id);
     glBindBuffer(GL_ARRAY_BUFFER, vb->id);
     glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat), vb->data, GL_STATIC_DRAW);
 
@@ -442,7 +515,7 @@ bool xe_graphics::graphics_device_gl::create_index_buffer(uint32 *indices, uint3
 {
     ib->data = indices;
 
-    glGenBuffers(1, (GLuint*)&ib->id);
+    glGenBuffers(1, &ib->id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
 
@@ -454,7 +527,7 @@ bool xe_graphics::graphics_device_gl::create_index_buffer(uint32 *indices, uint3
 
 bool xe_graphics::graphics_device_gl::create_vertex_array(vertex_array *va)
 {
-    glGenVertexArrays(1, (GLuint*)&va->id);
+    glGenVertexArrays(1, &va->id);
     
     return true;
 }
@@ -521,12 +594,12 @@ bool xe_graphics::graphics_device_gl::set_index_buffer(vertex_array *va, index_b
 
 void xe_graphics::graphics_device_gl::destroy_texture2D(texture2D * tex)
 {
-    glDeleteTextures(1, (GLuint*)&tex->id);
+    glDeleteTextures(1, &tex->id);
 }
 
 void xe_graphics::graphics_device_gl::destroy_framebuffer(framebuffer * fbo)
 {
-    glDeleteFramebuffers(1, (GLuint*)fbo->id);
+    glDeleteFramebuffers(1, &fbo->fbo_id);
 }
 
 void xe_graphics::graphics_device_gl::start_execution()

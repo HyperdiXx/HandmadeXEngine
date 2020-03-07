@@ -194,12 +194,33 @@ namespace xe_render
         graphics_device->bind_shader(shd);
 
         glm::mat4 view_projection = cam->getViewProjection();
-        graphics_device->set_mat4("viewproj", view_projection, shd);
-        graphics_device->set_mat4("model", mod, shd);
+
+        glm::mat4 mvp = view_projection * mod;
+
+        graphics_device->set_mat4("mvp", mvp, shd);
 
         graphics_device->bind_vertex_array(q->vertex_array);
 
         graphics_device->draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
+    void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform)
+    {
+        xe_graphics::graphics_device *device = xe_render::get_device();
+
+        glm::vec3 light_color = glm::vec3(1.0f);
+        real32 intens = 1.0f;
+
+        if (directional_light)
+        {
+            light_color = directional_light->color;
+            intens = directional_light->entensity;
+        }
+
+        device->bind_shader(shd);
+        device->set_float("intensity", intens, shd);
+        device->set_vec3("dir_light_color", light_color, shd);
+        device->set_vec3("light_pos", transform->position, shd);
     }
 
     void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, XEngine::PerspectiveCamera *cam)
@@ -207,7 +228,7 @@ namespace xe_render
         xe_graphics::graphics_device *device = xe_render::get_device();
 
         device->enable(GL_DEPTH_TEST);
-
+   
         glm::mat4 model_matrix = glm::mat4(1.0f);
 
         model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, -5.0f, -10.0f));
@@ -221,6 +242,7 @@ namespace xe_render
         device->bind_shader(shd);
         device->set_mat4("mvp", mvp, shd);
         device->set_mat4("model", model_matrix, shd);
+
 
         xe_assets::node *root = mod->root;
 

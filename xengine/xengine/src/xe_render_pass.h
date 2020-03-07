@@ -71,6 +71,10 @@ namespace xe_graphics
         xe_ecs::entity ent;
         xe_assets::model *model;
         xe_assets::model *model_tree;
+        xe_ecs::entity light_ent;
+
+        xe_graphics::framebuffer fbo;
+        xe_graphics::texture2D color_texture;
     };
 
     class gamma_correction_pass : public render_pass

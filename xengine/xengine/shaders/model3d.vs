@@ -6,11 +6,12 @@ layout (location = 2) in vec2 iUV;
 
 out vec2 uv;
 
+uniform mat4 mvp;
 uniform mat4 model;
-uniform mat4 viewproj;
 
 void main()
 {
     uv = iUV;
-    gl_Position = viewproj * model * vec4(iPos, 1.0);
+    vec4 world_pos = model * vec4(iPos, 1.0);
+    gl_Position = mvp * vec4(iPos, 1.0);
 }

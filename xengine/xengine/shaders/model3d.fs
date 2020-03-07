@@ -15,7 +15,13 @@ vec3 gamma_correction(vec3 color)
 void main()
 {
     vec3 diffuse = gamma_correction(texture(tex_diff1, uv).rgb);
+    
+    vec3 normalt = vec3(texture(tex_norm1, uv).rgb);
+	//vec3 spect = vec3(texture(tex_spec1, uv).rgb);
 	
-    frag_color = vec4(diffuse, 1.0);
-    //frag_color = texture(tex_diff1, uv);    
+    normalt = normalize(normalt * 2.0 - 1.0);
+	
+	vec3 res = diffuse;
+
+    frag_color = vec4(res, 1.0);  
 }

@@ -70,5 +70,22 @@ namespace xe_graphics
         shader *model_shader;
         xe_ecs::entity ent;
         xe_assets::model *model;
+        xe_assets::model *model_tree;
+    };
+
+    class gamma_correction_pass : public render_pass
+    {
+    public:
+        void init() override;
+        void clear() override;
+
+        void load_resources() override;
+        void unload_resources() override;
+
+        void render() override;
+
+        void update(float dt) override;
+    private:
+        shader* gmshd;
     };
 }

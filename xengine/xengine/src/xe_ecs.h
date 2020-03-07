@@ -94,10 +94,7 @@ namespace xe_ecs
         float near_plane = 0.0f;
         float far_plane = 0.0f;
 
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 pos = glm::vec3(0.0f, 0.0f, 1.0f);
-        glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
-
+        
         glm::mat4 view, projection, view_projection;
         glm::mat4 inv_view, inv_projection, inv_vp;
 
@@ -109,7 +106,15 @@ namespace xe_ecs
 
     class camera3d_component : public component
     {
+        float near_plane;
+        float far_plane;
 
+        void setup_projection();
+        void update();
+
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 pos = glm::vec3(0.0f, 0.0f, 1.0f);
+        glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
     };
 
     struct material_component : public component

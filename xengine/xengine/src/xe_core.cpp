@@ -3,6 +3,7 @@
 #include "xe_platform.h"
 
 #include <stdio.h>
+#include <fstream>
 
 namespace xe_core
 {
@@ -28,5 +29,25 @@ namespace xe_core
         }
 
         return res;
+    }
+
+    std::string read_file_string(const char *file_path)
+    {
+        std::ifstream file(file_path);
+        if (file.fail() || !file.is_open())
+        {
+            printf("Failed to open file: %s\n!!!", file_path);
+            return "";
+        }
+
+        std::string source;
+        std::string line;
+
+        while (getline(file, line))
+        {
+            source.append(line + '\n');
+        }
+
+        return source;
     }
 }

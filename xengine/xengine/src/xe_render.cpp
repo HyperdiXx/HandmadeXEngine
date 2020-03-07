@@ -16,30 +16,44 @@ namespace xe_render
 
     xe_graphics::shader *simple_shader = nullptr;
     xe_graphics::shader *model_shader = nullptr;
+    xe_graphics::shader *gamma_correction_shader = nullptr;
     
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
- 
+
+    xe_graphics::vertex_array quadVao;
+
     using namespace xe_graphics;
 
     void init_render()
     {
-        xe_ecs::camera2d_component camera = get_camera();
+        xe_ecs::camera2d_component camera = get_camera2D();
 
-        load_shaders();
+        bool32 loaded = load_shaders();
     }
 
-    void load_shaders()
+    bool32 load_shaders()
     {
         xe_graphics::graphics_device *device = get_device();
 
         simple_shader = new xe_graphics::shader();
         model_shader = new xe_graphics::shader();
+        gamma_correction_shader = new xe_graphics::shader();
 
-        device->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs", simple_shader);
-        device->create_shader("shaders/model3d.vs", "shaders/model3d.fs", model_shader);
+        bool32 res = device->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs", simple_shader);
+        
+        res = device->create_shader("shaders/model3d.vs", "shaders/model3d.fs", model_shader);
+       
+        res = device->create_shader("shaders/quad.vs", "shaders/gamma_correction.fs", gamma_correction_shader);
 
+        if (!res)
+        {
+            xe_utility::error("loading shader");
+            return false;
+        }
+            
         xe_utility::info("Shaders was loaded!!!");
+        return true;
     }
 
     void clear()
@@ -47,11 +61,17 @@ namespace xe_render
 
     }
 
-    xe_ecs::camera2d_component& get_camera() 
+    xe_ecs::camera2d_component& get_camera2D() 
     {
-        static xe_ecs::camera2d_component camera;
-        return camera;
-    };
+        static xe_ecs::camera2d_component camera2D;
+        return camera2D;
+    }
+    
+    xe_ecs::camera3d_component& get_camera3D()
+    {
+        static xe_ecs::camera3d_component camera3D;
+        return camera3D;
+    };    
     
     void set_device(xe_graphics::graphics_device *device)
     {
@@ -61,6 +81,11 @@ namespace xe_render
     void set_render_pass(xe_graphics::render_pass *pass)
     {
         active_render_pass = pass;
+    }
+
+    void set_active_framebuffer(xe_graphics::framebuffer *fbo)
+    {
+        active_framebuffer = fbo;
     }
 
     xe_graphics::graphics_device* get_device() { return graphics_device; }
@@ -73,6 +98,11 @@ namespace xe_render
     xe_graphics::shader *get_model_shader()
     {
         return model_shader;
+    }
+
+    xe_graphics::shader *get_gamma_correction_shader()
+    {
+        return gamma_correction_shader;
     }
 
     bool32 create_mesh(xe_assets::mesh *meh)
@@ -121,6 +151,19 @@ namespace xe_render
         graphics_device->set_index_buffer(q->vertex_array, q->index_buffer);
         
         return true;
+    }
+
+    bool32 create_full_quad()
+    {
+        glGenVertexArrays(1, &quadVao.id);
+
+        return true;
+    }
+
+    void draw_full_quad()
+    {
+        graphics_device->bind_vertex_array(&quadVao);
+        graphics_device->draw_array(GL_TRIANGLES, 0, 6);
     }
 
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam)
@@ -173,8 +216,10 @@ namespace xe_render
         glm::mat4 view_matrix = cam->getViewMatrix();
         glm::mat4 proj_matrix = cam->getProjectionMatrix();
 
+        glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
+
         device->bind_shader(shd);
-        device->set_mat4("viewproj", proj_matrix * view_matrix, shd);
+        device->set_mat4("mvp", mvp, shd);
         device->set_mat4("model", model_matrix, shd);
 
         xe_assets::node *root = mod->root;

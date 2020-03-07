@@ -29,6 +29,15 @@ namespace xe_graphics
         void bind_buffer(const index_buffer *ib) override;
         void bind_vertex_array(const vertex_array *va) override;
         void bind_framebuffer(const framebuffer *fbo) override;
+        void bind_for_read(const framebuffer *fbo) override;
+        void bind_for_write(const framebuffer *fbo) override;
+
+        void add_color_texture2D(texture2D *texture, uint32 color_attachment_id, framebuffer *fbo) override;
+        void add_depth_texture2D(texture2D *depth, framebuffer *fbo) override;
+        void add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo) override;
+        void set_texture2D(uint32 type, texture2D *texture) override;
+
+        void check_framebuffer() override;
 
         void unbind_texture2d() override;
         void unbind_vertex_array() override;
@@ -60,7 +69,8 @@ namespace xe_graphics
         bool set_index_buffer(vertex_array *va, index_buffer *ib) override;
 
         void destroy_texture2D(texture2D *tex) override;
-
+        void destroy_framebuffer(framebuffer *fbo) override;
+        
         void start_execution() override;
         void end_execution() override;
     private:

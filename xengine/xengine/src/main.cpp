@@ -25,9 +25,7 @@
 
 */
 
-
-
-
+// Engine 
 #include "xe_platform.h"
 #include <math/xemath.h>
 #include "config.h"
@@ -221,19 +219,6 @@ void start_png_parser()
     parse_png(png_image);
 }
 
-#ifdef DEBUG
-int main()
-{
-    using namespace XEngine;
-
-    TestApp testapp;
-
-    testapp.run();
-
-    return (0);
-}
-#endif
-
 internal void
 win32_init_gl(HWND window_handle)
 {
@@ -326,9 +311,41 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
     return result;
 }
 
+void set_pos(int posX, int posY)
+{
+    int startX = posX;
+    int startY = posX;
+}
+
+#define DEBUG
+
 int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
 { 
+#ifdef DEBUG
+
+    AllocConsole();
+    SetConsoleTitle("Dev console");
+
+    //HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
+    //int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
+    //FILE* hf_out = _fdopen(hCrt, "w");
+    //setvbuf(hf_out, NULL, _IONBF, 1);
+    //*stdout = *hf_out;
+
+    FILE *out_f;
+    freopen_s(&out_f, "CONOUT$", "w", stdout);
+
+    //HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
+    //hCrt = _open_osfhandle((long)handle_in, _O_TEXT);
+    //FILE* hf_in = _fdopen(hCrt, "r");
+    //setvbuf(hf_in, NULL, _IONBF, 128);
+    //*stdin = *hf_in;
+
+
+
+#endif
+
     WNDCLASS window = {};
 
     window.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -369,6 +386,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             render_pass3D *main_render_pass = new render_pass3D();
             main_render_pass->init();
 
+            gamma_correction_pass *gamma_correction = new gamma_correction_pass();
+            gamma_correction->init();
+
             vec4f clear_color = {};
 
             clear_color.x = 0.9f;
@@ -390,10 +410,13 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
               
                 main_render_pass->update(1.0f);
-                main_render_pass->render();                
+                main_render_pass->render();
                 
-                //base_render_pass->render();
-   
+                base_render_pass->update(0.16f);
+                base_render_pass->render();
+
+                //gamma_correction->render();
+
                 GLenum err;
                 while ((err = glGetError()) != GL_NO_ERROR)
                 {

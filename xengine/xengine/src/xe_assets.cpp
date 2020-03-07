@@ -1,5 +1,6 @@
 #include "xe_assets.h"
 
+#include "runtime/core/utility/log.h"
 #include <glad/glad.h>
 
 namespace xe_assets
@@ -315,6 +316,11 @@ namespace xe_assets
         }
 
         model *result = parse_static_model(scene, path);
+
+        if(result)
+            xe_utility::info("Model " + result->root->name + " was loaded!");
+        else
+            xe_utility::error("Loading of model " + result->root->name + " was failed!");
 
         return result;
     }

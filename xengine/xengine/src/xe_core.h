@@ -4,6 +4,7 @@
 #define XENGINE_CORE_H
 
 #include "types.h"
+#include <string>
 
 namespace xe_core
 {
@@ -14,6 +15,7 @@ namespace xe_core
     };
 
     file read_whole_file(const char *filename);
+    std::string read_file_string(const char *file_path);
 }
 
 #endif // !XENGINE_CORE_H

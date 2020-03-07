@@ -3,11 +3,11 @@
 #ifndef XENGINE_GRAPHICS_RESOURCES_H
 #define XENGINE_GRAPHICS_RESOURCES_H
 
-#include <vector>
-
 #include "xe_graphics_res_desc.h"
 
 #include <glm/glm.hpp>
+#include <vector>
+#include <glad/glad.h>
 
 namespace xe_graphics
 {
@@ -33,6 +33,10 @@ namespace xe_graphics
     struct framebuffer
     {
         uint32 id;
+        std::vector<texture2D*> color_textures;
+        texture2D *depth_texture;
+        texture2D *stencil_texture;
+        std::vector<GLenum> buffers;
     };
 
     enum ElementType

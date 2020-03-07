@@ -154,7 +154,7 @@ public:
         return *this;
     }
 
-    xestring &erase(uint32 index)
+    xestring& erase(uint32 index)
     {
         if (index > m_size - 1 || !m_size)
             return *this;
@@ -165,7 +165,7 @@ public:
     }
 
     // Modifies same object memory place
-    xestring &substr(uint32 pos, uint32 count)
+    xestring& substr(uint32 pos, uint32 count)
     {
         if (pos > m_size - 1 || count == 0)
             return *this;
@@ -218,12 +218,20 @@ public:
 
     void allocate(const char* str)
     {
-
+        uint32 len = length(str);
+        char *n_str = (char*)malloc(sizeof(char) * m_capacity);
+        memcpy(n_str, str, len + m_size + 1);
+        free(m_data);
+        m_data = n_str;
     }
 
     void reserve(uint32 length)
     {
-
+        m_capacity = length;
+        char *n_str = (char*)malloc(sizeof(char) * m_capacity);
+        memcpy(n_str, m_data, m_size + 1);
+        free(m_data);
+        m_data = n_str;
     }
 
     char first() const

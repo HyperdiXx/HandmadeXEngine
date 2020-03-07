@@ -32,7 +32,16 @@ namespace xe_graphics
         virtual void bind_buffer(const index_buffer *ib) = 0;
         virtual void bind_vertex_array(const vertex_array *va) = 0;
         virtual void bind_framebuffer(const framebuffer *fbo) = 0;
-        
+        virtual void bind_for_read(const framebuffer *fbo) = 0;
+        virtual void bind_for_write(const framebuffer *fbo) = 0;
+
+        virtual void add_color_texture2D(texture2D *texture, uint32 color_attachment_id, framebuffer *fbo) = 0;
+        virtual void add_depth_texture2D(texture2D *depth, framebuffer *fbo) = 0;
+        virtual void add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo) = 0;
+        virtual void set_texture2D(uint32 type, texture2D *texture) = 0;
+
+        virtual void check_framebuffer() = 0;
+
         virtual void unbind_texture2d() = 0;
         virtual void unbind_vertex_array() = 0;
         virtual void unbind_shader() = 0;
@@ -70,6 +79,7 @@ namespace xe_graphics
         virtual bool set_index_buffer(vertex_array *va, index_buffer *ib) = 0;
 
         virtual void destroy_texture2D(texture2D *tex) = 0;
+        virtual void destroy_framebuffer(framebuffer *fbo) = 0;
 
         inline int get_screen_width() const { return screen_width; }
         inline int get_screen_height() const { return screen_height; }

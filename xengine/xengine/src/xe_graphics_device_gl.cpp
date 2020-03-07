@@ -8,6 +8,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
 
+#define MAX_COLOR_ATT 4
+
 using namespace xe_graphics;
 
 xe_graphics::graphics_device_gl::graphics_device_gl(HWND window_handle, bool fullscreen)
@@ -152,6 +154,63 @@ void xe_graphics::graphics_device_gl::bind_framebuffer(const framebuffer *fbo)
     }
 }
 
+void xe_graphics::graphics_device_gl::bind_for_read(const framebuffer * fbo)
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->id);
+}
+
+void xe_graphics::graphics_device_gl::bind_for_write(const framebuffer *fbo)
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->id);
+}
+
+void xe_graphics::graphics_device_gl::add_color_texture2D(texture2D *texture, uint32 color_attachment_id, framebuffer *fbo)
+{
+    if (color_attachment_id > MAX_COLOR_ATT)
+        return;
+
+    GLuint type_of_tex = GL_COLOR_ATTACHMENT0 + color_attachment_id;
+
+    fbo->color_textures[color_attachment_id] = texture;
+    set_texture2D(type_of_tex, texture);
+    fbo->buffers.push_back(type_of_tex);
+    glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());
+}
+
+void xe_graphics::graphics_device_gl::add_depth_texture2D(texture2D * depth, framebuffer * fbo)
+{
+}
+
+void xe_graphics::graphics_device_gl::add_depth_texture2D(uint32 w, uint32 h, framebuffer * fbo)
+{
+}
+
+void xe_graphics::graphics_device_gl::set_texture2D(uint32 type, texture2D *texture)
+{
+    glFramebufferTexture(GL_FRAMEBUFFER, type, texture->id, 0);
+}
+
+void xe_graphics::graphics_device_gl::check_framebuffer()
+{
+    GLuint error = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if(error != GL_FRAMEBUFFER_COMPLETE)
+    {
+        // Log::error during framebuffer setup;
+
+        switch (error)
+        {
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+            break;
+
+        }
+    }
+
+    
+}
+
 void xe_graphics::graphics_device_gl::unbind_texture2d()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -289,12 +348,12 @@ bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, const c
 
 bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, const char *fragment_code, shader *shd)
 {
-    xe_core::file file_vs = xe_core::read_whole_file(vertex_code);
-    xe_core::file file_fs = xe_core::read_whole_file(fragment_code);
+    std::string file_vs = xe_core::read_file_string(vertex_code);
+    std::string file_fs = xe_core::read_file_string(fragment_code);
     
-    const GLchar *vs_file_code = (GLchar*)file_vs.data;
-    const GLchar *fs_file_code = (GLchar*)file_fs.data;
-
+    const GLchar *vs_file_code = (GLchar*)file_vs.c_str();
+    const GLchar *fs_file_code = (GLchar*)file_fs.c_str();
+    
     unsigned int vertex, fragment;
 
     vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -317,7 +376,7 @@ bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, con
         GLint buflength;
         glGetShaderInfoLog(vertex, length, &buflength, buffer);
 
-        xe_utility::error("Vertex shader error!!!");
+        xe_utility::error("Vertex shader");
         xe_utility::error(buffer);
 
         delete[] buffer;
@@ -337,7 +396,7 @@ bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, con
         GLint buflength;
         glGetShaderInfoLog(fragment, length, &buflength, buffer);
 
-        xe_utility::error("Fragment shader error!!!");
+        xe_utility::error("Fragment shader");
         xe_utility::error(buffer);
 
         delete[] buffer;
@@ -463,6 +522,11 @@ bool xe_graphics::graphics_device_gl::set_index_buffer(vertex_array *va, index_b
 void xe_graphics::graphics_device_gl::destroy_texture2D(texture2D * tex)
 {
     glDeleteTextures(1, (GLuint*)&tex->id);
+}
+
+void xe_graphics::graphics_device_gl::destroy_framebuffer(framebuffer * fbo)
+{
+    glDeleteFramebuffers(1, (GLuint*)fbo->id);
 }
 
 void xe_graphics::graphics_device_gl::start_execution()

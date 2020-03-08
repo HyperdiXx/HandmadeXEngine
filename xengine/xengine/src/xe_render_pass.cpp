@@ -71,8 +71,8 @@ void xe_graphics::render_pass2D::update(float dt)
 
     transform_component *transform = main_ent.find_component<transform_component>();
     
-    transform->position += glm::vec3(0.0f, 1.0f, 0.0f) * 1.2f;
-    transform->scale += glm::vec3(1.0f, 1.0f, 0.0f) * 1.2f;
+    transform->position += glm::vec3(0.0f, 1.0f, 0.0f) * dt * 12.f;
+    transform->scale += glm::vec3(1.0f, 1.0f, 0.0f) * dt * 12.f;
 
     if (transform->position.y >= 720)
         transform->position.y = 0;
@@ -87,27 +87,34 @@ void xe_graphics::render_pass3D::init()
 {
     graphics_device *device = xe_render::get_device();
     
-    model_shader = xe_render::get_model_shader();
+    shader *model_shader = xe_render::get_model_shader();
+    shader *color_shader = xe_render::get_color_shader();
 
     device->bind_shader(model_shader);
     device->set_int("tex_diff", 0, model_shader);
+
+    device->bind_shader(color_shader);
+    device->set_vec3("color", glm::vec3(1.0f, 0.0f, 0.0f), color_shader);
 
     ent.add_component(new mesh_component());
     ent.add_component(new transform_component());
 
     mesh_component *mesh = ent.find_component<mesh_component>();
-    //mesh->model_asset = xe_assets::load_model_from_file("engineassets/nano/nanosuit.obj");
-    model = xe_assets::load_model_from_file("engineassets/nano/nanosuit.obj");
+    mesh->model_asset = xe_assets::load_model_from_file("engineassets/nano/nanosuit.obj");
+
+    mesh_component *cube = new mesh_component();
+    cube->model_asset = xe_assets::load_model_from_file("engineassets/cube.obj");
 
     dir_light *dl = new dir_light();
-    dl->color = glm::vec3(0.7f, 0.0f, 0.0f);
-    dl->entensity = 0.9f;
+    dl->color = glm::vec3(0.8f, 0.7f, 0.8f);
+    dl->entensity = 0.9f;   
 
     transform_component *light_transform = new transform_component();
-    light_transform->position = glm::vec3(0.0f, 2.0f, 2.0f);
+    light_transform->position = glm::vec3(3.0f, 1.0f, 150.0f);
 
     light_ent.add_component(dl);
     light_ent.add_component(light_transform);
+    light_ent.add_component(cube);
 
     device->create_texture2D(1280, 720, &color_texture);
    
@@ -140,49 +147,69 @@ void xe_graphics::render_pass3D::unload_resources()
 
 void xe_graphics::render_pass3D::render()
 {
-    graphics_device *device = xe_render::get_device(); 
     XEngine::PerspectiveCamera cam = get_camera3d();
 
     dir_light *light = light_ent.find_component<dir_light>();
     transform_component *transform = light_ent.find_component<transform_component>();
 
-    //device->bind_framebuffer(&fbo);
+    mesh_component *mesh_light = light_ent.find_component<mesh_component>();
+    shader *color_shader = xe_render::get_color_shader();
+    if (mesh_light != nullptr)
+        xe_render::draw_model(mesh_light->model_asset, color_shader, &cam);
 
-    if(light)
+    mesh_component *model_mesh = ent.find_component<mesh_component>();
+    shader *model_shader = xe_render::get_model_shader();
+
+    if (light)
         xe_render::apply_dir_light(model_shader, light, transform);
-    
-    xe_render::draw_model(model, model_shader, &cam);
 
-    //device->unbind_framebuffer();
+    xe_render::draw_model(model_mesh->model_asset, model_shader, &cam);
 }
 
 void xe_graphics::render_pass3D::update(float dt)
 {
+    float speed = 12.0f;
+
     if (xe_input::pressed(xe_input::KEYBOARD_W))
     {
-        camera3D.camPos -= 2.0f * glm::vec3(0.0f, 0.0f, 1.0f);
+        camera3D.camPos -= speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
     }
 
     if (xe_input::pressed(xe_input::KEYBOARD_S))
     {
-        camera3D.camPos += 2.0f * glm::vec3(0.0f, 0.0f, 1.0f);
+        camera3D.camPos += speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
     }
 
     if (xe_input::pressed(xe_input::KEYBOARD_A))
     {
-        camera3D.camPos -= 2.0f * glm::vec3(1.0f, 0.0f, 0.0f);
+        camera3D.camPos -= speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
     }
 
     if (xe_input::pressed(xe_input::KEYBOARD_D))
     {
-        camera3D.camPos += 2.0f * glm::vec3(1.0f, 0.0f, 0.0f);
+        camera3D.camPos += speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
+    }
+
+    if (xe_input::pressed(xe_input::KEYBOARD_V))
+    {
+        transform_component *tr = light_ent.find_component<transform_component>();
+        tr->position.x += 0.8f * sin(dt);
+        tr->position.z += 0.8f * cos(dt);
+    }
+
+    if (xe_input::pressed(xe_input::KEYBOARD_B))
+    {
+        transform_component *tr = light_ent.find_component<transform_component>();
+        tr->position.x -= 0.8f * sin(dt);
+        tr->position.z -= 0.8f * cos(dt);
     }
 
     transform_component *light_transform = light_ent.find_component<transform_component>();
 
     if (light_transform)
     {
-        //light_transform->position += 1.1f * glm::vec3(1.0f, 0.0f, 0.0f);        
+        //light_transform->position.x += 2.2f * sin(dt);
+        //light_transform->position.z += 2.2f * cos(dt);
     }        
 }
 

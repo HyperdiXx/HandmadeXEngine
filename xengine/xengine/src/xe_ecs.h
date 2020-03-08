@@ -81,27 +81,35 @@ namespace xe_ecs
     class mesh_component : public component
     {
     public:
-        //xe_assets::model *model_asset;
+        xe_assets::model *model_asset;
     };
 
     
     class camera2d_component : public component
     {
     public:
-        float width = 0.0f;
-        float height = 0.0f;
-        float fov = 60.0f;
+        real32 width = 0.0f;
+        real32 height = 0.0f;        
 
-        float near_plane = 0.0f;
-        float far_plane = 0.0f;
+        glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 
-        
-        glm::mat4 view, projection, view_projection;
-        glm::mat4 inv_view, inv_projection, inv_vp;
+        glm::mat4 view = glm::mat4(1.0f), projection, view_projection;
+        glm::mat4 inv_vp;
 
-        void setup_projection(float n, float f, float w, float h, float fov);
-        void update_camera();
-        void transform_camera(transform_component& transform);
+        void setup_projection(real32 left, real32 right, real32 bottom, real32 top)
+        {
+            projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+            view_projection = projection * view;
+        }
+
+        void update_camera()
+        {
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
+
+            view = glm::inverse(transform);
+            view_projection = projection * view;
+        }
     };
 
 
@@ -110,6 +118,7 @@ namespace xe_ecs
     public:
         float near_plane;
         float far_plane;
+        float fov = 60.0f;
 
         void setup_projection();
         void update_input();

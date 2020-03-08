@@ -24,6 +24,9 @@ namespace xe_platform
         static window_handle window;
         return window;
     }
+
+    bool32 load_library(const char *name);
+
 #endif
 }
 

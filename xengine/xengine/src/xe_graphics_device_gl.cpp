@@ -75,6 +75,11 @@ void xe_graphics::graphics_device_gl::disable(int type)
     glDisable(type);
 }
 
+void xe_graphics::graphics_device_gl::set_cull_mode(int type)
+{
+    glCullFace(type);
+}
+
 void xe_graphics::graphics_device_gl::draw_array(int mode, uint32 first, uint32 count)
 {
     glDrawArrays(mode, first, count);

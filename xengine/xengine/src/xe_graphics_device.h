@@ -21,6 +21,7 @@ namespace xe_graphics
         virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) = 0;
         virtual void enable(int type) = 0;
         virtual void disable(int type) = 0;
+        virtual void set_cull_mode(int type) = 0;
         virtual void draw_array(int mode, uint32 first, uint32 count) = 0;
         virtual void draw_indexed(int mode, uint32 count, int type, void *ind) = 0;
 

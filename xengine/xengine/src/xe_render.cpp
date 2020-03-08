@@ -17,6 +17,7 @@ namespace xe_render
     xe_graphics::shader *simple_shader = nullptr;
     xe_graphics::shader *model_shader = nullptr;
     xe_graphics::shader *gamma_correction_shader = nullptr;
+    xe_graphics::shader *color = nullptr;
     
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
@@ -39,12 +40,12 @@ namespace xe_render
         simple_shader = new xe_graphics::shader();
         model_shader = new xe_graphics::shader();
         gamma_correction_shader = new xe_graphics::shader();
+        color = new xe_graphics::shader();
 
         bool32 res = device->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs", simple_shader);
-        
-        res = device->create_shader("shaders/model3d.vs", "shaders/model3d.fs", model_shader);
-       
+        res = device->create_shader("shaders/model3d.vs", "shaders/model3d.fs", model_shader);       
         res = device->create_shader("shaders/quad.vs", "shaders/gamma_correction.fs", gamma_correction_shader);
+        res = device->create_shader("shaders/model3d.vs", "shaders/color.fs", color);
 
         if (!res)
         {
@@ -103,6 +104,11 @@ namespace xe_render
     xe_graphics::shader *get_gamma_correction_shader()
     {
         return gamma_correction_shader;
+    }
+
+    xe_graphics::shader * get_color_shader()
+    {
+        return color;
     }
 
     bool32 create_mesh(xe_assets::mesh *meh)
@@ -178,8 +184,7 @@ namespace xe_render
         model = glm::scale(model, glm::vec3(100, 100, 100));
 
         glm::mat4 view_projection = cam->getViewProjection();
-        graphics_device->set_mat4("viewproj", view_projection, shd);
-        graphics_device->set_mat4("model", model, shd);
+        graphics_device->set_mat4("mvp", view_projection * model, shd);
 
         graphics_device->bind_vertex_array(q->vertex_array);
         
@@ -228,7 +233,9 @@ namespace xe_render
         xe_graphics::graphics_device *device = xe_render::get_device();
 
         device->enable(GL_DEPTH_TEST);
-   
+        device->enable(GL_CULL_FACE);
+        device->set_cull_mode(GL_BACK);
+
         glm::mat4 model_matrix = glm::mat4(1.0f);
 
         model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, -5.0f, -10.0f));
@@ -242,7 +249,6 @@ namespace xe_render
         device->bind_shader(shd);
         device->set_mat4("mvp", mvp, shd);
         device->set_mat4("model", model_matrix, shd);
-
 
         xe_assets::node *root = mod->root;
 
@@ -260,6 +266,7 @@ namespace xe_render
         device->unbind_shader();
 
         device->disable(GL_DEPTH_TEST);
+        device->disable(GL_CULL_FACE);
     }
 
     void draw_mesh(xe_assets::mesh *msh, xe_graphics::shader *shd)
@@ -294,7 +301,7 @@ namespace xe_render
         {
             glBindVertexArray(msh->vao);
             device->draw_indexed(GL_TRIANGLES, msh->indices.size(), GL_UNSIGNED_INT, 0);
-            //glBindVertexArray(0);
+            glBindVertexArray(0);
         }
     }
 }

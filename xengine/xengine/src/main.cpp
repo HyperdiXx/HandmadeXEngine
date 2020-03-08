@@ -40,6 +40,8 @@
 #include <thirdparty/imguit/imgui_impl_opengl3.h>
 #include <thirdparty/imguit/imgui_impl_win32.h>
 
+#include "xe_input.h"
+
 static int WINDOW_WIDTH_SIZE = 1280;
 static int WINDOW_HEIGHT_SIZE = 720;
 
@@ -341,9 +343,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     //FILE* hf_in = _fdopen(hCrt, "r");
     //setvbuf(hf_in, NULL, _IONBF, 128);
     //*stdin = *hf_in;
-
-
-
 #endif
 
     WNDCLASS window = {};
@@ -371,6 +370,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             using namespace xe_graphics;
             using namespace xe_render;
             
+            xe_input::init();
+
             graphics_device *device = new graphics_device_gl(window_handle, false);
             set_device(device);
             win32_init_gl_loader();
@@ -391,10 +392,12 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
             vec4f clear_color = {};
 
-            clear_color.x = 0.9f;
-            clear_color.y = 0.9f;
-            clear_color.z = 0.9f;
+            clear_color.x = 0.0f;
+            clear_color.y = 0.0f;
+            clear_color.z = 0.0f;
 
+            ImGuiIO& io = ImGui::GetIO();
+            
             using namespace xe_render;
 
             while (is_open)
@@ -405,14 +408,16 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                     TranslateMessage(&message);
                     DispatchMessage(&message);
                 }
+                
+                xe_input::poll_events();
                
                 device->clear_color(clear_color.x, clear_color.y, clear_color.z, 1.0f);
                 device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
               
-                main_render_pass->update(1.0f);
+                main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
-                base_render_pass->update(0.16f);
+                base_render_pass->update(io.DeltaTime);
                 base_render_pass->render();
 
                 //gamma_correction->render();

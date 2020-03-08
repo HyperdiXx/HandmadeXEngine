@@ -39,6 +39,7 @@ namespace xe_render
     xe_graphics::shader* get_simple_shader();
     xe_graphics::shader* get_model_shader();
     xe_graphics::shader* get_gamma_correction_shader();
+    xe_graphics::shader* get_color_shader();
 
     xe_ecs::camera2d_component& get_camera2D();
     xe_ecs::camera3d_component& get_camera3D();

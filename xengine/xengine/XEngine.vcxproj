@@ -187,6 +187,7 @@
     <ClCompile Include="src\xe_assets.cpp" />
     <ClCompile Include="src\xe_core.cpp" />
     <ClCompile Include="src\xe_input.cpp" />
+    <ClCompile Include="src\xe_platform.cpp" />
     <ClCompile Include="src\xe_render.cpp" />
     <ClCompile Include="src\xe_graphics_device_gl.cpp" />
     <ClCompile Include="src\xe_render_pass.cpp" />

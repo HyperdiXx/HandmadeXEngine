@@ -67,10 +67,10 @@ namespace xe_graphics
         inline XEngine::PerspectiveCamera& get_camera3d() { return camera3D; }
     private:            
         XEngine::PerspectiveCamera camera3D;
-        shader *model_shader;
+        
         xe_ecs::entity ent;
         xe_assets::model *model;
-        xe_assets::model *model_tree;
+        xe_assets::model *model_cube;
         xe_ecs::entity light_ent;
 
         xe_graphics::framebuffer fbo;

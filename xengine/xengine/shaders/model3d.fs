@@ -21,7 +21,8 @@ vec3 gamma_correction(vec3 color)
 
 void main()
 {
-    vec3 diffuse = gamma_correction(texture(tex_diff1, uv).rgb);
+    //vec3 diffuse = gamma_correction(texture(tex_diff1, uv).rgb);    
+    vec3 diffuse = texture(tex_diff1, uv).rgb;
     vec3 ambient = dir_light_color * intensity;
 
     //vec3 normalt = vec3(texture(tex_norm1, uv).rgb);

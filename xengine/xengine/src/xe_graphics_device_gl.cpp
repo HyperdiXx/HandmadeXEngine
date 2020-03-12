@@ -205,22 +205,28 @@ void xe_graphics::graphics_device_gl::add_depth_texture2D(uint32 w, uint32 h, fr
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, fbo->depth_texture->id, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo->depth_texture->id, 0);
     }
 
     bind_renderbuffer(fbo);
     set_depth_buffer_attachment(fbo);
 }
 
-void xe_graphics::graphics_device_gl::set_depth_buffer_attachment(const framebuffer * fbo)
+void xe_graphics::graphics_device_gl::set_depth_buffer_attachment(const framebuffer *fbo)
 {
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
 }
 
+texture2D& xe_graphics::graphics_device_gl::get_texture(uint32 number, const framebuffer *fbo)
+{
+    if(fbo && number >= 0 <= MAX_COLOR_ATT)
+        return *fbo->color_textures[number];
+}
+
 void xe_graphics::graphics_device_gl::set_texture2D(uint32 type, texture2D *texture)
 {
-    glFramebufferTexture(GL_FRAMEBUFFER, type, texture->id, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, type, GL_TEXTURE_2D, texture->id, 0);
 }
 
 void xe_graphics::graphics_device_gl::check_framebuffer()
@@ -364,8 +370,11 @@ bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, const c
     stbi_uc* image = stbi_load(path_res, &texture->desc.width, &texture->desc.height, &channels, 0);
 
     if (!image)
+    {
+        xe_utility::error("Failed to load texture2D: " + std::string(path));
         return false;
-
+    }
+        
     GLenum internal_format = 0, data_format = 0;
     if (channels == 4)
     {
@@ -410,7 +419,6 @@ bool xe_graphics::graphics_device_gl::create_texture2D(uint32 width, uint32 heig
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
     glBindTexture(GL_TEXTURE_2D, 0);

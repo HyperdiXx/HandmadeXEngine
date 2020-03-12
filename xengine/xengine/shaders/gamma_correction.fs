@@ -12,6 +12,5 @@ vec3 gamma_correction(vec3 input)
 
 void main()
 {
-	//frag_color =  vec4(gamma_correction(texture(tex_diff, out_uv).rgb), 1.0);
-	frag_color = vec4(1.0, 0.0, 1.0, 1.0);
+	frag_color =  vec4(gamma_correction(texture(tex_diff, out_uv).rgb), 1.0);
 }

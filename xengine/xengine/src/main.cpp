@@ -395,6 +395,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             clear_color.x = 0.0f;
             clear_color.y = 0.0f;
             clear_color.z = 0.0f;
+            clear_color.w = 1.0f;
 
             ImGuiIO& io = ImGui::GetIO();
             
@@ -411,7 +412,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 
                 xe_input::poll_events();
                
-                device->clear_color(clear_color.x, clear_color.y, clear_color.z, 1.0f);
+                device->clear_color(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
                 device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
               
                 main_render_pass->update(io.DeltaTime);
@@ -420,7 +421,10 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 base_render_pass->update(io.DeltaTime);
                 base_render_pass->render();
 
-                //gamma_correction->render();
+                texture2D pass_texture = main_render_pass->get_color_texture();
+
+                gamma_correction->set_color_texture(&pass_texture);
+                gamma_correction->render();
 
                 GLenum err;
                 while ((err = glGetError()) != GL_NO_ERROR)

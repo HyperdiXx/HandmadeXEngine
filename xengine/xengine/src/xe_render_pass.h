@@ -65,6 +65,7 @@ namespace xe_graphics
         void update(float dt) override;
 
         inline XEngine::PerspectiveCamera& get_camera3d() { return camera3D; }
+        inline xe_graphics::texture2D& get_color_texture() { return color_texture; }
     private:            
         XEngine::PerspectiveCamera camera3D;
         
@@ -89,7 +90,10 @@ namespace xe_graphics
         void render() override;
 
         void update(float dt) override;
+
+        void set_color_texture(texture2D *tex) { texture = tex; }
     private:
         shader* gmshd;
+        texture2D *texture;
     };
 }

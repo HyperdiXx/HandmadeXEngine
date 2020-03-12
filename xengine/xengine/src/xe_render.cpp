@@ -23,7 +23,7 @@ namespace xe_render
     xe_graphics::framebuffer *active_framebuffer = nullptr;
 
     xe_graphics::vertex_array quadVao;
-
+  
     using namespace xe_graphics;
 
     void init_render()
@@ -52,7 +52,7 @@ namespace xe_render
             xe_utility::error("loading shader");
             return false;
         }
-            
+    
         xe_utility::info("Shaders was loaded!!!");
         return true;
     }

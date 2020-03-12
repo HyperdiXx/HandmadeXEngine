@@ -42,7 +42,7 @@ namespace xe_graphics
         virtual void add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo) = 0;
         virtual void set_depth_buffer_attachment(const framebuffer *fbo) = 0;
         virtual void set_texture2D(uint32 type, texture2D *texture) = 0;
-
+        virtual texture2D& get_texture(uint32 number, const framebuffer *fbo) = 0;
         virtual void check_framebuffer() = 0;
 
         virtual void unbind_texture2d() = 0;

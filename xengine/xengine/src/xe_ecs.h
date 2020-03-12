@@ -4,6 +4,7 @@
 #define XENGINE_ECS_H
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "xe_graphics_resource.h"
 #include "xe_assets.h"

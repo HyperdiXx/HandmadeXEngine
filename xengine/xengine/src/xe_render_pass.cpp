@@ -154,6 +154,12 @@ void xe_graphics::render_pass3D::render()
 
     mesh_component *mesh_light = light_ent.find_component<mesh_component>();
     shader *color_shader = xe_render::get_color_shader();
+    
+    graphics_device *device = xe_render::get_device();
+
+    device->bind_framebuffer(&fbo);
+    device->clear_color(0.0f, 0.0f, 0.0f, 1.0f);
+    device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (mesh_light != nullptr)
         xe_render::draw_model(mesh_light->model_asset, color_shader, &cam);
 
@@ -164,6 +170,8 @@ void xe_graphics::render_pass3D::render()
         xe_render::apply_dir_light(model_shader, light, transform);
 
     xe_render::draw_model(model_mesh->model_asset, model_shader, &cam);
+   
+    device->unbind_framebuffer();
 }
 
 void xe_graphics::render_pass3D::update(float dt)
@@ -238,11 +246,15 @@ void xe_graphics::gamma_correction_pass::render()
 {
     graphics_device *device = xe_render::get_device();
 
+    if(texture != nullptr)
+        device->activate_bind_texture2d(texture);
+
     device->bind_shader(gmshd);
-    //device->set_int("tex_diff", 0, gmshd);
+    device->set_int("tex_diff", 0, gmshd);
     
     xe_render::draw_full_quad();
 
+    device->unbind_texture2d();
     device->unbind_shader();
 }
 

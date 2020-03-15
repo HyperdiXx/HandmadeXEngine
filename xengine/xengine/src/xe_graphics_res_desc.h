@@ -34,7 +34,9 @@ namespace xe_graphics
         COLOR, 
         HDR, 
         GREYSCALE,
-        LUT
+        LUT, 
+        CUBEMAP, 
+        DEPTH
     };
 
     enum TEXTURE_WRAPPING
@@ -70,7 +72,8 @@ namespace xe_graphics
 
     struct texture_desc
     {
-        TEXTURE_DIMENSION type;
+        TEXTURE_DIMENSION dimension;
+        TEXTURE_TYPE texture_type;
 
         int32 width = 0;
         int32 height = 0;

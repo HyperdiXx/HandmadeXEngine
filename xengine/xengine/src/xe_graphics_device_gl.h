@@ -20,8 +20,8 @@ namespace xe_graphics
         void disable(int type) override;
         void set_blend_func(int src, int dst) override;
         void set_cull_mode(int type) override;
-        void draw_array(int mode, uint32 first, uint32 count) override;
-        void draw_indexed(int mode, uint32 count, int type, void *ind) override;
+        void draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) override;
+        void draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) override;
        
         void activate_bind_texture2d(const texture2D *texture) override;
         void activate_texture2d(uint32 index) override;
@@ -63,19 +63,20 @@ namespace xe_graphics
         void set_mat3(const std::string &name, const glm::mat3 &mat, shader *shd) override;
         void set_mat4(const std::string &name, const glm::mat4 &mat, shader *shd) override;
 
-        bool create_texture2D(const char *path, texture2D *texture) override;
-        bool create_texture2D(const char *path, const char *dir, texture2D *texture) override;
-        bool create_texture2D(uint32 width, uint32 height, texture2D* texture) override;
-        bool create_shader(const char* vertex, const char* fragment, shader *shader) override;
-        bool create_framebuffer(const uint32 count, framebuffer *fbo) override;
-        bool create_render_buffer(const uint32 count, framebuffer *fbo) override;
-        bool create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) override;        
-        bool create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) override;
-        bool create_vertex_array(vertex_array *va) override;
-        bool create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) override;
-        bool set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout) override;
-        bool add_vertex_buffer(vertex_array *va, vertex_buffer *vb) override;
-        bool set_index_buffer(vertex_array *va, index_buffer *ib) override;
+        bool32 create_texture2D(const char *path, texture2D *texture) override;
+        bool32 create_texture2D(const char *path, const char *dir, texture2D *texture) override;
+        bool32 create_texture2D(uint32 width, uint32 height, texture2D* texture) override;
+        bool32 create_texture2D(const char *path, const char* dir, uint32 type, uint32 intern_format, uint32 format, texture2D* texture) override;
+        bool32 create_shader(const char* vertex, const char* fragment, shader *shader) override;
+        bool32 create_framebuffer(const uint32 count, framebuffer *fbo) override;
+        bool32 create_render_buffer(const uint32 count, framebuffer *fbo) override;
+        bool32 create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) override;        
+        bool32 create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) override;
+        bool32 create_vertex_array(vertex_array *va) override;
+        bool32 create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) override;
+        bool32 set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout) override;
+        bool32 add_vertex_buffer(vertex_array *va, vertex_buffer *vb) override;
+        bool32 set_index_buffer(vertex_array *va, index_buffer *ib) override;
 
         void set_tex_filter(uint32 filter, texture2D *tex) override;
 

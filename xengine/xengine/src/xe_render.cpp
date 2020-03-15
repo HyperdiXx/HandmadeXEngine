@@ -218,6 +218,17 @@ namespace xe_render
         return bool32();
     }
 
+    bool32 create_cubemap(std::vector<const char*> paths, xe_graphics::cubemap *cube)
+    {
+        
+        for (int i = 0; i < paths.size(); ++i)
+        {
+            graphics_device->create_texture2D(paths[i], cube->face_textures[i]);
+        }
+
+        return true;
+    }
+
     bool32 create_quad(xe_graphics::quad *q)
     {   
         real32 vertices[] = 
@@ -273,7 +284,7 @@ namespace xe_render
     void draw_full_quad()
     {
         graphics_device->bind_vertex_array(&quadVao);
-        graphics_device->draw_array(GL_TRIANGLES, 0, 6);
+        graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
         graphics_device->unbind_vertex_array();
     }
 
@@ -282,7 +293,7 @@ namespace xe_render
         if (texture != nullptr)
             graphics_device->bind_texture2d(texture);
 
-        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 model = IDENTITY_MATRIX;
         
         graphics_device->bind_shader(shd);
         
@@ -293,7 +304,7 @@ namespace xe_render
         graphics_device->set_mat4("mvp", view_projection * model, shd);
 
         graphics_device->bind_vertex_array(q->vertex_array);        
-        graphics_device->draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        graphics_device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, 6, GL_UNSIGNED_INT, 0);
         graphics_device->unbind_vertex_array();
         graphics_device->unbind_shader();
     }
@@ -312,7 +323,7 @@ namespace xe_render
 
         graphics_device->bind_shader(shd);
 
-        glm::mat4 model_matrix = glm::mat4(1.0f);
+        glm::mat4 model_matrix = tr->model_matrix;
 
         model_matrix = glm::translate(model_matrix, tr->position);
         model_matrix = glm::scale(model_matrix, tr->scale);
@@ -324,7 +335,7 @@ namespace xe_render
 
         graphics_device->bind_vertex_array(mesh->quad_mesh->vertex_array);
 
-        graphics_device->draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        graphics_device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, 6, GL_UNSIGNED_INT, 0);
 
         graphics_device->unbind_vertex_array();
         graphics_device->unbind_shader();
@@ -344,7 +355,7 @@ namespace xe_render
 
         graphics_device->bind_vertex_array(q->vertex_array);
 
-        graphics_device->draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        graphics_device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, 6, GL_UNSIGNED_INT, 0);
 
         graphics_device->unbind_vertex_array();
         graphics_device->unbind_shader();
@@ -389,7 +400,7 @@ namespace xe_render
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-            graphics_device->draw_array(GL_TRIANGLES, 0, 6);
+            graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
 
             x += (ch.Advance >> 6) * scale;
         }
@@ -412,7 +423,7 @@ namespace xe_render
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)
     {
-        glm::mat4 model_matrix = glm::mat4(1.0f);
+        glm::mat4 model_matrix = transform->model_matrix;
 
         model_matrix = glm::translate(model_matrix, transform->position);
         model_matrix = glm::scale(model_matrix, transform->scale);
@@ -453,7 +464,7 @@ namespace xe_render
     {
         xe_graphics::graphics_device *device = xe_render::get_device();
 
-        glm::mat4 model_matrix = glm::mat4(1.0f);
+        glm::mat4 model_matrix = IDENTITY_MATRIX;
 
         model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, -5.0f, -10.0f));
         model_matrix = glm::scale(model_matrix, glm::vec3(0.4f, 0.4f, 0.4f));
@@ -558,7 +569,7 @@ namespace xe_render
         if (msh->vertices.size() > 0)
         {
             glBindVertexArray(msh->vao);
-            device->draw_indexed(GL_TRIANGLES, msh->indices.size(), GL_UNSIGNED_INT, 0);
+            device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
         }
     }

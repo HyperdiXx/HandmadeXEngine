@@ -30,6 +30,8 @@ namespace XEngine
 
 namespace xe_render
 {
+    static const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
+
     namespace ftgl 
     {
         struct texture_atlas_t;
@@ -58,6 +60,7 @@ namespace xe_render
     
     bool32 create_quad(xe_graphics::quad *q);
     bool32 create_full_quad();
+    bool32 create_cubemap(xe_graphics::cubemap *cube);
 
     void draw_full_quad();
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam);
@@ -72,6 +75,8 @@ namespace xe_render
     void draw_text(const std::string &text, glm::vec2& pos, glm::vec3& color);
     void draw_text(const std::string &text, glm::vec2& pos);
     void draw_text(const std::string &text, real32 x, real32 y);
+
+    void draw_skybox();
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera);
     void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform);

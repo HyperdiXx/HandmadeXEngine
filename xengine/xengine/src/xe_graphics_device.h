@@ -23,8 +23,8 @@ namespace xe_graphics
         virtual void disable(int type) = 0;
         virtual void set_blend_func(int src, int dst) = 0;
         virtual void set_cull_mode(int type) = 0;
-        virtual void draw_array(int mode, uint32 first, uint32 count) = 0;
-        virtual void draw_indexed(int mode, uint32 count, int type, void *ind) = 0;
+        virtual void draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) = 0;
+        virtual void draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) = 0;
 
         virtual void activate_bind_texture2d(const texture2D *texture) = 0;
         virtual void activate_texture2d(uint32 index) = 0;
@@ -69,19 +69,20 @@ namespace xe_graphics
         virtual void start_execution() = 0;
         virtual void end_execution() = 0;
        
-        virtual bool create_texture2D(const char *path, texture2D* texture) = 0;
-        virtual bool create_texture2D(const char *path, const char* dir, texture2D* texture) = 0;
-        virtual bool create_texture2D(uint32 width, uint32 height, texture2D* texture) = 0;
-        virtual bool create_shader(const char* vertex, const char* fragment, shader* shader) = 0;
-        virtual bool create_framebuffer(const uint32 count, framebuffer *fbo) = 0;
-        virtual bool create_render_buffer(const uint32 count, framebuffer *fbo) = 0;
-        virtual bool create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) = 0;
-        virtual bool create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) = 0;
-        virtual bool create_vertex_array(vertex_array *va) = 0;
-        virtual bool create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) = 0;
-        virtual bool set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout) = 0;
-        virtual bool add_vertex_buffer(vertex_array *va, vertex_buffer *vb) = 0;
-        virtual bool set_index_buffer(vertex_array *va, index_buffer *ib) = 0;
+        virtual bool32 create_texture2D(const char *path, texture2D* texture) = 0;
+        virtual bool32 create_texture2D(const char *path, const char* dir, texture2D* texture) = 0;
+        virtual bool32 create_texture2D(const char *path, const char* dir, uint32 type, uint32 intern_format, uint32 format, texture2D* texture) = 0;
+        virtual bool32 create_texture2D(uint32 width, uint32 height, texture2D* texture) = 0;
+        virtual bool32 create_shader(const char* vertex, const char* fragment, shader* shader) = 0;
+        virtual bool32 create_framebuffer(const uint32 count, framebuffer *fbo) = 0;
+        virtual bool32 create_render_buffer(const uint32 count, framebuffer *fbo) = 0;
+        virtual bool32 create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) = 0;
+        virtual bool32 create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) = 0;
+        virtual bool32 create_vertex_array(vertex_array *va) = 0;
+        virtual bool32 create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) = 0;
+        virtual bool32 set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout) = 0;
+        virtual bool32 add_vertex_buffer(vertex_array *va, vertex_buffer *vb) = 0;
+        virtual bool32 set_index_buffer(vertex_array *va, index_buffer *ib) = 0;
 
         virtual void set_tex_filter(uint32 filter, texture2D *tex) = 0;
 
@@ -90,8 +91,8 @@ namespace xe_graphics
 
         inline int get_screen_width() const { return screen_width; }
         inline int get_screen_height() const { return screen_height; }
-        inline bool get_is_fullscreen() const { return fullscreen; }
-        inline bool get_is_vsync() const { return vsync; }
+        inline bool32 get_is_fullscreen() const { return fullscreen; }
+        inline bool32 get_is_vsync() const { return vsync; }
         
         static APIs::RenderAPI::API get_api() { return APIs::RenderAPI::get_api(); }
     

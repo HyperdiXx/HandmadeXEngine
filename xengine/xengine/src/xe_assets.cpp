@@ -73,7 +73,7 @@ namespace xe_assets
                 xe_graphics::graphics_device *device = xe_render::get_device();
 
                 texture2D* texture_crt = new texture2D();
-                texture_crt->desc.type = TEXTURE_2D;
+                texture_crt->desc.dimension = TEXTURE_2D;
 
                 device->create_texture2D(str.C_Str(), mdl->parent_dir.c_str(), texture_crt);
 

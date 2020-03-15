@@ -32,6 +32,37 @@ namespace xe_graphics
         return res;
     }
 
+    constexpr uint32 convert_primitive_type(PRIMITIVE_TOPOLOGY type)
+    {
+        uint32 res = 0;
+
+        switch (type)
+        {
+        case xe_graphics::TRIANGLE:
+            res |= GL_TRIANGLES;
+            break;
+        case xe_graphics::TRIANGLE_STRIP:
+            res |= GL_TRIANGLE_STRIP;
+            break;
+        case xe_graphics::LINE:
+            res |= GL_LINE;
+            break;
+        case xe_graphics::LINE_LOOP:
+            res |= GL_LINE_LOOP;
+            break;
+        case xe_graphics::LINE_STRIP:
+            res |= GL_LINE_STRIP;
+            break;
+        case xe_graphics::POINT:
+            res |= GL_POINT;
+            break;
+        default:
+            break;
+        }
+
+        return res;
+    }
+
     constexpr uint32 convert_buffer_type_gl(BUFFER_TYPE buf_type)
     {
         uint32 res = 0;
@@ -141,14 +172,16 @@ void xe_graphics::graphics_device_gl::set_cull_mode(int type)
     glCullFace(type);
 }
 
-void xe_graphics::graphics_device_gl::draw_array(int mode, uint32 first, uint32 count)
+void xe_graphics::graphics_device_gl::draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
 {
-    glDrawArrays(mode, first, count);
+    uint32 gl_primitive_type = convert_primitive_type(mode);
+    glDrawArrays(gl_primitive_type, first, count);
 }
 
-void xe_graphics::graphics_device_gl::draw_indexed(int mode, uint32 count, int type, void *ind)
+void xe_graphics::graphics_device_gl::draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind)
 {
-    glDrawElements(mode, count, type, ind);
+    uint32 gl_primitive_type = convert_primitive_type(mode);
+    glDrawElements(gl_primitive_type, count, type, ind);
 }
 
 void xe_graphics::graphics_device_gl::activate_bind_texture2d(const texture2D * texture)
@@ -264,7 +297,8 @@ void xe_graphics::graphics_device_gl::add_depth_texture2D(uint32 w, uint32 h, fr
         fbo->depth_texture = new texture2D();
         fbo->depth_texture->desc.width = w;
         fbo->depth_texture->desc.height = h;
-        fbo->depth_texture->desc.type = TEXTURE_2D;
+        fbo->depth_texture->desc.dimension = TEXTURE_2D;
+        fbo->depth_texture->desc.texture_type = DEPTH;
 
         glGenTextures(1, &fbo->depth_texture->id);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
@@ -411,14 +445,16 @@ void xe_graphics::graphics_device_gl::set_mat4(const std::string &name, const gl
     glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, texture2D *texture)
+bool32 xe_graphics::graphics_device_gl::create_texture2D(const char *path, texture2D *texture)
 {
     return create_texture2D(path, nullptr, texture);
 }
 
-bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, const char *dir, texture2D *texture)
+bool32 xe_graphics::graphics_device_gl::create_texture2D(const char *path, const char *dir, texture2D *texture)
 {
-    const char *path_res;
+    return create_texture2D(path, dir, GL_TEXTURE_2D, GL_RGBA8, GL_RGBA, texture);
+
+    /*const char *path_res;
 
     if (dir)
     {
@@ -471,15 +507,73 @@ bool xe_graphics::graphics_device_gl::create_texture2D(const char *path, const c
 
     stbi_image_free(image);
 
+    return true;*/
+}
+
+bool32 xe_graphics::graphics_device_gl::create_texture2D(const char *path, const char* dir, uint32 type, uint32 intern_format, uint32 format, texture2D* texture)
+{
+    const char *path_res;
+
+    if (dir)
+    {
+        std::string filename(path);
+        std::string dirname(dir);
+        filename = dirname + '/' + filename;
+        path_res = filename.c_str();
+    }
+    else
+        path_res = path;
+
+
+    int channels;
+
+    stbi_set_flip_vertically_on_load(true);
+    stbi_uc* image = stbi_load(path_res, &texture->desc.width, &texture->desc.height, &channels, 0);
+
+    if (!image)
+    {
+        xe_utility::error("Failed to load texture2D: " + std::string(path));
+        return false;
+    }
+
+    GLenum internal_format = 0, data_format = 0;
+    if (channels == 4)
+    {
+        internal_format = GL_RGBA8;
+        data_format = GL_RGBA;
+    }
+    else if (channels == 3)
+    {
+        internal_format = GL_RGB8;
+        data_format = GL_RGB;
+    }
+
+    glGenTextures(1, &texture->id);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glTexImage2D(GL_TEXTURE_2D, 0, data_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    stbi_image_free(image);
+
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_texture2D(uint32 width, uint32 height, texture2D *texture)
+bool32 xe_graphics::graphics_device_gl::create_texture2D(uint32 width, uint32 height, texture2D *texture)
 {
     texture->desc.width = width;
     texture->desc.height = height;
-    texture->desc.type = TEXTURE_2D;
-
+    texture->desc.dimension = TEXTURE_2D;
+    
     glGenTextures(1, &texture->id);
     glBindTexture(GL_TEXTURE_2D, texture->id);
 
@@ -493,7 +587,7 @@ bool xe_graphics::graphics_device_gl::create_texture2D(uint32 width, uint32 heig
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, const char *fragment_code, shader *shd)
+bool32 xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, const char *fragment_code, shader *shd)
 {
     std::string file_vs = xe_core::read_file_string(vertex_code);
     std::string file_fs = xe_core::read_file_string(fragment_code);
@@ -563,21 +657,21 @@ bool xe_graphics::graphics_device_gl::create_shader(const char *vertex_code, con
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_framebuffer(uint32 count, framebuffer *fbo)
+bool32 xe_graphics::graphics_device_gl::create_framebuffer(uint32 count, framebuffer *fbo)
 {
     glGenFramebuffers(count, &fbo->fbo_id);
     
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_render_buffer(uint32 count, framebuffer *fbo)
+bool32 xe_graphics::graphics_device_gl::create_render_buffer(uint32 count, framebuffer *fbo)
 {
     glGenRenderbuffers(count, &fbo->rb_id);
 
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
+bool32 xe_graphics::graphics_device_gl::create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
 {
     vb->data = vertices;
 
@@ -594,7 +688,7 @@ bool xe_graphics::graphics_device_gl::create_vertex_buffer(real32 *vertices, uin
     return false;
 }
 
-bool xe_graphics::graphics_device_gl::create_index_buffer(uint32 *indices, uint32 size, index_buffer *ib)
+bool32 xe_graphics::graphics_device_gl::create_index_buffer(uint32 *indices, uint32 size, index_buffer *ib)
 {
     ib->data = indices;
 
@@ -608,14 +702,14 @@ bool xe_graphics::graphics_device_gl::create_index_buffer(uint32 *indices, uint3
     return false;
 }
 
-bool xe_graphics::graphics_device_gl::create_vertex_array(vertex_array *va)
+bool32 xe_graphics::graphics_device_gl::create_vertex_array(vertex_array *va)
 {
     glGenVertexArrays(1, &va->id);
     
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout)
+bool32 xe_graphics::graphics_device_gl::create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout)
 {  
     buf_layout->elements = element;
 
@@ -633,14 +727,14 @@ bool xe_graphics::graphics_device_gl::create_buffer_layout(std::initializer_list
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout)
+bool32 xe_graphics::graphics_device_gl::set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout)
 {
     vb->layout = *buf_layout;
 
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::add_vertex_buffer(vertex_array *va, vertex_buffer *vb)
+bool32 xe_graphics::graphics_device_gl::add_vertex_buffer(vertex_array *va, vertex_buffer *vb)
 {
     glBindVertexArray(va->id);
     if (vb != nullptr)
@@ -661,7 +755,7 @@ bool xe_graphics::graphics_device_gl::add_vertex_buffer(vertex_array *va, vertex
     return false;
 }
 
-bool xe_graphics::graphics_device_gl::set_index_buffer(vertex_array *va, index_buffer *ib)
+bool32 xe_graphics::graphics_device_gl::set_index_buffer(vertex_array *va, index_buffer *ib)
 {
     // assert 
     if (ib != nullptr)

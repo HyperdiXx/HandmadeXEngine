@@ -58,9 +58,16 @@ namespace xe_ecs
     class transform_component : public component
     {
     public:
+        uint32 state = 0;
+
         glm::vec3 position;
         glm::vec3 rotation;
         glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        glm::mat4 model_matrix = xe_render::IDENTITY_MATRIX;
+
+        inline void set_dirty() {};
+        inline bool32 is_dirty() const { return state; };
     };
    
     class update_component : public component

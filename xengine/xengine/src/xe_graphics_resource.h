@@ -183,5 +183,10 @@ namespace xe_graphics
         quad *q;
         texture2D *texture;
     };
+
+    struct cubemap
+    {
+        std::vector<texture2D*> face_textures;
+    };
 }
 #endif

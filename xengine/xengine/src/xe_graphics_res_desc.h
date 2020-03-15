@@ -7,6 +7,13 @@
 
 namespace xe_graphics
 {
+    enum DRAW_TYPE
+    {
+        NONE,
+        STATIC,
+        DYNAMIC
+    };
+
     enum SHADER_TYPE
     {
         VS,

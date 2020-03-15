@@ -77,7 +77,7 @@ namespace XEngine
         using namespace Rendering;        
         
         render_instance->clear_color(0.9f, 0.9f, 0.9f, 1.0f);
-        render_instance->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //render_instance->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         render_instance->start_execution();
        

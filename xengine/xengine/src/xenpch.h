@@ -11,8 +11,6 @@
     #define APIENTRY __stdcall
 #endif
 
-#include <glad/glad.h>
-
 #include <utility>
 #include <memory>
 #include <iostream>

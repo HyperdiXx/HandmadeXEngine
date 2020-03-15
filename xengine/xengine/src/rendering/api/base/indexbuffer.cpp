@@ -1,7 +1,7 @@
 #include "indexbuffer.h"
 
 #include <rendering/render/render.h>
-#include <rendering/api/opengl/glindexbuffer.h>
+//#include <rendering/api/opengl/glindexbuffer.h>
 
 namespace XEngine
 {
@@ -12,7 +12,7 @@ namespace XEngine
             switch (Render::get_api())
             {
             case APIs::RenderAPI::API::OpenGL:
-                return new GLIndexBuffer(indices, size);
+                //return new GLIndexBuffer(indices, size);
                 break;
             default:
                 // LOG:
@@ -27,7 +27,7 @@ namespace XEngine
             switch (Render::get_api())
             {
             case APIs::RenderAPI::API::OpenGL:
-                return new GLIndexBuffer(indices, size);
+                //return new GLIndexBuffer(indices, size);
                 break;
             default:
                 // LOG:

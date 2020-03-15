@@ -1,6 +1,5 @@
 #include "vertexarray.h"
 #include <rendering/render/render.h>
-#include <rendering/api/opengl/glvertexarray.h>
 
 namespace XEngine
 {
@@ -14,7 +13,7 @@ namespace XEngine
                 return nullptr;
                 break;
             case APIs::RenderAPI::API::OpenGL:
-                return new GLVertexArray();
+                //return new GLVertexArray();
                 break;
             default:
                 // LOG: error

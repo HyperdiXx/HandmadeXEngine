@@ -1,7 +1,6 @@
 #include "texture2d.h"
 
 #include <rendering/render/render.h>
-#include <rendering/api/opengl/gltexture2d.h>
 
 namespace XEngine
 {
@@ -12,7 +11,7 @@ namespace XEngine
             switch (Render::get_api())
             {
             case APIs::RenderAPI::API::OpenGL: 
-                return new GLTexture2D(path);
+                //return new GLTexture2D(path);
                     break;
                 default:
                     // Log : "Unsoppurted format!!!"
@@ -26,7 +25,7 @@ namespace XEngine
         {
             switch (Render::get_api())
             {
-            case APIs::RenderAPI::API::OpenGL: return new GLTexture2D(path, dir);
+            //case APIs::RenderAPI::API::OpenGL: return new GLTexture2D(path, dir);
                 break;
             default:
                 // Log : "Unsoppurted format!!!"

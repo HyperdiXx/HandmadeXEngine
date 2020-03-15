@@ -26,7 +26,7 @@ void xe_graphics::render_pass2D::init()
     xe_render::create_quad(mesh->quad_mesh);
 
     device->bind_shader(simple_shader);
-    device->set_int("texture_diff", 0, simple_shader);
+    device->set_int("tex_diff", 0, simple_shader);
 }
 
 void xe_graphics::render_pass2D::clear()
@@ -47,19 +47,12 @@ void xe_graphics::render_pass2D::unload_resources()
 }
 
 void xe_graphics::render_pass2D::render()
-{     
-    quad_component* mesh = main_ent.find_component<quad_component>();
-    transform_component *tr = main_ent.find_component<transform_component>();
+{ 
+    using namespace xe_render;
 
-    glm::vec3 pos = tr->position;
-    glm::vec3 sc = tr->scale;
-
-    glm::mat4 model_matrix = glm::mat4(1.0f);
-
-    model_matrix = glm::translate(model_matrix, pos);
-    model_matrix = glm::scale(model_matrix, sc);
-
-    xe_render::draw_quad(mesh->quad_mesh, simple_shader, &result_texture, model_matrix, &camera2D);
+    draw_quad(&main_ent, simple_shader, &result_texture, &camera2D);
+    glm::vec2 text_pos = glm::vec2(250.0f, 600.0f);
+    draw_text("test_text", text_pos);    
 }
 
 void xe_graphics::render_pass2D::update(float dt)
@@ -94,14 +87,17 @@ void xe_graphics::render_pass3D::init()
     device->set_int("tex_diff", 0, model_shader);
 
     device->bind_shader(color_shader);
-    device->set_vec3("color", glm::vec3(1.0f, 0.0f, 0.0f), color_shader);
+    device->set_vec3("color", glm::vec3(0.5f, 0.9f, 0.9f), color_shader);
 
-    ent.add_component(new mesh_component());
-    ent.add_component(new transform_component());
-
-    mesh_component *mesh = ent.find_component<mesh_component>();
+    mesh_component *mesh = new mesh_component();
     mesh->model_asset = xe_assets::load_model_from_file("engineassets/nano/nanosuit.obj");
+    
+    transform_component *nano_transform = new transform_component();
+    nano_transform->position = glm::vec3(-20.0f, -9.0f, -50.0f);
 
+    ent.add_component(mesh);
+    ent.add_component(nano_transform);
+ 
     mesh_component *cube = new mesh_component();
     cube->model_asset = xe_assets::load_model_from_file("engineassets/cube.obj");
 
@@ -110,8 +106,8 @@ void xe_graphics::render_pass3D::init()
     dl->entensity = 0.9f;   
 
     transform_component *light_transform = new transform_component();
-    light_transform->position = glm::vec3(3.0f, 1.0f, 150.0f);
-
+    light_transform->position = glm::vec3(3.0f, 1.0f, -10.0f);
+    
     light_ent.add_component(dl);
     light_ent.add_component(light_transform);
     light_ent.add_component(cube);
@@ -128,6 +124,35 @@ void xe_graphics::render_pass3D::init()
 
     device->check_framebuffer();
     device->unbind_framebuffer();
+
+    // init ents
+
+    ents.reserve(16);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        entity *entity_add = new entity();
+        transform_component *transform = new transform_component();
+        transform->position = glm::vec3(30.0f * (i - 5), 0.0f, -5.0f * (i + 1));
+        transform->scale = glm::vec3(0.2f, 0.2f, 0.2f);
+
+        mesh_component *loading_model = new mesh_component();
+        loading_model->model_asset = xe_assets::load_model_from_file("engineassets/cube.obj");
+
+        entity_add->add_component(transform);
+        entity_add->add_component(loading_model);
+
+        ents.push_back(entity_add);
+    }
+
+    mesh_component *plane_mesh = new mesh_component();
+    plane_mesh->model_asset = xe_assets::load_model_from_file("engineassets/cube.obj");
+    transform_component *transform_plane = new transform_component();
+    transform_plane->position = glm::vec3(3.0f, -10.0f, 25.0f);
+    transform_plane->scale = glm::vec3(10.0f, 0.001f, 10.0f);
+
+    plane_ent.add_component(plane_mesh);
+    plane_ent.add_component(transform_plane);
 }
 
 void xe_graphics::render_pass3D::clear()
@@ -158,19 +183,36 @@ void xe_graphics::render_pass3D::render()
     graphics_device *device = xe_render::get_device();
 
     device->bind_framebuffer(&fbo);
-    device->clear_color(0.0f, 0.0f, 0.0f, 1.0f);
     device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    if (mesh_light != nullptr)
-        xe_render::draw_model(mesh_light->model_asset, color_shader, &cam);
+    
+    device->enable(GL_DEPTH_TEST);
+    device->enable(GL_CULL_FACE);
+    device->set_cull_mode(GL_BACK);
 
-    mesh_component *model_mesh = ent.find_component<mesh_component>();
+    //if (mesh_light != nullptr)
+    //    xe_render::draw_ent(&light_ent, color_shader, &cam);
+    
     shader *model_shader = xe_render::get_model_shader();
 
     if (light)
         xe_render::apply_dir_light(model_shader, light, transform);
 
-    xe_render::draw_model(model_mesh->model_asset, model_shader, &cam);
-   
+    xe_render::draw_ent(&ent, model_shader, &cam);
+
+    for (int i = 0; i < ents.size(); ++i)
+    {
+        entity *current_ent = ents[i];
+        glm::vec3 green = glm::vec3(0.0f, 1.0f, 0.0f);
+        xe_render::draw_ent(current_ent, color_shader, &cam, &green);
+    }
+
+    glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    xe_render::draw_ent(&plane_ent, color_shader, &cam, &red);
+
+    device->disable(GL_DEPTH_TEST);
+    device->disable(GL_CULL_FACE);
+
     device->unbind_framebuffer();
 }
 

@@ -1,8 +1,6 @@
 #include "context.h"
 
 #include <rendering/render/render.h>
-#include <rendering/api/opengl/glcontext.h>
-
 
 namespace XEngine
 {
@@ -13,7 +11,7 @@ namespace XEngine
             switch (Render::get_api())
             {
             case APIs::RenderAPI::API::OpenGL:
-                return new GLDeviceContext((GLFWwindow*)win);
+                //return new GLDeviceContext((GLFWwindow*)win);
                 break;
             default:
                 // LOG:

@@ -7,9 +7,12 @@
 
 namespace xe_ecs
 {
+    class entity;
     class camera2d_component;
     class camera3d_component;
     class dir_light;
+    class spot_light;
+    class point_light;
     class transform_component;
 }
 
@@ -27,14 +30,23 @@ namespace XEngine
 
 namespace xe_render
 {
+    namespace ftgl 
+    {
+        struct texture_atlas_t;
+        struct texture_font_t;
+    }
+
     void init_render();
-    void clear();
+    bool32 load_font(const char *path);
     bool32 load_shaders();
-  
+
+    void clear();
+
     void set_device(xe_graphics::graphics_device *device);
     void set_render_pass(xe_graphics::render_pass *pass);
     void set_active_framebuffer(xe_graphics::framebuffer *fbo);
-    
+    void set_clear_color(real32 r, real32 g, real32 b, real32 a);
+
     xe_graphics::graphics_device* get_device();
     xe_graphics::shader* get_simple_shader();
     xe_graphics::shader* get_model_shader();
@@ -49,10 +61,20 @@ namespace xe_render
 
     void draw_full_quad();
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam);
+    void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam);
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4& mod, XEngine::OrthoCamera *cam);
-    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, XEngine::PerspectiveCamera* camera);
+    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, XEngine::PerspectiveCamera* camera);    
     void draw_mesh(xe_assets::mesh *mshs, xe_graphics::shader *shd);
 
+    void draw_ent(xe_ecs::entity *ent, xe_graphics::shader *shd, XEngine::PerspectiveCamera* camera);
+    void draw_ent(xe_ecs::entity *ent, xe_graphics::shader *shd, XEngine::PerspectiveCamera* camera, glm::vec3 *color);
+
+    void draw_text(const std::string &text, glm::vec2& pos, glm::vec3& color);
+    void draw_text(const std::string &text, glm::vec2& pos);
+
+    void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera);
     void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform);
+    void apply_spot_light(xe_graphics::shader *shd, xe_ecs::spot_light *directional_light, xe_ecs::transform_component *transform);
+    void apply_point_light(xe_graphics::shader *shd, xe_ecs::point_light *directional_light, xe_ecs::transform_component *transform);
 }
 #endif // !XENGINE_RENDERING_H

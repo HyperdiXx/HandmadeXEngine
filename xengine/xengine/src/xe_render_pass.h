@@ -72,7 +72,10 @@ namespace xe_graphics
         xe_ecs::entity ent;
         xe_assets::model *model;
         xe_assets::model *model_cube;
+        
+        std::vector<xe_ecs::entity*> ents;
         xe_ecs::entity light_ent;
+        xe_ecs::entity plane_ent;
 
         xe_graphics::framebuffer fbo;
         xe_graphics::texture2D color_texture;

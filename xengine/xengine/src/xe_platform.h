@@ -2,8 +2,13 @@
 #pragma once
 
 #ifdef _WIN32
+    #define PLATFORM_WINDOWS
+#else
+    #define PLATFORM_LINUX
+#endif
 
-//Win32
+#ifdef PLATFORM_WINDOWS
+
 #define WIN32_LEAN_AND_MEAN
 
 #include <io.h>
@@ -14,9 +19,14 @@
 
 #endif 
 
+#ifdef PLATFORM_LINUX
+
+#endif
+
+
 namespace xe_platform
 {
-#ifdef _WIN32
+#ifdef PLATFORM_WINDOWS
     typedef HWND window_handle;
 
     inline HWND& get_window_handle()
@@ -26,6 +36,10 @@ namespace xe_platform
     }
 
     bool32 load_library(const char *name);
+
+#endif
+
+#ifdef PLATFORM_LINUX
 
 #endif
 }

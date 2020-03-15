@@ -127,13 +127,6 @@
     <ClCompile Include="src\rendering\api\dx11\dx11vertexbuffer.cpp" />
     <ClCompile Include="src\rendering\api\dx11\dxshader.cpp" />
     <ClCompile Include="src\rendering\api\dx11\dxtexture.cpp" />
-    <ClCompile Include="src\rendering\api\opengl\glcontext.cpp" />
-    <ClCompile Include="src\rendering\api\opengl\glframebuffer.cpp" />
-    <ClCompile Include="src\rendering\api\opengl\glindexbuffer.cpp" />
-    <ClCompile Include="src\rendering\api\opengl\glshader.cpp" />
-    <ClCompile Include="src\rendering\api\opengl\gltexture2d.cpp" />
-    <ClCompile Include="src\rendering\api\opengl\glvertexarray.cpp" />
-    <ClCompile Include="src\rendering\api\opengl\glvertexbuffer.cpp" />
     <ClCompile Include="src\rendering\api\renderAPI.cpp" />
     <ClCompile Include="src\rendering\batchsprite.cpp" />
     <ClCompile Include="src\rendering\commands\rendercommand.cpp" />
@@ -186,11 +179,13 @@
     <ClCompile Include="src\transforms.cpp" />
     <ClCompile Include="src\xe_assets.cpp" />
     <ClCompile Include="src\xe_core.cpp" />
+    <ClCompile Include="src\xe_graphics_device.cpp" />
     <ClCompile Include="src\xe_input.cpp" />
     <ClCompile Include="src\xe_platform.cpp" />
     <ClCompile Include="src\xe_render.cpp" />
     <ClCompile Include="src\xe_graphics_device_gl.cpp" />
     <ClCompile Include="src\xe_render_pass.cpp" />
+    <ClCompile Include="src\xe_scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple2d.fs" />
@@ -291,14 +286,6 @@
     <ClInclude Include="src\rendering\api\dx11\dxtexture.h" />
     <ClInclude Include="src\rendering\api\dx11\dxtypes.h" />
     <ClInclude Include="src\rendering\api\dx12\dx12context.h" />
-    <ClInclude Include="src\rendering\api\opengl\glcontext.h" />
-    <ClInclude Include="src\rendering\api\opengl\glframebuffer.h" />
-    <ClInclude Include="src\rendering\api\opengl\glindexbuffer.h" />
-    <ClInclude Include="src\rendering\api\opengl\glshader.h" />
-    <ClInclude Include="src\rendering\api\opengl\gltexture2d.h" />
-    <ClInclude Include="src\rendering\api\opengl\glvertexarray.h" />
-    <ClInclude Include="src\rendering\api\opengl\glvertexbuffer.h" />
-    <ClInclude Include="src\rendering\api\opengl\opengl.h" />
     <ClInclude Include="src\rendering\api\renderAPI.h" />
     <ClInclude Include="src\rendering\batchsprite.h" />
     <ClInclude Include="src\rendering\commands\abstract_render_command.h" />
@@ -376,14 +363,6 @@
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dxtexture.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx11\dxtypes.h" />
     <ClInclude Include="src\runtime\core\rendering\api\dx12\dx12context.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\gltexture2d.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glvertexbuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glcontext.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glframebuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glindexbuffer.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glvertexarray.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\glshader.h" />
-    <ClInclude Include="src\runtime\core\rendering\api\opengl\opengl.h" />
     <ClInclude Include="src\runtime\core\rendering\batchsprite.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\layer.h" />
     <ClInclude Include="src\runtime\core\rendering\layers\scenegraph.h" />
@@ -459,6 +438,7 @@
     <ClInclude Include="src\xengine_input.h" />
     <ClInclude Include="src\xenpch.h" />
     <ClInclude Include="src\xe_render_pass.h" />
+    <ClInclude Include="src\xe_scene.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl">

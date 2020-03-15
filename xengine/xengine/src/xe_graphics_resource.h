@@ -169,5 +169,19 @@ namespace xe_graphics
         xe_graphics::index_buffer *index_buffer;
         xe_graphics::vertex_array *vertex_array;
     };
+
+    struct character
+    {
+        GLuint     textureID;
+        glm::ivec2 Size;
+        glm::ivec2 Bearing;
+        GLuint     Advance;
+    };
+
+    struct text
+    {
+        quad *q;
+        texture2D *texture;
+    };
 }
 #endif

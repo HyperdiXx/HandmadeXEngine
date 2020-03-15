@@ -1,6 +1,5 @@
 #include "vertexbuffer.h"
 #include <rendering/render/render.h>
-#include <rendering/api/opengl/glvertexbuffer.h>
 
 namespace XEngine
 {
@@ -14,7 +13,7 @@ namespace XEngine
                 return nullptr;
                 break;
             case APIs::RenderAPI::API::OpenGL:
-                return new GLVertexBuffer(vertices, size);
+               //return new GLVertexBuffer(vertices, size);
                 break;
             default:
                 // LOG: error

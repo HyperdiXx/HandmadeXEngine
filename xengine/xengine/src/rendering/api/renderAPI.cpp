@@ -1,6 +1,5 @@
 #include "renderAPI.h"
 
-#include <rendering/api/opengl/opengl.h> 
 
 namespace APIs
 {
@@ -11,7 +10,7 @@ namespace APIs
         switch (boundApi)
         {
         case API::OpenGL: 
-            return create_ptr<OpenGL>();
+            return nullptr;
             break;
         default:
             break;

@@ -1,6 +1,8 @@
 
 #include "generator.h"
 
+#include <glad/glad.h>
+
 namespace XEngine
 {
     std::vector<float> createPlane()

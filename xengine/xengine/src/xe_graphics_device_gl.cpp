@@ -1,6 +1,6 @@
 
 #include "xe_graphics_device_gl.h"
-
+#include "xe_platform.h"
 #include "xe_core.h"
 
 #include "runtime/core/utility/log.h"
@@ -10,11 +10,35 @@
 
 #define MAX_COLOR_ATT 4
 
+
+namespace xe_graphics
+{
+    constexpr uint32 convert_to_gl_type(DRAW_TYPE draw_type)
+    {
+        uint32 res = 0;
+
+        switch (draw_type)
+        {
+        case STATIC:
+            res |= GL_STATIC_DRAW;
+            break;
+        case DYNAMIC:
+            res |= GL_DYNAMIC_DRAW;
+            break;
+        default:
+            break;
+        }
+
+        return res;
+    }
+}
+
 using namespace xe_graphics;
 
-xe_graphics::graphics_device_gl::graphics_device_gl(HWND window_handle, bool fullscreen)
+xe_graphics::graphics_device_gl::graphics_device_gl(HWND window_handle, bool32 vsync, bool32 fullscreen)
 {
     this->fullscreen = fullscreen;
+    this->vsync = vsync;
 
     RECT rect = RECT();
     GetClientRect(window_handle, &rect);
@@ -41,6 +65,18 @@ xe_graphics::graphics_device_gl::graphics_device_gl(HWND window_handle, bool ful
     {
         xe_utility::error("Cannot create OpenGL context!!!");
     }
+  
+#ifdef PLATFORM_WINDOWS
+
+    typedef BOOL(WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
+    wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+    if (wglSwapIntervalEXT && vsync)
+        wglSwapIntervalEXT(1);
+    else
+        wglSwapIntervalEXT(0);
+
+#endif 
 
     ReleaseDC(window_handle, dc);
 }
@@ -73,6 +109,11 @@ void xe_graphics::graphics_device_gl::enable(int type)
 void xe_graphics::graphics_device_gl::disable(int type)
 {
     glDisable(type);
+}
+
+void xe_graphics::graphics_device_gl::set_blend_func(int src, int dst)
+{
+    glBlendFunc(src, dst);
 }
 
 void xe_graphics::graphics_device_gl::set_cull_mode(int type)
@@ -142,8 +183,12 @@ void xe_graphics::graphics_device_gl::bind_shader(const shader *shader)
 }
 
 void xe_graphics::graphics_device_gl::bind_vertex_array(const vertex_array *va)
-{
-    glBindVertexArray(va->id);          
+{    
+    if (last_bound_unit_vao != va->id)
+    {
+        glBindVertexArray(va->id);
+        last_bound_unit_vao = va->id;
+    }
 }
 
 void xe_graphics::graphics_device_gl::bind_framebuffer(const framebuffer *fbo)
@@ -222,6 +267,7 @@ texture2D& xe_graphics::graphics_device_gl::get_texture(uint32 number, const fra
 {
     if(fbo && number >= 0 <= MAX_COLOR_ATT)
         return *fbo->color_textures[number];
+    // @Add return;
 }
 
 void xe_graphics::graphics_device_gl::set_texture2D(uint32 type, texture2D *texture)
@@ -276,6 +322,7 @@ void xe_graphics::graphics_device_gl::unbind_vertex_array()
 void xe_graphics::graphics_device_gl::unbind_shader()
 {
     glUseProgram(0);
+    last_bound_unit_shader = 0;
 }
 
 void xe_graphics::graphics_device_gl::unbind_framebuffer()
@@ -324,22 +371,22 @@ void xe_graphics::graphics_device_gl::set_vec4(const std::string & name, const g
     glUniform4fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
 }
 
-void xe_graphics::graphics_device_gl::set_vec4(const std::string & name, real32 x, real32 y, real32 z, real32 w, shader *shd)
+void xe_graphics::graphics_device_gl::set_vec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, shader *shd)
 {
     glUniform4f(glGetUniformLocation(shd->id, name.c_str()), x, y, z, w);
 }
 
-void xe_graphics::graphics_device_gl::set_mat2(const std::string & name, const glm::mat2 & mat, shader *shd)
+void xe_graphics::graphics_device_gl::set_mat2(const std::string &name, const glm::mat2 &mat, shader *shd)
 {
     glUniformMatrix2fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void xe_graphics::graphics_device_gl::set_mat3(const std::string & name, const glm::mat3& mat, shader *shd)
+void xe_graphics::graphics_device_gl::set_mat3(const std::string &name, const glm::mat3 &mat, shader *shd)
 {
     glUniformMatrix3fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void xe_graphics::graphics_device_gl::set_mat4(const std::string & name, const glm::mat4 & mat, shader *shd)
+void xe_graphics::graphics_device_gl::set_mat4(const std::string &name, const glm::mat4 &mat, shader *shd)
 {
     glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
@@ -510,13 +557,16 @@ bool xe_graphics::graphics_device_gl::create_render_buffer(uint32 count, framebu
     return true;
 }
 
-bool xe_graphics::graphics_device_gl::create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb)
+bool xe_graphics::graphics_device_gl::create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
 {
     vb->data = vertices;
 
     glGenBuffers(1, &vb->id);
     glBindBuffer(GL_ARRAY_BUFFER, vb->id);
-    glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat), vb->data, GL_STATIC_DRAW);
+    
+    uint32 draw_type_gl = convert_to_gl_type(draw_type);
+
+    glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat), vb->data, draw_type_gl);
 
     if (vb->data)
         return true;
@@ -603,6 +653,11 @@ bool xe_graphics::graphics_device_gl::set_index_buffer(vertex_array *va, index_b
     }
 
     return false;
+}
+
+void xe_graphics::graphics_device_gl::set_tex_filter(uint32 filter, texture2D *tex)
+{
+    //glTexParameteri(GL_TEXTURE_2D, , );
 }
 
 void xe_graphics::graphics_device_gl::destroy_texture2D(texture2D * tex)

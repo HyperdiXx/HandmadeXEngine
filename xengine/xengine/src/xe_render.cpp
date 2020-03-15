@@ -6,31 +6,124 @@
 #include "perspective_camera.h"
 #include "ortho_camera.h"
 
-#include <glad/glad.h>
-
-
+#include <xenpch.h>
 
 namespace xe_render
 {
+    glm::vec4 clear_color;
+    xe_graphics::viewport view_port;
+    glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
+
     xe_graphics::graphics_device *graphics_device = nullptr;
 
     xe_graphics::shader *simple_shader = nullptr;
     xe_graphics::shader *model_shader = nullptr;
     xe_graphics::shader *gamma_correction_shader = nullptr;
     xe_graphics::shader *color = nullptr;
+    xe_graphics::shader *text_shader = nullptr;
     
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
 
     xe_graphics::vertex_array quadVao;
-  
+    std::map<GLchar, xe_graphics::character> characters_map;
+
     using namespace xe_graphics;
 
     void init_render()
     {
         xe_ecs::camera2d_component camera = get_camera2D();
 
-        bool32 loaded = load_shaders();
+        if(!load_shaders())
+            xe_utility::error("Failed to init shader module");
+
+        if (!load_font("engineassets/fonts/arial.ttf"))
+            xe_utility::error("Failed to init font module");
+    }
+
+    bool32 load_font(const char *path)
+    {
+        FT_Library lib;
+
+        if (FT_Init_FreeType(&lib))
+            xe_utility::error("FREETYPE: Couldnt init free type lib");
+
+        FT_Face face;
+
+        if (FT_New_Face(lib, path, 0, &face))
+            xe_utility::error("FREETYPE: Failed to load font");
+
+        FT_Set_Pixel_Sizes(face, 0, 48);
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        for (int c = 0; c < 128; ++c)
+        {
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+            {
+                xe_utility::error("FREETYPE: Failed to load char");
+                continue;
+            }
+
+            //graphics_device->create_texture2D(face->glyph->bitmap.width, face->glyph->bitmap.rows, texture_sym);
+
+            uint32 tex_id;
+
+            glGenTextures(1, &tex_id);
+            glBindTexture(GL_TEXTURE_2D, tex_id);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width,
+                face->glyph->bitmap.rows,
+                0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            character chacter =
+            {
+                tex_id,
+                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                face->glyph->advance.x
+            };
+
+            characters_map.insert(std::pair<GLchar, character>(c, chacter));
+        }
+
+        graphics_device->unbind_texture2d();
+        FT_Done_Face(face);
+        FT_Done_FreeType(lib);
+
+        vertex_array *va = new vertex_array();
+        vertex_buffer *vb = new vertex_buffer();
+        graphics_device->create_vertex_array(va);
+        graphics_device->bind_vertex_array(va);
+
+        graphics_device->create_vertex_buffer(NULL, 24, DRAW_TYPE::DYNAMIC, vb);
+     
+        //glGenVertexArrays(1, &vao);
+        //glGenBuffers(1, &vbo);
+
+        //glBindVertexArray(vao);
+
+        //glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        //glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+        
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        graphics_device->unbind_vertex_array();
+
+        glm::mat4 ortho = glm::mat4(1.0f);
+
+        ortho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
+
+        graphics_device->bind_shader(text_shader);
+        graphics_device->set_mat4("projection", ortho, text_shader);
+
+        return true;
     }
 
     bool32 load_shaders()
@@ -41,11 +134,13 @@ namespace xe_render
         model_shader = new xe_graphics::shader();
         gamma_correction_shader = new xe_graphics::shader();
         color = new xe_graphics::shader();
+        text_shader = new xe_graphics::shader();
 
         bool32 res = device->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs", simple_shader);
         res = device->create_shader("shaders/model3d.vs", "shaders/model3d.fs", model_shader);       
         res = device->create_shader("shaders/quad.vs", "shaders/gamma_correction.fs", gamma_correction_shader);
         res = device->create_shader("shaders/model3d.vs", "shaders/color.fs", color);
+        res = device->create_shader("shaders/text.vs", "shaders/text.fs", text_shader);
 
         if (!res)
         {
@@ -89,6 +184,11 @@ namespace xe_render
         active_framebuffer = fbo;
     }
 
+    void set_clear_color(real32 r, real32 g, real32 b, real32 a)
+    {
+
+    }
+
     xe_graphics::graphics_device* get_device() { return graphics_device; }
 
     xe_graphics::shader *get_simple_shader()
@@ -118,14 +218,16 @@ namespace xe_render
 
     bool32 create_quad(xe_graphics::quad *q)
     {   
-        real32 vertices[] = {
+        real32 vertices[] = 
+        {
                   0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
                   0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
                  -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
                  -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
         };
 
-        unsigned int indices[] = {
+        unsigned int indices[] = 
+        {
             0, 1, 3,
             1, 2, 3
         };
@@ -138,7 +240,7 @@ namespace xe_render
         q->index_buffer = new xe_graphics::index_buffer;
         
         graphics_device->create_vertex_array(q->vertex_array);
-        graphics_device->create_vertex_buffer(vertices, vertex_size, q->vertex_buffer);
+        graphics_device->create_vertex_buffer(vertices, vertex_size, DRAW_TYPE::STATIC, q->vertex_buffer);
         graphics_device->create_index_buffer(indices, indices_size, q->index_buffer);
         
         using namespace xe_graphics;
@@ -170,6 +272,7 @@ namespace xe_render
     {
         graphics_device->bind_vertex_array(&quadVao);
         graphics_device->draw_array(GL_TRIANGLES, 0, 6);
+        graphics_device->unbind_vertex_array();
     }
 
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam)
@@ -178,17 +281,51 @@ namespace xe_render
             graphics_device->bind_texture2d(texture);
 
         glm::mat4 model = glm::mat4(1.0f);
+        
         graphics_device->bind_shader(shd);
-
+        
         model = glm::translate(model, glm::vec3(300, 200, 0));
         model = glm::scale(model, glm::vec3(100, 100, 100));
 
         glm::mat4 view_projection = cam->getViewProjection();
         graphics_device->set_mat4("mvp", view_projection * model, shd);
 
-        graphics_device->bind_vertex_array(q->vertex_array);
-        
+        graphics_device->bind_vertex_array(q->vertex_array);        
         graphics_device->draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        graphics_device->unbind_vertex_array();
+        graphics_device->unbind_shader();
+    }
+
+    void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam)
+    {
+        using namespace xe_ecs;
+        quad_component* mesh = ent->find_component<quad_component>();
+        transform_component *tr = ent->find_component<transform_component>();
+
+        if (texture != nullptr)
+            graphics_device->activate_bind_texture2d(texture);
+
+        if (mesh == nullptr)
+            return;
+
+        graphics_device->bind_shader(shd);
+
+        glm::mat4 model_matrix = glm::mat4(1.0f);
+
+        model_matrix = glm::translate(model_matrix, tr->position);
+        model_matrix = glm::scale(model_matrix, tr->scale);
+
+        glm::mat4 view_projection = cam->getViewProjection();
+        glm::mat4 mvp = view_projection * model_matrix;
+
+        graphics_device->set_mat4("mvp", mvp, shd);
+
+        graphics_device->bind_vertex_array(mesh->quad_mesh->vertex_array);
+
+        graphics_device->draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        graphics_device->unbind_vertex_array();
+        graphics_device->unbind_shader();
     }
 
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4 &mod, XEngine::OrthoCamera *cam)
@@ -199,7 +336,6 @@ namespace xe_render
         graphics_device->bind_shader(shd);
 
         glm::mat4 view_projection = cam->getViewProjection();
-
         glm::mat4 mvp = view_projection * mod;
 
         graphics_device->set_mat4("mvp", mvp, shd);
@@ -207,6 +343,82 @@ namespace xe_render
         graphics_device->bind_vertex_array(q->vertex_array);
 
         graphics_device->draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        graphics_device->unbind_vertex_array();
+        graphics_device->unbind_shader();
+    }
+
+    void draw_text(const std::string &text, glm::vec2 &pos, glm::vec3 &color)
+    {
+        float scale = 1.0f;
+
+        graphics_device->enable(GL_BLEND);
+        graphics_device->set_blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        graphics_device->bind_shader(text_shader);
+        graphics_device->set_vec3("color", color, text_shader);
+        
+        graphics_device->activate_texture2d(0);
+        glBindVertexArray(1);
+       
+        std::string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++)
+        {            
+            character ch = characters_map.at(*c);
+
+            GLfloat xpos = pos.x + ch.Bearing.x * scale;
+            GLfloat ypos = pos.y - (ch.Size.y - ch.Bearing.y) * scale;
+
+            GLfloat w = ch.Size.x * scale;
+            GLfloat h = ch.Size.y * scale;
+
+            GLfloat vertices[6][4] = {
+                { xpos,     ypos + h,   0.0, 0.0 },
+                { xpos,     ypos,       0.0, 1.0 },
+                { xpos + w, ypos,       1.0, 1.0 },
+
+                { xpos,     ypos + h,   0.0, 0.0 },
+                { xpos + w, ypos,       1.0, 1.0 },
+                { xpos + w, ypos + h,   1.0, 0.0 }
+            };
+
+            //graphics_device->bind_texture2d();
+
+            glBindTexture(GL_TEXTURE_2D, ch.textureID);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 1);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            graphics_device->draw_array(GL_TRIANGLES, 0, 6);
+
+            pos.x += (ch.Advance >> 6) * scale;
+        }
+
+        graphics_device->unbind_vertex_array();
+        graphics_device->unbind_texture2d();
+
+        graphics_device->disable(GL_BLEND);
+    }
+
+    void draw_text(const std::string &text, glm::vec2 &pos)
+    {
+        draw_text(text, pos, default_text_color);
+    }
+
+    void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)
+    {
+        glm::mat4 model_matrix = glm::mat4(1.0f);
+
+        model_matrix = glm::translate(model_matrix, transform->position);
+        model_matrix = glm::scale(model_matrix, transform->scale);
+
+        glm::mat4 view_matrix = camera->getViewMatrix();
+        glm::mat4 proj_matrix = camera->getProjectionMatrix();
+
+        glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
+
+        graphics_device->set_mat4("mvp", mvp, shd);
+        graphics_device->set_mat4("model", model_matrix, shd);
     }
 
     void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform)
@@ -228,13 +440,13 @@ namespace xe_render
         device->set_vec3("light_pos", transform->position, shd);
     }
 
+    void apply_spot_light(xe_graphics::shader * shd, xe_ecs::spot_light * directional_light, xe_ecs::transform_component * transform)
+    {
+    }
+
     void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, XEngine::PerspectiveCamera *cam)
     {
         xe_graphics::graphics_device *device = xe_render::get_device();
-
-        device->enable(GL_DEPTH_TEST);
-        device->enable(GL_CULL_FACE);
-        device->set_cull_mode(GL_BACK);
 
         glm::mat4 model_matrix = glm::mat4(1.0f);
 
@@ -264,18 +476,59 @@ namespace xe_render
         }
 
         device->unbind_shader();
+    }
 
-        device->disable(GL_DEPTH_TEST);
-        device->disable(GL_CULL_FACE);
+    void draw_ent(xe_ecs::entity *ent, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)
+    {
+        draw_ent(ent, shd, camera, nullptr);
+    }
+
+    void draw_ent(xe_ecs::entity *ent, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera, glm::vec3 *color)
+    {
+        using namespace xe_ecs;
+        
+        xe_graphics::graphics_device *device = xe_render::get_device();
+
+        mesh_component *model = ent->find_component<mesh_component>();
+
+        if (model != nullptr)
+        {
+            transform_component *transform = ent->find_component<transform_component>();
+
+            if (transform != nullptr)
+            {
+                device->bind_shader(shd);
+
+                if(color != nullptr)
+                    device->set_vec3("color", *color, shd);
+                
+                apply_transform(transform, shd, camera);
+
+                xe_assets::node *root = model->model_asset->root;
+
+                for (uint32 i = 0; i < root->children.size(); i++)
+                {
+                    xe_assets::node* curr_node = root->children[i];
+
+                    for (uint32 j = 0; j < curr_node->meshes.size(); j++)
+                    {
+                        xe_assets::mesh *cur_mesh = curr_node->meshes.at(j);
+                        draw_mesh(cur_mesh, shd);
+                    }
+                }
+
+                device->unbind_shader();
+            }
+        }
     }
 
     void draw_mesh(xe_assets::mesh *msh, xe_graphics::shader *shd)
     {
         xe_graphics::graphics_device *device = xe_render::get_device();
 
-        uint32 diffuseN = 1;
-        uint32 normalN = 1;
-        uint32 specularN = 1;
+        uint32 diff_texture_num = 1;
+        uint32 normal_texture_num = 1;
+        uint32 specular_texture_num = 1;
 
         for (uint32 i = 0; i < msh->mesh_textures.size(); i++)
         {
@@ -287,11 +540,11 @@ namespace xe_render
             std::string num;
 
             if (name == "tex_diff")
-                num = std::to_string(diffuseN++);
+                num = std::to_string(diff_texture_num++);
             else if (name == "tex_norm")
-                num = std::to_string(normalN++);
+                num = std::to_string(normal_texture_num++);
             else if (name == "tex_spec")
-                num = std::to_string(specularN++);
+                num = std::to_string(specular_texture_num++);
 
             device->set_int((name + num).c_str(), i, shd);
             device->bind_texture2d(mesh_texture);

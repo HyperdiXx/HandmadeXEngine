@@ -41,6 +41,7 @@
 #include <thirdparty/imguit/imgui_impl_win32.h>
 
 #include "xe_input.h"
+#include "xe_scene.h"
 
 static int WINDOW_WIDTH_SIZE = 1280;
 static int WINDOW_HEIGHT_SIZE = 720;
@@ -372,12 +373,14 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             
             xe_input::init();
 
-            graphics_device *device = new graphics_device_gl(window_handle, false);
+            graphics_device *device = new graphics_device_gl(window_handle);
             set_device(device);
             win32_init_gl_loader();
             win32_init_imgui(window_handle);
 
             init_render();
+            
+            xe_scene::init();
 
             render_pass *base_render_pass = new render_pass2D();
             set_render_pass(base_render_pass);
@@ -391,7 +394,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             gamma_correction->init();
 
             vec4f clear_color = {};
-
             clear_color.x = 0.0f;
             clear_color.y = 0.0f;
             clear_color.z = 0.0f;
@@ -423,8 +425,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
                 texture2D pass_texture = main_render_pass->get_color_texture();
 
-                gamma_correction->set_color_texture(&pass_texture);
-                gamma_correction->render();
+                //gamma_correction->set_color_texture(&pass_texture);
+                //gamma_correction->render();
 
                 GLenum err;
                 while ((err = glGetError()) != GL_NO_ERROR)

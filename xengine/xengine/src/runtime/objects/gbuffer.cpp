@@ -13,7 +13,7 @@ XEngine::Rendering::Gbuffer::~Gbuffer()
 
 void XEngine::Rendering::Gbuffer::init()
 {
-    glGenFramebuffers(1, &gBuffer);
+    /*glGenFramebuffers(1, &gBuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, gBuffer);
 
     glBindTexture(GL_TEXTURE_2D, gPos);
@@ -44,9 +44,5 @@ void XEngine::Rendering::Gbuffer::init()
     unsigned int drawBuffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     //glDrawBuffers(ARRAYSIZE(drawBuffers), drawBuffers);
 
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-
-
-
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);*/
 }

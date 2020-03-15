@@ -21,6 +21,7 @@ namespace xe_graphics
         virtual void set_viewport(int32 x, int32 y, int32 width, int32 height) = 0;
         virtual void enable(int type) = 0;
         virtual void disable(int type) = 0;
+        virtual void set_blend_func(int src, int dst) = 0;
         virtual void set_cull_mode(int type) = 0;
         virtual void draw_array(int mode, uint32 first, uint32 count) = 0;
         virtual void draw_indexed(int mode, uint32 count, int type, void *ind) = 0;
@@ -76,13 +77,15 @@ namespace xe_graphics
         virtual bool create_shader(const char* vertex, const char* fragment, shader* shader) = 0;
         virtual bool create_framebuffer(const uint32 count, framebuffer *fbo) = 0;
         virtual bool create_render_buffer(const uint32 count, framebuffer *fbo) = 0;
-        virtual bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) = 0;
+        virtual bool create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) = 0;
         virtual bool create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) = 0;
         virtual bool create_vertex_array(vertex_array *va) = 0;
         virtual bool create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) = 0;
         virtual bool set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout) = 0;
         virtual bool add_vertex_buffer(vertex_array *va, vertex_buffer *vb) = 0;
         virtual bool set_index_buffer(vertex_array *va, index_buffer *ib) = 0;
+
+        virtual void set_tex_filter(uint32 filter, texture2D *tex) = 0;
 
         virtual void destroy_texture2D(texture2D *tex) = 0;
         virtual void destroy_framebuffer(framebuffer *fbo) = 0;
@@ -100,8 +103,5 @@ namespace xe_graphics
         
         bool32 fullscreen= false;
         bool32 vsync = true;
-
-        
-
     };
 }

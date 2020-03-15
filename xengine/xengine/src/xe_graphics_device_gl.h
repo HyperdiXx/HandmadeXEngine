@@ -10,7 +10,7 @@ namespace xe_graphics
     class graphics_device_gl : public graphics_device
     {
     public:
-        graphics_device_gl(HWND window, bool fullscreen);
+        graphics_device_gl(HWND window, bool32 vsync = true, bool32 fullscreen = false);
         virtual ~graphics_device_gl();
 
         void clear(int flags) override;
@@ -18,6 +18,7 @@ namespace xe_graphics
         void set_viewport(int32 x, int32 y, int32 width, int32 height) override;
         void enable(int type) override;
         void disable(int type) override;
+        void set_blend_func(int src, int dst) override;
         void set_cull_mode(int type) override;
         void draw_array(int mode, uint32 first, uint32 count) override;
         void draw_indexed(int mode, uint32 count, int type, void *ind) override;
@@ -67,13 +68,15 @@ namespace xe_graphics
         bool create_shader(const char* vertex, const char* fragment, shader *shader) override;
         bool create_framebuffer(const uint32 count, framebuffer *fbo) override;
         bool create_render_buffer(const uint32 count, framebuffer *fbo) override;
-        bool create_vertex_buffer(real32 *vertices, uint32 size, vertex_buffer *vb) override;        
+        bool create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) override;        
         bool create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) override;
         bool create_vertex_array(vertex_array *va) override;
         bool create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) override;
         bool set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout) override;
         bool add_vertex_buffer(vertex_array *va, vertex_buffer *vb) override;
         bool set_index_buffer(vertex_array *va, index_buffer *ib) override;
+
+        void set_tex_filter(uint32 filter, texture2D *tex) override;
 
         void destroy_texture2D(texture2D *tex) override;
         void destroy_framebuffer(framebuffer *fbo) override;

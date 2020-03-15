@@ -1,7 +1,6 @@
 #pragma once
 
 #include <rendering/api/renderAPI.h>
-#include <rendering/api/opengl/opengl.h>
 #include <rendering/commands/abstract_render_command.h>
 #include <xenpch.h>
 

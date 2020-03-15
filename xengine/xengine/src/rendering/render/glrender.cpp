@@ -2,11 +2,7 @@
 
 #include <rendering/commands/model_rendercommand.h>
 #include <rendering/commands/quad_rendercommand.h>
-#include <rendering/api/opengl/gltexture2d.h>
-#include <rendering/api/opengl/glshader.h>
-#include <rendering/api/opengl/glvertexbuffer.h>
-#include <rendering/api/opengl/glindexbuffer.h>
-#include <rendering/api/opengl/glvertexarray.h>
+
 
 namespace XEngine
 {
@@ -48,26 +44,26 @@ namespace XEngine
 
         Texture2D* GLRender::create_texture2D(const char *path)
         {
-            return new GLTexture2D(path);
+            return nullptr;
         }
 
         Shader * GLRender::create_shader(const char *vertex, const char *fragment)
         {
-            return new GLShader(vertex, fragment);
+            return nullptr;
         }
 
         VertexBuffer * GLRender::create_vertex_buffer(real32 * vertices, uint32 size)
         {
-            return new GLVertexBuffer(vertices, size);
+            return nullptr;
         }
         IndexBuffer * GLRender::create_index_buffer(uint32 * indices, uint32 size)
         {
-            return new GLIndexBuffer(indices, size);
+            return nullptr;
         }
 
         VertexArray * GLRender::create_vertex_array()
         {
-            return new GLVertexArray();
+            return nullptr;
         }
 
         FrameBuffer * GLRender::create_framebuffer()

@@ -2,6 +2,7 @@
 #include "xe_render.h"
 #include "xe_assets.h"
 #include "xe_input.h"
+#include "config.h"
 
 using namespace xe_ecs;
 
@@ -51,8 +52,7 @@ void xe_graphics::render_pass2D::render()
     using namespace xe_render;
 
     draw_quad(&main_ent, simple_shader, &result_texture, &camera2D);
-    glm::vec2 text_pos = glm::vec2(250.0f, 600.0f);
-    draw_text("test_text", text_pos);    
+    draw_text(ENGINE_NAME, 10, 10);     
 }
 
 void xe_graphics::render_pass2D::update(float dt)

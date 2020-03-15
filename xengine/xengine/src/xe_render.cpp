@@ -10,9 +10,11 @@
 
 namespace xe_render
 {
-    glm::vec4 clear_color;
-    xe_graphics::viewport view_port;
-    glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
+    static glm::vec4 clear_color;
+    static xe_graphics::viewport main_view_port;
+ 
+    static glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
+    static real32 default_text_scale = 1.0f;
 
     xe_graphics::graphics_device *graphics_device = nullptr;
 
@@ -101,19 +103,19 @@ namespace xe_render
         graphics_device->bind_vertex_array(va);
 
         graphics_device->create_vertex_buffer(NULL, 24, DRAW_TYPE::DYNAMIC, vb);
-     
-        //glGenVertexArrays(1, &vao);
-        //glGenBuffers(1, &vbo);
 
-        //glBindVertexArray(vao);
+        buffer_layout buffer_layout = {};
 
-        //glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        //glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-        
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+        std::initializer_list<xe_graphics::buffer_element> init_list =
+        {
+            { "aPos",    ElementType::Float4, },            
+        };
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        graphics_device->create_buffer_layout(init_list, &buffer_layout);
+        graphics_device->set_vertex_buffer_layout(vb, &buffer_layout);
+        graphics_device->add_vertex_buffer(va, vb);
+
+        graphics_device->unbind_buffer(BUFFER_TYPE::VERTEX);
         graphics_device->unbind_vertex_array();
 
         glm::mat4 ortho = glm::mat4(1.0f);
@@ -348,10 +350,8 @@ namespace xe_render
         graphics_device->unbind_shader();
     }
 
-    void draw_text(const std::string &text, glm::vec2 &pos, glm::vec3 &color)
+    void draw_text(const std::string &text, real32 x, real32 y, glm::vec3 &color, real32 scale)
     {
-        float scale = 1.0f;
-
         graphics_device->enable(GL_BLEND);
         graphics_device->set_blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         graphics_device->bind_shader(text_shader);
@@ -365,8 +365,8 @@ namespace xe_render
         {            
             character ch = characters_map.at(*c);
 
-            GLfloat xpos = pos.x + ch.Bearing.x * scale;
-            GLfloat ypos = pos.y - (ch.Size.y - ch.Bearing.y) * scale;
+            GLfloat xpos = x + ch.Bearing.x * scale;
+            GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
 
             GLfloat w = ch.Size.x * scale;
             GLfloat h = ch.Size.y * scale;
@@ -391,7 +391,7 @@ namespace xe_render
 
             graphics_device->draw_array(GL_TRIANGLES, 0, 6);
 
-            pos.x += (ch.Advance >> 6) * scale;
+            x += (ch.Advance >> 6) * scale;
         }
 
         graphics_device->unbind_vertex_array();
@@ -402,7 +402,12 @@ namespace xe_render
 
     void draw_text(const std::string &text, glm::vec2 &pos)
     {
-        draw_text(text, pos, default_text_color);
+        draw_text(text, pos.x, pos.y, default_text_color, default_text_scale);
+    }
+
+    void draw_text(const std::string &text, real32 x, real32 y)
+    {
+        draw_text(text, x, y, default_text_color, default_text_scale);
     }
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)

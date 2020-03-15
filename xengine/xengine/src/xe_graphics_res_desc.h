@@ -14,6 +14,12 @@ namespace xe_graphics
         DYNAMIC
     };
 
+    enum BUFFER_TYPE
+    {
+        VERTEX,
+        INDEX
+    };
+
     enum SHADER_TYPE
     {
         VS,

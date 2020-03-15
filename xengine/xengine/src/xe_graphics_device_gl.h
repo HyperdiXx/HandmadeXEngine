@@ -48,6 +48,7 @@ namespace xe_graphics
         void unbind_vertex_array() override;
         void unbind_shader() override;
         void unbind_framebuffer() override;
+        void unbind_buffer(BUFFER_TYPE type) override;
 
         void set_bool(const std::string &name, bool value, shader *shd) override;
         void set_int(const std::string &namee, int32 value, shader *shd) override;

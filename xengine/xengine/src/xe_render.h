@@ -71,6 +71,7 @@ namespace xe_render
 
     void draw_text(const std::string &text, glm::vec2& pos, glm::vec3& color);
     void draw_text(const std::string &text, glm::vec2& pos);
+    void draw_text(const std::string &text, real32 x, real32 y);
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera);
     void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform);

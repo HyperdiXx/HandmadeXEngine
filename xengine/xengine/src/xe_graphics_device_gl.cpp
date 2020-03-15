@@ -31,6 +31,26 @@ namespace xe_graphics
 
         return res;
     }
+
+    constexpr uint32 convert_buffer_type_gl(BUFFER_TYPE buf_type)
+    {
+        uint32 res = 0;
+
+        switch (buf_type)
+        {
+        case VERTEX:
+            res |= GL_ARRAY_BUFFER;
+            break;
+        case INDEX:
+            res |= GL_ELEMENT_ARRAY_BUFFER;
+            break;
+        default:
+            break;
+        }
+
+        return res;
+    }
+
 }
 
 using namespace xe_graphics;
@@ -668,6 +688,12 @@ void xe_graphics::graphics_device_gl::destroy_texture2D(texture2D * tex)
 void xe_graphics::graphics_device_gl::destroy_framebuffer(framebuffer * fbo)
 {
     glDeleteFramebuffers(1, &fbo->fbo_id);
+}
+
+void xe_graphics::graphics_device_gl::unbind_buffer(BUFFER_TYPE type)
+{
+    uint32 type_gl = convert_buffer_type_gl(type);
+    glBindBuffer(type_gl, 0);
 }
 
 void xe_graphics::graphics_device_gl::start_execution()

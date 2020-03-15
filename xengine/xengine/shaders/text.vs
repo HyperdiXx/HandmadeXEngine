@@ -1,5 +1,5 @@
 #version 330 core
-layout (location = 0) in vec4 v;
+layout (location = 0) in vec4 aPos;
 
 out vec2 UV;
 
@@ -7,6 +7,6 @@ uniform mat4 projection;
 
 void main()
 {
-   UV = v.zw;
-   gl_Position = projection * vec4(v.xy, 0.0, 1.0);
+   UV = aPos.zw;
+   gl_Position = projection * vec4(aPos.xy, 0.0, 1.0);
 };

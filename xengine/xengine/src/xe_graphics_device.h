@@ -50,6 +50,7 @@ namespace xe_graphics
         virtual void unbind_vertex_array() = 0;
         virtual void unbind_shader() = 0;
         virtual void unbind_framebuffer() = 0;
+        virtual void unbind_buffer(BUFFER_TYPE type) = 0;
 
         // shader
         virtual void set_bool(const std::string &name, bool value, shader *shd) = 0;
@@ -64,9 +65,6 @@ namespace xe_graphics
         virtual void set_mat2(const std::string &name, const glm::mat2 &mat, shader* shd) = 0;
         virtual void set_mat3(const std::string &name, const glm::mat3 &mat, shader* shd) = 0;
         virtual void set_mat4(const std::string &name, const glm::mat4 &mat, shader* shd) = 0;
-
-        //virtual void draw_model(Assets::Model *model, Shader *m_shader, glm::mat4 mat) = 0;
-        //virtual void draw_quad(Geometry::Quad *quad, BasicMaterial *material) = 0;
 
         virtual void start_execution() = 0;
         virtual void end_execution() = 0;

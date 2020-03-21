@@ -323,6 +323,7 @@
     <ClInclude Include="src\xe_assets.h" />
     <ClInclude Include="src\xe_ecs.h" />
     <ClInclude Include="src\xe_graphics_device.h" />
+    <ClInclude Include="src\xe_graphics_device_dx11.h" />
     <ClInclude Include="src\xe_graphics_device_gl.h" />
     <ClInclude Include="src\xe_graphics_resource.h" />
     <ClInclude Include="src\xe_graphics_res_desc.h" />

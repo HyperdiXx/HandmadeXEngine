@@ -38,7 +38,10 @@ namespace xe_render
         struct texture_font_t;
     }
 
-    void init_render();
+    void init_render_gl();
+    void init_render_dx11();
+
+    bool32 init_common_gpu_objects();
     bool32 load_font(const char *path);
     bool32 load_shaders();
 
@@ -60,6 +63,7 @@ namespace xe_render
     
     bool32 create_quad(xe_graphics::quad *q);
     bool32 create_full_quad();
+    bool32 create_skybox(xe_graphics::skybox *sky);
     bool32 create_cubemap(xe_graphics::cubemap *cube);
 
     void draw_full_quad();
@@ -76,7 +80,7 @@ namespace xe_render
     void draw_text(const std::string &text, glm::vec2& pos);
     void draw_text(const std::string &text, real32 x, real32 y);
 
-    void draw_skybox();
+    void draw_skybox(XEngine::PerspectiveCamera *camera);
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera);
     void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform);

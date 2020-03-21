@@ -6,7 +6,6 @@ out vec3 UV;
 uniform mat4 projection;
 uniform mat4 view;
 
-
 void main()
 {
    UV = aPos;

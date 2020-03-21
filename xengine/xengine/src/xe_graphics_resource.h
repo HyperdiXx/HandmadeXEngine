@@ -16,6 +16,7 @@ namespace xe_graphics
     struct texture2D
     {
         uint32 id;
+        bool32 is_valid;
         texture_desc desc;
     };
 
@@ -186,7 +187,15 @@ namespace xe_graphics
 
     struct cubemap
     {
+        uint32 id;
         std::vector<texture2D*> face_textures;
+    };
+
+    struct skybox
+    {
+        vertex_array *va;
+        vertex_buffer *vb;
+        cubemap *cubemap;
     };
 }
 #endif

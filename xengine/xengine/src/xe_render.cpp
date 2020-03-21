@@ -6,6 +6,8 @@
 #include "perspective_camera.h"
 #include "ortho_camera.h"
 
+#include "xe_core.h"
+
 #include <xenpch.h>
 
 namespace xe_render
@@ -23,16 +25,20 @@ namespace xe_render
     xe_graphics::shader *gamma_correction_shader = nullptr;
     xe_graphics::shader *color = nullptr;
     xe_graphics::shader *text_shader = nullptr;
+    xe_graphics::shader *cubemap_shader = nullptr;
     
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
 
-    xe_graphics::vertex_array quadVao;
+    xe_graphics::vertex_array quad_vao;
+    
     std::map<GLchar, xe_graphics::character> characters_map;
+
+    xe_graphics::skybox *skybox_obj;
 
     using namespace xe_graphics;
 
-    void init_render()
+    void init_render_gl()
     {
         xe_ecs::camera2d_component camera = get_camera2D();
 
@@ -41,6 +47,30 @@ namespace xe_render
 
         if (!load_font("engineassets/fonts/arial.ttf"))
             xe_utility::error("Failed to init font module");
+
+        init_common_gpu_objects();           
+    }
+
+    void init_render_dx11()
+    {
+
+
+    }
+
+    bool32 init_common_gpu_objects()
+    {
+        if (skybox_obj == nullptr)
+            skybox_obj = new xe_graphics::skybox();
+        
+        bool32 is_skybox_created = create_skybox(skybox_obj);
+        
+        if (!is_skybox_created)
+        {
+            xe_utility::error("Failed to init skybox!");
+            return false;
+        }
+            
+        return true;
     }
 
     bool32 load_font(const char *path)
@@ -73,14 +103,16 @@ namespace xe_render
 
             glGenTextures(1, &tex_id);
             glBindTexture(GL_TEXTURE_2D, tex_id);
+            
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width,
                 face->glyph->bitmap.rows,
                 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+            graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+            graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+            graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
             character chacter =
             {
@@ -93,7 +125,7 @@ namespace xe_render
             characters_map.insert(std::pair<GLchar, character>(c, chacter));
         }
 
-        graphics_device->unbind_texture2d();
+        graphics_device->unbind_texture(TEXTURE_TYPE::COLOR);
         FT_Done_Face(face);
         FT_Done_FreeType(lib);
 
@@ -137,12 +169,14 @@ namespace xe_render
         gamma_correction_shader = new xe_graphics::shader();
         color = new xe_graphics::shader();
         text_shader = new xe_graphics::shader();
+        cubemap_shader = new xe_graphics::shader();
 
         bool32 res = device->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs", simple_shader);
         res = device->create_shader("shaders/model3d.vs", "shaders/model3d.fs", model_shader);       
         res = device->create_shader("shaders/quad.vs", "shaders/gamma_correction.fs", gamma_correction_shader);
         res = device->create_shader("shaders/model3d.vs", "shaders/color.fs", color);
         res = device->create_shader("shaders/text.vs", "shaders/text.fs", text_shader);
+        res = device->create_shader("shaders/cubeMap.vs", "shaders/cubeMap.fs", cubemap_shader);
 
         if (!res)
         {
@@ -276,14 +310,135 @@ namespace xe_render
 
     bool32 create_full_quad()
     {
-        glGenVertexArrays(1, &quadVao.id);
+        glGenVertexArrays(1, &quad_vao.id);
+
+        return true;
+    }
+
+    bool32 create_skybox(xe_graphics::skybox *sky)
+    {     
+        real32 skybox_vertices[] = 
+        {       
+            -1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            -1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f
+        };
+
+        int vertex_size = sizeof(skybox_vertices) / sizeof(skybox_vertices[0]);
+
+        sky->va = new xe_graphics::vertex_array();
+        sky->vb = new xe_graphics::vertex_buffer();
+        
+        graphics_device->create_vertex_array(sky->va);
+        graphics_device->create_vertex_buffer(skybox_vertices, vertex_size, DRAW_TYPE::STATIC, sky->vb);
+
+        buffer_layout buffer_layout = {};
+
+        std::initializer_list<xe_graphics::buffer_element> init_list =
+        {
+            { "aPos",    ElementType::Float3, }
+        };
+
+        graphics_device->create_buffer_layout(init_list, &buffer_layout);
+        graphics_device->set_vertex_buffer_layout(sky->vb, &buffer_layout);
+        graphics_device->add_vertex_buffer(sky->va, sky->vb);
+
+        sky->cubemap = new cubemap();
+
+        if (!create_cubemap(sky->cubemap))            
+            return false;      
+
+        return true;
+    }
+
+    bool32 create_cubemap(xe_graphics::cubemap *cube)
+    {
+        cube->face_textures.reserve(16);
+
+        std::vector<const char*> skybox_faces;
+        skybox_faces.push_back("right.jpg");
+        skybox_faces.push_back("left.jpg");
+        skybox_faces.push_back("top.jpg");
+        skybox_faces.push_back("bottom.jpg");
+        skybox_faces.push_back("front.jpg");
+        skybox_faces.push_back("back.jpg");
+
+        texture2D *cubemap_texture = new texture2D();
+        cubemap_texture->desc.texture_type = CUBEMAP;
+        cubemap_texture->desc.dimension = TEXTURE_2D;
+
+        graphics_device->create_texture(cubemap_texture);
+        graphics_device->bind_texture(TEXTURE_TYPE::CUBEMAP, cubemap_texture);
+
+        for (uint32 i = 0; i < skybox_faces.size(); i++)
+        {
+            int channels = 0;
+            std::string final_path = "engineassets/skybox/" + std::string(skybox_faces[i]);
+            unsigned char *texture_data = xe_core::load_texture_from_disc(final_path.c_str(), cubemap_texture->desc.width, cubemap_texture->desc.height, channels, 0, false);
+            if (texture_data)
+                graphics_device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap_texture->desc.width, cubemap_texture->desc.height, GL_RGB, GL_RGB, texture_data);
+            else
+                xe_core::delete_data(texture_data);
+           
+            //cube->face_textures.push_back(cubemap_texture);
+        }
+
+        graphics_device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+        graphics_device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+        graphics_device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_R, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+        graphics_device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+        graphics_device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+        
+        cube->id = cubemap_texture->id;
+
+        graphics_device->bind_shader(cubemap_shader);
+        graphics_device->set_int("skybox", 0, cubemap_shader);
 
         return true;
     }
 
     void draw_full_quad()
     {
-        graphics_device->bind_vertex_array(&quadVao);
+        graphics_device->bind_vertex_array(&quad_vao);
         graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
         graphics_device->unbind_vertex_array();
     }
@@ -291,7 +446,7 @@ namespace xe_render
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam)
     {
         if (texture != nullptr)
-            graphics_device->bind_texture2d(texture);
+            graphics_device->bind_texture(TEXTURE_TYPE::COLOR, texture);
 
         glm::mat4 model = IDENTITY_MATRIX;
         
@@ -316,7 +471,7 @@ namespace xe_render
         transform_component *tr = ent->find_component<transform_component>();
 
         if (texture != nullptr)
-            graphics_device->activate_bind_texture2d(texture);
+            graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);
 
         if (mesh == nullptr)
             return;
@@ -344,7 +499,7 @@ namespace xe_render
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4 &mod, XEngine::OrthoCamera *cam)
     {
         if (texture != nullptr)
-            graphics_device->activate_bind_texture2d(texture);
+            graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);
 
         graphics_device->bind_shader(shd);
 
@@ -368,7 +523,7 @@ namespace xe_render
         graphics_device->bind_shader(text_shader);
         graphics_device->set_vec3("color", color, text_shader);
         
-        graphics_device->activate_texture2d(0);
+        graphics_device->activate_texture(0);
         glBindVertexArray(1);
        
         std::string::const_iterator c;
@@ -397,18 +552,23 @@ namespace xe_render
             glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
             glBindBuffer(GL_ARRAY_BUFFER, 1);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);            
+            graphics_device->unbind_buffer(BUFFER_TYPE::VERTEX);
+            
             graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
 
             x += (ch.Advance >> 6) * scale;
         }
 
         graphics_device->unbind_vertex_array();
-        graphics_device->unbind_texture2d();
+        graphics_device->unbind_texture(TEXTURE_TYPE::COLOR);
 
         graphics_device->disable(GL_BLEND);
+    }
+
+    void draw_text(const std::string &text, glm::vec2 &pos, glm::vec3 &color)
+    {
+        draw_text(text, pos.x, pos.y, color, default_text_scale);
     }
 
     void draw_text(const std::string &text, glm::vec2 &pos)
@@ -419,6 +579,28 @@ namespace xe_render
     void draw_text(const std::string &text, real32 x, real32 y)
     {
         draw_text(text, x, y, default_text_color, default_text_scale);
+    }
+
+    void draw_skybox(XEngine::PerspectiveCamera *camera)
+    {
+        glDepthFunc(GL_LEQUAL);
+        graphics_device->bind_shader(cubemap_shader);
+        
+        glm::mat4 view = glm::mat4(glm::mat3(camera->getViewMatrix()));
+
+        graphics_device->set_mat4("view", view, cubemap_shader);
+        graphics_device->set_mat4("projection", camera->getProjectionMatrix(), cubemap_shader);
+        
+        graphics_device->bind_vertex_array(skybox_obj->va);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_obj->cubemap->id);
+
+        //graphics_device->activate_bind_texture(TEXTURE_TYPE::CUBEMAP, skybox_obj->cubemap->id);
+
+        graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
+
+        glDepthFunc(GL_LESS);
     }
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)
@@ -457,6 +639,10 @@ namespace xe_render
     }
 
     void apply_spot_light(xe_graphics::shader * shd, xe_ecs::spot_light * directional_light, xe_ecs::transform_component * transform)
+    {
+    }
+
+    void apply_point_light(xe_graphics::shader * shd, xe_ecs::point_light * directional_light, xe_ecs::transform_component * transform)
     {
     }
 
@@ -550,7 +736,7 @@ namespace xe_render
         {
             // @Refactor!!!
             xe_graphics::texture2D *mesh_texture = msh->mesh_textures[i].texture;
-            device->activate_texture2d(i);
+            device->activate_texture(i);
 
             std::string name = msh->mesh_textures[i].type;
             std::string num;
@@ -563,7 +749,7 @@ namespace xe_render
                 num = std::to_string(specular_texture_num++);
 
             device->set_int((name + num).c_str(), i, shd);
-            device->bind_texture2d(mesh_texture);
+            device->bind_texture(TEXTURE_TYPE::COLOR, mesh_texture);
         }
 
         if (msh->vertices.size() > 0)

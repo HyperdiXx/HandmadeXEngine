@@ -42,17 +42,34 @@ namespace xe_graphics
     enum TEXTURE_WRAPPING
     {       
         TEXTURE_ADDRESS_REPEAT,
-        TEXTURE_ADDRESS_WRAP,
+        TEXTURE_ADDRESS_MIR_REPEAT,
         TEXTURE_ADDRESS_CLAMP,
-        TEXTURE_ADDRESS_BORDER,
+        TEXTURE_ADDRESS_BORDER
+    };
+
+    enum TEXTURE_WRAPPING_AXIS
+    {
+        TEXTURE_AXIS_S,
+        TEXTURE_AXIS_T,
+        TEXTURE_AXIS_R
     };
 
     enum TEXTURE_SAMPLING
     {
         LINEAR,
-        REPEAT
+        NEAREST, 
+        NEAREST_MIPMAP_NEAREST,
+        LINEAR_MIPMAP_NEAREST,
+        NEAREST_MIPMAP_LINEAR,
+        LINEAR_MIPMAP_LINEAR
     };
 
+    enum TEXTURE_FILTER_OPERATION
+    {
+        MIN,
+        MAG
+    };
+    
     enum TEXTURE_DIMENSION
     {
         TEXTURE_1D,

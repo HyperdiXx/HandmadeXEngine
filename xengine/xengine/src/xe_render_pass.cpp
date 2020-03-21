@@ -182,8 +182,9 @@ void xe_graphics::render_pass3D::render()
     
     graphics_device *device = xe_render::get_device();
 
-    device->bind_framebuffer(&fbo);
-    device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //device->bind_framebuffer(&fbo);
+    //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     
     device->enable(GL_DEPTH_TEST);
     device->enable(GL_CULL_FACE);
@@ -210,10 +211,13 @@ void xe_graphics::render_pass3D::render()
 
     xe_render::draw_ent(&plane_ent, color_shader, &cam, &red);
 
-    device->disable(GL_DEPTH_TEST);
     device->disable(GL_CULL_FACE);
 
-    device->unbind_framebuffer();
+    xe_render::draw_skybox(&cam);
+
+    device->disable(GL_DEPTH_TEST);
+
+    //device->unbind_framebuffer();
 }
 
 void xe_graphics::render_pass3D::update(float dt)
@@ -289,14 +293,14 @@ void xe_graphics::gamma_correction_pass::render()
     graphics_device *device = xe_render::get_device();
 
     if(texture != nullptr)
-        device->activate_bind_texture2d(texture);
+        device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);
 
     device->bind_shader(gmshd);
     device->set_int("tex_diff", 0, gmshd);
     
     xe_render::draw_full_quad();
 
-    device->unbind_texture2d();
+    device->unbind_texture(TEXTURE_TYPE::COLOR);
     device->unbind_shader();
 }
 

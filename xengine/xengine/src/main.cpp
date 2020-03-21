@@ -373,13 +373,21 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             
             xe_input::init();
 
+#ifdef GAPI_GL
+
             graphics_device *device = new graphics_device_gl(window_handle);
             set_device(device);
             win32_init_gl_loader();
             win32_init_imgui(window_handle);
-
-            init_render();
             
+            init_render_gl();
+
+#endif 
+
+#ifdef GAPI_DX11
+        
+#endif
+
             xe_scene::init();
 
             render_pass *base_render_pass = new render_pass2D();

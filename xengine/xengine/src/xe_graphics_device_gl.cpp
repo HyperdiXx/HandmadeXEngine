@@ -1,11 +1,10 @@
 
 #include "xe_graphics_device_gl.h"
-#include "xe_platform.h"
 #include "xe_core.h"
 
 #include "runtime/core/utility/log.h"
 
-#define MAX_COLOR_ATT 4
+
 
 
 namespace xe_graphics
@@ -199,13 +198,14 @@ namespace xe_graphics
     {
         this->fullscreen = fullscreen;
         this->vsync = vsync;
-
+        this->vp = {};
+        
         xe_utility::info("GAPI - GL");
 
         RECT rect = RECT();
         GetClientRect(window_handle, &rect);
-        this->screen_width = rect.right - rect.left;
-        this->screen_height = rect.bottom - rect.top;
+        this->vp.width = rect.right - rect.left;
+        this->vp.height = rect.bottom - rect.top;
 
         HDC dc = GetDC(window_handle);
 
@@ -250,12 +250,16 @@ namespace xe_graphics
 
     void graphics_device_gl::clear(int flags)
     {
+        glClearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
         glClear(flags);
     }
 
     void graphics_device_gl::clear_color(real32 r, real32 g, real32 b, real32 a)
     {
-        glClearColor(r, g, b, a);
+        clear_color_v[0] = r;
+        clear_color_v[1] = g;
+        clear_color_v[2] = b;
+        clear_color_v[3] = a;
     }
 
     void graphics_device_gl::set_viewport(int32 x, int32 y, int32 width, int32 height)
@@ -919,11 +923,12 @@ namespace xe_graphics
 
     void graphics_device_gl::start_execution()
     {
-
+        clear_color(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
+        clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void graphics_device_gl::end_execution()
-    {
-
+    {       
+        SwapBuffers(xe_platform::get_dc());
     }
 }

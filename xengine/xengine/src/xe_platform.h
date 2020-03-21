@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "config.h"
+
 #ifdef _WIN32
     #define PLATFORM_WINDOWS
 #else
@@ -16,6 +18,11 @@
 #include <windows.h>
 #include <types.h>
 #include <memory>
+
+    #ifdef GAPI_DX11
+        #include <DirectXMath.h>
+        #include <DirectXPackedVector.h>       
+    #endif // 
 
 #endif 
 
@@ -33,6 +40,12 @@ namespace xe_platform
     {
         static window_handle window;
         return window;
+    }
+
+    inline HDC& get_dc()
+    {
+        static HDC dc = GetDC(get_window_handle());
+        return dc;
     }
 
     bool32 load_library(const char *name);

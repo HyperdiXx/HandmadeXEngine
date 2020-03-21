@@ -249,6 +249,9 @@
     <ClCompile Include="src\xe_graphics_device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\xe_graphics_device_dx11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\models\barrels.fbx" />

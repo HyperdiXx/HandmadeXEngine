@@ -32,7 +32,15 @@
 #include "xe_render.h"
 #include "xe_render_pass.h"
 #include "xe_core.h"
+
+#ifdef GAPI_GL
 #include "xe_graphics_device_gl.h"
+#endif 
+
+#ifdef GAPI_DX11
+#include "xe_graphics_device_dx11.h"
+#endif
+
 #include "png.h"
 
 // ImGui
@@ -53,7 +61,7 @@ static bool is_open = true;
 static void 
 win32_init_imgui(HWND window)
 {
-    IMGUI_CHECKVERSION();
+    //IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
@@ -330,20 +338,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     AllocConsole();
     SetConsoleTitle("Dev console");
 
-    //HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
-    //int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
-    //FILE* hf_out = _fdopen(hCrt, "w");
-    //setvbuf(hf_out, NULL, _IONBF, 1);
-    //*stdout = *hf_out;
-
     FILE *out_f;
     freopen_s(&out_f, "CONOUT$", "w", stdout);
-
-    //HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
-    //hCrt = _open_osfhandle((long)handle_in, _O_TEXT);
-    //FILE* hf_in = _fdopen(hCrt, "r");
-    //setvbuf(hf_in, NULL, _IONBF, 128);
-    //*stdin = *hf_in;
 #endif
 
     WNDCLASS window = {};
@@ -366,11 +362,11 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
         if (window_handle)
         {
-            HDC dc = GetDC(window_handle);
-
             using namespace xe_graphics;
             using namespace xe_render;
             
+            HDC dc = GetDC(window_handle);
+
             xe_input::init();
 
 #ifdef GAPI_GL
@@ -385,7 +381,10 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 #endif 
 
 #ifdef GAPI_DX11
-        
+            graphics_device *device = new graphics_device_dx11(window_handle);
+            set_device(device);
+
+            init_render_dx11();
 #endif
 
             xe_scene::init();
@@ -401,11 +400,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             gamma_correction_pass *gamma_correction = new gamma_correction_pass();
             gamma_correction->init();
 
-            vec4f clear_color = {};
-            clear_color.x = 0.0f;
-            clear_color.y = 0.0f;
-            clear_color.z = 0.0f;
-            clear_color.w = 1.0f;
+            device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
 
             ImGuiIO& io = ImGui::GetIO();
             
@@ -422,9 +417,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 
                 xe_input::poll_events();
                
-                device->clear_color(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-                device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-              
+                device->start_execution();
+
                 main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
@@ -457,8 +451,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
         DestroyWindow(window_handle);
     }
-
-    
    
     return (0);
 }

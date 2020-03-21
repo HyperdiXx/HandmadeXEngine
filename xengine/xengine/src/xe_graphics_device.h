@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <types.h>
 
+#define MAX_COLOR_ATT 4
+
 namespace xe_graphics
 {
     class render_pass;
@@ -97,18 +99,17 @@ namespace xe_graphics
         virtual void destroy_framebuffer(framebuffer *fbo) = 0;
         virtual void destroy_shader(uint32 id) = 0;
 
-        inline int get_screen_width() const { return screen_width; }
-        inline int get_screen_height() const { return screen_height; }
         inline bool32 get_is_fullscreen() const { return fullscreen; }
         inline bool32 get_is_vsync() const { return vsync; }
         
         //static APIs::RenderAPI::API get_api() { return APIs::RenderAPI::get_api(); }
     
     protected:
-        int32 screen_width = 0;
-        int32 screen_height = 0;
-        
-        bool32 fullscreen= false;
+        bool32 fullscreen = false;
         bool32 vsync = true;
+
+        viewport vp;
+
+        real32 clear_color_v[4];
     };
 }

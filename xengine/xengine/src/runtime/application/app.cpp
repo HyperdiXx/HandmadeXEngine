@@ -22,8 +22,6 @@
 #include <rendering/text.h>
 #include <runtime/core/windowsystem/windowWin.h>
 
-#include <rendering/api/opengl/glframebuffer.h>
-
 #include <rendering/scenes/scene.h>
 #include <rendering/pipeline/shadersBase.h>
 

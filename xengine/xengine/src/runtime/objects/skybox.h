@@ -7,7 +7,6 @@
 #include <rendering/api/base/vertexarray.h>
 #include <rendering/api/base/vertexbuffer.h>
 #include <rendering/texture.h>
-#include <rendering/api/opengl/glframebuffer.h>
 
 namespace XEngine
 {
@@ -57,12 +56,11 @@ namespace XEngine
 
             unsigned int getSkyTexture() 
             {
-                return skyboxFBO->getColorTexture();
+                return 0;
+                //return skyboxFBO->getColorTexture();
             }
         private:
-            
-            
-            Rendering::GLFrameBuffer * skyboxFBO;
+            //Rendering::GLFrameBuffer * skyboxFBO;
 
             //colorPreset presetSunset, highSunPreset;
             glm::vec3 skyColorTop, skyColorBottom;

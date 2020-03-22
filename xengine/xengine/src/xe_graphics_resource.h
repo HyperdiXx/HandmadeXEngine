@@ -197,5 +197,10 @@ namespace xe_graphics
         vertex_buffer *vb;
         cubemap *cubemap;
     };
+
+    struct shadow_map
+    {
+        framebuffer *depth_fbo;
+    };
 }
 #endif

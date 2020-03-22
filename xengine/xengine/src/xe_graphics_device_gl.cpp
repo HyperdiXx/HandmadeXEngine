@@ -216,7 +216,7 @@ namespace xe_graphics
         pixel_format_descriptor.cColorBits = 32;
         pixel_format_descriptor.cAlphaBits = 8;
         pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
-
+        
         int pixel_format_index = ChoosePixelFormat(dc, &pixel_format_descriptor);
         PIXELFORMATDESCRIPTOR sug_pixel_format;
         DescribePixelFormat(dc, pixel_format_index, sizeof(sug_pixel_format), &sug_pixel_format);
@@ -913,6 +913,15 @@ namespace xe_graphics
     void graphics_device_gl::destroy_shader(uint32 id)
     {
         glDeleteShader(id);
+    }
+
+    void graphics_device_gl::check_error()
+    {
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR)
+        {
+            const char* erro_char = (const char*)err;
+        }
     }
 
     void graphics_device_gl::unbind_buffer(BUFFER_TYPE type)

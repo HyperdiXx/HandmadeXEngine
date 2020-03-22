@@ -10,7 +10,7 @@ void xe_graphics::render_pass2D::init()
 {
     graphics_device *device = xe_render::get_device();
 
-    device->create_texture2D("engineassets/get.png", &result_texture);
+    device->create_texture2D("assets/get.png", &result_texture);
     simple_shader = xe_render::get_simple_shader();
 
     main_ent.add_component(new quad_component());
@@ -90,7 +90,7 @@ void xe_graphics::render_pass3D::init()
     device->set_vec3("color", glm::vec3(0.5f, 0.9f, 0.9f), color_shader);
 
     mesh_component *mesh = new mesh_component();
-    mesh->model_asset = xe_assets::load_model_from_file("engineassets/nano/nanosuit.obj");
+    mesh->model_asset = xe_assets::load_model_from_file("assets/nano/nanosuit.obj");
     
     transform_component *nano_transform = new transform_component();
     nano_transform->position = glm::vec3(-20.0f, -9.0f, -50.0f);
@@ -99,7 +99,7 @@ void xe_graphics::render_pass3D::init()
     ent.add_component(nano_transform);
  
     mesh_component *cube = new mesh_component();
-    cube->model_asset = xe_assets::load_model_from_file("engineassets/cube.obj");
+    cube->model_asset = xe_assets::load_model_from_file("assets/cube.obj");
 
     dir_light *dl = new dir_light();
     dl->color = glm::vec3(0.8f, 0.7f, 0.8f);
@@ -137,7 +137,7 @@ void xe_graphics::render_pass3D::init()
         transform->scale = glm::vec3(0.2f, 0.2f, 0.2f);
 
         mesh_component *loading_model = new mesh_component();
-        loading_model->model_asset = xe_assets::load_model_from_file("engineassets/cube.obj");
+        loading_model->model_asset = xe_assets::load_model_from_file("assets/cube.obj");
 
         entity_add->add_component(transform);
         entity_add->add_component(loading_model);
@@ -146,7 +146,7 @@ void xe_graphics::render_pass3D::init()
     }
 
     mesh_component *plane_mesh = new mesh_component();
-    plane_mesh->model_asset = xe_assets::load_model_from_file("engineassets/cube.obj");
+    plane_mesh->model_asset = xe_assets::load_model_from_file("assets/cube.obj");
     transform_component *transform_plane = new transform_component();
     transform_plane->position = glm::vec3(3.0f, -10.0f, 25.0f);
     transform_plane->scale = glm::vec3(10.0f, 0.001f, 10.0f);
@@ -182,9 +182,9 @@ void xe_graphics::render_pass3D::render()
     
     graphics_device *device = xe_render::get_device();
 
-    //device->bind_framebuffer(&fbo);
-    //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+    device->bind_framebuffer(&fbo);
+    device->set_viewport(0, 0, 1280, 720);
+    device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     device->enable(GL_DEPTH_TEST);
     device->enable(GL_CULL_FACE);
@@ -217,7 +217,8 @@ void xe_graphics::render_pass3D::render()
 
     device->disable(GL_DEPTH_TEST);
 
-    //device->unbind_framebuffer();
+    device->unbind_framebuffer();
+    device->set_viewport(0, 0, 1280, 720);
 }
 
 void xe_graphics::render_pass3D::update(float dt)
@@ -257,7 +258,7 @@ void xe_graphics::render_pass3D::update(float dt)
         tr->position.x -= 0.8f * sin(dt);
         tr->position.z -= 0.8f * cos(dt);
     }
-
+   
     transform_component *light_transform = light_ent.find_component<transform_component>();
 
     if (light_transform)
@@ -270,7 +271,7 @@ void xe_graphics::render_pass3D::update(float dt)
 void xe_graphics::gamma_correction_pass::init()
 {
     graphics_device *device = xe_render::get_device();
-    gmshd = xe_render::get_gamma_correction_shader();
+    gmshd = xe_render::get_post_proc_shader();
 }
 
 void xe_graphics::gamma_correction_pass::clear()
@@ -305,6 +306,41 @@ void xe_graphics::gamma_correction_pass::render()
 }
 
 void xe_graphics::gamma_correction_pass::update(float dt)
+{
+
+}
+
+void xe_graphics::shadow_map_pass::init()
+{
+    bool32 shadow_map_inited = xe_render::create_shadow_maps(shadow);
+
+   
+    
+
+
+}
+
+void xe_graphics::shadow_map_pass::clear()
+{
+
+}
+
+void xe_graphics::shadow_map_pass::load_resources()
+{
+
+}
+
+void xe_graphics::shadow_map_pass::unload_resources()
+{
+
+}
+
+void xe_graphics::shadow_map_pass::render()
+{
+
+}
+
+void xe_graphics::shadow_map_pass::update(float dt)
 {
 
 }

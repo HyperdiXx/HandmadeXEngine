@@ -182,7 +182,7 @@ XEngine::Rendering::SkyboxProced::~SkyboxProced()
 void XEngine::Rendering::SkyboxProced::draw()
 {
     SceneObjects &scene = SceneObjects::getInstance();
-    skyboxFBO->bind();
+    //skyboxFBO->bind();
 
     /*Shader& shader = skyboxShader->getShader();
     shader.enableShader();

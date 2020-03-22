@@ -161,6 +161,9 @@ namespace xe_ecs
     public:
         real32 entensity;
         glm::vec3 color;
+
+        bool32 is_static;
+        bool32 is_casting_shadows;
     };
 
 

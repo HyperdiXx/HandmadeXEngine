@@ -1,7 +1,6 @@
 #pragma once
 
 #include <rendering/api/base/shader.h>
-#include <rendering/api/opengl/opengl.h>
 
 namespace XEngine
 {

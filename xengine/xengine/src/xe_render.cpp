@@ -23,6 +23,7 @@ namespace xe_render
     xe_graphics::shader *simple_shader = nullptr;
     xe_graphics::shader *model_shader = nullptr;
     xe_graphics::shader *gamma_correction_shader = nullptr;
+    xe_graphics::shader *post_proc_shader = nullptr;
     xe_graphics::shader *color = nullptr;
     xe_graphics::shader *text_shader = nullptr;
     xe_graphics::shader *cubemap_shader = nullptr;
@@ -45,7 +46,7 @@ namespace xe_render
         if(!load_shaders())
             xe_utility::error("Failed to init shader module");
 
-        if (!load_font("engineassets/fonts/arial.ttf"))
+        if (!load_font("assets/fonts/arial.ttf"))
             xe_utility::error("Failed to init font module");
 
         init_common_gpu_objects();           
@@ -170,14 +171,17 @@ namespace xe_render
         color = new xe_graphics::shader();
         text_shader = new xe_graphics::shader();
         cubemap_shader = new xe_graphics::shader();
+        post_proc_shader = new xe_graphics::shader();
 
-        bool32 res = device->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs", simple_shader);
-        res = device->create_shader("shaders/model3d.vs", "shaders/model3d.fs", model_shader);       
-        res = device->create_shader("shaders/quad.vs", "shaders/gamma_correction.fs", gamma_correction_shader);
-        res = device->create_shader("shaders/model3d.vs", "shaders/color.fs", color);
-        res = device->create_shader("shaders/text.vs", "shaders/text.fs", text_shader);
-        res = device->create_shader("shaders/cubeMap.vs", "shaders/cubeMap.fs", cubemap_shader);
-
+#ifdef GAPI_GL
+        bool32 res = device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", simple_shader);
+        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/model3d.fs", model_shader);       
+        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", gamma_correction_shader);
+        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/color.fs", color);
+        res = device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", text_shader);
+        res = device->create_shader("shaders/glsl/cubeMap.vs", "shaders/glsl/cubeMap.fs", cubemap_shader);
+        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", post_proc_shader);
+#endif
         if (!res)
         {
             xe_utility::error("loading shader");
@@ -240,6 +244,11 @@ namespace xe_render
     xe_graphics::shader *get_gamma_correction_shader()
     {
         return gamma_correction_shader;
+    }
+
+    xe_graphics::shader *get_post_proc_shader()
+    {
+        return post_proc_shader;
     }
 
     xe_graphics::shader * get_color_shader()
@@ -411,7 +420,7 @@ namespace xe_render
         for (uint32 i = 0; i < skybox_faces.size(); i++)
         {
             int channels = 0;
-            std::string final_path = "engineassets/skybox/" + std::string(skybox_faces[i]);
+            std::string final_path = "assets/skybox/" + std::string(skybox_faces[i]);
             unsigned char *texture_data = xe_core::load_texture_from_disc(final_path.c_str(), cubemap_texture->desc.width, cubemap_texture->desc.height, channels, 0, false);
             if (texture_data)
                 graphics_device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap_texture->desc.width, cubemap_texture->desc.height, GL_RGB, GL_RGB, texture_data);
@@ -432,6 +441,90 @@ namespace xe_render
 
         graphics_device->bind_shader(cubemap_shader);
         graphics_device->set_int("skybox", 0, cubemap_shader);
+
+        return true;
+    }
+
+    bool32 create_shadow_maps(xe_graphics::shadow_map *shadow)
+    {
+        const uint32 SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+        const uint32 WIDTH = 1280, HEIGHT = 720;
+
+        shadow->depth_fbo = new framebuffer();
+        graphics_device->create_framebuffer(1, shadow->depth_fbo);
+
+        graphics_device->add_depth_texture2D(SHADOW_WIDTH, SHADOW_HEIGHT, shadow->depth_fbo);
+
+        //unsigned int depthMap;
+        //glGenTextures(1, &depthMap);
+        //glBindTexture(GL_TEXTURE_2D, depthMap);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+        float colorattach[] = { 1.0, 1.0, 1.0, 1.0 };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorattach);
+
+        //glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+        //glDrawBuffer(GL_NONE);
+        //glReadBuffer(GL_NONE);
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        unsigned int hdrFBO;
+        glGenFramebuffers(1, &hdrFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+        unsigned int colorBuffers[2];
+        glGenTextures(2, colorBuffers);
+
+        for (uint32 i = 0; i < 2; ++i)
+        {
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+
+        }
+
+        unsigned int rboDepth;
+        glGenRenderbuffers(1, &rboDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, attachments);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer not complete!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        unsigned int pingphongFBO[2];
+        unsigned int pingcolorBuffer[2];
+
+        glGenFramebuffers(2, pingphongFBO);
+        glGenTextures(2, pingcolorBuffer);
+
+        for (uint16 i = 0; i < 2; ++i)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[i]);
+            glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingcolorBuffer[i], 0);
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+               std::cout << "Framebuffer not complete\n";
+        }
 
         return true;
     }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendering/api/opengl/glframebuffer.h"
+//#include "rendering/api/opengl/glframebuffer.h"
 #include <types.h>
 
 namespace XEngine
@@ -16,7 +16,7 @@ namespace XEngine
 
         glm::mat4 projMatrix = glm::mat4(1.0f);
 
-        Rendering::FrameBuffer *sceneFBO;
+        //Rendering::FrameBuffer *sceneFBO;
         bool wireframe = false;
     public:
         static SceneObjects& getInstance()

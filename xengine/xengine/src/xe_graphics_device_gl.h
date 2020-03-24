@@ -92,6 +92,9 @@ namespace xe_graphics
         void destroy_framebuffer(framebuffer *fbo) override;
         void destroy_shader(uint32 id) override;
         
+        void set_draw_buffer(uint32 type) override;
+        void set_read_buffer(uint32 type) override;
+
         void check_error() override;
 
         void start_execution() override;

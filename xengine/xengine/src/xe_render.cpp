@@ -455,6 +455,7 @@ namespace xe_render
 
         graphics_device->add_depth_texture2D(SHADOW_WIDTH, SHADOW_HEIGHT, shadow->depth_fbo);
 
+       
         //unsigned int depthMap;
         //glGenTextures(1, &depthMap);
         //glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -467,63 +468,116 @@ namespace xe_render
         float colorattach[] = { 1.0, 1.0, 1.0, 1.0 };
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorattach);
 
+        graphics_device->bind_framebuffer(shadow->depth_fbo);
+        graphics_device->set_texture2D(GL_DEPTH_ATTACHMENT, shadow->depth_fbo->depth_texture);
+        graphics_device->set_draw_buffer(GL_NONE);
+        graphics_device->set_read_buffer(GL_NONE);
+        graphics_device->unbind_framebuffer();
+
         //glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
         //glDrawBuffer(GL_NONE);
         //glReadBuffer(GL_NONE);
         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        unsigned int hdrFBO;
-        glGenFramebuffers(1, &hdrFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+        framebuffer *hdr = new framebuffer();
+        graphics_device->create_framebuffer(1, hdr);
+        graphics_device->bind_framebuffer(hdr);
 
-        unsigned int colorBuffers[2];
-        glGenTextures(2, colorBuffers);
+        //unsigned int hdrFBO;
+        //glGenFramebuffers(1, &hdrFBO);
+        //glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+        texture2D *color_attach = new texture2D[2];
+
+        graphics_device->create_texture(color_attach);
+
+        //unsigned int colorBuffers[2];
+        //glGenTextures(2, colorBuffers);
 
         for (uint32 i = 0; i < 2; ++i)
         {
-            glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            graphics_device->bind_texture(TEXTURE_TYPE::COLOR, &color_attach[i]);
+            graphics_device->load_texture_gpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+            //glBindTexture(GL_TEXTURE_2D, color_attach[i]->id);
+            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 
+            graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+            graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+            graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+            graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+            graphics_device->set_texture2D(GL_COLOR_ATTACHMENT0 + i, &color_attach[i]);
+
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, &color_attach->desc[i], 0);
         }
 
-        unsigned int rboDepth;
-        glGenRenderbuffers(1, &rboDepth);
-        glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+        graphics_device->create_render_buffer(1, shadow->depth_fbo);
+
+        //unsigned int rboDepth;
+        //glGenRenderbuffers(1, &rboDepth);
+        
+        graphics_device->bind_renderbuffer(shadow->depth_fbo);
+
+        //glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+        
+        //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
+        //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 
         unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
         glDrawBuffers(2, attachments);
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+        graphics_device->check_framebuffer();
+        graphics_device->unbind_framebuffer();
+        
+        //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        //std::cout << "Framebuffer not complete!" << std::endl;
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         unsigned int pingphongFBO[2];
         unsigned int pingcolorBuffer[2];
 
+        framebuffer *p_fbo = new framebuffer[2];
+            
         glGenFramebuffers(2, pingphongFBO);
         glGenTextures(2, pingcolorBuffer);
+
+        graphics_device->create_framebuffer(2, p_fbo);
+        //graphics_device->create_texture();
 
         for (uint16 i = 0; i < 2; ++i)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[i]);
             glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[i]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  
+            graphics_device->load_texture_gpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
+
+            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+            
+            graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+            graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+            
+            graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+            graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+           
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingcolorBuffer[i], 0);
 
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-               std::cout << "Framebuffer not complete\n";
+            graphics_device->check_framebuffer();
+
+            //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            //   std::cout << "Framebuffer not complete\n";
         }
 
         return true;

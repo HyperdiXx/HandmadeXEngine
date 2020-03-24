@@ -99,6 +99,8 @@ namespace xe_graphics
         virtual void destroy_framebuffer(framebuffer *fbo) = 0;
         virtual void destroy_shader(uint32 id) = 0;
 
+        virtual void set_draw_buffer(uint32 type) = 0;
+        virtual void set_read_buffer(uint32 type) = 0;
         virtual void check_error() = 0;
 
         inline bool32 get_is_fullscreen() const { return fullscreen; }

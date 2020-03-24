@@ -915,6 +915,16 @@ namespace xe_graphics
         glDeleteShader(id);
     }
 
+    void graphics_device_gl::set_draw_buffer(uint32 type)
+    {
+        glDrawBuffer(type);
+    }
+
+    void graphics_device_gl::set_read_buffer(uint32 type)
+    {
+        glReadBuffer(type);
+    }
+
     void graphics_device_gl::check_error()
     {
         GLenum err;

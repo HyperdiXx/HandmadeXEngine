@@ -51,6 +51,8 @@
 #include "xe_input.h"
 #include "xe_scene.h"
 
+#include "runtime/core/utility/log.h"
+
 static int WINDOW_WIDTH_SIZE = 1280;
 static int WINDOW_HEIGHT_SIZE = 720;
 
@@ -267,6 +269,14 @@ void win32_init_gl_loader()
 {
     if (!gladLoadGL())
         printf("Failed to init OpenGL loader!\n");
+
+    const char *gl_vendor = (char*)glGetString(GL_VENDOR);
+    const char *gl_renderer = (char*)glGetString(GL_RENDERER);
+    const char *gl_version = (char*)glGetString(GL_VERSION);
+
+    xe_utility::info(gl_vendor);
+    xe_utility::info(gl_renderer);
+    xe_utility::info(gl_version);
 }
 
 internal 

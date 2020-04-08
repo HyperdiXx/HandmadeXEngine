@@ -884,6 +884,9 @@
     <ClInclude Include="src\xe_graphics_device_dx11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\external\wglext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\shaders\triangle.hlsl" />

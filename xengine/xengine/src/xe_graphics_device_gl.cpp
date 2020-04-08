@@ -4,8 +4,8 @@
 
 #include "runtime/core/utility/log.h"
 
-
-
+#include <GL/GL.h>
+#include <external/wglext.h>
 
 namespace xe_graphics
 {
@@ -216,8 +216,32 @@ namespace xe_graphics
         pixel_format_descriptor.cColorBits = 32;
         pixel_format_descriptor.cAlphaBits = 8;
         pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
+
+   
+        const int pixel_format_attrib_list[] = 
+        {
+             WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+             WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+             WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+             WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+             WGL_COLOR_BITS_ARB, 32,
+             WGL_DEPTH_BITS_ARB, 24,
+             WGL_STENCIL_BITS_ARB, 8,
+             0 
+        };
+
+        int attributes[] = 
+        {
+            WGL_CONTEXT_MAJOR_VERSION_ARB, 4, 
+            WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+            WGL_CONTEXT_FLAGS_ARB, 
+            WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, 0
+        };
+
+        int pixel_format = 0;
+        UINT num_formats = 0;
         
-        int pixel_format_index = ChoosePixelFormat(dc, &pixel_format_descriptor);
+        int pixel_format_index = ChoosePixelFormat(dc, &pixel_format_descriptor);        
         PIXELFORMATDESCRIPTOR sug_pixel_format;
         DescribePixelFormat(dc, pixel_format_index, sizeof(sug_pixel_format), &sug_pixel_format);
         SetPixelFormat(dc, pixel_format_index, &sug_pixel_format);
@@ -230,16 +254,40 @@ namespace xe_graphics
 
 #ifdef PLATFORM_WINDOWS
 
-        typedef BOOL(WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
-        PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
+        PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
         wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+       
+        PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
+        wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+        
+        PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
+        wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+        wglMakeCurrent(0, 0);
+
+        wglDeleteContext(gl_render_context);
+        ReleaseDC(window_handle, dc);
+        
+        // create modern gl context attribs
+        if (wglCreateContextAttribsARB)
+            gl_render_context = wglCreateContextAttribsARB(dc, 0, attributes);
+
+        // create context modern gl 
+        gl_render_context = wglCreateContext(dc);
+        
+        if (!wglMakeCurrent(dc, gl_render_context))
+        {
+            xe_utility::error("Cannot create OpenGL context!!!");
+        }
+
+        // set swap interval
         if (wglSwapIntervalEXT && vsync)
             wglSwapIntervalEXT(1);
         else
             wglSwapIntervalEXT(0);
 
 #endif 
-
+       
         ReleaseDC(window_handle, dc);
     }
 

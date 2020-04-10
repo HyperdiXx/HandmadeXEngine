@@ -85,6 +85,7 @@ namespace xe_graphics
         switch (tex_type)
         {
         case COLOR:
+        case DEPTH:
             res |= GL_TEXTURE_2D;
             break;
         case CUBEMAP:

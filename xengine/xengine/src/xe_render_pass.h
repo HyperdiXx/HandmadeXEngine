@@ -16,12 +16,11 @@ namespace xe_graphics
         virtual void init() = 0;
         virtual void clear() = 0;
 
-        virtual void load_resources() = 0;
         virtual void unload_resources() = 0;
 
         virtual void render() = 0;
 
-        virtual void update(float dt) = 0;
+        virtual void update(real32 dt) = 0;
 
     private:
         
@@ -33,7 +32,6 @@ namespace xe_graphics
         void init() override;
         void clear() override;
 
-        void load_resources() override;
         void unload_resources() override;
 
         void render() override;
@@ -57,18 +55,19 @@ namespace xe_graphics
         void init() override;
         void clear() override;
 
-        void load_resources() override;
         void unload_resources() override;
 
         void render() override;
 
-        void update(float dt) override;
+        void update(real32 dt) override;
 
         inline XEngine::PerspectiveCamera& get_camera3d() { return camera3D; }
         inline xe_graphics::texture2D& get_color_texture() { return color_texture; }
     private:            
         XEngine::PerspectiveCamera camera3D;
+       
         
+
         xe_ecs::entity ent;
         xe_assets::model *model;
         xe_assets::model *model_cube;
@@ -87,12 +86,11 @@ namespace xe_graphics
         void init() override;
         void clear() override;
 
-        void load_resources() override;
         void unload_resources() override;
 
         void render() override;
 
-        void update(float dt) override;
+        void update(real32 dt) override;
 
         void set_color_texture(texture2D *tex) { texture = tex; }
     private:
@@ -100,18 +98,20 @@ namespace xe_graphics
         texture2D *texture;
     };
 
-    class shadow_map_pass : public render_pass
+    class shadow_map_pass
     {
     public:
-        void init() override;
-        void clear() override;
+        void init();
+        void clear();
 
-        void load_resources() override;
-        void unload_resources() override;
+        void unload_resources();
 
-        void render() override;
+        void render(render_pass *pass);
 
-        void update(float dt) override;
+        void update(real32 dt);
+
+        void bind_depth_texture() const;
+
     private:
         xe_graphics::shadow_map *shadow;
     };

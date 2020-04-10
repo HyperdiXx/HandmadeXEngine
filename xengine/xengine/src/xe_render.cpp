@@ -24,9 +24,11 @@ namespace xe_render
     xe_graphics::shader *model_shader = nullptr;
     xe_graphics::shader *gamma_correction_shader = nullptr;
     xe_graphics::shader *post_proc_shader = nullptr;
-    xe_graphics::shader *color = nullptr;
+    xe_graphics::shader *color_shader = nullptr;
     xe_graphics::shader *text_shader = nullptr;
     xe_graphics::shader *cubemap_shader = nullptr;
+    xe_graphics::shader *shadow_map_shader = nullptr;
+    xe_graphics::shader *shadow_map_depth_shader = nullptr;
     
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
@@ -44,10 +46,10 @@ namespace xe_render
         xe_ecs::camera2d_component camera = get_camera2D();
 
         if(!load_shaders())
-            xe_utility::error("Failed to init shader module");
+            xe_utility::error("Failed to init shader module!");
 
         if (!load_font("assets/fonts/arial.ttf"))
-            xe_utility::error("Failed to init font module");
+            xe_utility::error("Failed to init font module!");
 
         init_common_gpu_objects();           
     }
@@ -98,16 +100,12 @@ namespace xe_render
                 continue;
             }
 
-            //graphics_device->create_texture2D(face->glyph->bitmap.width, face->glyph->bitmap.rows, texture_sym);
+            texture2D texture_symbol = {};
 
-            uint32 tex_id;
-
-            glGenTextures(1, &tex_id);
-            glBindTexture(GL_TEXTURE_2D, tex_id);
+            graphics_device->create_texture(&texture_symbol);
+            graphics_device->bind_texture(TEXTURE_TYPE::COLOR, &texture_symbol);
             
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width,
-                face->glyph->bitmap.rows,
-                0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            graphics_device->load_texture_gpu(TEXTURE_TYPE::COLOR, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_RED, face->glyph->bitmap.buffer);
 
             graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
             graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -117,7 +115,7 @@ namespace xe_render
 
             character chacter =
             {
-                tex_id,
+                texture_symbol.id,
                 glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
                 glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
                 face->glyph->advance.x
@@ -168,19 +166,24 @@ namespace xe_render
         simple_shader = new xe_graphics::shader();
         model_shader = new xe_graphics::shader();
         gamma_correction_shader = new xe_graphics::shader();
-        color = new xe_graphics::shader();
+        color_shader = new xe_graphics::shader();
         text_shader = new xe_graphics::shader();
         cubemap_shader = new xe_graphics::shader();
         post_proc_shader = new xe_graphics::shader();
+        shadow_map_shader = new xe_graphics::shader();
+        shadow_map_depth_shader = new xe_graphics::shader();
 
 #ifdef GAPI_GL
         bool32 res = device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", simple_shader);
         res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/model3d.fs", model_shader);       
         res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", gamma_correction_shader);
-        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/color.fs", color);
+        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/color.fs", color_shader);
         res = device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", text_shader);
-        res = device->create_shader("shaders/glsl/cubeMap.vs", "shaders/glsl/cubeMap.fs", cubemap_shader);
+        res = device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", cubemap_shader);
+        res = device->create_shader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", shadow_map_shader);
+        res = device->create_shader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", shadow_map_depth_shader);
         res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", post_proc_shader);
+        
 #endif
         if (!res)
         {
@@ -224,11 +227,6 @@ namespace xe_render
         active_framebuffer = fbo;
     }
 
-    void set_clear_color(real32 r, real32 g, real32 b, real32 a)
-    {
-
-    }
-
     xe_graphics::graphics_device* get_device() { return graphics_device; }
 
     xe_graphics::shader *get_simple_shader()
@@ -251,9 +249,19 @@ namespace xe_render
         return post_proc_shader;
     }
 
-    xe_graphics::shader * get_color_shader()
+    xe_graphics::shader *get_color_shader()
     {
-        return color;
+        return color_shader;
+    }
+
+    xe_graphics::shader *get_shadow_map_shader()
+    {
+        return shadow_map_shader;
+    }
+
+    xe_graphics::shader * get_shadow_map_depth_shader()
+    {
+        return shadow_map_depth_shader;
     }
 
     bool32 create_mesh(xe_assets::mesh *meh)
@@ -450,11 +458,13 @@ namespace xe_render
         const uint32 SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
         const uint32 WIDTH = 1280, HEIGHT = 720;
 
-        shadow->depth_fbo = new framebuffer();
-        graphics_device->create_framebuffer(1, shadow->depth_fbo);
+        shadow->depth_fbo = {};
 
-        graphics_device->add_depth_texture2D(SHADOW_WIDTH, SHADOW_HEIGHT, shadow->depth_fbo);
-
+        shadow->w = SHADOW_WIDTH;
+        shadow->h = SHADOW_HEIGHT;
+        
+        graphics_device->create_framebuffer(1, &shadow->depth_fbo);
+        graphics_device->add_depth_texture2D(SHADOW_WIDTH, SHADOW_HEIGHT, &shadow->depth_fbo);
        
         //unsigned int depthMap;
         //glGenTextures(1, &depthMap);
@@ -468,8 +478,8 @@ namespace xe_render
         float colorattach[] = { 1.0, 1.0, 1.0, 1.0 };
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorattach);
 
-        graphics_device->bind_framebuffer(shadow->depth_fbo);
-        graphics_device->set_texture2D(GL_DEPTH_ATTACHMENT, shadow->depth_fbo->depth_texture);
+        graphics_device->bind_framebuffer(&shadow->depth_fbo);
+        graphics_device->set_texture2D(GL_DEPTH_ATTACHMENT, shadow->depth_fbo.depth_texture);
         graphics_device->set_draw_buffer(GL_NONE);
         graphics_device->set_read_buffer(GL_NONE);
         graphics_device->unbind_framebuffer();
@@ -518,12 +528,12 @@ namespace xe_render
             //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, &color_attach->desc[i], 0);
         }
 
-        graphics_device->create_render_buffer(1, shadow->depth_fbo);
+        graphics_device->create_render_buffer(1, &shadow->depth_fbo);
 
         //unsigned int rboDepth;
         //glGenRenderbuffers(1, &rboDepth);
         
-        graphics_device->bind_renderbuffer(shadow->depth_fbo);
+        graphics_device->bind_renderbuffer(&shadow->depth_fbo);
 
         //glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
         
@@ -678,11 +688,11 @@ namespace xe_render
         {            
             character ch = characters_map.at(*c);
 
-            GLfloat xpos = x + ch.Bearing.x * scale;
-            GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+            GLfloat xpos = x + ch.bearing.x * scale;
+            GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
 
-            GLfloat w = ch.Size.x * scale;
-            GLfloat h = ch.Size.y * scale;
+            GLfloat w = ch.size.x * scale;
+            GLfloat h = ch.size.y * scale;
 
             GLfloat vertices[6][4] = {
                 { xpos,     ypos + h,   0.0, 0.0 },
@@ -696,7 +706,7 @@ namespace xe_render
 
             //graphics_device->bind_texture2d();
 
-            glBindTexture(GL_TEXTURE_2D, ch.textureID);
+            glBindTexture(GL_TEXTURE_2D, ch.texture_id);
 
             glBindBuffer(GL_ARRAY_BUFFER, 1);
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);            
@@ -704,7 +714,7 @@ namespace xe_render
             
             graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
 
-            x += (ch.Advance >> 6) * scale;
+            x += (ch.advance >> 6) * scale;
         }
 
         graphics_device->unbind_vertex_array();
@@ -748,6 +758,14 @@ namespace xe_render
         graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
 
         glDepthFunc(GL_LESS);
+    }
+
+    void apply_shadow_map(xe_graphics::shadow_map *shadow)
+    {        
+        real32 near_p = 1.0f;
+        real32 far_p = 7.5f;
+
+        shadow->light_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
     }
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)

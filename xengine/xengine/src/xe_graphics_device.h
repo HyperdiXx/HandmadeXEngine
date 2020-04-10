@@ -105,9 +105,8 @@ namespace xe_graphics
 
         inline bool32 get_is_fullscreen() const { return fullscreen; }
         inline bool32 get_is_vsync() const { return vsync; }
+        inline const viewport& get_viewport() { return vp; }
         
-        //static APIs::RenderAPI::API get_api() { return APIs::RenderAPI::get_api(); }
-    
     protected:
         bool32 fullscreen = false;
         bool32 vsync = true;

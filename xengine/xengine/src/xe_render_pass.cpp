@@ -37,11 +37,6 @@ void xe_graphics::render_pass2D::clear()
     device->destroy_texture2D(&result_texture);
 }
 
-void xe_graphics::render_pass2D::load_resources()
-{
-
-}
-
 void xe_graphics::render_pass2D::unload_resources()
 {
 
@@ -55,7 +50,7 @@ void xe_graphics::render_pass2D::render()
     draw_text(ENGINE_NAME, 10, 10);     
 }
 
-void xe_graphics::render_pass2D::update(float dt)
+void xe_graphics::render_pass2D::update(real32 dt)
 {
     update_component *updater = main_ent.find_component<update_component>();
 
@@ -160,11 +155,6 @@ void xe_graphics::render_pass3D::clear()
 
 }
 
-void xe_graphics::render_pass3D::load_resources()
-{
-
-}
-
 void xe_graphics::render_pass3D::unload_resources()
 {
 
@@ -216,12 +206,13 @@ void xe_graphics::render_pass3D::render()
     xe_render::draw_skybox(&cam);
 
     device->disable(GL_DEPTH_TEST);
-
     device->unbind_framebuffer();
-    device->set_viewport(0, 0, 1280, 720);
+
+    viewport vp = device->get_viewport();
+    device->set_viewport(0, 0, vp.width, vp.height);
 }
 
-void xe_graphics::render_pass3D::update(float dt)
+void xe_graphics::render_pass3D::update(real32 dt)
 {
     float speed = 12.0f;
 
@@ -271,15 +262,10 @@ void xe_graphics::render_pass3D::update(float dt)
 void xe_graphics::gamma_correction_pass::init()
 {
     graphics_device *device = xe_render::get_device();
-    gmshd = xe_render::get_post_proc_shader();
+    gmshd = xe_render::get_gamma_correction_shader();
 }
 
 void xe_graphics::gamma_correction_pass::clear()
-{
-
-}
-
-void xe_graphics::gamma_correction_pass::load_resources()
 {
 
 }
@@ -305,27 +291,32 @@ void xe_graphics::gamma_correction_pass::render()
     device->unbind_shader();
 }
 
-void xe_graphics::gamma_correction_pass::update(float dt)
+void xe_graphics::gamma_correction_pass::update(real32 dt)
 {
 
 }
 
 void xe_graphics::shadow_map_pass::init()
 {
+    // @Refactor: initialization here
+    shadow = new shadow_map();
+
     bool32 shadow_map_inited = xe_render::create_shadow_maps(shadow);
 
+    if (!shadow_map_inited)
+        printf("Failed to create shadow map!\n");
    
-    
+    graphics_device *device = xe_render::get_device();
 
+    shader *depth_shader = xe_render::get_shadow_map_depth_shader();
+    shader *shadow_map_shader = xe_render::get_shadow_map_shader();
 
+    device->bind_shader(shadow_map_shader);
+    device->set_int("diff_tex", 0, shadow_map_shader);
+    device->set_int("shadow_map", 1, shadow_map_shader);
 }
 
 void xe_graphics::shadow_map_pass::clear()
-{
-
-}
-
-void xe_graphics::shadow_map_pass::load_resources()
 {
 
 }
@@ -335,12 +326,31 @@ void xe_graphics::shadow_map_pass::unload_resources()
 
 }
 
-void xe_graphics::shadow_map_pass::render()
+void xe_graphics::shadow_map_pass::render(xe_graphics::render_pass *pass)
+{
+    graphics_device *device = xe_render::get_device();
+
+    device->set_viewport(0, 0, shadow->w, shadow->h);
+    device->bind_framebuffer(&shadow->depth_fbo);
+    device->clear(GL_DEPTH_BUFFER_BIT);
+
+    xe_render::apply_shadow_map(shadow);
+
+    pass->render();
+    //RenderScene();
+    
+    device->unbind_framebuffer();
+}
+
+void xe_graphics::shadow_map_pass::update(real32 dt)
 {
 
 }
 
-void xe_graphics::shadow_map_pass::update(float dt)
+void xe_graphics::shadow_map_pass::bind_depth_texture() const
 {
+    graphics_device *device = xe_render::get_device();
+
+    device->bind_texture(TEXTURE_TYPE::DEPTH, shadow->depth_fbo.depth_texture);
 
 }

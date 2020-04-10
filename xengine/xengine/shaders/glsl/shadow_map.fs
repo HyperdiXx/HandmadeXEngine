@@ -36,14 +36,14 @@ float calculate_shadows(vec4 light_space_pos)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(shadow_map, projected_coord.xy + vec2(x, y) * texel_size).r; 
-            shadow += current_depth - bias > pcfDepth  ? 1.0 : 0.0;        
+            float pcf = texture(shadow_map, projected_coord.xy + vec2(x, y) * texel_size).r; 
+            shadow += current_depth - bias > pcf  ? 1.0 : 0.0;        
         }    
     }
 
     shadow /= 9.0;
     
-    if(projCoords.z > 1.0)
+    if(projected_coord.z > 1.0)
         shadow = 0.0;
         
     return shadow;
@@ -62,7 +62,7 @@ void main()
    float diff = max(dot(light_dir, normal), 0.0);
    vec3 diffuse = diff * light_color;
 
-   vec3 view_dir = normalize(viewPos - fs_in.world_pos);
+   vec3 view_dir = normalize(view_pos - fs_in.world_pos);
    vec3 reflect_dir = reflect(-light_dir, normal);
    float spec = 0.0;
    vec3 halfway_dir = normalize(light_dir + view_dir);  

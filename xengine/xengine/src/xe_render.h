@@ -50,14 +50,15 @@ namespace xe_render
     void set_device(xe_graphics::graphics_device *device);
     void set_render_pass(xe_graphics::render_pass *pass);
     void set_active_framebuffer(xe_graphics::framebuffer *fbo);
-    void set_clear_color(real32 r, real32 g, real32 b, real32 a);
-
+    
     xe_graphics::graphics_device* get_device();
     xe_graphics::shader* get_simple_shader();
     xe_graphics::shader* get_model_shader();
     xe_graphics::shader* get_gamma_correction_shader();
     xe_graphics::shader* get_post_proc_shader();
     xe_graphics::shader* get_color_shader();
+    xe_graphics::shader* get_shadow_map_shader();
+    xe_graphics::shader* get_shadow_map_depth_shader();
 
     xe_ecs::camera2d_component& get_camera2D();
     xe_ecs::camera3d_component& get_camera3D();
@@ -84,6 +85,8 @@ namespace xe_render
 
     void draw_skybox(XEngine::PerspectiveCamera *camera);
     void draw_shadow_maps();
+
+    void apply_shadow_map(xe_graphics::shadow_map *shadow);
 
     void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera);
     void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform);

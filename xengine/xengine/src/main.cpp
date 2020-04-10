@@ -410,9 +410,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             gamma_correction_pass *gamma_correction = new gamma_correction_pass();
             gamma_correction->init();
 
-            //render_pass *shadow_pass = new shadow_map_pass();
-            //shadow_pass->init();
-
+            shadow_map_pass *shadow_pass = new shadow_map_pass();
+            shadow_pass->init();
 
             device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -433,18 +432,32 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                
                 device->start_execution();
 
+                //shadow_pass->render(main_render_pass);
+
+                viewport vp_state = device->get_viewport();
+
+                device->set_viewport(0, 0, vp_state.width, vp_state.height);
+                device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                
+                //glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+                //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                //ConfigureShaderAndMatrices();
+                //glBindTexture(GL_TEXTURE_2D, depthMap);
+                //RenderScene();
+
+                //shadow_pass->bind_depth_texture();
+
                 main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
-                base_render_pass->update(io.DeltaTime);
-                base_render_pass->render();
-
                 texture2D pass_texture = main_render_pass->get_color_texture();
 
                 gamma_correction->set_color_texture(&pass_texture);
                 gamma_correction->render();
 
-                
+                base_render_pass->update(io.DeltaTime);
+                base_render_pass->render();
+
                 win32_imgui_new_frame();                
                 top_bar();                            
                 win32_imgui_post_update();

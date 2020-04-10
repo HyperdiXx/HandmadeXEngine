@@ -16,13 +16,13 @@ uniform vec3 cam_pos;
 
 vec3 gamma_correction(vec3 color) 
 {
-    return pow(color, vec3(0.4545));
+    return pow(color, vec3(2.2));
 }
 
 void main()
 {
-    //vec3 diffuse = gamma_correction(texture(tex_diff1, uv).rgb);    
-    vec3 diffuse = texture(tex_diff1, uv).rgb;
+    vec3 diffuse = gamma_correction(texture(tex_diff1, uv).rgb);    
+    //vec3 diffuse = texture(tex_diff1, uv).rgb;
     vec3 ambient = dir_light_color * intensity;
 
     //vec3 normalt = vec3(texture(tex_norm1, uv).rgb);

@@ -173,10 +173,10 @@ namespace xe_graphics
 
     struct character
     {
-        GLuint     textureID;
-        glm::ivec2 Size;
-        glm::ivec2 Bearing;
-        GLuint     Advance;
+        GLuint     texture_id;
+        glm::ivec2 size;
+        glm::ivec2 bearing;
+        GLuint     advance;
     };
 
     struct text
@@ -200,7 +200,10 @@ namespace xe_graphics
 
     struct shadow_map
     {
-        framebuffer *depth_fbo;
+        uint32 w;
+        uint32 h;
+        glm::mat4 light_matrix = glm::mat4(1.0f);
+        framebuffer depth_fbo;
     };
 }
 #endif

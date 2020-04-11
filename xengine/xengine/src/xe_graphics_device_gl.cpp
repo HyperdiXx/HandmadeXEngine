@@ -511,7 +511,7 @@ namespace xe_graphics
 
         if (error != GL_FRAMEBUFFER_COMPLETE)
         {
-            xe_utility::error("during framebuffer setup");
+            xe_utility::error("Framebuffer setup");
 
             switch (error)
             {
@@ -624,7 +624,13 @@ namespace xe_graphics
 
     bool32 graphics_device_gl::create_texture(texture2D *texture)
     {
-        glGenTextures(1, &texture->id);
+        return create_texture(1, texture);
+    }
+
+    bool32 graphics_device_gl::create_texture(uint32 count, texture2D *texture)
+    {
+        assert(count > 0);
+        glGenTextures(count, &texture->id);
         texture->is_valid = true;
         return true;
     }

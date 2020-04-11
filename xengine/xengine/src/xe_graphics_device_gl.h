@@ -65,6 +65,7 @@ namespace xe_graphics
         void set_mat4(const std::string &name, const glm::mat4 &mat, shader *shd) override;
 
         bool32 create_texture(texture2D *texture) override;
+        bool32 create_texture(uint32 count, texture2D *texture) override;
         bool32 create_texture2D(const char *path, texture2D *texture) override;
         bool32 create_texture2D(const char *path, const char *dir, texture2D *texture) override;
         bool32 create_texture2D(uint32 width, uint32 height, texture2D* texture) override;

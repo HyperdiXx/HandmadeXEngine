@@ -45,13 +45,21 @@
 
 // ImGui
 #include <thirdparty/imguit/imgui.h>
+
+#ifdef GAPI_GL
 #include <thirdparty/imguit/imgui_impl_opengl3.h>
+#endif 
+
+#ifdef PLATFORM_WINDOWS
 #include <thirdparty/imguit/imgui_impl_win32.h>
+#endif
 
 #include "xe_input.h"
 #include "xe_scene.h"
 
 #include "runtime/core/utility/log.h"
+
+#include "app_state.h"
 
 static int WINDOW_WIDTH_SIZE = 1280;
 static int WINDOW_HEIGHT_SIZE = 720;
@@ -124,7 +132,7 @@ top_bar()
         {
             if (ImGui::MenuItem("AnimTree", NULL, false))
             {
-                //Log::info("Pressed on animation tree window");
+                xe_utility::info("Pressed on animation tree window");
                 ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
                 ImGui::Begin("Example: Log", open);
                 ImGui::End();
@@ -396,27 +404,100 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
             init_render_dx11();
 #endif
+            ImGuiIO &io = ImGui::GetIO();
 
-            xe_scene::init();
+            XEngine::PerspectiveCamera camera3D = {};
 
-            render_pass *base_render_pass = new render_pass2D();
-            set_render_pass(base_render_pass);
+            application::application_state app_state = {};
+            application::load_state(&app_state);
 
-            base_render_pass->init();
+            xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
+
+            xe_ecs::entity* test_entity = application::get_entity(&app_state);
+            xe_ecs::entity* light_entity = application::get_entity(&app_state);
+            xe_ecs::entity* plane_entity = application::get_entity(&app_state);
+
+            assert(test_entity != nullptr);
+            assert(light_entity != nullptr);
+            assert(plane_entity != nullptr);
+
+            xe_ecs::mesh_component *character_mesh = new xe_ecs::mesh_component();
+            character_mesh->model_asset = &app_state.assets_3D.models3D["Nano"];
+
+            xe_ecs::transform_component *nano_transform = new xe_ecs::transform_component();
+            nano_transform->set_translation(-20.0f, -9.0f, -50.0f);
+        
+            test_entity->add_component(character_mesh);
+            test_entity->add_component(nano_transform);
+
+            for (int i = 0; i < 10; ++i)
+            {
+                xe_ecs::entity* ent = application::get_entity(&app_state);
+                xe_ecs::transform_component *transform = new xe_ecs::transform_component(); 
+                transform->set_translation(30.0f * (i - 5), 0.0f, -5.0f * (i + 1));
+                transform->set_scale(0.2f, 0.2f, 0.2f);
+
+                xe_ecs::mesh_component *loading_model = new xe_ecs::mesh_component();
+                loading_model->model_asset = &app_state.assets_3D.models3D["Cube"];;
+
+                ent->add_component(transform);
+                ent->add_component(loading_model);
+                
+                new_scene.entities.push_back(ent);
+            }
+
+            xe_ecs::mesh_component *cube_mesh = new xe_ecs::mesh_component();
+            cube_mesh->model_asset = &app_state.assets_3D.models3D["Cube"];
+
+            xe_ecs::dir_light *dl = new xe_ecs::dir_light();
+            dl->color = glm::vec3(0.8f, 0.7f, 0.8f);
+            dl->entensity = 0.9f;
+
+            xe_ecs::transform_component *light_transform = new xe_ecs::transform_component();
+            light_transform->set_translation(0.0f, 20.0f, -5.0f);
+            light_transform->set_scale(0.2f, 0.2f, 0.2f);
+
+            light_entity->add_component(dl);
+            light_entity->add_component(light_transform);
+            light_entity->add_component(cube_mesh);
+
+            xe_ecs::mesh_component *plane_mesh = new xe_ecs::mesh_component();
+            plane_mesh->model_asset = &app_state.assets_3D.models3D["Cube"];
+            
+            xe_ecs::transform_component *transform_plane = new xe_ecs::transform_component();
+            
+            transform_plane->set_translation(3.0f, -10.0f, 25.0f);
+            transform_plane->set_scale(10.0f, 0.001f, 10.0f);
+
+            plane_entity->add_component(plane_mesh);
+            plane_entity->add_component(transform_plane);
+
+            new_scene.entities.push_back(test_entity);
+            new_scene.entities.push_back(light_entity);
+            new_scene.entities.push_back(plane_entity);
+
+            app_state.active_scene = new_scene;
+
+            render_pass *render_pass_2D = new render_pass2D();
+            set_render_pass(render_pass_2D);
+
+            render_pass_2D->init();
 
             render_pass3D *main_render_pass = new render_pass3D();
             main_render_pass->init();
+            main_render_pass->set_scene(&app_state.active_scene);
+            main_render_pass->set_camera3D(&camera3D);
 
-            gamma_correction_pass *gamma_correction = new gamma_correction_pass();
-            gamma_correction->init();
+            gamma_correction_pass gamma_correction = {};
+            gamma_correction.init();
 
-            shadow_map_pass *shadow_pass = new shadow_map_pass();
-            shadow_pass->init();
+            shadow_map_pass shadow_pass = {};
+            shadow_pass.init();
+            shadow_pass.set_scene(&app_state.active_scene);
+            shadow_pass.set_camera3D(&camera3D);
 
             device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
-
-            ImGuiIO& io = ImGui::GetIO();
-            
+  
             using namespace xe_render;
 
             while (is_open)
@@ -432,7 +513,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                
                 device->start_execution();
 
-                //shadow_pass->render(main_render_pass);
+                shadow_pass.render();
 
                 viewport vp_state = device->get_viewport();
 
@@ -445,18 +526,18 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 //glBindTexture(GL_TEXTURE_2D, depthMap);
                 //RenderScene();
 
-                //shadow_pass->bind_depth_texture();
+                shadow_pass.bind_depth_texture();
 
                 main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
                 texture2D pass_texture = main_render_pass->get_color_texture();
 
-                gamma_correction->set_color_texture(&pass_texture);
-                gamma_correction->render();
+                gamma_correction.set_color_texture(&pass_texture);
+                gamma_correction.render();
 
-                base_render_pass->update(io.DeltaTime);
-                base_render_pass->render();
+                render_pass_2D->update(io.DeltaTime);
+                render_pass_2D->render();
 
                 win32_imgui_new_frame();                
                 top_bar();                            

@@ -16,7 +16,9 @@ namespace xe_render
     static xe_graphics::viewport main_view_port;
  
     static glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
+    static glm::vec3 default_cube_color = glm::vec3(0.0f, 1.0f, 0.0f);
     static real32 default_text_scale = 1.0f;
+    static bool32 enable_shadows = true;
 
     xe_graphics::graphics_device *graphics_device = nullptr;
 
@@ -259,7 +261,7 @@ namespace xe_render
         return shadow_map_shader;
     }
 
-    xe_graphics::shader * get_shadow_map_depth_shader()
+    xe_graphics::shader *get_shadow_map_depth_shader()
     {
         return shadow_map_depth_shader;
     }
@@ -462,10 +464,10 @@ namespace xe_render
 
         shadow->w = SHADOW_WIDTH;
         shadow->h = SHADOW_HEIGHT;
-        
+
         graphics_device->create_framebuffer(1, &shadow->depth_fbo);
         graphics_device->add_depth_texture2D(SHADOW_WIDTH, SHADOW_HEIGHT, &shadow->depth_fbo);
-       
+
         //unsigned int depthMap;
         //glGenTextures(1, &depthMap);
         //glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -490,17 +492,17 @@ namespace xe_render
         //glReadBuffer(GL_NONE);
         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        framebuffer *hdr = new framebuffer();
-        graphics_device->create_framebuffer(1, hdr);
-        graphics_device->bind_framebuffer(hdr);
+        framebuffer hdr = {};
+        graphics_device->create_framebuffer(1, &hdr);
+        graphics_device->bind_framebuffer(&hdr);
 
         //unsigned int hdrFBO;
         //glGenFramebuffers(1, &hdrFBO);
         //glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
-        texture2D *color_attach = new texture2D[2];
+        texture2D color_attach[2];
 
-        graphics_device->create_texture(color_attach);
+        graphics_device->create_texture(2, color_attach);
 
         //unsigned int colorBuffers[2];
         //glGenTextures(2, colorBuffers);
@@ -553,16 +555,19 @@ namespace xe_render
         unsigned int pingphongFBO[2];
         unsigned int pingcolorBuffer[2];
 
-        framebuffer *p_fbo = new framebuffer[2];
+        framebuffer p_fbo[2];
+        texture2D p_color_buffer[2];
             
         glGenFramebuffers(2, pingphongFBO);
         glGenTextures(2, pingcolorBuffer);
 
-        graphics_device->create_framebuffer(2, p_fbo);
-        //graphics_device->create_texture();
+        //graphics_device->create_framebuffer(2, p_fbo);
+        //graphics_device->create_texture(2, p_color_buffer);
 
         for (uint16 i = 0; i < 2; ++i)
         {
+            //graphics_device->bind_framebuffer(p_fbo + i);
+            //graphics_device->bind_texture(TEXTURE_TYPE::COLOR, p_color_buffer + i);
             glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[i]);
             glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[i]);
   
@@ -845,12 +850,12 @@ namespace xe_render
         device->unbind_shader();
     }
 
-    void draw_ent(xe_ecs::entity *ent, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)
+    void draw_ent(xe_ecs::entity *ent, XEngine::PerspectiveCamera *camera)
     {
-        draw_ent(ent, shd, camera, nullptr);
+        draw_ent(ent, camera, nullptr);
     }
 
-    void draw_ent(xe_ecs::entity *ent, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera, glm::vec3 *color)
+    void draw_ent(xe_ecs::entity *ent, XEngine::PerspectiveCamera *camera, glm::vec3 *color)
     {
         using namespace xe_ecs;
         
@@ -858,35 +863,50 @@ namespace xe_render
 
         mesh_component *model = ent->find_component<mesh_component>();
 
-        if (model != nullptr)
+        shader *shader_to_draw = nullptr;
+
+        if (model)
+            shader_to_draw = xe_render::get_model_shader();
+        
+        if (enable_shadows)
+            shader_to_draw = xe_render::get_shadow_map_shader();
+
+        transform_component *transform = ent->find_component<transform_component>();
+
+        if (transform != nullptr)
         {
-            transform_component *transform = ent->find_component<transform_component>();
-
-            if (transform != nullptr)
+            if (color != nullptr)
             {
-                device->bind_shader(shd);
-
-                if(color != nullptr)
-                    device->set_vec3("color", *color, shd);
-                
-                apply_transform(transform, shd, camera);
-
-                xe_assets::node *root = model->model_asset->root;
-
-                for (uint32 i = 0; i < root->children.size(); i++)
-                {
-                    xe_assets::node* curr_node = root->children[i];
-
-                    for (uint32 j = 0; j < curr_node->meshes.size(); j++)
-                    {
-                        xe_assets::mesh *cur_mesh = curr_node->meshes.at(j);
-                        draw_mesh(cur_mesh, shd);
-                    }
-                }
-
-                device->unbind_shader();
+                shader_to_draw = xe_render::get_color_shader();
+                device->bind_shader(shader_to_draw);
+                device->set_vec3("color", *color, shader_to_draw);
             }
-        }
+            else if (model->model_asset->model_textures.size() == 0)
+            {
+                shader_to_draw = xe_render::get_color_shader();
+                device->bind_shader(shader_to_draw);
+                device->set_vec3("color", default_cube_color, shader_to_draw);
+            }
+
+            device->bind_shader(shader_to_draw);
+
+            apply_transform(transform, shader_to_draw, camera);
+
+            xe_assets::node *root = model->model_asset->root;
+
+            for (uint32 i = 0; i < root->children.size(); i++)
+            {
+                xe_assets::node* curr_node = root->children[i];
+
+                for (uint32 j = 0; j < curr_node->meshes.size(); j++)
+                {
+                    xe_assets::mesh *cur_mesh = curr_node->meshes.at(j);
+                    draw_mesh(cur_mesh, shader_to_draw);
+                }
+            }
+
+            device->unbind_shader();
+        }           
     }
 
     void draw_mesh(xe_assets::mesh *msh, xe_graphics::shader *shd)

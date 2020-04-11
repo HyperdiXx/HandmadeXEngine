@@ -5,8 +5,14 @@
 #include "perspective_camera.h"
 #include "ortho_camera.h"
 
+namespace xe_scene
+{
+    struct scene;
+}
+
 namespace xe_graphics
 {
+    
     class render_pass
     {
     public:
@@ -61,23 +67,16 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        inline XEngine::PerspectiveCamera& get_camera3d() { return camera3D; }
+        void set_scene(xe_scene::scene *scene) { current_scene = scene; };
+        void set_camera3D(XEngine::PerspectiveCamera *camera) { camera3D = camera; };
+
+        inline XEngine::PerspectiveCamera* get_camera3d() { return camera3D; }
         inline xe_graphics::texture2D& get_color_texture() { return color_texture; }
     private:            
-        XEngine::PerspectiveCamera camera3D;
-       
-        
-
-        xe_ecs::entity ent;
-        xe_assets::model *model;
-        xe_assets::model *model_cube;
-        
-        std::vector<xe_ecs::entity*> ents;
-        xe_ecs::entity light_ent;
-        xe_ecs::entity plane_ent;
-
         xe_graphics::framebuffer fbo;
         xe_graphics::texture2D color_texture;
+        xe_scene::scene *current_scene;
+        XEngine::PerspectiveCamera *camera3D;
     };
 
     class gamma_correction_pass : public render_pass
@@ -106,13 +105,19 @@ namespace xe_graphics
 
         void unload_resources();
 
-        void render(render_pass *pass);
+        void render();
 
         void update(real32 dt);
 
         void bind_depth_texture() const;
 
+        void set_scene(xe_scene::scene *active_sc) { current_scene = active_sc; };
+        void set_camera3D(XEngine::PerspectiveCamera *camera) { camera3D = camera; };
+
+        inline XEngine::PerspectiveCamera* get_camera3d() { return camera3D; }
     private:
         xe_graphics::shadow_map *shadow;
+        xe_scene::scene *current_scene;
+        XEngine::PerspectiveCamera* camera3D;
     };
 }

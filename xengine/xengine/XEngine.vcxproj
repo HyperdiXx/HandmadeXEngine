@@ -109,6 +109,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\allocator.cpp" />
+    <ClCompile Include="src\app_state.cpp" />
     <ClCompile Include="src\events.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\input.cpp" />
@@ -252,7 +253,7 @@
     <None Include="src\thirdparty\imguit\imgui.ini" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="app_state.h" />
+    <ClInclude Include="src\app_state.h" />
     <ClInclude Include="inc\external\wglext.h" />
     <ClInclude Include="inc\stb_image\stb_image.h" />
     <ClInclude Include="src\allocator.h" />

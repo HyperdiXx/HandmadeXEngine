@@ -72,6 +72,7 @@ namespace xe_graphics
         virtual void end_execution() = 0;
        
         virtual bool32 create_texture(texture2D *texture) = 0;
+        virtual bool32 create_texture(uint32 count, texture2D *texture) = 0;
         virtual bool32 create_texture2D(const char *path, texture2D* texture) = 0;
         virtual bool32 create_texture2D(const char *path, const char* dir, texture2D* texture) = 0;
         virtual bool32 create_texture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, texture2D* texture) = 0;

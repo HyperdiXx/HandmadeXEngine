@@ -50,8 +50,13 @@ namespace xe_ecs
             components.push_back(comp);
         }
 
+        void set_active(bool32 val) { is_used = val; };
+        inline bool32 active() { return is_used; }
+
     private:
         uint32_t id;
+        bool32 is_used = false;
+
         std::vector<component*> components;
     };
 
@@ -66,7 +71,47 @@ namespace xe_ecs
 
         glm::mat4 model_matrix = xe_render::IDENTITY_MATRIX;
 
-        inline void set_dirty() {};
+        void set_transform(glm::vec3 &pos, glm::vec3 &rot, glm::vec3 &scale)
+        {
+            set_translation(pos.x, pos.y, pos.z);
+            set_rotation(rot.x, rot.y, rot.z);
+            set_scale(scale.x, scale.y, scale.z);
+        }
+
+        void set_translation(real32 x, real32 y, real32 z)
+        {
+            if (position.x != x || position.y != y || position.z != z)
+            {
+                position.x = x;
+                position.y = y;
+                position.z = z;
+                set_dirty();
+            }
+        }
+
+        void set_rotation(real32 x_eul, real32 y_eul, real32 z_eul)
+        {
+            if (rotation.x != x_eul || rotation.y != y_eul || rotation.z != z_eul)
+            {
+                scale.x = x_eul;
+                scale.y = y_eul;
+                scale.z = z_eul;
+                set_dirty();
+            }
+        }
+
+        void set_scale(real32 x, real32 y, real32 z)
+        {
+            if (scale.x != x || scale.y != y || scale.z != z)
+            {
+                scale.x = x;
+                scale.y = y;
+                scale.z = z;
+                set_dirty();
+            }
+        }
+
+        void set_dirty() { state = true; };
         inline bool32 is_dirty() const { return state; };
     };
    
@@ -88,8 +133,8 @@ namespace xe_ecs
     {
     public:
         xe_assets::model *model_asset;
+        xe_graphics::texture2D *diffuse_texture;
     };
-
     
     class camera2d_component : public component
     {

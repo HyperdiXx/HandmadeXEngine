@@ -252,6 +252,9 @@
     <ClCompile Include="src\xe_graphics_device_dx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\app_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\models\barrels.fbx" />
@@ -887,7 +890,7 @@
     <ClInclude Include="inc\external\wglext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="app_state.h">
+    <ClInclude Include="src\app_state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

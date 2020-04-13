@@ -73,6 +73,22 @@ int main(int argc, char **argv)
     if(erased != nullptr)
         printf("%d\n", erased->data);
 
+
+    xearray<int32> test_array;
+
+    test_array.push_back(100);
+    test_array.push_back(200);
+    test_array.push_back(300);
+    test_array.push_back(400);
+    test_array.push_back(500);
+    test_array.push_back(600);
+    test_array.push_back(700);
+    test_array.push_back(1000);
+    test_array.push_back(1100);
+
+    test_array.insert(1, 800);
+    test_array.insert(2, 900);
+
     xearray<int32> art;
 
     art.push_back(5);
@@ -91,7 +107,7 @@ int main(int argc, char **argv)
 
     int32 check = art[2];
 
-    art.insert(1778, 1);
+    art.insert(1, 1778);
     
     xedyn_array<int32> vector;
 

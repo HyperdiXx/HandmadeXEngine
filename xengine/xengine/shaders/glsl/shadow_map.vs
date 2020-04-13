@@ -14,13 +14,13 @@ out VS_OUT {
 
 uniform mat4 model;
 uniform mat4 mvp;
-uniform mat4 lightSpaceMatrix;
+uniform mat4 light_space_matrix;
 
 void main()
 {
     vs_out.world_pos = vec3(model * vec4(aPos, 1.0));
     vs_out.normal = transpose(inverse(mat3(model))) * aNormal;
     vs_out.uv = aUV;
-    vs_out.light_space_pos = lightSpaceMatrix * vec4(vs_out.world_pos, 1.0);
+    vs_out.light_space_pos = light_space_matrix * vec4(vs_out.world_pos, 1.0);
     gl_Position = mvp * vec4(aPos, 1.0);
 }

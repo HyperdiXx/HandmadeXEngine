@@ -15,6 +15,15 @@ namespace xe_ecs
 {
     static uint32_t id_create = 0;
 
+    enum ENTITY_TYPE
+    {
+        ENT_NONE, 
+        ENT_STATIC_OBJECT_COLORED,
+        ENT_STATIC_OBJECT_TEXTURED,
+        ENT_CAMERA,
+        ENT_ANIMATED_OBJECT
+    };
+
     class component
     {
     public:
@@ -50,12 +59,14 @@ namespace xe_ecs
             components.push_back(comp);
         }
 
+        void set_entity_type(ENTITY_TYPE t) { type = t; }
         void set_active(bool32 val) { is_used = val; };
         inline bool32 active() { return is_used; }
-
+        inline ENTITY_TYPE get_type() { return type; }
     private:
         uint32_t id;
         bool32 is_used = false;
+        ENTITY_TYPE type = ENTITY_TYPE::ENT_NONE;
 
         std::vector<component*> components;
     };
@@ -167,38 +178,94 @@ namespace xe_ecs
     class camera3d_component : public component
     {
     public:
-        float near_plane;
-        float far_plane;
-        float fov = 60.0f;
+        //@Config!!!
+        const real32 c_yaw = -90.0f;
+        const real32 c_pitch = 0.0f;
+        const real32 c_sens = 0.1f;
+        const real32 c_zoom = 45.0f;
+        const real32 c_speed = 12.0f;
 
-        void setup_projection();
-        void update_input();
+        real32 near_plane = 0.05f;
+        real32 far_plane = 1000.0f;
+        real32 fov = 45.0f;
+        real32 aspect_ratio = (real32)1280 / (real32)720;
 
+        real32 cam_yaw;
+        real32 cam_pitch;
+        real32 speed;
+
+        bool32 is_setuped = false;
+      
+        glm::vec3 pos;
+        glm::vec3 target = glm::vec3(0.0f, 0.0f, -1.0f);
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 pos = glm::vec3(0.0f, 0.0f, 1.0f);
-        glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 right;
+        glm::vec3 world_up;
+
+        glm::mat4 projection = glm::mat4(1.0f);
+
+        camera3d_component(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f))
+        {
+            pos = position;
+            cam_yaw = c_yaw;
+            cam_pitch = c_pitch;
+            speed = c_speed;
+            world_up = up;
+            update_camera_dir();
+        }
+
+        glm::mat4 &get_projection_matrix()
+        {
+            if (!is_setuped)
+            {
+                projection = glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);
+                is_setuped = true;
+            }
+
+            return projection;
+        }
+
+        glm::mat4 get_view_matrix()
+        {
+            return glm::lookAt(pos, pos + target, up);
+        }
+
+        void update_camera_dir()
+        {
+            glm::vec3 front;
+            front.x = cos(glm::radians(c_yaw)) * cos(glm::radians(c_pitch));
+            front.y = sin(glm::radians(c_pitch));
+            front.z = sin(glm::radians(c_yaw)) * cos(glm::radians(c_pitch));
+            target = glm::normalize(front);
+            right = glm::normalize(glm::cross(target, world_up));
+            up = glm::normalize(glm::cross(right, target));
+        }
     };
 
     class material_component : public component
     {
     public:
         xe_graphics::shader *shader;
+
         xe_graphics::texture2D *diffuse;
         xe_graphics::texture2D *normal;
         xe_graphics::texture2D *specular;
-
         xe_graphics::texture2D *ao;
     };
 
     class spot_light : public component
     {
     public:
+        real32 entensity;
+        glm::vec3 color;
 
+        real32 radius;
     };
 
     class point_light : public component
     {
     public:
+        glm::vec3 direction;
     };
 
     class dir_light : public component
@@ -210,7 +277,5 @@ namespace xe_ecs
         bool32 is_static;
         bool32 is_casting_shadows;
     };
-
-
 }
 #endif

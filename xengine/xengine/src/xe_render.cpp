@@ -743,15 +743,17 @@ namespace xe_render
         draw_text(text, x, y, default_text_color, default_text_scale);
     }
 
-    void draw_skybox(XEngine::PerspectiveCamera *camera)
+    void draw_skybox()
     {
         glDepthFunc(GL_LEQUAL);
         graphics_device->bind_shader(cubemap_shader);
         
-        glm::mat4 view = glm::mat4(glm::mat3(camera->getViewMatrix()));
+        xe_ecs::camera3d_component camera = get_camera3D();
+        
+        glm::mat4 view = glm::mat4(glm::mat3(camera.get_view_matrix()));
 
         graphics_device->set_mat4("view", view, cubemap_shader);
-        graphics_device->set_mat4("projection", camera->getProjectionMatrix(), cubemap_shader);
+        graphics_device->set_mat4("projection", camera.get_projection_matrix(), cubemap_shader);
         
         graphics_device->bind_vertex_array(skybox_obj->va);
 
@@ -770,18 +772,20 @@ namespace xe_render
         real32 near_p = 1.0f;
         real32 far_p = 7.5f;
 
-        shadow->light_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
+        shadow->light_projection_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
     }
 
-    void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd, XEngine::PerspectiveCamera *camera)
+    void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd)
     {
         glm::mat4 model_matrix = transform->model_matrix;
 
         model_matrix = glm::translate(model_matrix, transform->position);
         model_matrix = glm::scale(model_matrix, transform->scale);
 
-        glm::mat4 view_matrix = camera->getViewMatrix();
-        glm::mat4 proj_matrix = camera->getProjectionMatrix();
+        xe_ecs::camera3d_component camera = get_camera3D();
+
+        glm::mat4 view_matrix = camera.get_view_matrix();
+        glm::mat4 proj_matrix = camera.get_projection_matrix();
 
         glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
 
@@ -850,12 +854,30 @@ namespace xe_render
         device->unbind_shader();
     }
 
-    void draw_ent(xe_ecs::entity *ent, XEngine::PerspectiveCamera *camera)
+    void draw_ent(xe_ecs::entity *ent)
     {
-        draw_ent(ent, camera, nullptr);
+        using namespace xe_ecs;
+
+        ENTITY_TYPE type = ent->get_type();
+
+        switch (type)
+        {
+        case ENTITY_TYPE::ENT_STATIC_OBJECT_TEXTURED:
+            draw_ent(ent, nullptr);
+            break;
+        case ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED:
+            draw_ent(ent, &default_cube_color);
+            break;
+        case ENTITY_TYPE::ENT_ANIMATED_OBJECT:
+            break;
+        default:
+            xe_utility::debug("Entity type not declared!");
+            break;
+        }
+
     }
 
-    void draw_ent(xe_ecs::entity *ent, XEngine::PerspectiveCamera *camera, glm::vec3 *color)
+    void draw_ent(xe_ecs::entity *ent, glm::vec3 *color)
     {
         using namespace xe_ecs;
         
@@ -864,12 +886,9 @@ namespace xe_render
         mesh_component *model = ent->find_component<mesh_component>();
 
         shader *shader_to_draw = nullptr;
-
+        
         if (model)
             shader_to_draw = xe_render::get_model_shader();
-        
-        if (enable_shadows)
-            shader_to_draw = xe_render::get_shadow_map_shader();
 
         transform_component *transform = ent->find_component<transform_component>();
 
@@ -881,16 +900,38 @@ namespace xe_render
                 device->bind_shader(shader_to_draw);
                 device->set_vec3("color", *color, shader_to_draw);
             }
-            else if (model->model_asset->model_textures.size() == 0)
+
+            /*else if (model->model_asset->model_textures.size() == 0)
             {
                 shader_to_draw = xe_render::get_color_shader();
                 device->bind_shader(shader_to_draw);
                 device->set_vec3("color", default_cube_color, shader_to_draw);
-            }
+            }*/
+
+            if (enable_shadows)
+                shader_to_draw = xe_render::get_shadow_map_shader();
 
             device->bind_shader(shader_to_draw);
 
-            apply_transform(transform, shader_to_draw, camera);
+            apply_transform(transform, shader_to_draw);
+
+            if (enable_shadows)
+            {
+                real32 near_p = 1.0f;
+                real32 far_p = 7.5f;
+
+                glm::mat4 light_projection_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
+                glm::vec3 light_pos = glm::vec3(-2.0f, 4.0f, -2.0f);
+                glm::mat4 light_view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                glm::mat4 light_space_matrix = light_view_matrix * light_projection_matrix;
+
+                camera3d_component camera = get_camera3D();
+                shader *shadow_shader = xe_render::get_shadow_map_shader();
+                device->bind_shader(shadow_shader);
+                device->set_vec3("view_pos", camera.pos, shadow_shader);
+                device->set_vec3("light_pos", light_pos, shadow_shader);
+                device->set_mat4("light_space_matrix", light_space_matrix, shadow_shader);
+            }
 
             xe_assets::node *root = model->model_asset->root;
 
@@ -907,6 +948,41 @@ namespace xe_render
 
             device->unbind_shader();
         }           
+    }
+
+    void draw_ent_with_shader(xe_ecs::entity *ent, xe_graphics::shader *shd)
+    {
+        using namespace xe_ecs;
+        
+        xe_graphics::graphics_device *device = xe_render::get_device();
+
+        mesh_component *model = ent->find_component<mesh_component>();
+
+        shader *shader_to_draw = shd;
+
+        transform_component *transform = ent->find_component<transform_component>();
+
+        if (transform != nullptr)
+        {           
+            device->bind_shader(shader_to_draw);
+
+            apply_transform(transform, shader_to_draw);
+
+            xe_assets::node *root = model->model_asset->root;
+
+            for (uint32 i = 0; i < root->children.size(); i++)
+            {
+                xe_assets::node* curr_node = root->children[i];
+
+                for (uint32 j = 0; j < curr_node->meshes.size(); j++)
+                {
+                    xe_assets::mesh *cur_mesh = curr_node->meshes.at(j);
+                    draw_mesh(cur_mesh, shader_to_draw);
+                }
+            }
+
+            device->unbind_shader();
+        }
     }
 
     void draw_mesh(xe_assets::mesh *msh, xe_graphics::shader *shd)

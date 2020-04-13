@@ -351,6 +351,7 @@ void set_pos(int posX, int posY)
 int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
 { 
+
 #ifdef DEBUG
 
     AllocConsole();
@@ -406,16 +407,19 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 #endif
             ImGuiIO &io = ImGui::GetIO();
 
-            XEngine::PerspectiveCamera camera3D = {};
-
             application::application_state app_state = {};
             application::load_state(&app_state);
 
             xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
 
             xe_ecs::entity* test_entity = application::get_entity(&app_state);
+            test_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_TEXTURED);
+
             xe_ecs::entity* light_entity = application::get_entity(&app_state);
+            light_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED);
+
             xe_ecs::entity* plane_entity = application::get_entity(&app_state);
+            plane_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED);
 
             assert(test_entity != nullptr);
             assert(light_entity != nullptr);
@@ -428,11 +432,13 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             nano_transform->set_translation(-20.0f, -9.0f, -50.0f);
         
             test_entity->add_component(character_mesh);
-            test_entity->add_component(nano_transform);
+            test_entity->add_component(nano_transform);            
 
             for (int i = 0; i < 10; ++i)
             {
                 xe_ecs::entity* ent = application::get_entity(&app_state);
+                ent->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED);
+
                 xe_ecs::transform_component *transform = new xe_ecs::transform_component(); 
                 transform->set_translation(30.0f * (i - 5), 0.0f, -5.0f * (i + 1));
                 transform->set_scale(0.2f, 0.2f, 0.2f);
@@ -465,7 +471,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             plane_mesh->model_asset = &app_state.assets_3D.models3D["Cube"];
             
             xe_ecs::transform_component *transform_plane = new xe_ecs::transform_component();
-            
+
             transform_plane->set_translation(3.0f, -10.0f, 25.0f);
             transform_plane->set_scale(10.0f, 0.001f, 10.0f);
 
@@ -486,7 +492,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             render_pass3D *main_render_pass = new render_pass3D();
             main_render_pass->init();
             main_render_pass->set_scene(&app_state.active_scene);
-            main_render_pass->set_camera3D(&camera3D);
+            //main_render_pass->set_camera3D(&camera3D);
 
             gamma_correction_pass gamma_correction = {};
             gamma_correction.init();
@@ -494,7 +500,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             shadow_map_pass shadow_pass = {};
             shadow_pass.init();
             shadow_pass.set_scene(&app_state.active_scene);
-            shadow_pass.set_camera3D(&camera3D);
+            //shadow_pass.set_camera3D(&camera3D);
 
             device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
   

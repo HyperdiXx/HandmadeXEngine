@@ -161,7 +161,6 @@ public:
 
     inline uint32 size() const
     {
-
         return m_cur_size;
     }
 

@@ -24,16 +24,18 @@ public:
         cur_size = 0;       
     }
 
-    void insert(T d, uint32 pos)
+    void insert(uint32 pos, T d)
     {
         if (cur_size > 0 && pos > 0 && pos < capacity - 1)
         {
-            push_back(0);
-            for (uint32 last = cur_size - 1; last > pos; --last)
+            if (cur_size == capacity)
             {
-                data[last] = data[last - 1];
+                capacity += 8;
             }
+
+            memcpy(data + pos + 1, data + pos, (cur_size - (pos)) * sizeof(d));
             data[pos] = d;
+            cur_size++;
         }
     }
     

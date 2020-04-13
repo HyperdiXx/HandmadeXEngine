@@ -202,7 +202,7 @@ namespace xe_graphics
     {
         uint32 w;
         uint32 h;
-        glm::mat4 light_matrix = glm::mat4(1.0f);
+        glm::mat4 light_projection_matrix = glm::mat4(1.0f);
         framebuffer depth_fbo;
     };
 }

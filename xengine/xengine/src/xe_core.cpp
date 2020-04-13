@@ -14,11 +14,11 @@
 
 namespace xe_core
 {
-    file read_whole_file(const char *filename)
+    file read_whole_file(const char *file_name)
     {
         file res = {};
 
-        FILE *op = fopen(filename, "rb");
+        FILE *op = fopen(file_name, "rb");
 
         if (op)
         {
@@ -32,7 +32,7 @@ namespace xe_core
         }
         else
         {
-            printf("ERROR: Cant open file %s!\n", filename);
+            printf("ERROR: Cant open file %s!\n", file_name);
         }
 
         return res;
@@ -65,6 +65,7 @@ namespace xe_core
        
         return image;
     }
+
     void delete_data(unsigned char *d)
     {
         if(d != nullptr)

@@ -86,29 +86,6 @@ void xe_graphics::render_pass3D::init()
     device->bind_shader(color_shader);
     device->set_vec3("color", glm::vec3(0.5f, 0.9f, 0.9f), color_shader);
 
-    /*mesh_component *mesh = new mesh_component();
-    mesh->model_asset = xe_assets::load_model_from_file("assets/nano/nanosuit.obj");
-    
-    transform_component *nano_transform = new transform_component();
-    nano_transform->position = glm::vec3(-20.0f, -9.0f, -50.0f);
-
-    ent.add_component(mesh);
-    ent.add_component(nano_transform);*/
- 
-    /*mesh_component *cube = new mesh_component();
-    cube->model_asset = xe_assets::load_model_from_file("assets/cube.obj");
-
-    dir_light *dl = new dir_light();
-    dl->color = glm::vec3(0.8f, 0.7f, 0.8f);
-    dl->entensity = 0.9f;   
-
-    transform_component *light_transform = new transform_component();
-    light_transform->position = glm::vec3(3.0f, 1.0f, -10.0f);
-    
-    light_ent.add_component(dl);
-    light_ent.add_component(light_transform);
-    light_ent.add_component(cube);*/
-
     device->create_texture2D(1280, 720, &color_texture);
    
     device->create_framebuffer(1, &fbo);  
@@ -121,35 +98,6 @@ void xe_graphics::render_pass3D::init()
 
     device->check_framebuffer();
     device->unbind_framebuffer();
-
-    // init ents
-
-    //ents.reserve(16);
-
-    /*for (int i = 0; i < 10; ++i)
-    {
-        entity *entity_add = new entity();
-        transform_component *transform = new transform_component();
-        transform->position = glm::vec3(30.0f * (i - 5), 0.0f, -5.0f * (i + 1));
-        transform->scale = glm::vec3(0.2f, 0.2f, 0.2f);
-
-        mesh_component *loading_model = new mesh_component();
-        loading_model->model_asset = xe_assets::load_model_from_file("assets/cube.obj");
-
-        entity_add->add_component(transform);
-        entity_add->add_component(loading_model);
-
-        ents.push_back(entity_add);
-    }*/
-
-    /*mesh_component *plane_mesh = new mesh_component();
-    plane_mesh->model_asset = xe_assets::load_model_from_file("assets/cube.obj");
-    transform_component *transform_plane = new transform_component();
-    transform_plane->position = glm::vec3(3.0f, -10.0f, 25.0f);
-    transform_plane->scale = glm::vec3(10.0f, 0.001f, 10.0f);
-
-    plane_ent.add_component(plane_mesh);
-    plane_ent.add_component(transform_plane);*/
 }
 
 void xe_graphics::render_pass3D::clear()
@@ -165,11 +113,10 @@ void xe_graphics::render_pass3D::unload_resources()
 void xe_graphics::render_pass3D::render()
 {
     graphics_device *device = xe_render::get_device();
-    XEngine::PerspectiveCamera* cam = get_camera3d();
-
+    
     shader *color_shader = xe_render::get_color_shader();
     shader *model_shader = xe_render::get_model_shader();
-
+     
     viewport vp = device->get_viewport();
 
     device->bind_framebuffer(&fbo);
@@ -179,7 +126,7 @@ void xe_graphics::render_pass3D::render()
     device->enable(GL_DEPTH_TEST);
     device->enable(GL_CULL_FACE);
     device->set_cull_mode(GL_BACK);
-
+    
     for (uint16 i = 0; i < current_scene->entities.size(); ++i)
     {
         entity *current_ent = current_scene->entities[i];
@@ -189,13 +136,13 @@ void xe_graphics::render_pass3D::render()
 
         if(light)
             xe_render::apply_dir_light(model_shader, light, transform);
-
-        xe_render::draw_ent(current_ent, cam);
+        
+        xe_render::draw_ent(current_ent);
     }
 
     device->disable(GL_CULL_FACE);
 
-    xe_render::draw_skybox(cam);
+    xe_render::draw_skybox();
 
     device->disable(GL_DEPTH_TEST);
     device->unbind_framebuffer();
@@ -205,26 +152,26 @@ void xe_graphics::render_pass3D::render()
 
 void xe_graphics::render_pass3D::update(real32 dt)
 {
-    float speed = 12.0f;
-
+    xe_ecs::camera3d_component& camera3D = xe_render::get_camera3D();
+    
     if (xe_input::pressed(xe_input::KEYBOARD_W))
     {
-        camera3D->camPos -= speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
+        camera3D.pos -= camera3D.speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
     }
 
     if (xe_input::pressed(xe_input::KEYBOARD_S))
     {
-        camera3D->camPos += speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
+        camera3D.pos += camera3D.speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
     }
 
     if (xe_input::pressed(xe_input::KEYBOARD_A))
     {
-        camera3D->camPos -= speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
+        camera3D.pos -= camera3D.speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
     }
 
     if (xe_input::pressed(xe_input::KEYBOARD_D))
     {
-        camera3D->camPos += speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
+        camera3D.pos += camera3D.speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
     }
 
     if (xe_input::pressed(xe_input::KEYBOARD_V))
@@ -328,11 +275,18 @@ void xe_graphics::shadow_map_pass::render()
 
     xe_render::apply_shadow_map(shadow);
 
+    glm::mat4 light_view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+    glm::mat4 light_space_matrix = light_view_matrix * shadow->light_projection_matrix;
+  
+    shader *depth_shader = xe_render::get_shadow_map_depth_shader();
+    device->bind_shader(depth_shader);
+    device->set_mat4("light_space_matrix", light_space_matrix, depth_shader);
+
     for (uint16 i = 0; i < current_scene->entities.size(); ++i)
     {
         entity *current_ent = current_scene->entities[i];
 
-        xe_render::draw_ent(current_ent, cam);
+        xe_render::draw_ent_with_shader(current_ent, depth_shader);
     }
         
     //RenderScene();

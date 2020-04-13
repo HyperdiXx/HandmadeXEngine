@@ -18,7 +18,7 @@ namespace xe_render
     static glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
     static glm::vec3 default_cube_color = glm::vec3(0.0f, 1.0f, 0.0f);
     static real32 default_text_scale = 1.0f;
-    static bool32 enable_shadows = true;
+    static bool32 enable_shadows = false;
 
     xe_graphics::graphics_device *graphics_device = nullptr;
 
@@ -542,34 +542,40 @@ namespace xe_render
         //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
         //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 
-        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-        glDrawBuffers(2, attachments);
-        
-        graphics_device->check_framebuffer();
-        graphics_device->unbind_framebuffer();
-        
-        //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        //std::cout << "Framebuffer not complete!" << std::endl;
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         //glDrawBuffers(2, attachments);
 
-        unsigned int pingphongFBO[2];
-        unsigned int pingcolorBuffer[2];
+        uint32 attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };        
+        graphics_device->set_draw_buffers(2, attachments);
+
+        graphics_device->check_framebuffer();
+        graphics_device->unbind_framebuffer();        
+        
+        //unsigned int pingphongFBO[2];
+        //unsigned int pingcolorBuffer[2];
 
         framebuffer p_fbo[2];
         texture2D p_color_buffer[2];
             
-        glGenFramebuffers(2, pingphongFBO);
-        glGenTextures(2, pingcolorBuffer);
-
-        //graphics_device->create_framebuffer(2, p_fbo);
-        //graphics_device->create_texture(2, p_color_buffer);
+        //glGenFramebuffers(2, pingphongFBO);
+        //glGenTextures(2, pingcolorBuffer);
 
         for (uint16 i = 0; i < 2; ++i)
         {
-            //graphics_device->bind_framebuffer(p_fbo + i);
-            //graphics_device->bind_texture(TEXTURE_TYPE::COLOR, p_color_buffer + i);
-            glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[i]);
-            glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[i]);
+            graphics_device->create_framebuffer(1, p_fbo + i);
+        }
+
+        for (uint16 j = 0; j < 2; ++j)
+        {
+            graphics_device->create_texture(1, p_color_buffer + j);
+        }
+
+        for (uint16 i = 0; i < 2; ++i)
+        {
+            graphics_device->bind_framebuffer(p_fbo + i);
+            graphics_device->bind_texture(TEXTURE_TYPE::COLOR, p_color_buffer + i);
+            
+            //glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[i]);
+            //glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[i]);
   
             graphics_device->load_texture_gpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
 
@@ -587,12 +593,10 @@ namespace xe_render
             //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
            
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingcolorBuffer[i], 0);
+            graphics_device->add_color_texture2D(p_color_buffer + i, i, p_fbo + i);
+            //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingcolorBuffer[i], 0);
 
             graphics_device->check_framebuffer();
-
-            //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            //   std::cout << "Framebuffer not complete\n";
         }
 
         return true;
@@ -908,13 +912,8 @@ namespace xe_render
                 device->set_vec3("color", default_cube_color, shader_to_draw);
             }*/
 
-            if (enable_shadows)
-                shader_to_draw = xe_render::get_shadow_map_shader();
-
             device->bind_shader(shader_to_draw);
-
-            apply_transform(transform, shader_to_draw);
-
+            
             if (enable_shadows)
             {
                 real32 near_p = 1.0f;
@@ -923,15 +922,19 @@ namespace xe_render
                 glm::mat4 light_projection_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
                 glm::vec3 light_pos = glm::vec3(-2.0f, 4.0f, -2.0f);
                 glm::mat4 light_view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                glm::mat4 light_space_matrix = light_view_matrix * light_projection_matrix;
+                glm::mat4 light_space_matrix = light_projection_matrix * light_view_matrix;
 
                 camera3d_component camera = get_camera3D();
-                shader *shadow_shader = xe_render::get_shadow_map_shader();
-                device->bind_shader(shadow_shader);
-                device->set_vec3("view_pos", camera.pos, shadow_shader);
-                device->set_vec3("light_pos", light_pos, shadow_shader);
-                device->set_mat4("light_space_matrix", light_space_matrix, shadow_shader);
+                shader_to_draw = xe_render::get_model_shader();
+                device->bind_shader(shader_to_draw);
+                device->set_vec3("dir_light_color", glm::vec3(1.0, 0.0, 0.0), shader_to_draw);
+                device->set_vec3("cam_pos", camera.pos, shader_to_draw);
+                device->set_vec3("light_pos", light_pos, shader_to_draw);
+                device->set_mat4("light_space_matrix", light_space_matrix, shader_to_draw);
+
             }
+
+            apply_transform(transform, shader_to_draw);
 
             xe_assets::node *root = model->model_asset->root;
 
@@ -1017,7 +1020,7 @@ namespace xe_render
         {
             glBindVertexArray(msh->vao);
             device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
+            device->unbind_vertex_array();
         }
     }
 }

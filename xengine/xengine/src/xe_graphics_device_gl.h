@@ -94,6 +94,7 @@ namespace xe_graphics
         void destroy_shader(uint32 id) override;
         
         void set_draw_buffer(uint32 type) override;
+        void set_draw_buffers(uint32 count, void *pointer) override;
         void set_read_buffer(uint32 type) override;
 
         void check_error() override;

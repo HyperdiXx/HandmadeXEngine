@@ -267,8 +267,7 @@ void xe_graphics::shadow_map_pass::unload_resources()
 void xe_graphics::shadow_map_pass::render()
 {
     graphics_device *device = xe_render::get_device();
-    XEngine::PerspectiveCamera* cam = get_camera3d();
-
+    
     device->set_viewport(0, 0, shadow->w, shadow->h);
     device->bind_framebuffer(&shadow->depth_fbo);
     device->clear(GL_DEPTH_BUFFER_BIT);
@@ -289,8 +288,6 @@ void xe_graphics::shadow_map_pass::render()
         xe_render::draw_ent_with_shader(current_ent, depth_shader);
     }
         
-    //RenderScene();
-    
     device->unbind_framebuffer();
 }
 

@@ -767,7 +767,7 @@ namespace xe_graphics
             GLint buflength;
             glGetShaderInfoLog(vertex, length, &buflength, buffer);
 
-            xe_utility::error("Vertex shader");
+            xe_utility::error("Vertex shader: " + std::string(vertex_code));
             xe_utility::error(buffer);
 
             delete[] buffer;
@@ -787,7 +787,7 @@ namespace xe_graphics
             GLint buflength;
             glGetShaderInfoLog(fragment, length, &buflength, buffer);
 
-            xe_utility::error("Fragment shader");
+            xe_utility::error("Fragment shader: " + std::string(fragment_code));
             xe_utility::error(buffer);
 
             delete[] buffer;
@@ -810,7 +810,7 @@ namespace xe_graphics
     bool32 graphics_device_gl::create_framebuffer(uint32 count, framebuffer *fbo)
     {
         glGenFramebuffers(count, &fbo->fbo_id);
-
+        
         return true;
     }
 
@@ -973,6 +973,11 @@ namespace xe_graphics
     void graphics_device_gl::set_draw_buffer(uint32 type)
     {
         glDrawBuffer(type);
+    }
+
+    void graphics_device_gl::set_draw_buffers(uint32 count, void *pointer)
+    {
+        glDrawBuffers(2, (uint32*)pointer);
     }
 
     void graphics_device_gl::set_read_buffer(uint32 type)

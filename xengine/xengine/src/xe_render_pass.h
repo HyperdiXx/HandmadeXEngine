@@ -42,7 +42,7 @@ namespace xe_graphics
 
         void render() override;
 
-        void update(float dt) override;
+        void update(real32 dt) override;
 
         const texture2D& get_result_texture() { return result_texture; };
 
@@ -68,15 +68,12 @@ namespace xe_graphics
         void update(real32 dt) override;
 
         void set_scene(xe_scene::scene *scene) { current_scene = scene; };
-        //void set_camera3D(XEngine::PerspectiveCamera *camera) { camera3D = camera; };
-
-        //inline XEngine::PerspectiveCamera* get_camera3d() { return camera3D; }
+       
         inline xe_graphics::texture2D& get_color_texture() { return color_texture; }
     private:            
         xe_graphics::framebuffer fbo;
         xe_graphics::texture2D color_texture;
         xe_scene::scene *current_scene;
-        //XEngine::PerspectiveCamera *camera3D;
     };
 
     class gamma_correction_pass : public render_pass
@@ -112,13 +109,10 @@ namespace xe_graphics
         void bind_depth_texture() const;
 
         void set_scene(xe_scene::scene *active_sc) { current_scene = active_sc; };
-        void set_camera3D(XEngine::PerspectiveCamera *camera) { camera3D = camera; };
 
-        inline XEngine::PerspectiveCamera* get_camera3d() { return camera3D; }
     private:
         xe_graphics::shadow_map *shadow;
         xe_scene::scene *current_scene;
-        XEngine::PerspectiveCamera* camera3D;
 
         glm::vec3 light_pos = glm::vec3(-2.0f, 4.0f, -2.0f);
     };

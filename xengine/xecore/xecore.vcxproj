@@ -83,6 +83,7 @@
     <ClInclude Include="inc\allocator.h" />
     <ClInclude Include="inc\array.h" />
     <ClInclude Include="inc\assert.h" />
+    <ClInclude Include="inc\btree.h" />
     <ClInclude Include="inc\crt.h" />
     <ClInclude Include="inc\double_linked_list.h" />
     <ClInclude Include="inc\dyn_array.h" />

@@ -361,6 +361,21 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     freopen_s(&out_f, "CONOUT$", "w", stdout);
 #endif
 
+    const char* config_filename = "config.txt";
+    FILE *config = fopen(config_filename, "r");
+
+    char data[256];
+
+    while (fgets(data, sizeof(data), config))
+    {
+        int si = sizeof(data);
+        int line_len = sizeof(data) / sizeof(data[0]);
+
+        printf("%s", data);
+    }
+        
+    fclose(config);
+
     WNDCLASS window = {};
 
     window.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -370,7 +385,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     if (RegisterClass(&window))
     {
-        HWND window_handle = xe_platform::get_window_handle();
+        HWND& window_handle = xe_platform::get_window_handle();
 
         window_handle = CreateWindowEx(0, window.lpszClassName,
                                             "Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
@@ -384,8 +399,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             using namespace xe_graphics;
             using namespace xe_render;
             
-            HDC dc = GetDC(window_handle);
-
             xe_input::init();
 
 #ifdef GAPI_GL
@@ -472,7 +485,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             
             xe_ecs::transform_component *transform_plane = new xe_ecs::transform_component();
 
-            transform_plane->set_translation(3.0f, -10.0f, 25.0f);
+            transform_plane->set_translation(3.0f, -10.0f, 75.0f);
             transform_plane->set_scale(10.0f, 0.001f, 10.0f);
 
             plane_entity->add_component(plane_mesh);
@@ -492,7 +505,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             render_pass3D *main_render_pass = new render_pass3D();
             main_render_pass->init();
             main_render_pass->set_scene(&app_state.active_scene);
-            //main_render_pass->set_camera3D(&camera3D);
 
             gamma_correction_pass gamma_correction = {};
             gamma_correction.init();
@@ -500,7 +512,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             shadow_map_pass shadow_pass = {};
             shadow_pass.init();
             shadow_pass.set_scene(&app_state.active_scene);
-            //shadow_pass.set_camera3D(&camera3D);
 
             device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
   
@@ -551,7 +562,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
                 device->check_error();
 
-                SwapBuffers(dc);
+                device->end_execution();
             }
         }
 

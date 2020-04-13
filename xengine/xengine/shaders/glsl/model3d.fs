@@ -19,6 +19,8 @@ vec3 gamma_correction(vec3 color)
     return pow(color, vec3(2.2));
 }
 
+
+
 void main()
 {
     vec3 diffuse = gamma_correction(texture(tex_diff1, uv).rgb);    

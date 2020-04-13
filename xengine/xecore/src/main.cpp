@@ -13,6 +13,8 @@
 
 #include "stack_allocator.h"
 
+#include <btree.h>
+
 void stack_allocator_test()
 {
     StackAllocator* stack = new StackAllocator(1024);
@@ -26,7 +28,25 @@ int main(int argc, char **argv)
 {
     stack_allocator_test();
 
+    binary_search_tree bst = {};
 
+    bst.add_node(10);
+    bst.add_node(40);
+    bst.add_node(20);
+    bst.add_node(3);
+    bst.add_node(5);
+    bst.add_node(7);
+    bst.add_node(8);
+    bst.add_node(1);
+    bst.add_node(12);
+    bst.add_node(2);
+    
+    rtaverse_tree_preorder(bst.root);
+
+    BSTreeNode *cur = find(bst.root, 12);
+
+    BSTreeNode *min_node = min(bst.root);
+    BSTreeNode *max_node = max(bst.root);
 
     ///////////////////////////////////
     xestring str("config");

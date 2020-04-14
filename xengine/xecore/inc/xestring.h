@@ -3,6 +3,7 @@
 #ifndef STRING_H
 #define STRING_H
 
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "types.h"
 #include "memory_allocate.h"
@@ -80,11 +81,12 @@ public:
 
     uint32 length(const char* data)
     {
-        const char * str = data;
+        const char *str = data;
         while (*str != '\0')
         {
             str++;
         }
+
         return (uint32)(str - data);
     }
 
@@ -104,7 +106,14 @@ public:
 
     void append(const char *str)
     {
+        uint32 len = length(str);
+        
+        if(m_size + len >= m_capacity)
+            reserve(m_capacity << 1);
+        
+        strcat(m_data, str);
 
+        m_size += len;
     }
 
     char find_at(uint8 index)
@@ -228,9 +237,9 @@ public:
     void reserve(uint32 length)
     {
         m_capacity = length;
-        char *n_str = (char*)malloc(sizeof(char) * m_capacity);
+        char *n_str = (char*)allocate_memory(sizeof(char) * m_capacity);        
         memcpy(n_str, m_data, m_size + 1);
-        free(m_data);
+        deallocate_memory(m_data);
         m_data = n_str;
     }
 

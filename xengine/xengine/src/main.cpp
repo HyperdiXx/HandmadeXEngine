@@ -346,6 +346,38 @@ void set_pos(int posX, int posY)
     int startY = posX;
 }
 
+struct config_data
+{
+    const char *name;
+    bool32 windowed;
+};
+
+internal void
+parse_config_file(const char *data, config_data *cd)
+{
+    char data_string[128];
+    strcpy(data_string, data);
+
+    while (data_string != "\n")
+    {
+        char *split_name = strtok(data_string, ":");
+        char *result_value = strtok(NULL, "\n");
+
+        if (strcmp(split_name, "name") == 0)
+        {
+            cd->name = result_value;
+        }
+        else if (strcmp(split_name, "windowed") == 0)
+        {
+            if (strcmp(result_value, "true") == 0)
+                cd->windowed = true;
+            else
+                cd->windowed = false;
+        }
+    }
+}
+
+
 #define DEBUG
 
 int CALLBACK
@@ -359,22 +391,26 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     FILE *out_f;
     freopen_s(&out_f, "CONOUT$", "w", stdout);
+    freopen_s(&out_f, "CONIN$", "w", stdin);
+    freopen_s(&out_f, "CONERR$", "w", stderr);
 #endif
+
+    config_data cd = {};
 
     const char* config_filename = "config.txt";
     FILE *config = fopen(config_filename, "r");
 
     char data[256];
+    char output[512 * 512];
 
     while (fgets(data, sizeof(data), config))
-    {
-        int si = sizeof(data);
-        int line_len = sizeof(data) / sizeof(data[0]);
-
-        printf("%s", data);
+    {        
+        strcat(output, data);
     }
         
     fclose(config);
+
+    parse_config_file(output, &cd);
 
     WNDCLASS window = {};
 

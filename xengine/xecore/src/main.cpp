@@ -1,5 +1,5 @@
 
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 
 #include <xestring.h>
@@ -20,14 +20,10 @@ void stack_allocator_test()
     StackAllocator* stack = new StackAllocator(1024);
 
     void *m_block = stack->get_memory_block(256, 16);
-
-
 }
 
-int main(int argc, char **argv)
+void bst_test()
 {
-    stack_allocator_test();
-
     binary_search_tree bst = {};
 
     bst.add_node(10);
@@ -40,13 +36,25 @@ int main(int argc, char **argv)
     bst.add_node(1);
     bst.add_node(12);
     bst.add_node(2);
-    
+
     rtaverse_tree_preorder(bst.root);
 
     BSTreeNode *cur = find(bst.root, 12);
 
     BSTreeNode *min_node = min(bst.root);
     BSTreeNode *max_node = max(bst.root);
+}
+
+int main(int argc, char **argv)
+{
+    stack_allocator_test();
+
+    bst_test();
+
+    xestring test_append("hello");
+
+    test_append.append(" world!!!");
+    test_append.append("onemorestr!!!");
 
     ///////////////////////////////////
     xestring str("config");

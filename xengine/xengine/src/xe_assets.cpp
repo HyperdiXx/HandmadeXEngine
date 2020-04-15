@@ -224,7 +224,7 @@ namespace xe_assets
         glBindVertexArray(meh->vao);
         glBindBuffer(GL_ARRAY_BUFFER, meh->vbo);
 
-        /*if (calculate_tspace)
+        if (calculate_tspace)
         {
             glBufferData(GL_ARRAY_BUFFER, meh->vertices_tab.size() * sizeof(pos_normal_tb_uv), &meh->vertices_tab[0], GL_STATIC_DRAW);
 
@@ -246,9 +246,9 @@ namespace xe_assets
 
             glEnableVertexAttribArray(4);
             glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, uv));
-        }*/
+        }
         //else
-       // {
+        /*{
             glBufferData(GL_ARRAY_BUFFER, meh->vertices.size() * sizeof(pos_normal_uv), &meh->vertices[0], GL_STATIC_DRAW);
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meh->ibo);
@@ -262,7 +262,7 @@ namespace xe_assets
            
             glEnableVertexAttribArray(2);
             glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)offsetof(pos_normal_uv, uv));
-        //}
+        }*/
         
         glBindVertexArray(0);
         glDeleteBuffers(1, &meh->vbo);
@@ -381,14 +381,14 @@ namespace xe_assets
 
     void parse_vert(mesh *meh, aiMesh *aimesh)
     {
-        std::vector<pos_normal_uv> vertices;
-        //std::vector<pos_normal_tb_uv> vertices;
+        //std::vector<pos_normal_uv> vertices;
+        std::vector<pos_normal_tb_uv> vertices;
 
         std::vector<uint32> indices;
         std::vector<texture_wrapper> textures;
 
-        pos_normal_uv vertex;
-        //pos_normal_tb_uv vertex;
+        //pos_normal_uv vertex;
+        pos_normal_tb_uv vertex;
         
         vec3f vector;
 
@@ -424,7 +424,7 @@ namespace xe_assets
                 vertex.uv = vec2f(0.0f, 0.0f);
 
             // @Note : not using tbn right now
-            /*if (aimesh->HasTangentsAndBitangents())
+            if (aimesh->HasTangentsAndBitangents())
             {
                 vector.x = aimesh->mTangents[i].x;
                 vector.y = aimesh->mTangents[i].y;
@@ -435,7 +435,7 @@ namespace xe_assets
                 vector.y = aimesh->mBitangents[i].y;
                 vector.z = aimesh->mBitangents[i].z;
                 vertex.bitangent = vector;
-            }*/
+            }
 
             meh->add_vertex(vertex);
         }

@@ -13,7 +13,8 @@ void xe_graphics::render_pass2D::init()
     graphics_device *device = xe_render::get_device();
 
     device->create_texture2D("assets/get.png", &result_texture);
-    simple_shader = xe_render::get_simple_shader();
+
+    simple_shader = xe_render::get_shader("simple2d");
 
     main_ent.add_component(new quad_component());
     main_ent.add_component(new transform_component());
@@ -77,8 +78,8 @@ void xe_graphics::render_pass3D::init()
 {
     graphics_device *device = xe_render::get_device();
     
-    shader *model_shader = xe_render::get_model_shader();
-    shader *color_shader = xe_render::get_color_shader();
+    shader *model_shader = xe_render::get_shader("base3d");
+    shader *color_shader = xe_render::get_shader("color");
 
     device->bind_shader(model_shader);
     device->set_int("tex_diff", 0, model_shader);
@@ -114,8 +115,8 @@ void xe_graphics::render_pass3D::render()
 {
     graphics_device *device = xe_render::get_device();
     
-    shader *color_shader = xe_render::get_color_shader();
-    shader *model_shader = xe_render::get_model_shader();
+    shader *color_shader = xe_render::get_shader("color");
+    shader *model_shader = xe_render::get_shader("base3d");
      
     viewport vp = device->get_viewport();
 
@@ -200,7 +201,7 @@ void xe_graphics::render_pass3D::update(real32 dt)
 void xe_graphics::gamma_correction_pass::init()
 {
     graphics_device *device = xe_render::get_device();
-    gmshd = xe_render::get_gamma_correction_shader();
+    gmshd = xe_render::get_shader("gc");
 }
 
 void xe_graphics::gamma_correction_pass::clear()
@@ -246,8 +247,8 @@ void xe_graphics::shadow_map_pass::init()
    
     graphics_device *device = xe_render::get_device();
 
-    shader *depth_shader = xe_render::get_shadow_map_depth_shader();
-    shader *shadow_map_shader = xe_render::get_shadow_map_shader();
+    shader *depth_shader = xe_render::get_shader("shadow_depth");
+    shader *shadow_map_shader = xe_render::get_shader("shadow_map");
 
     device->bind_shader(shadow_map_shader);
     device->set_int("diff_tex", 0, shadow_map_shader);
@@ -277,7 +278,7 @@ void xe_graphics::shadow_map_pass::render()
     glm::mat4 light_view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     glm::mat4 light_space_matrix = light_view_matrix * shadow->light_projection_matrix;
   
-    shader *depth_shader = xe_render::get_shadow_map_depth_shader();
+    shader *depth_shader = xe_render::get_shader("shadow_depth");
     device->bind_shader(depth_shader);
     device->set_mat4("light_space_matrix", light_space_matrix, depth_shader);
 

@@ -52,13 +52,8 @@ namespace xe_render
     void set_active_framebuffer(xe_graphics::framebuffer *fbo);
     
     xe_graphics::graphics_device* get_device();
-    xe_graphics::shader* get_simple_shader();
-    xe_graphics::shader* get_model_shader();
-    xe_graphics::shader* get_gamma_correction_shader();
-    xe_graphics::shader* get_post_proc_shader();
-    xe_graphics::shader* get_color_shader();
-    xe_graphics::shader* get_shadow_map_shader();
-    xe_graphics::shader* get_shadow_map_depth_shader();
+
+    xe_graphics::shader *get_shader(const char* name);
 
     xe_ecs::camera2d_component& get_camera2D();
     xe_ecs::camera3d_component& get_camera3D();

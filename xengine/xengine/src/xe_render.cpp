@@ -22,16 +22,8 @@ namespace xe_render
 
     xe_graphics::graphics_device *graphics_device = nullptr;
 
-    xe_graphics::shader *simple_shader = nullptr;
-    xe_graphics::shader *model_shader = nullptr;
-    xe_graphics::shader *gamma_correction_shader = nullptr;
-    xe_graphics::shader *post_proc_shader = nullptr;
-    xe_graphics::shader *color_shader = nullptr;
-    xe_graphics::shader *text_shader = nullptr;
-    xe_graphics::shader *cubemap_shader = nullptr;
-    xe_graphics::shader *shadow_map_shader = nullptr;
-    xe_graphics::shader *shadow_map_depth_shader = nullptr;
-    
+    std::map<const char*, xe_graphics::shader> shaders;
+
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
 
@@ -155,6 +147,8 @@ namespace xe_render
 
         ortho = glm::ortho(0.0f, float(WINDOWWIDTH), 0.0f, float(WINDOWHEIGHT), -1.0f, 1.0f);
 
+        shader *text_shader = &shaders["text"];
+
         graphics_device->bind_shader(text_shader);
         graphics_device->set_mat4("projection", ortho, text_shader);
 
@@ -165,28 +159,53 @@ namespace xe_render
     {
         xe_graphics::graphics_device *device = get_device();
 
-        simple_shader = new xe_graphics::shader();
-        model_shader = new xe_graphics::shader();
-        gamma_correction_shader = new xe_graphics::shader();
-        color_shader = new xe_graphics::shader();
-        text_shader = new xe_graphics::shader();
-        cubemap_shader = new xe_graphics::shader();
-        post_proc_shader = new xe_graphics::shader();
-        shadow_map_shader = new xe_graphics::shader();
-        shadow_map_depth_shader = new xe_graphics::shader();
+        xe_graphics::shader simple_shader = {};
+        xe_graphics::shader model_shader = {};
+        xe_graphics::shader gamma_correction_shader = {};
+        xe_graphics::shader color_shader = {};
+        xe_graphics::shader text_shader = {};
+        xe_graphics::shader cubemap_shader = {};
+        xe_graphics::shader post_proc_shader = {};
+        xe_graphics::shader shadow_map_shader = {};
+        xe_graphics::shader shadow_map_depth_shader = {};
+
+        std::string shader_names[8] = {};
+
+        const char *shaders_dir = "shaders/glsl/";
+
+        uint32 N = 9;
 
 #ifdef GAPI_GL
-        bool32 res = device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", simple_shader);
-        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", model_shader);       
-        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", gamma_correction_shader);
-        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/color.fs", color_shader);
-        res = device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", text_shader);
-        res = device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", cubemap_shader);
-        res = device->create_shader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", shadow_map_shader);
-        res = device->create_shader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", shadow_map_depth_shader);
-        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", post_proc_shader);
+
+        /*bool32 shader_res;
+
+        for (uint16 i = 0; i < N; i++)
+        {
+            shader_res |= device->create_shader(shaders_dir + std::string("simple2d.vs"), std::string(shaders_dir + "simple2d.vs").c_str(), &simple_shader);
+        }*/
+
+        bool32 res = device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
+        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);       
+        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
+        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/color.fs", &color_shader);
+        res = device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
+        res = device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
+        res = device->create_shader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
+        res = device->create_shader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
+        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
         
 #endif
+
+        shaders["simple2d"] = simple_shader;        
+        shaders["base3d"] = model_shader;
+        shaders["gc"] = gamma_correction_shader;
+        shaders["text"] = text_shader;
+        shaders["cubemap"] = cubemap_shader;
+        shaders["color"] = color_shader;
+        shaders["shadow_map"] = shadow_map_shader;
+        shaders["shadow_depth"] = shadow_map_depth_shader;
+        shaders["post_proc"] = post_proc_shader;
+
         if (!res)
         {
             xe_utility::error("loading shader");
@@ -231,41 +250,11 @@ namespace xe_render
 
     xe_graphics::graphics_device* get_device() { return graphics_device; }
 
-    xe_graphics::shader *get_simple_shader()
+    xe_graphics::shader *get_shader(const char *name)
     {
-        return simple_shader;
+        return &shaders[name];
     }
-
-    xe_graphics::shader *get_model_shader()
-    {
-        return model_shader;
-    }
-
-    xe_graphics::shader *get_gamma_correction_shader()
-    {
-        return gamma_correction_shader;
-    }
-
-    xe_graphics::shader *get_post_proc_shader()
-    {
-        return post_proc_shader;
-    }
-
-    xe_graphics::shader *get_color_shader()
-    {
-        return color_shader;
-    }
-
-    xe_graphics::shader *get_shadow_map_shader()
-    {
-        return shadow_map_shader;
-    }
-
-    xe_graphics::shader *get_shadow_map_depth_shader()
-    {
-        return shadow_map_depth_shader;
-    }
-
+    
     bool32 create_mesh(xe_assets::mesh *meh)
     {
         return bool32();
@@ -449,6 +438,7 @@ namespace xe_render
         
         cube->id = cubemap_texture->id;
 
+        shader *cubemap_shader = &shaders["cubemap"];
         graphics_device->bind_shader(cubemap_shader);
         graphics_device->set_int("skybox", 0, cubemap_shader);
 
@@ -686,6 +676,9 @@ namespace xe_render
     {
         graphics_device->enable(GL_BLEND);
         graphics_device->set_blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        shader *text_shader = &shaders["text"];
+
         graphics_device->bind_shader(text_shader);
         graphics_device->set_vec3("color", color, text_shader);
         
@@ -750,6 +743,8 @@ namespace xe_render
     void draw_skybox()
     {
         glDepthFunc(GL_LEQUAL);
+        shader *cubemap_shader = &shaders["cubemap"];
+
         graphics_device->bind_shader(cubemap_shader);
         
         xe_ecs::camera3d_component camera = get_camera3D();
@@ -810,7 +805,7 @@ namespace xe_render
             glm::mat4 light_view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
             glm::mat4 light_space_matrix = light_projection_matrix * light_view_matrix;
 
-            shd = xe_render::get_model_shader();
+            shd = xe_render::get_shader("base3d");
             graphics_device->bind_shader(shd);
             graphics_device->set_mat4("light_space_matrix", light_space_matrix, shd);
             graphics_device->set_bool("shadows_enabled", true, shd);
@@ -826,16 +821,13 @@ namespace xe_render
         xe_graphics::graphics_device *device = xe_render::get_device();
 
         glm::vec3 light_color = glm::vec3(1.0f);
-        real32 intens = 1.0f;
-
+        
         if (directional_light)
         {
             light_color = directional_light->color;
-            intens = directional_light->entensity;
         }
 
         device->bind_shader(shd);
-        device->set_float("intensity", intens, shd);
         device->set_vec3("dir_light_color", light_color, shd);
         device->set_vec3("light_pos", transform->position, shd);
     }
@@ -914,10 +906,10 @@ namespace xe_render
         shader *shader_to_draw = nullptr;
         
         if (model)
-            shader_to_draw = xe_render::get_model_shader();
+            shader_to_draw = xe_render::get_shader("base3d");
 
         if (model->draw_with_color)
-            shader_to_draw = xe_render::get_color_shader();
+            shader_to_draw = xe_render::get_shader("color");
 
         transform_component *transform = ent->find_component<transform_component>();
 

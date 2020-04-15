@@ -511,7 +511,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             dl->entensity = 0.9f;
 
             xe_ecs::transform_component *light_transform = new xe_ecs::transform_component();
-            light_transform->set_translation(0.0f, 20.0f, -5.0f);
+            light_transform->set_translation(0.0f, 5.0f, -5.0f);
             light_transform->set_scale(0.2f, 0.2f, 0.2f);
 
             light_entity->add_component(dl);
@@ -592,7 +592,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 render_pass_2D->render();
 
                 win32_imgui_new_frame();                
-                top_bar();                            
+                top_bar(); 
+
                 win32_imgui_post_update();
 
                 device->check_error();

@@ -1,12 +1,55 @@
 #version 330 core
 out vec4 frag_color;
 
+struct material 
+{
+    sampler2D diffuse;
+    sampler2D specular;
+    float shininess;
+}; 
+
+struct direction_light
+{
+    vec3 direction;
+	
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct point_light 
+{    
+	vec3 position;
+  
+    float constant;
+    float linear;
+    float quadratic;
+	
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct spot_light 
+{
+    vec3 position;
+    vec3 direction;
+    float cut_off;
+    float outer_cut_off;
+  
+    float constant;
+    float linear;
+    float quadratic;
+  
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;       
+};
+
 in VS_OUT {
     vec2 uv;
-    vec3 world_pos;
     vec3 normal;
-    //vec3 tangent;
-    //vec3 bitangent;
+    vec3 world_pos;
     vec4 world_pos_light_space;
 } fs_in;
 
@@ -16,7 +59,6 @@ uniform sampler2D tex_spec1;
 
 uniform sampler2D shadow_map;
 
-uniform vec3 dir_light_color;
 uniform vec3 light_pos;
 uniform vec3 cam_pos;
 
@@ -72,34 +114,28 @@ float calculate_shadows(vec4 light_space_pos)
 }
 
 void main()
-{
-    vec3 diffuse_tex = gamma_correction(texture(tex_diff1, fs_in.uv).rgb);    
-    vec3 ambient = dir_light_color * 0.5;
+{    
+    vec3 diffuse_tex = gamma_correction(texture(tex_diff1, fs_in.uv).rgb);
+    
+    float ambient_coef = 0.5;
 
-    //vec3 normal_from_map = calculate_normal(fs_in.normal, fs_in.tangent, fs_in.bitangent, fs_in.uv);
+    vec3 norm = normalize(fs_in.normal);
+    vec3 view_direction = normalize(cam_pos - fs_in.world_pos);
 
     vec3 light_dir = normalize(light_pos - fs_in.world_pos);
     
-    float diff_coef = max(dot(normalize(fs_in.normal), light_dir), 0.0);
-    vec3 diffuse_value = diff_coef * dir_light_color * diffuse_tex;
+    float diff_coef = max(dot(norm, light_dir), 0.0);
     
-    float specular = 0.0;    
+    vec3 reflect_direction = reflect(-light_dir, norm);
+
+    float specular = 0.0;      
+    vec3 half_vector = normalize(light_dir + view_direction);
     
-    vec3 view_dir = normalize(cam_pos - fs_in.world_pos);
-    vec3 half_vector = normalize(light_dir + cam_pos);
-    
-   
-    specular = pow(max(dot(fs_in.normal, half_vector), 0.0), 64.0);
-    vec3 spec_res = specular * dir_light_color;
+    specular = pow(max(dot(norm, half_vector), 0.0), 32.0);
     
     float shadows_factor = 1.0;
+
+    vec3 final_color = (ambient_coef + diff_coef + specular) * diffuse_tex;
     
-    //if(shadows_enabled)
-    //    shadows_factor = calculate_shadows(fs_in.world_pos_light_space);           
-	
-    //vec3 final = (ambient + (1.0 - shadows_factor) * (diffuse_value + spec_res)) * diffuse_tex;
-
-    vec3 final_color = (ambient + diffuse_value + spec_res);
-
-    frag_color = vec4(1.0, 0.0, 0.0, 1.0);   
+	frag_color = vec4(final_color, 1.0);    
 }

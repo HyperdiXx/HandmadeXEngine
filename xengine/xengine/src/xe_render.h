@@ -77,7 +77,7 @@ namespace xe_render
     void draw_mesh(xe_assets::mesh *mshs, xe_graphics::shader *shd);
 
     void draw_ent(xe_ecs::entity *ent);
-    void draw_ent(xe_ecs::entity *ent, glm::vec3 *color);
+    void draw_ent_static(xe_ecs::entity *ent);
     void draw_ent_with_shader(xe_ecs::entity *ent, xe_graphics::shader *shd);
 
     void draw_text(const std::string &text, glm::vec2& pos, glm::vec3& color);

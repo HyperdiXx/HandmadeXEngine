@@ -410,7 +410,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         
     fclose(config);
 
-    parse_config_file(output, &cd);
+    //parse_config_file(output, &cd);
 
     WNDCLASS window = {};
 
@@ -462,21 +462,21 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
 
             xe_ecs::entity* test_entity = application::get_entity(&app_state);
-            test_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_TEXTURED);
+            test_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
 
             xe_ecs::entity* light_entity = application::get_entity(&app_state);
-            light_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED);
+            light_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
 
             xe_ecs::entity* plane_entity = application::get_entity(&app_state);
-            plane_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED);
-
+            plane_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
+     
             assert(test_entity != nullptr);
             assert(light_entity != nullptr);
             assert(plane_entity != nullptr);
 
             xe_ecs::mesh_component *character_mesh = new xe_ecs::mesh_component();
             character_mesh->model_asset = &app_state.assets_3D.models3D["Nano"];
-
+           
             xe_ecs::transform_component *nano_transform = new xe_ecs::transform_component();
             nano_transform->set_translation(-20.0f, -9.0f, -50.0f);
         
@@ -486,7 +486,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             for (int i = 0; i < 10; ++i)
             {
                 xe_ecs::entity* ent = application::get_entity(&app_state);
-                ent->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED);
+                ent->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
 
                 xe_ecs::transform_component *transform = new xe_ecs::transform_component(); 
                 transform->set_translation(30.0f * (i - 5), 0.0f, -5.0f * (i + 1));
@@ -494,6 +494,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
                 xe_ecs::mesh_component *loading_model = new xe_ecs::mesh_component();
                 loading_model->model_asset = &app_state.assets_3D.models3D["Cube"];;
+                loading_model->draw_with_color = true;
 
                 ent->add_component(transform);
                 ent->add_component(loading_model);
@@ -503,6 +504,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
             xe_ecs::mesh_component *cube_mesh = new xe_ecs::mesh_component();
             cube_mesh->model_asset = &app_state.assets_3D.models3D["Cube"];
+            cube_mesh->draw_with_color = true;
 
             xe_ecs::dir_light *dl = new xe_ecs::dir_light();
             dl->color = glm::vec3(0.8f, 0.7f, 0.8f);
@@ -518,7 +520,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
             xe_ecs::mesh_component *plane_mesh = new xe_ecs::mesh_component();
             plane_mesh->model_asset = &app_state.assets_3D.models3D["Cube"];
-            
+            plane_mesh->draw_with_color = true;
+
             xe_ecs::transform_component *transform_plane = new xe_ecs::transform_component();
 
             transform_plane->set_translation(3.0f, -10.0f, 75.0f);
@@ -532,6 +535,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             new_scene.entities.push_back(plane_entity);
 
             app_state.active_scene = new_scene;
+
+            //------------------------------------------------------------//
 
             render_pass *render_pass_2D = new render_pass2D();
             set_render_pass(render_pass_2D);
@@ -566,20 +571,14 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                
                 device->start_execution();
 
-                shadow_pass.render();
+                //shadow_pass.render();
 
                 viewport vp_state = device->get_viewport();
 
                 device->set_viewport(0, 0, vp_state.width, vp_state.height);
                 device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                
-                //glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-                //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                //ConfigureShaderAndMatrices();
-                //glBindTexture(GL_TEXTURE_2D, depthMap);
-                //RenderScene();
 
-                shadow_pass.bind_depth_texture();
+                //shadow_pass.bind_depth_texture();
 
                 main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();

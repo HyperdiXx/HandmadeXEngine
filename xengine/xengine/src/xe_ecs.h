@@ -18,10 +18,9 @@ namespace xe_ecs
     enum ENTITY_TYPE
     {
         ENT_NONE, 
-        ENT_STATIC_OBJECT_COLORED,
-        ENT_STATIC_OBJECT_TEXTURED,
-        ENT_CAMERA,
-        ENT_ANIMATED_OBJECT
+        ENT_STATIC_OBJECT,
+        ENT_ANIMATED_OBJECT,
+        ENT_CAMERA
     };
 
     class component
@@ -145,6 +144,8 @@ namespace xe_ecs
     public:
         xe_assets::model *model_asset;
         xe_graphics::texture2D *diffuse_texture;
+
+        bool32 draw_with_color = false;
     };
     
     class camera2d_component : public component

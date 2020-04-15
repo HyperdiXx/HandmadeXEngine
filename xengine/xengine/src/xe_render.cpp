@@ -177,7 +177,7 @@ namespace xe_render
 
 #ifdef GAPI_GL
         bool32 res = device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", simple_shader);
-        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/model3d.fs", model_shader);       
+        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", model_shader);       
         res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", gamma_correction_shader);
         res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/color.fs", color_shader);
         res = device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", text_shader);
@@ -795,6 +795,30 @@ namespace xe_render
 
         graphics_device->set_mat4("mvp", mvp, shd);
         graphics_device->set_mat4("model", model_matrix, shd);
+       
+        //graphics_device->set_vec3("dir_light_color", glm::vec3(1.0, 0.0, 0.0), shd);
+        //graphics_device->set_vec3("light_pos", glm::vec3(4.0, 4.0, 0.0), shd);
+        //graphics_device->set_vec3("cam_pos", camera.pos, shd);
+
+        if (enable_shadows)
+        {
+            real32 near_p = 1.0f;
+            real32 far_p = 7.5f;
+
+            glm::mat4 light_projection_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
+            glm::vec3 light_pos = glm::vec3(-2.0f, 4.0f, -2.0f);
+            glm::mat4 light_view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+            glm::mat4 light_space_matrix = light_projection_matrix * light_view_matrix;
+
+            shd = xe_render::get_model_shader();
+            graphics_device->bind_shader(shd);
+            graphics_device->set_mat4("light_space_matrix", light_space_matrix, shd);
+            graphics_device->set_bool("shadows_enabled", true, shd);
+        }
+        else
+        {
+            graphics_device->set_bool("shadows_enabled", false, shd);
+        }
     }
 
     void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform)
@@ -863,16 +887,14 @@ namespace xe_render
         using namespace xe_ecs;
 
         ENTITY_TYPE type = ent->get_type();
-
+        
         switch (type)
         {
-        case ENTITY_TYPE::ENT_STATIC_OBJECT_TEXTURED:
-            draw_ent(ent, nullptr);
-            break;
-        case ENTITY_TYPE::ENT_STATIC_OBJECT_COLORED:
-            draw_ent(ent, &default_cube_color);
+        case ENTITY_TYPE::ENT_STATIC_OBJECT:
+            draw_ent_static(ent);
             break;
         case ENTITY_TYPE::ENT_ANIMATED_OBJECT:
+            
             break;
         default:
             xe_utility::debug("Entity type not declared!");
@@ -881,60 +903,40 @@ namespace xe_render
 
     }
 
-    void draw_ent(xe_ecs::entity *ent, glm::vec3 *color)
+    void draw_ent_static(xe_ecs::entity *ent)
     {
         using namespace xe_ecs;
         
         xe_graphics::graphics_device *device = xe_render::get_device();
 
         mesh_component *model = ent->find_component<mesh_component>();
-
+        
         shader *shader_to_draw = nullptr;
         
         if (model)
             shader_to_draw = xe_render::get_model_shader();
 
+        if (model->draw_with_color)
+            shader_to_draw = xe_render::get_color_shader();
+
         transform_component *transform = ent->find_component<transform_component>();
 
         if (transform != nullptr)
         {
-            if (color != nullptr)
-            {
-                shader_to_draw = xe_render::get_color_shader();
-                device->bind_shader(shader_to_draw);
-                device->set_vec3("color", *color, shader_to_draw);
-            }
-
-            /*else if (model->model_asset->model_textures.size() == 0)
-            {
-                shader_to_draw = xe_render::get_color_shader();
-                device->bind_shader(shader_to_draw);
-                device->set_vec3("color", default_cube_color, shader_to_draw);
-            }*/
-
             device->bind_shader(shader_to_draw);
-            
-            if (enable_shadows)
+
+            if (model->draw_with_color)
             {
-                real32 near_p = 1.0f;
-                real32 far_p = 7.5f;
-
-                glm::mat4 light_projection_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
-                glm::vec3 light_pos = glm::vec3(-2.0f, 4.0f, -2.0f);
-                glm::mat4 light_view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                glm::mat4 light_space_matrix = light_projection_matrix * light_view_matrix;
-
-                camera3d_component camera = get_camera3D();
-                shader_to_draw = xe_render::get_model_shader();
-                device->bind_shader(shader_to_draw);
-                device->set_vec3("dir_light_color", glm::vec3(1.0, 0.0, 0.0), shader_to_draw);
-                device->set_vec3("cam_pos", camera.pos, shader_to_draw);
-                device->set_vec3("light_pos", light_pos, shader_to_draw);
-                device->set_mat4("light_space_matrix", light_space_matrix, shader_to_draw);
-
+                device->set_vec3("color", default_cube_color, shader_to_draw);
             }
-
+           
             apply_transform(transform, shader_to_draw);
+
+            /*if (model->diffuse_texture != nullptr)
+            {
+                device->set_int("tex_diff1", 0, shader_to_draw);
+                device->activate_bind_texture(TEXTURE_TYPE::COLOR, model->diffuse_texture);
+            }*/
 
             xe_assets::node *root = model->model_asset->root;
 
@@ -1016,12 +1018,12 @@ namespace xe_render
             device->bind_texture(TEXTURE_TYPE::COLOR, mesh_texture);
         }
 
-        if (msh->vertices.size() > 0)
-        {
+        //if (msh->vertices.size() > 0)
+       // {
             glBindVertexArray(msh->vao);
             device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
             device->unbind_vertex_array();
-        }
+       // }
     }
 }
 

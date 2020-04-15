@@ -18,10 +18,14 @@ namespace xe_assets
 
     struct mesh
     {
-        void add_vertex(static_vertex vertex);
-        void add_index(uint32 ind);        
+        void add_vertex(pos_normal_uv vertex);
+        void add_vertex(pos_normal_tb_uv vertex);
         
-        std::vector<static_vertex> vertices;
+        void add_index(uint32 ind);        
+
+        std::vector<pos_normal_uv> vertices;
+        std::vector<pos_normal_tb_uv> vertices_tab;
+
         std::vector<uint32> indices;
         std::vector<texture_wrapper> mesh_textures;
 
@@ -98,6 +102,6 @@ namespace xe_assets
 
     anim_model *parse_anim_model(const aiScene* scene);
 
-    model* load_model_from_file(const std::string &path);
-    anim_model* load_anim_model_from_file(const std::string &path);
+    model* load_model_from_file(const std::string &path, bool32 calculate_tb = true);
+    anim_model* load_anim_model_from_file(const std::string &path, bool32 calculate_tb = true);
 }

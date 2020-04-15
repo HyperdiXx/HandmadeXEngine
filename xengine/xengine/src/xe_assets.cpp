@@ -6,6 +6,8 @@
 
 namespace xe_assets
 {
+    static bool32 calculate_tspace;
+
     glm::mat4 xe_assets::transposeAiMat4(aiMatrix4x4 ai_mat)
     {
         glm::mat4 res;
@@ -152,7 +154,7 @@ namespace xe_assets
         }
     }
 
-    void parse_materials(model * m, mesh * mesh, aiMesh * ai_mesh, const aiScene * scene)
+    void parse_materials(model *m, mesh *mesh, aiMesh *ai_mesh, const aiScene *scene)
     {
         aiMaterial* material = scene->mMaterials[ai_mesh->mMaterialIndex];
 
@@ -222,27 +224,46 @@ namespace xe_assets
         glBindVertexArray(meh->vao);
         glBindBuffer(GL_ARRAY_BUFFER, meh->vbo);
 
-        glBufferData(GL_ARRAY_BUFFER, meh->vertices.size() * sizeof(static_vertex), &meh->vertices[0], GL_STATIC_DRAW);
+        /*if (calculate_tspace)
+        {
+            glBufferData(GL_ARRAY_BUFFER, meh->vertices_tab.size() * sizeof(pos_normal_tb_uv), &meh->vertices_tab[0], GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meh->ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, meh->indices.size() * sizeof(uint32), &meh->indices[0], GL_STATIC_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meh->ibo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, meh->indices.size() * sizeof(uint32), &meh->indices[0], GL_STATIC_DRAW);
 
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(static_vertex), (void*)0);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)0);
 
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(static_vertex), (void*)offsetof(static_vertex, normal));
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, normal));
 
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(static_vertex), (void*)offsetof(static_vertex, uv));
+            // @tangent & @bitangent
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, tangent));
 
-        // @tangent & @bitangent
-        //glEnableVertexAttribArray(3);
-        //glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(V3F_UV2F_N3F_T3F_BI3F), (void*)offsetof(V3F_UV2F_N3F_T3F_BI3F, tangent));
+            glEnableVertexAttribArray(3);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, bitangent));
 
-        //glEnableVertexAttribArray(4);
-        //glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(V3F_UV2F_N3F_T3F_BI3F), (void*)offsetof(V3F_UV2F_N3F_T3F_BI3F, bitangent));
+            glEnableVertexAttribArray(4);
+            glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, uv));
+        }*/
+        //else
+       // {
+            glBufferData(GL_ARRAY_BUFFER, meh->vertices.size() * sizeof(pos_normal_uv), &meh->vertices[0], GL_STATIC_DRAW);
 
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meh->ibo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, meh->indices.size() * sizeof(uint32), &meh->indices[0], GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)0);
+
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)offsetof(pos_normal_uv, normal));
+           
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)offsetof(pos_normal_uv, uv));
+        //}
+        
         glBindVertexArray(0);
         glDeleteBuffers(1, &meh->vbo);
         glDeleteBuffers(1, &meh->ibo);
@@ -250,7 +271,7 @@ namespace xe_assets
         return true;
     }
 
-    model * parse_static_model(const aiScene * scene, const std::string & path)
+    model *parse_static_model(const aiScene *scene, const std::string &path)
     {
         model *mode = new model();
 
@@ -262,7 +283,7 @@ namespace xe_assets
         return mode;
     }
 
-    anim_model * parse_anim_model(const aiScene * scene)
+    anim_model *parse_anim_model(const aiScene *scene)
     {
         anim_model* animated_model = new anim_model();
 
@@ -293,7 +314,7 @@ namespace xe_assets
         return cur_node;
     }
 
-    mesh * parse_mesh(model * model, aiMesh * ai_mesh, const aiScene * scene)
+    mesh *parse_mesh(model *model, aiMesh *ai_mesh, const aiScene *scene)
     {
         mesh* mes = new mesh();
         parse_vert(mes, ai_mesh);
@@ -305,16 +326,24 @@ namespace xe_assets
         return mes;
     }
 
-    model* xe_assets::load_model_from_file(const std::string &path)
+    model* xe_assets::load_model_from_file(const std::string &path, bool32 calculate_tb)
     {
         Assimp::Importer importer;
+
         // @FLip UV ???
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+        uint32 flags = aiProcess_Triangulate;
+
+        if (calculate_tb)
+            flags |= aiProcess_CalcTangentSpace;
+
+        const aiScene* scene = importer.ReadFile(path, flags);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             xe_utility::error(importer.GetErrorString());
             return nullptr;
         }
+
+        calculate_tspace = calculate_tb;
 
         model *result = parse_static_model(scene, path);
 
@@ -326,15 +355,23 @@ namespace xe_assets
         return result;
     }
 
-    anim_model * load_anim_model_from_file(const std::string &path)
+    anim_model *load_anim_model_from_file(const std::string &path, bool32 calculate_tb)
     {
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+
+        uint32 flags = aiProcess_Triangulate;
+
+        if (calculate_tb)
+            flags |= aiProcess_CalcTangentSpace;
+
+        const aiScene* scene = importer.ReadFile(path, flags);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             xe_utility::error(importer.GetErrorString());
             return nullptr;
         }
+
+        calculate_tspace = calculate_tb;
 
         anim_model *result = parse_anim_model(scene);
 
@@ -344,15 +381,19 @@ namespace xe_assets
 
     void parse_vert(mesh *meh, aiMesh *aimesh)
     {
-        std::vector<static_vertex> vertices;
+        std::vector<pos_normal_uv> vertices;
+        //std::vector<pos_normal_tb_uv> vertices;
+
         std::vector<uint32> indices;
         std::vector<texture_wrapper> textures;
 
+        pos_normal_uv vertex;
+        //pos_normal_tb_uv vertex;
+        
+        vec3f vector;
+
         for (uint32 i = 0; i < aimesh->mNumVertices; i++)
         {
-            static_vertex vertex;
-            vec3f vector;
-
             if (aimesh->HasPositions())
             {
                 // @SpeedUp: memcpy above
@@ -388,21 +429,26 @@ namespace xe_assets
                 vector.x = aimesh->mTangents[i].x;
                 vector.y = aimesh->mTangents[i].y;
                 vector.z = aimesh->mTangents[i].z;
-                //vertex.tangent = vector;
+                vertex.tangent = vector;
 
                 vector.x = aimesh->mBitangents[i].x;
                 vector.y = aimesh->mBitangents[i].y;
                 vector.z = aimesh->mBitangents[i].z;
-                //vertex.bitangent = vector;
+                vertex.bitangent = vector;
             }*/
 
             meh->add_vertex(vertex);
         }
     }
 
-    void mesh::add_vertex(static_vertex vertex)
+    void mesh::add_vertex(pos_normal_uv vertex)
     {
         vertices.push_back(vertex);
+    }
+
+    void mesh::add_vertex(pos_normal_tb_uv vertex)
+    {
+        vertices_tab.push_back(vertex);
     }
 
     void mesh::add_index(uint32 ind)

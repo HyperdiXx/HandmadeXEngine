@@ -119,18 +119,18 @@ namespace xe_graphics
 
 #define BONES_COUNT 10
 
-    struct V3F
+    struct position_vertex
     {
         vec3f pos;
     };
 
-    struct V3F_UV2F
+    struct position_uv_vertex
     {
         vec3f pos;
         vec2f uv;
     };
 
-    struct V3F_UV2F_N3F_T3F_BI3F
+    struct pos_normal_tb_uv
     {
         vec3f pos;
         vec3f normal;
@@ -139,28 +139,29 @@ namespace xe_graphics
         vec2f uv;
     };
 
-    struct static_vertex
+    struct pos_normal_uv
     {
         vec3f pos;
         vec3f normal;
         vec2f uv;
     };
 
-    struct anim_vertex
+    struct pos_normal_uv_b_w
     {
         vec3f pos;
         vec3f normal;
         vec2f uv;
 
-        float boneIDs[BONES_COUNT] = {};
-        float weights[BONES_COUNT] = {};
+        real32 bone_ids[BONES_COUNT] = {};
+        real32 weights[BONES_COUNT] = {};
     };
 
     struct BPMaterialSpec
     {
-        vec3f dif;
+        vec3f diff;
         vec3f spec;
         vec3f ambient;
-        float shiness;
+
+        real32 shiness;
     };
 }

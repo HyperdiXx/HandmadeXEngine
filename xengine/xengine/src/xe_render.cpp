@@ -883,6 +883,7 @@ namespace xe_render
         switch (type)
         {
         case ENTITY_TYPE::ENT_STATIC_OBJECT:
+        case ENTITY_TYPE::ENT_DIR_LIGHT:
             draw_ent_static(ent);
             break;
         case ENTITY_TYPE::ENT_ANIMATED_OBJECT:

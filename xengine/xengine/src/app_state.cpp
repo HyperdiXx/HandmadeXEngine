@@ -43,4 +43,22 @@ namespace application
         
         return result;
     }
+
+    xe_ecs::entity *get_entity_by_type(application_state *state, xe_ecs::ENTITY_TYPE type)
+    {
+        xe_ecs::entity *result = nullptr;
+
+        std::vector<xe_ecs::entity> &ents = state->entities;
+
+        for (int i = 0; i < ents.size(); ++i)
+        {
+            if (!ents[i].get_type() == type)
+            {
+                result = &ents[i];
+                break;
+            }
+        }
+
+        return result;
+    }
 }

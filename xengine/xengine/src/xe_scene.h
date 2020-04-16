@@ -12,6 +12,11 @@ namespace xe_graphics
     class render_pass;
 }
 
+namespace application
+{
+    struct application_state;
+}
+
 namespace xe_scene
 {
     struct scene
@@ -20,6 +25,7 @@ namespace xe_scene
         std::vector<xe_ecs::entity*> entities;
         std::vector<xe_graphics::render_pass*> passes;
         xe_graphics::shadow_map_pass *shadow_pass;
+        xe_ecs::entity *directional_light;
     };
 
     struct resources
@@ -32,10 +38,8 @@ namespace xe_scene
         std::map<const char*, xe_assets::model> models3D;
     };
 
-    struct entity_manager
-    {
-
-    };
-
     scene create_scene(const char *name);
+   
+    // @Rework init by parsing 
+    void load_test_scene(application::application_state *st, scene *sc);
 }

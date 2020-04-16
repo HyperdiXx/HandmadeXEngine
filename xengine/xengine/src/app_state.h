@@ -13,4 +13,5 @@ namespace application
 
     void load_state(application_state *state);
     xe_ecs::entity* get_entity(application_state *state);
+    xe_ecs::entity* get_entity_by_type(application_state *state, xe_ecs::ENTITY_TYPE type);
 }

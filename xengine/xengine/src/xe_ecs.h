@@ -19,6 +19,7 @@ namespace xe_ecs
     {
         ENT_NONE, 
         ENT_STATIC_OBJECT,
+        ENT_DIR_LIGHT,
         ENT_ANIMATED_OBJECT,
         ENT_CAMERA
     };

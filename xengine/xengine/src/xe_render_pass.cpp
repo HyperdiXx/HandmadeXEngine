@@ -187,15 +187,16 @@ void xe_graphics::render_pass3D::update(real32 dt)
         //transform_component *tr = light_ent.find_component<transform_component>();
         //tr->position.x -= 0.8f * sin(dt);
         //tr->position.z -= 0.8f * cos(dt);
-    }
-   
-    //transform_component *light_transform = light_ent.find_component<transform_component>();
+    }   
+    
+    xe_ecs::entity *light_ent = current_scene->directional_light;
+    transform_component *light_transform = light_ent->find_component<transform_component>();
 
-    //if (light_transform)
-   // {
-        //light_transform->position.x += 2.2f * sin(dt);
-        //light_transform->position.z += 2.2f * cos(dt);
-    //}        
+    if (light_transform)
+    {
+        glm::vec3 &pos = light_transform->position;
+        light_transform->set_translation(pos.x + 12.2f * dt, pos.y, pos.z + 12.2f * dt);
+    }
 }
 
 void xe_graphics::gamma_correction_pass::init()

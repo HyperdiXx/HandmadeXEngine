@@ -15,11 +15,26 @@ namespace xe_ecs
 {
     static uint32_t id_create = 0;
 
+    enum COMPONENT_TYPE
+    {
+        TRANSFORM,
+        DIR_LIGHT,
+        SPOT_LIGHT,
+        POINT_LIGHT,
+        QUAD_COMPONENT,
+        MESH_COMPONENT,
+        CAMERA2D,
+        CAMERA3D,
+        UPDATE,
+        MATERIAL
+    };
+
     enum ENTITY_TYPE
     {
         ENT_NONE, 
         ENT_STATIC_OBJECT,
         ENT_DIR_LIGHT,
+        ENT_PRIMITIVE_OBJECT,
         ENT_ANIMATED_OBJECT,
         ENT_CAMERA
     };
@@ -140,12 +155,17 @@ namespace xe_ecs
         xe_graphics::quad *quad_mesh;
     };
 
+    class sphere_component : public component
+    {
+    public:
+        xe_graphics::sphere *sphere_mesh;
+    };
+
     class mesh_component : public component
     {
     public:
         xe_assets::model *model_asset;
-        xe_graphics::texture2D *diffuse_texture;
-
+        
         bool32 draw_with_color = false;
     };
     
@@ -258,7 +278,7 @@ namespace xe_ecs
     class spot_light : public component
     {
     public:
-        real32 entensity;
+        real32 intensity;
         glm::vec3 color;
 
         real32 radius;
@@ -273,7 +293,7 @@ namespace xe_ecs
     class dir_light : public component
     {
     public:
-        real32 entensity;
+        real32 intensity;
         glm::vec3 color;
 
         bool32 is_static;

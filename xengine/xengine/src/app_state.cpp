@@ -5,31 +5,41 @@
 
 namespace application
 {
-    void load_state(application_state *state)
+    application_state app_state = {};
+
+    void load_state()
     {
         using namespace xe_ecs;
 
         xe_assets::model *character = xe_assets::load_model_from_file("assets/nano/nanosuit.obj");
         xe_assets::model *primitive_cube = xe_assets::load_model_from_file("assets/cube.obj");
 
-        state->assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Nano", *character));
-        state->assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cube", *primitive_cube));
+        app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Nano", *character));
+        app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cube", *primitive_cube));
 
-        state->active_scene = {};
+        app_state.active_scene = {};
 
         //@load all ents
 
         for(int i = 0; i < 20; i++)
-            state->entities.push_back(entity());
-
-
+            app_state.entities.push_back(entity());
     }
 
-    xe_ecs::entity* get_entity(application_state *state)
+    application_state * get_app_state()
+    {
+        return &app_state;
+    }
+
+    void set_active_scene(xe_scene::scene *sc)
+    {
+        app_state.active_scene = *sc;
+    }
+
+    xe_ecs::entity* get_entity()
     {
         xe_ecs::entity *result = nullptr;
         
-        std::vector<xe_ecs::entity> &ents = state->entities;
+        std::vector<xe_ecs::entity> &ents = app_state.entities;
         
         for (int i = 0; i < ents.size(); ++i)
         {
@@ -44,11 +54,11 @@ namespace application
         return result;
     }
 
-    xe_ecs::entity *get_entity_by_type(application_state *state, xe_ecs::ENTITY_TYPE type)
+    xe_ecs::entity *get_entity_by_type(xe_ecs::ENTITY_TYPE type)
     {
         xe_ecs::entity *result = nullptr;
 
-        std::vector<xe_ecs::entity> &ents = state->entities;
+        std::vector<xe_ecs::entity> &ents = app_state.entities;
 
         for (int i = 0; i < ents.size(); ++i)
         {
@@ -58,6 +68,17 @@ namespace application
                 break;
             }
         }
+
+        return result;
+    }
+
+    xe_assets::model *get_model_by_name(const char *name)
+    {
+        xe_assets::model *result = nullptr;
+
+        xe_scene::objects *obj = &app_state.assets_3D;
+       
+        result = &obj->models3D[name];
 
         return result;
     }

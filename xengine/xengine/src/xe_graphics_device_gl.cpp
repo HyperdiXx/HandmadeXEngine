@@ -841,6 +841,7 @@ namespace xe_graphics
     bool32 graphics_device_gl::create_index_buffer(uint32 *indices, uint32 size, index_buffer *ib)
     {
         ib->data = indices;
+        ib->count = size;
 
         glGenBuffers(1, &ib->id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
@@ -866,9 +867,9 @@ namespace xe_graphics
         uint32 offset = 0;
         buf_layout->stride = 0;
 
-        for (int i = 0; i < buf_layout->elements.size(); i++)
+        for (uint32 i = 0; i < buf_layout->elements.size(); i++)
         {
-            auto element = buf_layout->elements.at(i);
+            auto &element = buf_layout->elements.at(i);
             element.offset = offset;
             offset += element.size;
             buf_layout->stride += element.size;
@@ -886,7 +887,7 @@ namespace xe_graphics
 
     bool32 graphics_device_gl::add_vertex_buffer(vertex_array *va, vertex_buffer *vb)
     {
-        glBindVertexArray(va->id);
+        bind_vertex_array(va);
         if (vb != nullptr)
             bind_buffer(vb);
 
@@ -910,7 +911,7 @@ namespace xe_graphics
         // assert 
         if (ib != nullptr)
         {
-            glBindVertexArray(va->id);
+            bind_vertex_array(va);
             bind_buffer(ib);
             va->ib = ib;
             return true;

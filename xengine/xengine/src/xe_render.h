@@ -24,7 +24,6 @@ namespace xe_assets
 
 namespace XEngine
 {
-    class PerspectiveCamera;
     class OrthoCamera;
 }
 
@@ -44,6 +43,7 @@ namespace xe_render
     bool32 init_common_gpu_objects();
     bool32 load_font(const char *path);
     bool32 load_shaders();
+    bool32 load_free_textures();
 
     void clear();
 
@@ -54,6 +54,7 @@ namespace xe_render
     xe_graphics::graphics_device* get_device();
 
     xe_graphics::shader *get_shader(const char* name);
+    xe_graphics::texture2D *get_texture2D_resource(const char* name);
 
     xe_ecs::camera2d_component& get_camera2D();
     xe_ecs::camera3d_component& get_camera3D();
@@ -63,17 +64,22 @@ namespace xe_render
     bool32 create_skybox(xe_graphics::skybox *sky);
     bool32 create_cubemap(xe_graphics::cubemap *cube);
     bool32 create_shadow_maps(xe_graphics::shadow_map *shadow);
+    bool32 create_sphere(xe_graphics::sphere *sphre);
 
     void draw_full_quad();
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam);
     void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam);
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4& mod, XEngine::OrthoCamera *cam);
-    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, XEngine::PerspectiveCamera* camera);    
+    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd);    
     void draw_mesh(xe_assets::mesh *mshs, xe_graphics::shader *shd);
+   
+    void draw_sphere(xe_graphics::texture2D *texture_diff);
+    void draw_sphere();
 
     void draw_ent(xe_ecs::entity *ent);
     void draw_ent_static(xe_ecs::entity *ent);
     void draw_ent_with_shader(xe_ecs::entity *ent, xe_graphics::shader *shd);
+    void draw_ent_primitive(xe_ecs::entity *ent);
 
     void draw_text(const std::string &text, glm::vec2& pos, glm::vec3& color);
     void draw_text(const std::string &text, glm::vec2& pos);

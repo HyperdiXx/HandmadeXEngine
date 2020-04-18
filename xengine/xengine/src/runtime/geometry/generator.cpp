@@ -146,14 +146,9 @@ namespace XEngine
 
     void Geometry::renderSphere()
     {
+        const float PI = 3.14159265359;
         if (sphereVAO == 0)
-        {
-            glGenVertexArrays(1, &sphereVAO);
-
-            uint32 vbo, ebo;
-            glGenBuffers(1, &vbo);
-            glGenBuffers(1, &ebo);
-
+        {            
             std::vector<glm::vec3> positions;
             std::vector<glm::vec2> uv;
             std::vector<glm::vec3> normals;
@@ -165,13 +160,13 @@ namespace XEngine
                 {
                     float xSegment = (float)x / (float)64;
                     float ySegment = (float)y / (float)64;
-                    //float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-                    //float yPos = std::cos(ySegment * PI);
-                    //float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                    float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                    float yPos = std::cos(ySegment * PI);
+                    float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 
-                    //positions.push_back(glm::vec3(xPos, yPos, zPos));
-                    //uv.push_back(glm::vec2(xSegment, ySegment));
-                    //normals.push_back(glm::vec3(xPos, yPos, zPos));
+                    positions.push_back(glm::vec3(xPos, yPos, zPos));
+                    uv.push_back(glm::vec2(xSegment, ySegment));
+                    normals.push_back(glm::vec3(xPos, yPos, zPos));
                 }
             }
 
@@ -216,12 +211,23 @@ namespace XEngine
                     data.push_back(normals[i].z);
                 }
             }
+            
+
+            uint32 vbo, ebo;
+
+            glGenVertexArrays(1, &sphereVAO);
             glBindVertexArray(sphereVAO);
+
+            glGenBuffers(1, &vbo);
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
             glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+
+            glGenBuffers(1, &ebo);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+            
             float stride = (3 + 2 + 3) * sizeof(float);
+            
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
             glEnableVertexAttribArray(1);

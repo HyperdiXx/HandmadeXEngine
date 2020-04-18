@@ -28,6 +28,7 @@ namespace xe_graphics
     struct index_buffer
     {
         uint32 id;
+        uint32 count;
         uint32 *data;
     };
 
@@ -166,9 +167,12 @@ namespace xe_graphics
 
     struct quad
     {
-        xe_graphics::vertex_buffer *vertex_buffer;
-        xe_graphics::index_buffer *index_buffer;
         xe_graphics::vertex_array *vertex_array;
+    };
+
+    struct sphere
+    {
+        xe_graphics::vertex_array  *vertex_array;
     };
 
     struct character

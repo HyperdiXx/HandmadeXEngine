@@ -12,7 +12,7 @@ void xe_graphics::render_pass2D::init()
 {
     graphics_device *device = xe_render::get_device();
 
-    device->create_texture2D("assets/get.png", &result_texture);
+    result_texture = xe_render::get_texture2D_resource("water");
 
     simple_shader = xe_render::get_shader("simple2d");
 
@@ -35,9 +35,7 @@ void xe_graphics::render_pass2D::init()
 
 void xe_graphics::render_pass2D::clear()
 {
-    graphics_device *device = xe_render::get_device();
-
-    device->destroy_texture2D(&result_texture);
+  
 }
 
 void xe_graphics::render_pass2D::unload_resources()
@@ -49,7 +47,7 @@ void xe_graphics::render_pass2D::render()
 { 
     using namespace xe_render;
 
-    draw_quad(&main_ent, simple_shader, &result_texture, &camera2D);
+    draw_quad(&main_ent, simple_shader, result_texture, &camera2D);
     draw_text(ENGINE_NAME, 10, 10);     
 }
 
@@ -190,12 +188,15 @@ void xe_graphics::render_pass3D::update(real32 dt)
     }   
     
     xe_ecs::entity *light_ent = current_scene->directional_light;
-    transform_component *light_transform = light_ent->find_component<transform_component>();
-
-    if (light_transform)
+    if (light_ent)
     {
-        glm::vec3 &pos = light_transform->position;
-        light_transform->set_translation(pos.x + 12.2f * dt, pos.y, pos.z + 12.2f * dt);
+        transform_component *light_transform = light_ent->find_component<transform_component>();
+
+        if (light_transform)
+        {
+            glm::vec3 &pos = light_transform->position;
+            light_transform->set_translation(pos.x + 12.2f * dt, pos.y, pos.z + 12.2f * dt);
+        }
     }
 }
 

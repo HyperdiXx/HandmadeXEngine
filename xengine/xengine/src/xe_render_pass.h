@@ -44,12 +44,12 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        const texture2D& get_result_texture() { return result_texture; };
+        const texture2D *get_result_texture() { return result_texture; };
 
         inline XEngine::OrthoCamera& get_camera2d() { return camera2D; };
     private:
         XEngine::OrthoCamera camera2D;
-        texture2D result_texture;
+        texture2D *result_texture;
         shader* simple_shader;
         xe_ecs::entity main_ent;      
     };

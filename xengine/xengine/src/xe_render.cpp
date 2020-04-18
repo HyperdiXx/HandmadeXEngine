@@ -7,6 +7,7 @@
 #include "ortho_camera.h"
 
 #include "xe_core.h"
+#include "runtime/geometry/generator.h"
 
 #include <xenpch.h>
 
@@ -23,11 +24,13 @@ namespace xe_render
     xe_graphics::graphics_device *graphics_device = nullptr;
 
     std::map<const char*, xe_graphics::shader> shaders;
+    std::map<const char*, xe_graphics::texture2D> textures;
 
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
 
     xe_graphics::vertex_array quad_vao;
+    xe_graphics::sphere sphere_base;
     
     std::map<GLchar, xe_graphics::character> characters_map;
 
@@ -41,6 +44,9 @@ namespace xe_render
 
         if(!load_shaders())
             xe_utility::error("Failed to init shader module!");
+
+        if(!load_free_textures())
+            xe_utility::error("Failed to init textures module!");
 
         if (!load_font("assets/fonts/arial.ttf"))
             xe_utility::error("Failed to init font module!");
@@ -67,6 +73,11 @@ namespace xe_render
             return false;
         }
             
+        shader *texture_shader = get_shader("simple_tex");
+
+        graphics_device->bind_shader(texture_shader);
+        graphics_device->set_int("tex_diff", 0, texture_shader);
+
         return true;
     }
 
@@ -157,8 +168,6 @@ namespace xe_render
 
     bool32 load_shaders()
     {
-        xe_graphics::graphics_device *device = get_device();
-
         xe_graphics::shader simple_shader = {};
         xe_graphics::shader model_shader = {};
         xe_graphics::shader gamma_correction_shader = {};
@@ -168,6 +177,8 @@ namespace xe_render
         xe_graphics::shader post_proc_shader = {};
         xe_graphics::shader shadow_map_shader = {};
         xe_graphics::shader shadow_map_depth_shader = {};
+        xe_graphics::shader pbr = {};
+        xe_graphics::shader simple_texture = {};
 
         std::string shader_names[8] = {};
 
@@ -184,19 +195,22 @@ namespace xe_render
             shader_res |= device->create_shader(shaders_dir + std::string("simple2d.vs"), std::string(shaders_dir + "simple2d.vs").c_str(), &simple_shader);
         }*/
 
-        bool32 res = device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
-        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);       
-        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
-        res = device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/color.fs", &color_shader);
-        res = device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
-        res = device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
-        res = device->create_shader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
-        res = device->create_shader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
-        res = device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
+        bool32 res = graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
+        res = graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
+        res = graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
+        res = graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
+        res = graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
+        res = graphics_device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
+        res = graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
+        res = graphics_device->create_shader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
+        res = graphics_device->create_shader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
+        res = graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
+        res = graphics_device->create_shader("shaders/glsl/pbr.vs", "shaders/glsl/pbr.fs", &pbr);
         
 #endif
 
-        shaders["simple2d"] = simple_shader;        
+        shaders["simple2d"] = simple_shader;
+        shaders["simple_tex"] = simple_texture;
         shaders["base3d"] = model_shader;
         shaders["gc"] = gamma_correction_shader;
         shaders["text"] = text_shader;
@@ -205,20 +219,49 @@ namespace xe_render
         shaders["shadow_map"] = shadow_map_shader;
         shaders["shadow_depth"] = shadow_map_depth_shader;
         shaders["post_proc"] = post_proc_shader;
-
+        shaders["pbr"] = pbr;
+        
         if (!res)
         {
             xe_utility::error("loading shader");
             return false;
         }
     
-        xe_utility::info("Shaders was loaded!!!");
+        xe_utility::info("Shaders loaded!!!");
+        return true;
+    }
+
+    bool32 load_free_textures()
+    {
+        texture2D wood_texture = {};
+        texture2D water_texture = {};
+
+        bool32 loaded = graphics_device->create_texture2D("assets/get.png", &wood_texture);
+        
+        graphics_device->create_texture2D("assets/water-texture.jpg", &water_texture);
+
+        if (!loaded)
+        {
+            xe_utility::error("Failed to load free texture");
+            return false;
+        }
+
+        textures["wood"] = wood_texture;
+        textures["water"] = water_texture;
+
+        xe_utility::info("Free textures loaded!!!");
         return true;
     }
 
     void clear()
     {
+        // @Clear destroy free textures
 
+        std::map<const char*, xe_graphics::texture2D>::iterator it = textures.begin();
+        for (uint32 i = 0; i < textures.size(); ++i)
+        {
+            graphics_device->destroy_texture2D(&it->second);
+        }
     }
 
     xe_ecs::camera2d_component& get_camera2D() 
@@ -254,6 +297,11 @@ namespace xe_render
     {
         return &shaders[name];
     }
+
+    xe_graphics::texture2D *get_texture2D_resource(const char *name)
+    {
+        return &textures[name];
+    }
     
     bool32 create_mesh(xe_assets::mesh *meh)
     {
@@ -281,7 +329,7 @@ namespace xe_render
                  -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
         };
 
-        unsigned int indices[] = 
+        uint32 indices[] = 
         {
             0, 1, 3,
             1, 2, 3
@@ -291,12 +339,12 @@ namespace xe_render
         int indices_size = sizeof(indices) / sizeof(indices[0]);
 
         q->vertex_array = new xe_graphics::vertex_array;
-        q->vertex_buffer = new xe_graphics::vertex_buffer;
-        q->index_buffer = new xe_graphics::index_buffer;
+        q->vertex_array->buffers.push_back(new xe_graphics::vertex_buffer);
+        q->vertex_array->ib = new xe_graphics::index_buffer;
         
         graphics_device->create_vertex_array(q->vertex_array);
-        graphics_device->create_vertex_buffer(vertices, vertex_size, DRAW_TYPE::STATIC, q->vertex_buffer);
-        graphics_device->create_index_buffer(indices, indices_size, q->index_buffer);
+        graphics_device->create_vertex_buffer(vertices, vertex_size, DRAW_TYPE::STATIC, q->vertex_array->buffers[0]);
+        graphics_device->create_index_buffer(indices, indices_size, q->vertex_array->ib);
         
         using namespace xe_graphics;
 
@@ -309,9 +357,9 @@ namespace xe_render
         };
 
         graphics_device->create_buffer_layout(init_list, &buffer_layout);
-        graphics_device->set_vertex_buffer_layout(q->vertex_buffer, &buffer_layout);        
-        graphics_device->add_vertex_buffer(q->vertex_array, q->vertex_buffer);
-        graphics_device->set_index_buffer(q->vertex_array, q->index_buffer);
+        graphics_device->set_vertex_buffer_layout(q->vertex_array->buffers[0], &buffer_layout);        
+        graphics_device->add_vertex_buffer(q->vertex_array, q->vertex_array->buffers[0]);
+        graphics_device->set_index_buffer(q->vertex_array, q->vertex_array->ib);
         
         return true;
     }
@@ -425,8 +473,6 @@ namespace xe_render
                 graphics_device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap_texture->desc.width, cubemap_texture->desc.height, GL_RGB, GL_RGB, texture_data);
             else
                 xe_core::delete_data(texture_data);
-           
-            //cube->face_textures.push_back(cubemap_texture);
         }
 
         graphics_device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -588,6 +634,101 @@ namespace xe_render
 
             graphics_device->check_framebuffer();
         }
+
+        return true;
+    }
+
+    bool32 create_sphere(xe_graphics::sphere *sphre)
+    {        
+        sphre->vertex_array = new xe_graphics::vertex_array();
+        sphre->vertex_array->buffers.push_back(new xe_graphics::vertex_buffer());
+        sphre->vertex_array->ib = new xe_graphics::index_buffer();
+
+        std::vector<glm::vec3> positions;
+        std::vector<glm::vec2> uv;
+        std::vector<glm::vec3> normals;
+        std::vector<uint32> indices;
+
+        for (uint32 y = 0; y <= 64; ++y)
+        {
+            for (uint32 x = 0; x <= 64; ++x)
+            {
+                real32 xSegment = (real32)x / (real32)64;
+                real32 ySegment = (real32)y / (real32)64;
+                real32 xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                real32 yPos = std::cos(ySegment * PI);
+                real32 zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
+                positions.push_back(glm::vec3(xPos, yPos, zPos));
+                uv.push_back(glm::vec2(xSegment, ySegment));
+                normals.push_back(glm::vec3(xPos, yPos, zPos));
+            }
+        }
+
+        bool32 oddRow = false;
+        for (int y = 0; y < 64; ++y)
+        {
+            if (!oddRow)
+            {
+                for (int x = 0; x <= 64; ++x)
+                {
+                    indices.push_back(y       * (64 + 1) + x);
+                    indices.push_back((y + 1) * (64 + 1) + x);
+                }
+            }
+            else
+            {
+                for (int x = 64; x >= 0; --x)
+                {
+                    indices.push_back((y + 1) * (64 + 1) + x);
+                    indices.push_back(y       * (64 + 1) + x);
+                }
+            }
+            oddRow = !oddRow;
+        }
+        
+        std::vector<real32> data;
+        for (int i = 0; i < positions.size(); ++i)
+        {
+            data.push_back(positions[i].x);
+            data.push_back(positions[i].y);
+            data.push_back(positions[i].z);
+
+            if (uv.size() > 0)
+            {
+                data.push_back(uv[i].x);
+                data.push_back(uv[i].y);
+            }
+
+            if (normals.size() > 0)
+            {
+                data.push_back(normals[i].x);
+                data.push_back(normals[i].y);
+                data.push_back(normals[i].z);
+            }
+        }
+
+        graphics_device->create_vertex_array(sphre->vertex_array);
+        graphics_device->bind_vertex_array(sphre->vertex_array);
+
+        graphics_device->create_vertex_buffer(&data[0], data.size(), DRAW_TYPE::STATIC, sphre->vertex_array->buffers[0]);
+        graphics_device->create_index_buffer(&indices[0], indices.size(), sphre->vertex_array->ib);
+
+        buffer_layout buffer_layout = {};
+
+        std::initializer_list<xe_graphics::buffer_element> init_list =
+        {
+            { "aPos",       ElementType::Float3, },
+            { "aUV",        ElementType::Float2, },
+            { "aNormal",    ElementType::Float3, }
+        };
+
+        graphics_device->create_buffer_layout(init_list, &buffer_layout);
+        graphics_device->set_vertex_buffer_layout(sphre->vertex_array->buffers[0], &buffer_layout);
+        graphics_device->add_vertex_buffer(sphre->vertex_array, sphre->vertex_array->buffers[0]);
+        graphics_device->set_index_buffer(sphre->vertex_array, sphre->vertex_array->ib);
+
+        sphre->vertex_array->ib->count = indices.size();
 
         return true;
     }
@@ -792,8 +933,8 @@ namespace xe_render
         graphics_device->set_mat4("model", model_matrix, shd);
        
         //graphics_device->set_vec3("dir_light_color", glm::vec3(1.0, 0.0, 0.0), shd);
-        //graphics_device->set_vec3("light_pos", glm::vec3(4.0, 4.0, 0.0), shd);
-        //graphics_device->set_vec3("cam_pos", camera.pos, shd);
+        graphics_device->set_vec3("light_pos", glm::vec3(4.0, 4.0, 0.0), shd);
+        graphics_device->set_vec3("cam_pos", camera.pos, shd);
 
         if (enable_shadows)
         {
@@ -840,7 +981,7 @@ namespace xe_render
     {
     }
 
-    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, XEngine::PerspectiveCamera *cam)
+    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd)
     {
         xe_graphics::graphics_device *device = xe_render::get_device();
 
@@ -849,8 +990,10 @@ namespace xe_render
         model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, -5.0f, -10.0f));
         model_matrix = glm::scale(model_matrix, glm::vec3(0.4f, 0.4f, 0.4f));
         
-        glm::mat4 view_matrix = cam->getViewMatrix();
-        glm::mat4 proj_matrix = cam->getProjectionMatrix();
+        xe_ecs::camera3d_component cam = get_camera3D();
+
+        glm::mat4 view_matrix = cam.get_view_matrix();
+        glm::mat4 proj_matrix = cam.get_projection_matrix();
 
         glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
 
@@ -889,6 +1032,9 @@ namespace xe_render
         case ENTITY_TYPE::ENT_ANIMATED_OBJECT:
             
             break;
+        case ENTITY_TYPE::ENT_PRIMITIVE_OBJECT:
+            draw_ent_primitive(ent);
+            break;
         default:
             xe_utility::debug("Entity type not declared!");
             break;
@@ -914,7 +1060,7 @@ namespace xe_render
 
         transform_component *transform = ent->find_component<transform_component>();
 
-        if (transform != nullptr)
+        if (transform)
         {
             device->bind_shader(shader_to_draw);
 
@@ -960,7 +1106,7 @@ namespace xe_render
 
         transform_component *transform = ent->find_component<transform_component>();
 
-        if (transform != nullptr)
+        if (transform)
         {           
             device->bind_shader(shader_to_draw);
 
@@ -980,6 +1126,33 @@ namespace xe_render
             }
 
             device->unbind_shader();
+        }
+    }
+
+    void draw_ent_primitive(xe_ecs::entity *ent)
+    {
+        using namespace xe_ecs;
+        sphere_component *sphere = ent->find_component<sphere_component>();
+
+        if (sphere)
+        {
+            transform_component *transform = ent->find_component<transform_component>();
+            shader *shd = xe_render::get_shader("color");
+
+            graphics_device->bind_shader(shd);
+            graphics_device->set_vec3("color", default_cube_color, shd);
+
+            apply_transform(transform, shd);
+
+            texture2D *wood_tex = xe_render::get_texture2D_resource("wood");
+
+            if (wood_tex)
+            {
+                graphics_device->bind_shader(shd);
+                graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, wood_tex);
+            }
+
+            draw_sphere();
         }
     }
 
@@ -1015,8 +1188,25 @@ namespace xe_render
        // {
             glBindVertexArray(msh->vao);
             device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
-            device->unbind_vertex_array();
        // }
+    }
+
+    void draw_sphere(xe_graphics::texture2D *texture_diff)
+    {
+        if (texture_diff)
+            graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture_diff);
+        draw_sphere();
+    }
+
+    void draw_sphere()
+    {
+        if (!sphere_base.vertex_array)
+        {            
+            create_sphere(&sphere_base);
+        }
+
+        graphics_device->bind_vertex_array(sphere_base.vertex_array);
+        graphics_device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, sphere_base.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
     }
 }
 

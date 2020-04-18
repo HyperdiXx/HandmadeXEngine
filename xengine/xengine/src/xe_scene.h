@@ -41,5 +41,6 @@ namespace xe_scene
     scene create_scene(const char *name);
    
     // @Rework init by parsing 
-    void load_test_scene(application::application_state *st, scene *sc);
+    void load_test_scene(scene *sc);
+    void load_spheres_scene(scene *sc);
 }

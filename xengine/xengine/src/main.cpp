@@ -456,15 +456,17 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 #endif
             ImGuiIO &io = ImGui::GetIO();
 
-            application::application_state app_state = {};
-            application::load_state(&app_state);
+            application::load_state();
 
-            xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
-           
-            xe_scene::load_test_scene(&app_state, &new_scene);
+            xe_scene::scene new_scene = xe_scene::create_scene("TestScene");           
+            xe_scene::scene pbr_scene = xe_scene::create_scene("PBRScene"); 
 
-            app_state.active_scene = new_scene;
+            xe_scene::load_test_scene(&new_scene);
+            xe_scene::load_spheres_scene(&pbr_scene);
 
+            application::application_state *current_app_state = application::get_app_state();
+            application::set_active_scene(&pbr_scene);
+          
             //------------------------------------------------------------//
 
             render_pass *render_pass_2D = new render_pass2D();
@@ -474,19 +476,18 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
             render_pass3D *main_render_pass = new render_pass3D();
             main_render_pass->init();
-            main_render_pass->set_scene(&app_state.active_scene);
+            main_render_pass->set_scene(&current_app_state->active_scene);
 
             gamma_correction_pass gamma_correction = {};
             gamma_correction.init();
 
             shadow_map_pass shadow_pass = {};
             shadow_pass.init();
-            shadow_pass.set_scene(&app_state.active_scene);
+            shadow_pass.set_scene(&current_app_state->active_scene);
 
             device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
   
             using namespace xe_render;
-
 
             while (is_open)
             {
@@ -531,6 +532,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 device->end_execution();
             }
         }
+
+        xe_render::clear();
 
         win32_imgui_shutdown();
         wglMakeCurrent(0, 0);

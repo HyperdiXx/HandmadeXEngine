@@ -62,13 +62,19 @@ namespace xe_core
     {
         stbi_set_flip_vertically_on_load(flip);
         stbi_uc* image = stbi_load(path, &width, &height, &channels, flag);
-       
         return image;
     }
 
-    void delete_data(unsigned char *d)
+    float *load_texturef_from_disc(const char * path, int & width, int & height, int & channels, int flag, bool32 flip)
     {
-        if(d != nullptr)
-            stbi_image_free(d);
+        stbi_set_flip_vertically_on_load(flip);
+        real32 *image = stbi_loadf(path, &width, &height, &channels, flag);
+        return image;
+    }
+
+    void delete_data(void *data)
+    {
+        if(data != nullptr)
+            stbi_image_free(data);
     }
 }

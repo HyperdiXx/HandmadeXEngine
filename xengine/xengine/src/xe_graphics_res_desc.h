@@ -72,8 +72,8 @@ namespace xe_graphics
     
     enum TEXTURE_DIMENSION
     {
-        TEXTURE_1D,
         TEXTURE_2D,
+        TEXTURE_1D,
         TEXTURE_3D
     };
 

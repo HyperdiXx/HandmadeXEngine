@@ -89,8 +89,8 @@ namespace xe_graphics
         void set_texture_wrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler) override;
         void set_texture_sampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler) override;
 
-        void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, unsigned char* image) override;
-        void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, unsigned char* image) override;
+        void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image) override;
+        void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image) override;
         void generate_texture_mipmap(TEXTURE_TYPE texture_t) override;
 
         void destroy_texture2D(texture2D *tex) override;

@@ -322,9 +322,14 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
             WINDOW_HEIGHT_SIZE = HIWORD(l_param);
             
             xe_graphics::graphics_device *device = xe_render::get_device();
-            if(device != nullptr)
+            if (device)
+            {
                 device->set_viewport(0, 0, WINDOW_WIDTH_SIZE, WINDOW_HEIGHT_SIZE);
-            
+                xe_graphics::viewport &vp_state = device->get_viewport();
+                vp_state.width = WINDOW_WIDTH_SIZE;
+                vp_state.height = WINDOW_HEIGHT_SIZE;
+            }
+                
             OutputDebugStringA("Resizing window\n");
         } break;
         case WM_ACTIVATEAPP:
@@ -504,11 +509,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
                 //shadow_pass.render();
 
-                viewport vp_state = device->get_viewport();
-
-                device->set_viewport(0, 0, vp_state.width, vp_state.height);
-                device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+                //viewport vp_state = device->get_viewport();
+                //device->set_viewport(0, 0, vp_state.width, vp_state.height);
+                //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 //shadow_pass.bind_depth_texture();
 
                 main_render_pass->update(io.DeltaTime);

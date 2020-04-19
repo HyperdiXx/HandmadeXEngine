@@ -78,6 +78,7 @@ void xe_graphics::render_pass3D::init()
     
     shader *model_shader = xe_render::get_shader("base3d");
     shader *color_shader = xe_render::get_shader("color");
+    shader *pbr = xe_render::get_shader("pbr");
 
     device->bind_shader(model_shader);
     device->set_int("tex_diff", 0, model_shader);
@@ -97,6 +98,10 @@ void xe_graphics::render_pass3D::init()
 
     device->check_framebuffer();
     device->unbind_framebuffer();
+
+
+
+
 }
 
 void xe_graphics::render_pass3D::clear()
@@ -119,7 +124,7 @@ void xe_graphics::render_pass3D::render()
     viewport vp = device->get_viewport();
 
     device->bind_framebuffer(&fbo);
-    device->set_viewport(0, 0, 1280, 720);
+    device->set_viewport(0, 0, vp.width, vp.height);
     device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     device->enable(GL_DEPTH_TEST);
@@ -146,7 +151,7 @@ void xe_graphics::render_pass3D::render()
     device->disable(GL_DEPTH_TEST);
     device->unbind_framebuffer();
 
-    device->set_viewport(0, 0, vp.width, vp.height);
+    //device->set_viewport(0, 0, vp.width, vp.height);
 }
 
 void xe_graphics::render_pass3D::update(real32 dt)
@@ -204,6 +209,8 @@ void xe_graphics::gamma_correction_pass::init()
 {
     graphics_device *device = xe_render::get_device();
     gmshd = xe_render::get_shader("gc");
+    device->bind_shader(gmshd);
+    device->set_int("tex_diff", 0, gmshd);
 }
 
 void xe_graphics::gamma_correction_pass::clear()
@@ -220,11 +227,10 @@ void xe_graphics::gamma_correction_pass::render()
 {
     graphics_device *device = xe_render::get_device();
 
+    device->bind_shader(gmshd);
+
     if(texture != nullptr)
         device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);
-
-    device->bind_shader(gmshd);
-    device->set_int("tex_diff", 0, gmshd);
     
     xe_render::draw_full_quad();
 
@@ -271,8 +277,9 @@ void xe_graphics::shadow_map_pass::render()
 {
     graphics_device *device = xe_render::get_device();
     
-    device->set_viewport(0, 0, shadow->w, shadow->h);
     device->bind_framebuffer(&shadow->depth_fbo);
+    device->set_viewport(0, 0, shadow->w, shadow->h);
+
     device->clear(GL_DEPTH_BUFFER_BIT);
 
     xe_render::apply_shadow_map(shadow);
@@ -292,6 +299,7 @@ void xe_graphics::shadow_map_pass::render()
     }
         
     device->unbind_framebuffer();
+    
 }
 
 void xe_graphics::shadow_map_pass::update(real32 dt)

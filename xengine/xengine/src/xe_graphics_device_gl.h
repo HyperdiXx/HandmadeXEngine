@@ -67,6 +67,8 @@ namespace xe_graphics
         bool32 create_texture(texture2D *texture) override;
         bool32 create_texture(uint32 count, texture2D *texture) override;
         bool32 create_texture2D(const char *path, texture2D *texture) override;
+        bool32 create_texture2D(const char *path, TEXTURE_TYPE tex_type, texture2D *texture) override;
+        bool32 create_texture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, texture2D *texture) override;
         bool32 create_texture2D(const char *path, const char *dir, texture2D *texture) override;
         bool32 create_texture2D(uint32 width, uint32 height, texture2D* texture) override;
         bool32 create_texture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, texture2D* texture) override;
@@ -85,8 +87,8 @@ namespace xe_graphics
         void set_texture_wrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler) override;
         void set_texture_sampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler) override;
 
-        void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, unsigned char* image) override;
-        void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, unsigned char* image) override;
+        void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image) override;
+        void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image) override;
         void generate_texture_mipmap(TEXTURE_TYPE texture_t) override;
 
         void destroy_texture2D(texture2D *tex) override;

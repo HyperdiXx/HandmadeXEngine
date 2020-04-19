@@ -74,6 +74,8 @@ namespace xe_graphics
         virtual bool32 create_texture(texture2D *texture) = 0;
         virtual bool32 create_texture(uint32 count, texture2D *texture) = 0;
         virtual bool32 create_texture2D(const char *path, texture2D* texture) = 0;
+        virtual bool32 create_texture2D(const char *path, TEXTURE_TYPE tex_type, texture2D *texture) = 0;
+        virtual bool32 create_texture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, texture2D *texture) = 0;
         virtual bool32 create_texture2D(const char *path, const char* dir, texture2D* texture) = 0;
         virtual bool32 create_texture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, texture2D* texture) = 0;
         virtual bool32 create_texture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, texture2D* texture) = 0;
@@ -92,8 +94,8 @@ namespace xe_graphics
         virtual void set_texture_wrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler) = 0;
         virtual void set_texture_sampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler) = 0;
 
-        virtual void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, unsigned char* image) = 0;
-        virtual void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, unsigned char* image) = 0;
+        virtual void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image) = 0;
+        virtual void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image) = 0;
         virtual void generate_texture_mipmap(TEXTURE_TYPE texture_t) = 0;
         
         virtual void destroy_texture2D(texture2D *tex) = 0;
@@ -107,7 +109,7 @@ namespace xe_graphics
 
         inline bool32 get_is_fullscreen() const { return fullscreen; }
         inline bool32 get_is_vsync() const { return vsync; }
-        inline const viewport& get_viewport() { return vp; }
+        inline viewport& get_viewport() { return vp; }
         
     protected:
         bool32 fullscreen = false;

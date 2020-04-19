@@ -546,11 +546,11 @@ namespace xe_graphics
     {
     }
 
-    void graphics_device_dx11::load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, unsigned char * image)
+    void graphics_device_dx11::load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image)
     {
     }
 
-    void graphics_device_dx11::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, unsigned char * image)
+    void graphics_device_dx11::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image)
     {
     }
 

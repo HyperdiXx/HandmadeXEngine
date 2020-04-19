@@ -86,6 +86,7 @@ namespace xe_graphics
         {
         case COLOR:
         case DEPTH:
+        case HDR:
             res |= GL_TEXTURE_2D;
             break;
         case CUBEMAP:
@@ -640,6 +641,16 @@ namespace xe_graphics
         return create_texture2D(path, nullptr, texture);
     }
 
+    bool32 graphics_device_gl::create_texture2D(const char *path, TEXTURE_TYPE tex_type, texture2D *texture)
+    {
+        return create_texture2D(path, nullptr, tex_type, false, texture);
+    }
+
+    bool32 graphics_device_gl::create_texture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, texture2D *texture)
+    {
+        return create_texture2D(path, nullptr, tex_type, 0, gen_mip, texture);
+    }
+
     bool32 graphics_device_gl::create_texture2D(const char *path, const char *dir, texture2D *texture)
     {
         return create_texture2D(path, dir, TEXTURE_TYPE::COLOR, true, texture);
@@ -661,46 +672,93 @@ namespace xe_graphics
 
         int channels = 0;
 
-        unsigned char *image = xe_core::load_texture_from_disc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
+        void *image = nullptr;
 
+        switch (type)
+        {
+        case xe_graphics::COLOR:
+        case xe_graphics::GREYSCALE:
+        case xe_graphics::LUT:
+        case xe_graphics::CUBEMAP:
+        case xe_graphics::DEPTH:
+            image = xe_core::load_texture_from_disc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
+            break;
+        case xe_graphics::HDR:
+            image = xe_core::load_texturef_from_disc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
+            break;
+        default:
+            break;
+        }
+        
         if (!image)
         {
-            xe_utility::error("Failed to load texture2D: " + std::string(path));
+            xe_utility::error("Failed to load texture: " + std::string(path));
             return false;
         }
 
         GLenum internal_format = 0, data_format = 0;
-        if (channels == 4)
+        if (channels == 1)
         {
-            internal_format = GL_RGBA8;
-            data_format = GL_RGBA;
+            internal_format = GL_RED;
+            data_format = GL_RED;
         }
         else if (channels == 3)
         {
             internal_format = GL_RGB8;
             data_format = GL_RGB;
         }
+        else if (channels == 4)
+        {
+            internal_format = GL_RGBA8;
+            data_format = GL_RGBA;
+        }
 
         create_texture(texture);
         bind_texture(type, texture);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-        if (type == TEXTURE_TYPE::CUBEMAP)
+        switch (type)
         {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
-        }
-        else
-        {
+        case xe_graphics::COLOR:
+        case xe_graphics::LUT:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
             load_texture_gpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
-            //glTexImage2D(gl_texture_type, 0, internal_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
+
+            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+
+            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+
+            break;
+        case xe_graphics::GREYSCALE:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+            load_texture_gpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
+            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+
+            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+            break;
+        case xe_graphics::HDR:
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
+            
+            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+            break;
+        case xe_graphics::CUBEMAP:
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
+            break;
+        case xe_graphics::DEPTH:
+            break;
+        default:
+            break;
         }
 
-        set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
-        set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
-
-        set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
-        set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
 
         if (generate_mipmap)
             generate_texture_mipmap(type);
@@ -708,7 +766,6 @@ namespace xe_graphics
         unbind_texture(type);
 
         xe_core::delete_data(image);
-
 
         return true;
     }
@@ -936,14 +993,14 @@ namespace xe_graphics
         glTexParameteri(gl_texture_type, gl_texture_filter, gl_texture_sampling);
     }
 
-    void graphics_device_gl::load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, unsigned char *image)
+    void graphics_device_gl::load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void *image)
     {
         uint32 gl_texture_type = convert_texture_type_gl(texture_t);
         glTexImage2D(gl_texture_type, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
     }
 
     // @Special cubemap
-    void graphics_device_gl::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, unsigned char *image)
+    void graphics_device_gl::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void *image)
     {
         glTexImage2D(texture_t, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
     }

@@ -78,6 +78,20 @@ namespace xe_render
         graphics_device->bind_shader(texture_shader);
         graphics_device->set_int("tex_diff", 0, texture_shader);
 
+        shader *pbr = get_shader("pbr");
+
+        graphics_device->bind_shader(pbr);
+        graphics_device->set_int("irradiance_map", 0, pbr);
+        graphics_device->set_int("prefilter_map", 1, pbr);
+        graphics_device->set_int("brdf_LUT", 2, pbr);
+        graphics_device->set_int("albedo_map", 3, pbr);
+        graphics_device->set_int("normal_map", 4, pbr);
+        graphics_device->set_int("metallic_map", 5, pbr);
+        graphics_device->set_int("roughness_map", 6, pbr);
+        graphics_device->set_int("ao_map", 7, pbr);
+        
+
+
         return true;
     }
 
@@ -110,7 +124,7 @@ namespace xe_render
             graphics_device->create_texture(&texture_symbol);
             graphics_device->bind_texture(TEXTURE_TYPE::COLOR, &texture_symbol);
             
-            graphics_device->load_texture_gpu(TEXTURE_TYPE::COLOR, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_RED, face->glyph->bitmap.buffer);
+            graphics_device->load_texture_gpu(TEXTURE_TYPE::COLOR, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_RED, (void**)face->glyph->bitmap.buffer);
 
             graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
             graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -179,6 +193,11 @@ namespace xe_render
         xe_graphics::shader shadow_map_depth_shader = {};
         xe_graphics::shader pbr = {};
         xe_graphics::shader simple_texture = {};
+        xe_graphics::shader background_shader = {};
+        xe_graphics::shader brdf_shader = {};
+        xe_graphics::shader prefilter_shader = {};
+        xe_graphics::shader equirectangular_cubemap = {};
+        xe_graphics::shader irradiance_shader = {};
 
         std::string shader_names[8] = {};
 
@@ -196,17 +215,22 @@ namespace xe_render
         }*/
 
         bool32 res = graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
-        res = graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
-        res = graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
-        res = graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
-        res = graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
-        res = graphics_device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
-        res = graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
-        res = graphics_device->create_shader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
-        res = graphics_device->create_shader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
-        res = graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
-        res = graphics_device->create_shader("shaders/glsl/pbr.vs", "shaders/glsl/pbr.fs", &pbr);
-        
+        res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
+        res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
+        res |= graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
+        res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
+        res |= graphics_device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
+        res |= graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
+        res |= graphics_device->create_shader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
+        res |= graphics_device->create_shader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
+        res |= graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
+        res |= graphics_device->create_shader("shaders/glsl/pbr/pbr.vs", "shaders/glsl/pbr/pbr.fs", &pbr);
+        res |= graphics_device->create_shader("shaders/glsl/pbr/background.vs", "shaders/glsl/pbr/background.fs", &background_shader);
+        res |= graphics_device->create_shader("shaders/glsl/pbr/brdf.vs", "shaders/glsl/pbr/brdf.fs", &brdf_shader);
+        res |= graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
+        res |= graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
+        res |= graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
+
 #endif
 
         shaders["simple2d"] = simple_shader;
@@ -220,7 +244,12 @@ namespace xe_render
         shaders["shadow_depth"] = shadow_map_depth_shader;
         shaders["post_proc"] = post_proc_shader;
         shaders["pbr"] = pbr;
-        
+        shaders["background"] = background_shader;
+        shaders["brdf"] = brdf_shader;
+        shaders["prefilter"] = prefilter_shader;
+        shaders["equirect"] = equirectangular_cubemap;
+        shaders["irradiance"] = irradiance_shader;
+       
         if (!res)
         {
             xe_utility::error("loading shader");
@@ -236,8 +265,74 @@ namespace xe_render
         texture2D wood_texture = {};
         texture2D water_texture = {};
 
-        bool32 loaded = graphics_device->create_texture2D("assets/get.png", &wood_texture);
-        
+        // pbr
+
+        texture2D albedo_iron = {};
+        texture2D normal_iron = {};
+        texture2D metallic_iron = {};
+        texture2D roughness_iron = {};
+        texture2D ao_iron = {}; 
+
+        texture2D albedo_plastic = {};
+        texture2D normal_plastic = {};
+        texture2D metallic_plastic = {};
+        texture2D roughness_plastic = {};
+        texture2D ao_plastic = {};
+
+        texture2D albedo_grass = {};
+        texture2D normal_grass = {};
+        texture2D metallic_grass = {};
+        texture2D roughness_grass = {};
+        texture2D ao_grass = {};
+
+        texture2D albedo_gold = {};
+        texture2D normal_gold = {};
+        texture2D metallic_gold = {};
+        texture2D roughness_gold = {};
+        texture2D ao_gold = {};
+
+        texture2D albedo_wall = {};
+        texture2D normal_wall = {};
+        texture2D metallic_wall = {};
+        texture2D roughness_wall = {};
+        texture2D ao_wall = {};
+
+        // hdr env map
+        texture2D hdr = {};
+
+        graphics_device->create_texture2D("assets/pbr/rusted_iron/albedo.png", &albedo_iron);
+        graphics_device->create_texture2D("assets/pbr/rusted_iron/normal.png", &normal_iron);
+        graphics_device->create_texture2D("assets/pbr/rusted_iron/metallic.png", &metallic_iron);
+        graphics_device->create_texture2D("assets/pbr/rusted_iron/roughness.png", &roughness_iron);
+        graphics_device->create_texture2D("assets/pbr/rusted_iron/ao.png", &ao_iron);        
+       
+        graphics_device->create_texture2D("assets/pbr/grass/albedo.png", &albedo_grass);
+        graphics_device->create_texture2D("assets/pbr/grass/normal.png", &normal_grass);
+        graphics_device->create_texture2D("assets/pbr/grass/metallic.png", &metallic_grass);
+        graphics_device->create_texture2D("assets/pbr/grass/roughness.png", &roughness_grass);
+        graphics_device->create_texture2D("assets/pbr/grass/ao.png", &ao_grass);
+
+        graphics_device->create_texture2D("assets/pbr/wall/albedo.png", &albedo_wall);
+        graphics_device->create_texture2D("assets/pbr/wall/normal.png", &normal_wall);
+        graphics_device->create_texture2D("assets/pbr/wall/metallic.png", &metallic_wall);
+        graphics_device->create_texture2D("assets/pbr/wall/roughness.png", &roughness_wall);
+        graphics_device->create_texture2D("assets/pbr/wall/ao.png", &ao_wall);
+
+        graphics_device->create_texture2D("assets/pbr/plastic/albedo.png", &albedo_plastic);
+        graphics_device->create_texture2D("assets/pbr/plastic/normal.png", &normal_plastic);
+        graphics_device->create_texture2D("assets/pbr/plastic/metallic.png", &metallic_plastic);
+        graphics_device->create_texture2D("assets/pbr/plastic/roughness.png", &roughness_plastic);
+        graphics_device->create_texture2D("assets/pbr/plastic/ao.png", &ao_plastic);
+
+        graphics_device->create_texture2D("assets/pbr/gold/albedo.png", &albedo_gold);
+        graphics_device->create_texture2D("assets/pbr/gold/normal.png", &normal_gold);
+        graphics_device->create_texture2D("assets/pbr/gold/metallic.png", &metallic_gold);
+        graphics_device->create_texture2D("assets/pbr/gold/roughness.png", &roughness_gold);
+        graphics_device->create_texture2D("assets/pbr/gold/ao.png", &ao_gold);
+
+        graphics_device->create_texture2D("assets/hdr/newport_loft.hdr", TEXTURE_TYPE::HDR, false, &hdr);
+
+        bool32 loaded = graphics_device->create_texture2D("assets/get.png", &wood_texture);        
         graphics_device->create_texture2D("assets/water-texture.jpg", &water_texture);
 
         if (!loaded)
@@ -248,6 +343,37 @@ namespace xe_render
 
         textures["wood"] = wood_texture;
         textures["water"] = water_texture;
+
+        textures["albedo_iron"] = albedo_iron;
+        textures["normal_iron"] = normal_iron;
+        textures["metallic_iron"] = metallic_iron;
+        textures["roughness_iron"] = roughness_iron;
+        textures["ao_iron"] = ao_iron;
+
+        textures["albedo_grass"] = albedo_grass;
+        textures["normal_grass"] = normal_grass;
+        textures["metallic_grass"] = metallic_grass;
+        textures["roughness_grass"] = roughness_grass;
+        textures["ao_grass"] = ao_grass;
+
+        textures["albedo_wall"] = albedo_wall;
+        textures["normal_wall"] = normal_wall;
+        textures["metallic_wall"] = metallic_wall;
+        textures["roughness_wall"] = roughness_wall;
+        textures["ao_wall"] = ao_wall;
+
+        textures["albedo_gold"] = albedo_gold;
+        textures["normal_gold"] = normal_gold;
+        textures["metallic_gold"] = metallic_gold;
+        textures["roughness_gold"] = roughness_gold;
+        textures["ao_gold"] = ao_gold;
+
+        textures["albedo_plastic"] = albedo_plastic;
+        textures["normal_plastic"] = normal_plastic;
+        textures["metallic_plastic"] = metallic_plastic;
+        textures["roughness_plastic"] = roughness_plastic;
+        textures["ao_plastic"] = ao_plastic;
+
 
         xe_utility::info("Free textures loaded!!!");
         return true;
@@ -309,8 +435,7 @@ namespace xe_render
     }
 
     bool32 create_cubemap(std::vector<const char*> paths, xe_graphics::cubemap *cube)
-    {
-        
+    {        
         for (int i = 0; i < paths.size(); ++i)
         {
             graphics_device->create_texture2D(paths[i], cube->face_textures[i]);
@@ -468,11 +593,11 @@ namespace xe_render
         {
             int channels = 0;
             std::string final_path = "assets/skybox/" + std::string(skybox_faces[i]);
-            unsigned char *texture_data = xe_core::load_texture_from_disc(final_path.c_str(), cubemap_texture->desc.width, cubemap_texture->desc.height, channels, 0, false);
-            if (texture_data)
-                graphics_device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap_texture->desc.width, cubemap_texture->desc.height, GL_RGB, GL_RGB, texture_data);
-            else
-                xe_core::delete_data(texture_data);
+            void *texture_data = xe_core::load_texture_from_disc(final_path.c_str(), cubemap_texture->desc.width, cubemap_texture->desc.height, channels, 0, false);
+            
+            graphics_device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap_texture->desc.width, cubemap_texture->desc.height, GL_RGB, GL_RGB, texture_data);
+       
+            xe_core::delete_data(texture_data);
         }
 
         graphics_device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);

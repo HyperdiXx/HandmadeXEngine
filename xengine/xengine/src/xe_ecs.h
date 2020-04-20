@@ -159,6 +159,7 @@ namespace xe_ecs
     {
     public:
         xe_graphics::sphere *sphere_mesh;
+        xe_graphics::texture2D *diffuse;
     };
 
     class mesh_component : public component

@@ -96,16 +96,11 @@ namespace xe_scene
     void load_spheres_scene(scene *sc)
     {
         //@ PBR scene
-
-        //xe_graphics::sphere *mesh_sphere = new xe_graphics::sphere();
-
-        //bool32 created = xe_render::create_sphere(mesh_sphere);
-
         xe_ecs::entity *sphere_entity = application::get_entity();
         sphere_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_PRIMITIVE_OBJECT);
 
         xe_ecs::sphere_component *sphere_compon = new xe_ecs::sphere_component();
-        //sphere_compon->sphere_mesh = xe_render::;
+        sphere_compon->diffuse = xe_render::get_texture2D_resource("albedo_iron");
 
         xe_ecs::transform_component *trans_component = new xe_ecs::transform_component();
         trans_component->set_translation(0.0f, -4.0f, -5.0f);

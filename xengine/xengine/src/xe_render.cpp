@@ -90,7 +90,10 @@ namespace xe_render
         graphics_device->set_int("roughness_map", 6, pbr);
         graphics_device->set_int("ao_map", 7, pbr);
         
+        shader *equ_to_cubemap = get_shader("equirect");
 
+        graphics_device->bind_shader(equ_to_cubemap);
+        graphics_device->set_int("equirectangular_map", 0, equ_to_cubemap);
 
         return true;
     }
@@ -227,9 +230,9 @@ namespace xe_render
         res |= graphics_device->create_shader("shaders/glsl/pbr/pbr.vs", "shaders/glsl/pbr/pbr.fs", &pbr);
         res |= graphics_device->create_shader("shaders/glsl/pbr/background.vs", "shaders/glsl/pbr/background.fs", &background_shader);
         res |= graphics_device->create_shader("shaders/glsl/pbr/brdf.vs", "shaders/glsl/pbr/brdf.fs", &brdf_shader);
-        res |= graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
-        res |= graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
-        res |= graphics_device->create_shader("shaders/glsl/cube_map.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
+        res |= graphics_device->create_shader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
+        res |= graphics_device->create_shader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
+        res |= graphics_device->create_shader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
 
 #endif
 
@@ -1100,10 +1103,13 @@ namespace xe_render
 
     void apply_spot_light(xe_graphics::shader * shd, xe_ecs::spot_light * directional_light, xe_ecs::transform_component * transform)
     {
+
+
     }
 
     void apply_point_light(xe_graphics::shader * shd, xe_ecs::point_light * directional_light, xe_ecs::transform_component * transform)
     {
+
     }
 
     void draw_model(xe_assets::model *mod, xe_graphics::shader *shd)
@@ -1267,15 +1273,14 @@ namespace xe_render
             graphics_device->bind_shader(shd);
             graphics_device->set_vec3("color", default_cube_color, shd);
 
-            apply_transform(transform, shd);
-
-            texture2D *wood_tex = xe_render::get_texture2D_resource("wood");
-
-            if (wood_tex)
+            if (sphere->diffuse)
             {
+                shd = xe_render::get_shader("simple_tex");
                 graphics_device->bind_shader(shd);
-                graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, wood_tex);
+                graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, sphere->diffuse);
             }
+      
+            apply_transform(transform, shd);
 
             draw_sphere();
         }

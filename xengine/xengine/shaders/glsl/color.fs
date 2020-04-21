@@ -4,6 +4,9 @@ out vec4 frag_color;
 in vec2 UV;
 
 uniform vec3 color;
+uniform bool shadows_enabled;
+uniform vec3 cam_pos;
+uniform vec3 light_pos;
 
 void main()
 {    

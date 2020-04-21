@@ -377,6 +377,7 @@ namespace xe_render
         textures["roughness_plastic"] = roughness_plastic;
         textures["ao_plastic"] = ao_plastic;
 
+        textures["hdr_env"] = hdr;
 
         xe_utility::info("Free textures loaded!!!");
         return true;
@@ -645,7 +646,7 @@ namespace xe_render
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorattach);
 
         graphics_device->bind_framebuffer(&shadow->depth_fbo);
-        graphics_device->set_texture2D(GL_DEPTH_ATTACHMENT, shadow->depth_fbo.depth_texture);
+        graphics_device->set_texture2D_fbo(GL_DEPTH_ATTACHMENT, TEXTURE_TYPE::DEPTH, shadow->depth_fbo.depth_texture);
         graphics_device->set_draw_buffer(GL_NONE);
         graphics_device->set_read_buffer(GL_NONE);
         graphics_device->unbind_framebuffer();
@@ -676,21 +677,14 @@ namespace xe_render
             graphics_device->bind_texture(TEXTURE_TYPE::COLOR, &color_attach[i]);
             graphics_device->load_texture_gpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
 
-            //glBindTexture(GL_TEXTURE_2D, color_attach[i]->id);
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-
             graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
             graphics_device->set_texture_wrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
 
             graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
             graphics_device->set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
-            graphics_device->set_texture2D(GL_COLOR_ATTACHMENT0 + i, &color_attach[i]);
+            graphics_device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0 + i, TEXTURE_TYPE::COLOR, &color_attach[i]);
 
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, &color_attach->desc[i], 0);
         }
 

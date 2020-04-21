@@ -367,8 +367,18 @@ namespace xe_graphics
     {
     }
 
-    void graphics_device_dx11::set_texture2D(uint32 type, texture2D *texture)
+    void graphics_device_dx11::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture)
     {
+
+    }
+
+    void graphics_device_dx11::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture)
+    {
+    }
+
+    void graphics_device_dx11::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D * texture, uint32 mip)
+    {
+
     }
 
     texture2D &graphics_device_dx11::get_texture(uint32 number, const framebuffer *fbo)

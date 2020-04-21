@@ -9,7 +9,7 @@
 
 namespace xe_graphics
 {
-    constexpr uint32 convert_to_gl_type(DRAW_TYPE draw_type)
+    constexpr uint32 convert_draw_type_to_gl_type(DRAW_TYPE draw_type)
     {
         uint32 res = 0;
 
@@ -92,6 +92,8 @@ namespace xe_graphics
         case CUBEMAP:
             res |= GL_TEXTURE_CUBE_MAP;
             break;
+        case CUBEMAP_POSITIVE:
+            res |= GL_TEXTURE_CUBE_MAP_POSITIVE_X;
         default:
             break;
         }
@@ -450,7 +452,7 @@ namespace xe_graphics
         fbo->color_textures.push_back(texture);
         texture2D *color_texture = fbo->color_textures[color_attachment_id];
 
-        set_texture2D(type_of_tex, texture);
+        set_texture2D_fbo(type_of_tex, TEXTURE_TYPE::COLOR, texture);
         fbo->buffers.push_back(type_of_tex);
         glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());
     }
@@ -494,6 +496,12 @@ namespace xe_graphics
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
     }
 
+    void graphics_device_gl::set_depth_buffer_attachment(uint32 w, uint32 h, const framebuffer *fbo)
+    {
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, w, h);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
+    }
+
     texture2D& graphics_device_gl::get_texture(uint32 number, const framebuffer *fbo)
     {
         if (fbo && number >= 0 <= MAX_COLOR_ATT)
@@ -501,9 +509,22 @@ namespace xe_graphics
         // @Add return;
     }
 
-    void graphics_device_gl::set_texture2D(uint32 type, texture2D *texture)
+    void graphics_device_gl::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture)
     {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, type, GL_TEXTURE_2D, texture->id, 0);
+        uint32 tex_t = convert_texture_type_gl(tex_type);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t, texture->id, 0);
+    }
+
+    void graphics_device_gl::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D * texture)
+    {
+        uint32 tex_t = convert_texture_type_gl(tex_type);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, 0);
+    }
+
+    void graphics_device_gl::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D * texture, uint32 mip)
+    {
+        uint32 tex_t = convert_texture_type_gl(tex_type);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, mip);
     }
 
     void graphics_device_gl::check_framebuffer()
@@ -885,7 +906,7 @@ namespace xe_graphics
         glGenBuffers(1, &vb->id);
         glBindBuffer(GL_ARRAY_BUFFER, vb->id);
 
-        uint32 draw_type_gl = convert_to_gl_type(draw_type);
+        uint32 draw_type_gl = convert_draw_type_to_gl_type(draw_type);
 
         glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat), vb->data, draw_type_gl);
 

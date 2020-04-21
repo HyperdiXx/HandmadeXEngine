@@ -1,12 +1,14 @@
 #version 330 core
-out vec2 FragColor;
-in vec2 TexCoords;
+out vec2 frag_color;
+
+in vec2 uv;
 
 const float PI = 3.14159265359;
+
 // ----------------------------------------------------------------------------
 // http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 // efficient VanDerCorpus calculation.
-float RadicalInverse_VdC(uint bits) 
+float radical_inverse_VdC(uint bits) 
 {
      bits = (bits << 16u) | (bits >> 16u);
      bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
@@ -16,18 +18,18 @@ float RadicalInverse_VdC(uint bits)
      return float(bits) * 2.3283064365386963e-10; // / 0x100000000
 }
 
-vec2 Hammersley(uint i, uint N)
+vec2 hammersley(uint i, uint N)
 {
-	return vec2(float(i)/float(N), RadicalInverse_VdC(i));
+	return vec2(float(i) / float(N), radical_inverse_VdC(i));
 }
 
-vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
+vec3 importance_sample_ggx(vec2 Xi, vec3 N, float roughness)
 {
-	float a = roughness*roughness;
+	float a = roughness * roughness;
 	
 	float phi = 2.0 * PI * Xi.x;
 	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
-	float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
+	float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
 	
 	// from spherical coordinates to cartesian coordinates - halfway vector
 	vec3 H;
@@ -44,7 +46,7 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 	return normalize(sampleVec);
 }
 
-float GeometrySchlickGGX(float NdotV, float roughness)
+float geometry_schlick_ggx(float NdotV, float roughness)
 {
     // note that we use a different k for IBL
     float a = roughness;
@@ -56,20 +58,20 @@ float GeometrySchlickGGX(float NdotV, float roughness)
     return nom / denom;
 }
 
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+float geometry_smith(vec3 N, vec3 V, vec3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+    float ggx2 = geometry_schlick_ggx(NdotV, roughness);
+    float ggx1 = geometry_schlick_ggx(NdotL, roughness);
 
     return ggx1 * ggx2;
 }
 
-vec2 IntegrateBRDF(float NdotV, float roughness)
+vec2 ct_brdf(float NdotV, float roughness)
 {
     vec3 V;
-    V.x = sqrt(1.0 - NdotV*NdotV);
+    V.x = sqrt(1.0 - NdotV * NdotV);
     V.y = 0.0;
     V.z = NdotV;
 
@@ -83,8 +85,8 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
     {
         // generates a sample vector that's biased towards the
         // preferred alignment direction (importance sampling).
-        vec2 Xi = Hammersley(i, SAMPLE_COUNT);
-        vec3 H = ImportanceSampleGGX(Xi, N, roughness);
+        vec2 Xi = hammersley(i, SAMPLE_COUNT);
+        vec3 H = importance_sample_ggx(Xi, N, roughness);
         vec3 L = normalize(2.0 * dot(V, H) * H - V);
 
         float NdotL = max(L.z, 0.0);
@@ -93,7 +95,7 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
 
         if(NdotL > 0.0)
         {
-            float G = GeometrySmith(N, V, L, roughness);
+            float G = geometry_smith(N, V, L, roughness);
             float G_Vis = (G * VdotH) / (NdotH * NdotV);
             float Fc = pow(1.0 - VdotH, 5.0);
 
@@ -108,6 +110,6 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
 
 void main() 
 {
-    vec2 integratedBRDF = IntegrateBRDF(TexCoords.x, TexCoords.y);
-    FragColor = integratedBRDF;
+    vec2 brdf = ct_brdf(uv.x, uv.y);
+    frag_color = brdf;
 }

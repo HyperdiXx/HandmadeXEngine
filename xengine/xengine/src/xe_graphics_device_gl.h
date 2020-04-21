@@ -40,8 +40,11 @@ namespace xe_graphics
         void add_depth_texture2D(texture2D *depth, framebuffer *fbo) override;
         void add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo) override;
         void set_depth_buffer_attachment(const framebuffer *fbo) override;
+        void set_depth_buffer_attachment(uint32 w, uint32 h, const framebuffer *fbo) override;
         texture2D& get_texture(uint32 number, const framebuffer *fbo) override;
-        void set_texture2D(uint32 type, texture2D *texture) override;
+        void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture) override;
+        void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture) override;
+        void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture, uint32 mip) override;
 
         void check_framebuffer() override;
 

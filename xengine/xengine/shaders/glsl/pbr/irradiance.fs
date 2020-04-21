@@ -1,38 +1,40 @@
 #version 330 core
-out vec4 FragColor;
-in vec3 WorldPos;
+out vec4 frag_color;
 
-uniform samplerCube environmentMap;
+in vec3 world_pos;
+
+uniform samplerCube environment_map;
 
 const float PI = 3.14159265359;
 
 void main()
 {		
-    vec3 N = normalize(WorldPos);
+    vec3 N = normalize(world_pos);
 
     vec3 irradiance = vec3(0.0);   
     
-    // tangent space calculation from origin point
     vec3 up    = vec3(0.0, 1.0, 0.0);
     vec3 right = cross(up, N);
-    up            = cross(N, right);
+    up         = cross(N, right);
        
-    float sampleDelta = 0.025;
-    float nrSamples = 0.0f;
-    for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
+    float sample_delta = 0.025;
+    float nr_samples = 0.0f;
+    for(float phi = 0.0; phi < 2.0 * PI; phi += sample_delta)
     {
-        for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
+        for(float theta = 0.0; theta < 0.5 * PI; theta += sample_delta)
         {
             // spherical to cartesian (in tangent space)
-            vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+            vec3 tangent = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+            
             // tangent space to world
-            vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N; 
+            vec3 sampled_vec = tangent.x * right + tangent.y * up + tangent.z * N; 
 
-            irradiance += texture(environmentMap, sampleVec).rgb * cos(theta) * sin(theta);
-            nrSamples++;
+            irradiance += texture(environment_map, sampled_vec).rgb * cos(theta) * sin(theta);
+            nr_samples++;
         }
     }
-    irradiance = PI * irradiance * (1.0 / float(nrSamples));
+
+    irradiance = PI * irradiance * (1.0 / float(nr_samples));
     
-    FragColor = vec4(irradiance, 1.0);
+    frag_color = vec4(irradiance, 1.0);
 }

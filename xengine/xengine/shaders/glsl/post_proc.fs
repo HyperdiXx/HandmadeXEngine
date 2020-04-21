@@ -5,6 +5,9 @@ in vec2 out_uv;
 
 uniform sampler2D tex_diff; 
 
+uniform vec2 offsets[9];
+uniform float blur[9];
+
 const float offset = 1.0 / 300.0;
 
 vec3 gamma_correction(vec3 input)

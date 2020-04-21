@@ -36,6 +36,7 @@ namespace xe_graphics
         GREYSCALE,
         LUT, 
         CUBEMAP, 
+        CUBEMAP_POSITIVE, 
         DEPTH
     };
 

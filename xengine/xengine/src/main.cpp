@@ -490,6 +490,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             shadow_pass.init();
             shadow_pass.set_scene(&current_app_state->active_scene);
 
+            pbr_pass pbr_setup = {};
+            pbr_setup.init();           
+
             device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
   
             using namespace xe_render;
@@ -514,7 +517,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 //shadow_pass.bind_depth_texture();
 
-                main_render_pass->update(io.DeltaTime);
+                /*main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
                 texture2D pass_texture = main_render_pass->get_color_texture();
@@ -523,7 +526,10 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 gamma_correction.render();
 
                 render_pass_2D->update(io.DeltaTime);
-                render_pass_2D->render();
+                render_pass_2D->render();*/
+
+                pbr_setup.update(io.DeltaTime);
+                pbr_setup.render();
 
                 win32_imgui_new_frame();                
                 top_bar(); 

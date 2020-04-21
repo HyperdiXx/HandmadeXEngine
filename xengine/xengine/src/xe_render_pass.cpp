@@ -314,3 +314,242 @@ void xe_graphics::shadow_map_pass::bind_depth_texture() const
     device->bind_texture(TEXTURE_TYPE::DEPTH, shadow->depth_fbo.depth_texture);
 
 }
+
+void xe_graphics::pbr_pass::init()
+{
+    graphics_device *device = xe_render::get_device();
+
+    device->create_framebuffer(1, &fbo);
+    device->create_render_buffer(1, &fbo);
+
+    device->bind_framebuffer(&fbo);
+    device->bind_renderbuffer(&fbo);
+    device->set_depth_buffer_attachment(512, 512, &fbo);
+
+    glm::vec3 lightPositions[] = 
+    {
+        glm::vec3(-10.0f,  10.0f, 10.0f),
+        glm::vec3(10.0f,  10.0f, 10.0f),
+        glm::vec3(-10.0f, -10.0f, 10.0f),
+        glm::vec3(10.0f, -10.0f, 10.0f),
+     };
+    
+    glm::vec3 lightColors[] = 
+    {
+        glm::vec3(300.0f, 300.0f, 300.0f),
+        glm::vec3(300.0f, 300.0f, 300.0f),
+        glm::vec3(300.0f, 300.0f, 300.0f),
+        glm::vec3(300.0f, 300.0f, 300.0f)
+    };
+
+    device->create_texture(&env_cubemap);
+    device->bind_texture(TEXTURE_TYPE::CUBEMAP, &env_cubemap);
+
+    for (uint32 i = 0; i < 6; ++i)
+    {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+    }
+
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_R, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+    glm::mat4 projection_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+    
+    glm::mat4 views_to_capture[] =
+    {
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+    };
+
+    shader *equ_to_cubemap = xe_render::get_shader("equirect");
+
+    device->bind_shader(equ_to_cubemap);
+    device->set_mat4("projection", projection_matrix, equ_to_cubemap);
+
+    texture2D *hdr_tex = xe_render::get_texture2D_resource("hdr_env");
+
+    device->activate_bind_texture(TEXTURE_TYPE::COLOR, hdr_tex);
+
+    device->set_viewport(0, 0, 512, 512);
+    device->bind_framebuffer(&fbo);
+
+    for (uint32 i = 0; i < 6; ++i)
+    {
+        device->set_mat4("view", views_to_capture[i], equ_to_cubemap);
+        device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0, TEXTURE_TYPE::CUBEMAP_POSITIVE, i, &env_cubemap);
+        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, env_cubemap.id, 0);
+        device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //renderCube();
+    }
+
+    device->unbind_framebuffer();
+
+    device->bind_texture(TEXTURE_TYPE::CUBEMAP, &env_cubemap);
+    device->generate_texture_mipmap(TEXTURE_TYPE::CUBEMAP);
+
+    device->create_texture(&irr_map);
+    device->bind_texture(TEXTURE_TYPE::CUBEMAP, &irr_map);
+
+    for (uint32 i = 0; i < 6; ++i)
+    {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
+    }
+
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_R, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+    device->bind_framebuffer(&fbo);
+    device->bind_renderbuffer(&fbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
+
+    shader *irradiance = xe_render::get_shader("irradiance");
+
+    device->bind_shader(irradiance);
+    device->set_int("environment_map", 0, irradiance);
+    device->set_mat4("projection", projection_matrix, irradiance);
+
+    device->activate_bind_texture(TEXTURE_TYPE::COLOR, &env_cubemap);
+
+    device->set_viewport(0, 0, 32, 32);
+    device->bind_framebuffer(&fbo);
+
+    for (uint32 i = 0; i < 6; ++i)
+    {
+        device->set_mat4("view", views_to_capture[i], irradiance);
+        device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0, TEXTURE_TYPE::CUBEMAP_POSITIVE, i, &irr_map);
+        device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //renderCube();
+    }
+
+    device->unbind_framebuffer();
+
+    device->create_texture(&prefilter_map);
+    device->bind_texture(TEXTURE_TYPE::CUBEMAP, &prefilter_map);
+
+    for (uint32 i = 0; i < 6; i++)
+    {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 128, 128, 0, GL_RGB, GL_FLOAT, nullptr);
+    }
+    
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_R, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+    device->generate_texture_mipmap(TEXTURE_TYPE::CUBEMAP);
+
+    shader *prefilter = xe_render::get_shader("prefilter");
+
+    device->bind_shader(prefilter);
+    device->set_int("environment_map", 0, prefilter);
+    device->set_mat4("projection", projection_matrix, prefilter);
+
+    device->activate_bind_texture(TEXTURE_TYPE::CUBEMAP, &env_cubemap);
+    device->bind_framebuffer(&fbo);
+
+    uint32 max_mip_levels = 5;
+    for (uint32 mip = 0; mip < max_mip_levels; ++mip)
+    {
+        uint32 mip_width = 128 * std::pow(0.5, mip);
+        uint32 mip_height = 128 * std::pow(0.5, mip);
+        
+        device->bind_renderbuffer(&fbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mip_width, mip_height);
+    
+        device->set_viewport(0, 0, mip_width, mip_height);
+    
+        real32 roughness = (real32)mip / (real32)(max_mip_levels - 1);
+        device->set_float("roughness", roughness, prefilter);
+        for (uint32 i = 0; i < 6; ++i)
+        {
+            device->set_mat4("view", views_to_capture[i], prefilter);
+            device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0, TEXTURE_TYPE::CUBEMAP_POSITIVE, i, &prefilter_map, mip);
+
+            device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            //renderCube();
+        }
+    }
+
+    device->unbind_framebuffer();
+
+    device->create_texture(&brdf_lut);
+    device->bind_texture(TEXTURE_TYPE::COLOR, &brdf_lut);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+    device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+    device->bind_framebuffer(&fbo);
+    device->bind_renderbuffer(&fbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdf_lut.id, 0);
+
+    device->set_viewport(0, 0, 512, 512);
+
+    shader *brdf = xe_render::get_shader("brdf");
+
+    device->bind_shader(brdf);
+    device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    //render quad
+
+    device->unbind_framebuffer();
+
+    shader *pbr = xe_render::get_shader("pbr");
+    shader *back = xe_render::get_shader("background");
+
+    camera3d_component camera = xe_render::get_camera3D();
+
+    device->bind_shader(pbr);
+    device->set_mat4("projection", camera.get_projection_matrix(), pbr);
+
+    device->bind_shader(back);
+    device->set_mat4("projection", camera.get_projection_matrix(), back);
+
+    viewport vp = device->get_viewport();
+    
+    device->set_viewport(0, 0, vp.width, vp.height);
+}
+
+void xe_graphics::pbr_pass::clear()
+{
+    graphics_device *device = xe_render::get_device();
+
+    device->destroy_framebuffer(&fbo);
+}
+
+void xe_graphics::pbr_pass::unload_resources()
+{
+
+}
+
+void xe_graphics::pbr_pass::render()
+{
+
+}
+
+void xe_graphics::pbr_pass::update(real32 dt)
+{
+
+}

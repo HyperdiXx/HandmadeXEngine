@@ -76,6 +76,28 @@ namespace xe_graphics
         xe_scene::scene *current_scene;
     };
 
+    class pbr_pass : public render_pass
+    {
+    public:
+        void init() override;
+        void clear() override;
+
+        void unload_resources() override;
+
+        void render() override;
+
+        void update(real32 dt) override;
+    
+    private:
+        xe_graphics::framebuffer fbo;
+        xe_graphics::texture2D env_cubemap;
+        xe_graphics::texture2D irr_map;
+        xe_graphics::texture2D prefilter_map;
+        xe_graphics::texture2D brdf_lut;
+        xe_graphics::texture2D color_texture;
+        xe_scene::scene *current_scene;
+    };
+
     class gamma_correction_pass : public render_pass
     {
     public:

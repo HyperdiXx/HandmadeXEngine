@@ -8,12 +8,13 @@ out vec3 world_pos;
 out vec3 normal;
 
 uniform mat4 model;
-uniform mat4 mvp;
+uniform mat4 projection;
+uniform mat4 view;
 
 void main()
 {
     uv = aUV;
     world_pos = vec3(model * vec4(aPos, 1.0));
     normal = mat3(model) * aNormal;
-    gl_Position = mvp * vec4(aPos, 1.0);
+    gl_Position = projection * view * vec4(world_pos, 1.0);
 }

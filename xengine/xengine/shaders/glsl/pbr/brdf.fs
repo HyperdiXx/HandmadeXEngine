@@ -25,25 +25,26 @@ vec2 hammersley(uint i, uint N)
 
 vec3 importance_sample_ggx(vec2 Xi, vec3 N, float roughness)
 {
+    // IBL
 	float a = roughness * roughness;
 	
 	float phi = 2.0 * PI * Xi.x;
-	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
-	float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+	float cos_theta = sqrt((1.0 - Xi.y) / (1.0 + (a * a - 1.0) * Xi.y));
+	float sin_theta = sqrt(1.0 - cos_theta * cos_theta);
 	
 	// from spherical coordinates to cartesian coordinates - halfway vector
 	vec3 H;
-	H.x = cos(phi) * sinTheta;
-	H.y = sin(phi) * sinTheta;
-	H.z = cosTheta;
+	H.x = cos(phi) * sin_theta;
+	H.y = sin(phi) * sin_theta;
+	H.z = cos_theta;
 	
 	// from tangent-space H vector to world-space sample vector
 	vec3 up          = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
 	vec3 tangent   = normalize(cross(up, N));
 	vec3 bitangent = cross(N, tangent);
 	
-	vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;
-	return normalize(sampleVec);
+	vec3 sample_vec = tangent * H.x + bitangent * H.y + N * H.z;
+	return normalize(sample_vec);
 }
 
 float geometry_schlick_ggx(float NdotV, float roughness)
@@ -52,10 +53,7 @@ float geometry_schlick_ggx(float NdotV, float roughness)
     float a = roughness;
     float k = (a * a) / 2.0;
 
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / denom;
+    return NdotV / NdotV * (1.0 - k) + k;
 }
 
 float geometry_smith(vec3 N, vec3 V, vec3 L, float roughness)
@@ -80,12 +78,12 @@ vec2 ct_brdf(float NdotV, float roughness)
 
     vec3 N = vec3(0.0, 0.0, 1.0);
     
-    const uint SAMPLE_COUNT = 1024u;
-    for(uint i = 0u; i < SAMPLE_COUNT; ++i)
+    const uint num_samples = 1024u;
+    for(uint i = 0u; i < num_samples; ++i)
     {
         // generates a sample vector that's biased towards the
         // preferred alignment direction (importance sampling).
-        vec2 Xi = hammersley(i, SAMPLE_COUNT);
+        vec2 Xi = hammersley(i, num_samples);
         vec3 H = importance_sample_ggx(Xi, N, roughness);
         vec3 L = normalize(2.0 * dot(V, H) * H - V);
 
@@ -103,8 +101,10 @@ vec2 ct_brdf(float NdotV, float roughness)
             B += Fc * G_Vis;
         }
     }
-    A /= float(SAMPLE_COUNT);
-    B /= float(SAMPLE_COUNT);
+
+    A /= float(num_samples);
+    B /= float(num_samples);
+    
     return vec2(A, B);
 }
 

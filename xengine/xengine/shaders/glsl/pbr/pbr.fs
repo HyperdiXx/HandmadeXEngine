@@ -1,4 +1,5 @@
 #version 330 core
+
 out vec4 frag_color;
 
 in vec2 uv;
@@ -45,6 +46,8 @@ vec3 calculate_normals()
 
 float dist_ggx(vec3 N, vec3 H, float roughness)
 {
+    // NDF = a2 / (dot(n * h))2 * (a2 - 1.0) + 1.0
+
     float alpha = roughness * roughness;
     float aSqr = alpha * alpha;
     float NdotH = max(dot(N, H), 0.0);
@@ -57,6 +60,9 @@ float dist_ggx(vec3 N, vec3 H, float roughness)
 
 float geometry_schlick_ggx(float NdotV, float roughness)
 {
+    // Specular G 
+    //    n * v / (n * v)(1 - k) + k
+
     float r = (roughness + 1.0);
     float k = (r * r) / 8.0;
 
@@ -83,6 +89,14 @@ vec3 fresnel_schlick_roughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }   
 
+vec3 approximate_specular_ibl(vec3 spec_color, float roughness, vec3 N, vec3 V)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    vec3 R = 2 * dot(V, N) * N - V;
+
+    return R;
+}
+
 void main()
 {		
     // gamma correction
@@ -96,6 +110,8 @@ void main()
     vec3 V = normalize(cam_pos - world_pos);    
     vec3 R = reflect(-V, N); 
     
+    float dotLo = max(dot(N, V), 0.0); 
+
     F0 = mix(F0, albedo, metallic);
 
     // reflectance equation
@@ -138,30 +154,32 @@ void main()
     }   
     
     // ambient lighting
-    vec3 F = fresnel_schlick_roughness(max(dot(N, V), 0.0), F0, roughness);
+    vec3 irradiance = texture(irradiance_map, N).rgb;
+    vec3 F = fresnel_schlick_roughness(dotLo, F0, roughness);
     
     vec3 kS = F;
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;	  
-    
-    vec3 irradiance = texture(irradiance_map, N).rgb;
-    vec3 diffuse    = irradiance * albedo;
-    
-    // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+
+    vec3 diffuseIBL    = irradiance * albedo;
+
+    // sample both the pre-filter map and the BRDF lut and combine them together
+    // use split-sum appr as IBL spec
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefiltered_color = textureLod(prefilter_map, R,  roughness * MAX_REFLECTION_LOD).rgb;    
-    vec2 brdf  = texture(brdf_LUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
-    vec3 specular = prefiltered_color * (F * brdf.x + brdf.y);
-
-    vec3 ambient = (kD * diffuse + specular) * ao;
     
-    vec3 result_color = ambient + Lo;
+    vec3 prefiltered_color = textureLod(prefilter_map, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+    vec2 specularBRDF  = texture(brdf_LUT, vec2(dotLo, roughness)).rg;
+    vec3 specularIBL = prefiltered_color * (F * specularBRDF.x + specularBRDF.y);
 
-    // Tonemapping
+    vec3 ambientIBL = (kD * diffuseIBL + specularIBL) * ao;
+    
+    vec3 result_color = ambientIBL + Lo;
+
+    // tonemapping
     result_color = result_color / (result_color + vec3(1.0));
     
-    // Gamma correction
+    // gamma correction
     result_color = pow(result_color, vec3(1.0/2.2)); 
 
-    frag_color = vec4(result_color , 1.0);
+    frag_color = vec4(result_color, 1.0);
 }

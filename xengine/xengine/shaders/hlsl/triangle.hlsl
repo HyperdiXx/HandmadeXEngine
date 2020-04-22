@@ -1,8 +1,8 @@
 cbuffer Matrices
 {
-    matrix worldPos;
-    matrix viewPos;
-    matrix projectionPos;
+    matrix world_pos;
+    matrix view_pos;
+    matrix projection_pos;
 };
 
 struct VSIN
@@ -24,9 +24,9 @@ PSIN main(VSIN input)
 
     input.pos.w = 1.0f;
 
-    output.pos = mul(input.pos, worldPos);
-    output.pos = mul(output.pos, viewPos);
-    output.pos = mul(output.pos, projectionPos);
+    output.pos = mul(input.pos, world_pos);
+    output.pos = mul(output.pos, view_pos);
+    output.pos = mul(output.pos, projection_pos);
 
     output.color = input.color;
 

@@ -25,11 +25,13 @@ namespace xe_input
 
     };
 
-    struct mouse_keys
+    struct mouse_state
     {
         vec2i position = vec2i(0, 0);
         vec2i dt_position = vec2i(0, 0);
         real32 wheel = 0;
+        bool32 is_left_button_pressed = false;
+        bool32 is_right_button_pressed = false;
     };
 
     struct keyboard_buttons
@@ -42,4 +44,6 @@ namespace xe_input
     bool pressed(Button button);
     
     void poll_events();
+
+    mouse_state *get_mouse_state();
 }

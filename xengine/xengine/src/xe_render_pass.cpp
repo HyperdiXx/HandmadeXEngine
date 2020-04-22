@@ -47,7 +47,7 @@ void xe_graphics::render_pass2D::render()
 { 
     using namespace xe_render;
 
-    draw_quad(&main_ent, simple_shader, result_texture, &camera2D);
+    draw_quad(&main_ent, simple_shader, result_texture);
     draw_text(ENGINE_NAME, 10, 10);     
 }
 
@@ -319,6 +319,10 @@ void xe_graphics::pbr_pass::init()
 {
     graphics_device *device = xe_render::get_device();
 
+    device->enable(GL_DEPTH_TEST);
+    device->set_depth_func(GL_LEQUAL);
+    device->enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    
     device->create_framebuffer(1, &fbo);
     device->create_render_buffer(1, &fbo);
 
@@ -326,22 +330,7 @@ void xe_graphics::pbr_pass::init()
     device->bind_renderbuffer(&fbo);
     device->set_depth_buffer_attachment(512, 512, &fbo);
 
-    glm::vec3 lightPositions[] = 
-    {
-        glm::vec3(-10.0f,  10.0f, 10.0f),
-        glm::vec3(10.0f,  10.0f, 10.0f),
-        glm::vec3(-10.0f, -10.0f, 10.0f),
-        glm::vec3(10.0f, -10.0f, 10.0f),
-     };
-    
-    glm::vec3 lightColors[] = 
-    {
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f)
-    };
-
+   
     device->create_texture(&env_cubemap);
     device->bind_texture(TEXTURE_TYPE::CUBEMAP, &env_cubemap);
 
@@ -388,7 +377,7 @@ void xe_graphics::pbr_pass::init()
         //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, env_cubemap.id, 0);
         device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //renderCube();
+        xe_render::draw_cube();
     }
 
     device->unbind_framebuffer();
@@ -432,7 +421,7 @@ void xe_graphics::pbr_pass::init()
         device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0, TEXTURE_TYPE::CUBEMAP_POSITIVE, i, &irr_map);
         device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //renderCube();
+        xe_render::draw_cube();
     }
 
     device->unbind_framebuffer();
@@ -482,8 +471,8 @@ void xe_graphics::pbr_pass::init()
             device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0, TEXTURE_TYPE::CUBEMAP_POSITIVE, i, &prefilter_map, mip);
 
             device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-            //renderCube();
+
+            xe_render::draw_cube();
         }
     }
 
@@ -512,8 +501,8 @@ void xe_graphics::pbr_pass::init()
     device->bind_shader(brdf);
     device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    //render quad
-
+    xe_render::draw_full_quad();
+    
     device->unbind_framebuffer();
 
     shader *pbr = xe_render::get_shader("pbr");
@@ -523,6 +512,29 @@ void xe_graphics::pbr_pass::init()
 
     device->bind_shader(pbr);
     device->set_mat4("projection", camera.get_projection_matrix(), pbr);
+
+    glm::vec3 light_pos[] =
+    {
+        glm::vec3(-10.0f,  10.0f, 10.0f),
+        glm::vec3(10.0f,  10.0f, 10.0f),
+        glm::vec3(-10.0f, -10.0f, 10.0f),
+        glm::vec3(10.0f, -10.0f, 10.0f),
+    };
+
+    glm::vec3 light_colors[] =
+    {
+        glm::vec3(300.0f, 300.0f, 300.0f),
+        glm::vec3(300.0f, 300.0f, 300.0f),
+        glm::vec3(300.0f, 300.0f, 300.0f),
+        glm::vec3(300.0f, 300.0f, 300.0f)
+    };
+
+
+    for (uint32 i = 0; i < sizeof(light_pos) / sizeof(light_pos[0]); ++i)
+    {
+        device->set_vec3("light_positions[" + std::to_string(i) + "]", light_pos[i], pbr);
+        device->set_vec3("light_colors[" + std::to_string(i) + "]", light_colors[i], pbr);
+    }
 
     device->bind_shader(back);
     device->set_mat4("projection", camera.get_projection_matrix(), back);
@@ -546,6 +558,72 @@ void xe_graphics::pbr_pass::unload_resources()
 
 void xe_graphics::pbr_pass::render()
 {
+    shader *pbr_shader = xe_render::get_shader("pbr");
+    graphics_device *device = xe_render::get_device();
+    camera3d_component camera3d = xe_render::get_camera3D();
+
+    device->bind_shader(pbr_shader);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = camera3d.get_view_matrix();
+
+    device->set_mat4("view", view, pbr_shader);
+    device->set_vec3("cam_pos", camera3d.pos, pbr_shader);
+    
+    // bind pre-computed IBL data
+    
+    device->activate_texture(0);
+    device->bind_texture(TEXTURE_TYPE::CUBEMAP, &irr_map);
+
+    device->activate_texture(1);
+    device->bind_texture(TEXTURE_TYPE::CUBEMAP, &prefilter_map);
+
+    device->activate_texture(2);
+    device->bind_texture(TEXTURE_TYPE::COLOR, &brdf_lut);
+
+    texture2D *iron_albedo = xe_render::get_texture2D_resource("albedo_iron");
+    texture2D *iron_normal = xe_render::get_texture2D_resource("normal_iron");
+    texture2D *iron_metallic = xe_render::get_texture2D_resource("metallic_iron");
+    texture2D *iron_roughness = xe_render::get_texture2D_resource("roughness_iron");
+    texture2D *iron_ao = xe_render::get_texture2D_resource("ao_iron");
+
+    device->activate_texture(3);
+    device->bind_texture(TEXTURE_TYPE::COLOR, iron_albedo);
+    device->activate_texture(4);
+    device->bind_texture(TEXTURE_TYPE::COLOR, iron_normal);
+    device->activate_texture(5);
+    device->bind_texture(TEXTURE_TYPE::COLOR, iron_metallic);
+    device->activate_texture(6);
+    device->bind_texture(TEXTURE_TYPE::COLOR, iron_roughness);
+    device->activate_texture(7);
+    device->bind_texture(TEXTURE_TYPE::COLOR, iron_ao);
+
+    glm::mat4 model_matrix = glm::mat4(1.0);
+
+    model_matrix = glm::translate(model_matrix, glm::vec3(-3.0, 0.0, -10.0f));
+    device->set_mat4("model", model_matrix, pbr_shader);  
+    xe_render::draw_sphere();
+
+    model_matrix = glm::translate(model_matrix, glm::vec3(-8.0, 0.0, -2.0f));
+    device->set_mat4("model", model_matrix, pbr_shader);
+    xe_render::draw_sphere();
+
+    model_matrix = glm::translate(model_matrix, glm::vec3(3.0, 0.0, -5.0f));
+    device->set_mat4("model", model_matrix, pbr_shader);
+    xe_render::draw_sphere();
+   
+    shader *back = xe_render::get_shader("background");
+    
+    device->bind_shader(back);
+    device->set_mat4("view", view, back);
+
+    device->activate_texture(0);
+    device->bind_texture(TEXTURE_TYPE::CUBEMAP, &env_cubemap);
+    
+    //device->bind_texture(TEXTURE_TYPE::CUBEMAP, &irr_map);
+    //device->bind_texture(TEXTURE_TYPE::CUBEMAP, &prefilter_map);
+    
+    xe_render::draw_cube();
 
 }
 

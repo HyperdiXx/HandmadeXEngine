@@ -316,6 +316,63 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
         {
             is_open = false;
         } break;
+        case WM_INPUT:
+        {
+            UINT size;
+
+            GetRawInputData((HRAWINPUT)l_param, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
+            
+            LPBYTE lpb = new BYTE[size];
+            if (lpb == NULL)
+            {
+                return 0;
+            }
+
+            if (GetRawInputData((HRAWINPUT)l_param, RID_INPUT, lpb, &size, sizeof(RAWINPUTHEADER)) != size)
+                OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
+
+            RAWINPUT* raw = (RAWINPUT*)lpb;
+
+            if (raw->header.dwType == RIM_TYPEKEYBOARD)
+            {
+                
+            }
+            else if (raw->header.dwType == RIM_TYPEMOUSE)
+            {
+                const RAWMOUSE& rawmouse = raw->data.mouse;
+
+                xe_input::mouse_state *mouse = xe_input::get_mouse_state();
+
+                if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE)
+                {
+                    mouse->dt_position.x += rawmouse.lLastX;
+                    mouse->dt_position.y += rawmouse.lLastY;
+                   
+                    if (rawmouse.usButtonFlags == RI_MOUSE_WHEEL)
+                    {
+                        mouse->wheel += float((SHORT)rawmouse.usButtonData) / float(WHEEL_DELTA);
+                    }
+                }
+                else if (raw->data.mouse.usFlags == MOUSE_MOVE_ABSOLUTE)
+                {
+                    mouse->position.x += rawmouse.lLastX;
+                    mouse->position.y += rawmouse.lLastY;
+                }
+
+                if (rawmouse.usButtonFlags == RI_MOUSE_LEFT_BUTTON_DOWN)
+                {
+                    mouse->is_left_button_pressed = true;
+                    xe_utility::info("left mouse button pressed!");
+                }
+                
+                if (rawmouse.usButtonFlags == RI_MOUSE_RIGHT_BUTTON_DOWN)
+                {
+                    mouse->is_right_button_pressed = true;
+                }
+
+            }
+            return 0;
+        } break;
         case WM_SIZE:
         {
             WINDOW_WIDTH_SIZE = LOWORD(l_param);
@@ -515,22 +572,25 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 //viewport vp_state = device->get_viewport();
                 //device->set_viewport(0, 0, vp_state.width, vp_state.height);
                 //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+          
                 //shadow_pass.bind_depth_texture();
-
+                
                 /*main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
                 texture2D pass_texture = main_render_pass->get_color_texture();
 
                 gamma_correction.set_color_texture(&pass_texture);
-                gamma_correction.render();
+                gamma_correction.render();*/
 
-                render_pass_2D->update(io.DeltaTime);
-                render_pass_2D->render();*/
+                main_render_pass->update(io.DeltaTime);
 
                 pbr_setup.update(io.DeltaTime);
                 pbr_setup.render();
 
+                render_pass_2D->update(io.DeltaTime);
+                render_pass_2D->render();
+               
                 win32_imgui_new_frame();                
                 top_bar(); 
 

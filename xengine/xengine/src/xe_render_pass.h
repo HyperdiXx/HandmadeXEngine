@@ -46,9 +46,9 @@ namespace xe_graphics
 
         const texture2D *get_result_texture() { return result_texture; };
 
-        inline XEngine::OrthoCamera& get_camera2d() { return camera2D; };
+        //inline XEngine::OrthoCamera& get_camera2d() { return camera2D; };
     private:
-        XEngine::OrthoCamera camera2D;
+        //XEngine::OrthoCamera camera2D;
         texture2D *result_texture;
         shader* simple_shader;
         xe_ecs::entity main_ent;      

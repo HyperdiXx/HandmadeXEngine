@@ -23,12 +23,14 @@ namespace xe_graphics
         virtual void enable(int type) = 0;
         virtual void disable(int type) = 0;
         virtual void set_blend_func(int src, int dst) = 0;
+        virtual void set_depth_func(int type) = 0;
         virtual void set_cull_mode(int type) = 0;
         virtual void set_depth(bool32 type) = 0;
         virtual void draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) = 0;
         virtual void draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) = 0;
 
         virtual void activate_bind_texture(TEXTURE_TYPE type, const texture2D *texture) = 0;
+        virtual void activate_bind_texture(TEXTURE_TYPE type, const cubemap *texture) = 0;
         virtual void activate_texture(uint32 index) = 0;
         virtual void bind_texture(TEXTURE_TYPE type, const texture2D *texture) = 0;
         virtual void bind_shader(const shader *shader) = 0;

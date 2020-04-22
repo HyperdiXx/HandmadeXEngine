@@ -19,12 +19,14 @@ namespace xe_graphics
         void enable(int type) override;
         void disable(int type) override;
         void set_blend_func(int src, int dst) override;
+        void set_depth_func(int type) override;
         void set_cull_mode(int type) override;
         void set_depth(bool32 type) override;
         void draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) override;
         void draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) override;
        
         void activate_bind_texture(TEXTURE_TYPE type, const texture2D *texture) override;
+        void activate_bind_texture(TEXTURE_TYPE type, const cubemap *texture) override;
         void activate_texture(uint32 index) override;
         void bind_texture(TEXTURE_TYPE type, const texture2D *tetxture) override;
         void bind_shader(const shader *shader) override;

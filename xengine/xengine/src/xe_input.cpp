@@ -1,6 +1,7 @@
 #include "xe_input.h"
 
 #include "xe_platform.h"
+#include "runtime/core/utility/log.h"
 
 #ifdef _WIN32
 
@@ -31,6 +32,11 @@ namespace xe_input
     static xinput_set_state *LXInputSetState = XInputSetStateFa;
     #define XInputSetState LXInputSetState
 
+    std::vector<uint8_t*> loop_mess;
+
+    mouse_state mouse;
+    keyboard_buttons keyboard;
+
     void init()
     {
         HMODULE xinput_lib = LoadLibrary("xinput1_4.dll");
@@ -39,6 +45,30 @@ namespace xe_input
             XInputGetState = (xinput_get_state*)GetProcAddress(xinput_lib, "XInputGetState");
             XInputSetState = (xinput_set_state*)GetProcAddress(xinput_lib, "XInputSetState");
         }
+
+        loop_mess.reserve(64);
+
+        RAWINPUTDEVICE rid[2] = {};
+
+        // Mouse
+        rid[0].usUsagePage = 0x01;
+        rid[0].usUsage = 0x02;
+        rid[0].dwFlags = 0;
+        rid[0].hwndTarget = 0;
+
+        // Keyboard
+        rid[1].usUsagePage = 0x01;
+        rid[1].usUsage = 0x06;
+        rid[1].dwFlags = 0;
+        rid[1].hwndTarget = 0;
+
+        int size = sizeof(rid) / sizeof(rid[0]);
+
+        if (RegisterRawInputDevices(rid, size, sizeof(rid[0])) == FALSE)
+        {
+            xe_utility::error("Failed to init RegisterRawInputDevices!");
+        }
+
     }
 
     bool pressed(Button button)
@@ -118,6 +148,9 @@ namespace xe_input
         }
     }
 
-
+    mouse_state *get_mouse_state()
+    {
+        return &mouse;
+    }
 
 }

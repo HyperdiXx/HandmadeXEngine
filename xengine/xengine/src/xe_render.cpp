@@ -13,12 +13,11 @@
 
 namespace xe_render
 {
-    static glm::vec4 clear_color;
-    static xe_graphics::viewport main_view_port;
- 
+    static glm::vec4 clear_color; 
     static glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
     static glm::vec3 default_cube_color = glm::vec3(0.0f, 1.0f, 0.0f);
     static real32 default_text_scale = 1.0f;
+
     static bool32 enable_shadows = false;
 
     xe_graphics::graphics_device *graphics_device = nullptr;
@@ -30,7 +29,8 @@ namespace xe_render
     xe_graphics::framebuffer *active_framebuffer = nullptr;
 
     xe_graphics::vertex_array quad_vao;
-    xe_graphics::sphere sphere_base;
+    xe_graphics::sphere sphere_vao;
+    xe_graphics::cube cube_vao;
     
     std::map<GLchar, xe_graphics::character> characters_map;
 
@@ -40,8 +40,6 @@ namespace xe_render
 
     void init_render_gl()
     {
-        xe_ecs::camera2d_component camera = get_camera2D();
-
         if(!load_shaders())
             xe_utility::error("Failed to init shader module!");
 
@@ -84,6 +82,7 @@ namespace xe_render
         graphics_device->set_int("irradiance_map", 0, pbr);
         graphics_device->set_int("prefilter_map", 1, pbr);
         graphics_device->set_int("brdf_LUT", 2, pbr);
+
         graphics_device->set_int("albedo_map", 3, pbr);
         graphics_device->set_int("normal_map", 4, pbr);
         graphics_device->set_int("metallic_map", 5, pbr);
@@ -333,7 +332,7 @@ namespace xe_render
         graphics_device->create_texture2D("assets/pbr/gold/roughness.png", &roughness_gold);
         graphics_device->create_texture2D("assets/pbr/gold/ao.png", &ao_gold);
 
-        graphics_device->create_texture2D("assets/hdr/newport_loft.hdr", TEXTURE_TYPE::HDR, false, &hdr);
+        graphics_device->create_texture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);
 
         bool32 loaded = graphics_device->create_texture2D("assets/get.png", &wood_texture);        
         graphics_device->create_texture2D("assets/water-texture.jpg", &water_texture);
@@ -397,6 +396,11 @@ namespace xe_render
     xe_ecs::camera2d_component& get_camera2D() 
     {
         static xe_ecs::camera2d_component camera2D;
+        
+        viewport vp = graphics_device->get_viewport();        
+        camera2D.width = vp.width;
+        camera2D.height = vp.height;
+
         return camera2D;
     }
     
@@ -787,10 +791,10 @@ namespace xe_render
             }
         }
 
-        bool32 oddRow = false;
+        bool32 odd_row = false;
         for (int y = 0; y < 64; ++y)
         {
-            if (!oddRow)
+            if (!odd_row)
             {
                 for (int x = 0; x <= 64; ++x)
                 {
@@ -806,7 +810,7 @@ namespace xe_render
                     indices.push_back(y       * (64 + 1) + x);
                 }
             }
-            oddRow = !oddRow;
+            odd_row = !odd_row;
         }
         
         std::vector<real32> data;
@@ -855,6 +859,79 @@ namespace xe_render
         return true;
     }
 
+    bool32 create_cube(xe_graphics::cube *cube)
+    {
+        real32 data[] = 
+        {
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, 
+             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, 
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 
+            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, 
+         
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, 
+             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, 
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, 
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, 
+            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, 
+            
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 
+            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, 
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
+            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
+             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f,          
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 
+             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 
+
+            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, 
+             1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 
+             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, 
+             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, 
+            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, 
+            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, 
+           
+            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 
+             1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, 
+             1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, 
+             1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, 
+            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 
+            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  
+        };
+
+        cube->vertex_array = new xe_graphics::vertex_array();
+        cube->vertex_array->buffers.push_back(new xe_graphics::vertex_buffer());
+
+        graphics_device->create_vertex_array(cube->vertex_array);
+        graphics_device->bind_vertex_array(cube->vertex_array);
+
+        uint32 size = sizeof(data) / sizeof(data[0]);
+
+        graphics_device->create_vertex_buffer(&data[0], size, DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
+
+        buffer_layout buffer_layout = {};
+
+        std::initializer_list<xe_graphics::buffer_element> init_list =
+        {
+            { "aPos",       ElementType::Float3, },
+            { "aNormal",    ElementType::Float3, },
+            { "aUV",        ElementType::Float2, }
+        };
+
+        graphics_device->create_buffer_layout(init_list, &buffer_layout);
+        graphics_device->set_vertex_buffer_layout(cube->vertex_array->buffers[0], &buffer_layout);
+        graphics_device->add_vertex_buffer(cube->vertex_array, cube->vertex_array->buffers[0]);
+        
+        return true;
+    }
+
     void draw_full_quad()
     {
         graphics_device->bind_vertex_array(&quad_vao);
@@ -862,7 +939,7 @@ namespace xe_render
         graphics_device->unbind_vertex_array();
     }
 
-    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam)
+    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture)
     {
         if (texture != nullptr)
             graphics_device->bind_texture(TEXTURE_TYPE::COLOR, texture);
@@ -873,8 +950,9 @@ namespace xe_render
         
         model = glm::translate(model, glm::vec3(300, 200, 0));
         model = glm::scale(model, glm::vec3(100, 100, 100));
+        xe_ecs::camera2d_component camera2d = get_camera2D();
 
-        glm::mat4 view_projection = cam->getViewProjection();
+        glm::mat4 view_projection = camera2d.get_view_projection();
         graphics_device->set_mat4("mvp", view_projection * model, shd);
 
         graphics_device->bind_vertex_array(q->vertex_array);        
@@ -883,7 +961,7 @@ namespace xe_render
         graphics_device->unbind_shader();
     }
 
-    void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam)
+    void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture)
     {
         using namespace xe_ecs;
         quad_component* mesh = ent->find_component<quad_component>();
@@ -901,8 +979,10 @@ namespace xe_render
 
         model_matrix = glm::translate(model_matrix, tr->position);
         model_matrix = glm::scale(model_matrix, tr->scale);
+        
+        xe_ecs::camera2d_component camera2d = get_camera2D();
 
-        glm::mat4 view_projection = cam->getViewProjection();
+        glm::mat4 view_projection = camera2d.get_view_projection();
         glm::mat4 mvp = view_projection * model_matrix;
 
         graphics_device->set_mat4("mvp", mvp, shd);
@@ -915,14 +995,16 @@ namespace xe_render
         graphics_device->unbind_shader();
     }
 
-    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4 &mod, XEngine::OrthoCamera *cam)
+    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4 &mod)
     {
         if (texture != nullptr)
             graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);
 
         graphics_device->bind_shader(shd);
 
-        glm::mat4 view_projection = cam->getViewProjection();
+        xe_ecs::camera2d_component camera2d = get_camera2D();
+
+        glm::mat4 view_projection = camera2d.get_view_projection();
         glm::mat4 mvp = view_projection * mod;
 
         graphics_device->set_mat4("mvp", mvp, shd);
@@ -1005,7 +1087,7 @@ namespace xe_render
 
     void draw_skybox()
     {
-        glDepthFunc(GL_LEQUAL);
+        graphics_device->set_depth_func(GL_LEQUAL);
         shader *cubemap_shader = &shaders["cubemap"];
 
         graphics_device->bind_shader(cubemap_shader);
@@ -1019,14 +1101,11 @@ namespace xe_render
         
         graphics_device->bind_vertex_array(skybox_obj->va);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_obj->cubemap->id);
-
-        //graphics_device->activate_bind_texture(TEXTURE_TYPE::CUBEMAP, skybox_obj->cubemap->id);
-
+        graphics_device->activate_bind_texture(TEXTURE_TYPE::CUBEMAP, skybox_obj->cubemap);
+ 
         graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
 
-        glDepthFunc(GL_LESS);
+        graphics_device->set_depth_func(GL_LESS);
     }
 
     void apply_shadow_map(xe_graphics::shadow_map *shadow)
@@ -1140,6 +1219,25 @@ namespace xe_render
         }
 
         device->unbind_shader();
+    }
+
+    void draw_cube(xe_graphics::texture2D *texture_diff)
+    {
+        if (texture_diff)
+            graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture_diff);
+        draw_cube();
+    }
+
+    void draw_cube()
+    {
+        if (!cube_vao.vertex_array)
+        {
+            create_cube(&cube_vao);
+        }
+
+        graphics_device->bind_vertex_array(cube_vao.vertex_array);
+        graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
+        graphics_device->unbind_vertex_array();
     }
 
     void draw_ent(xe_ecs::entity *ent)
@@ -1324,13 +1422,14 @@ namespace xe_render
 
     void draw_sphere()
     {
-        if (!sphere_base.vertex_array)
+        if (!sphere_vao.vertex_array)
         {            
-            create_sphere(&sphere_base);
+            create_sphere(&sphere_vao);
         }
 
-        graphics_device->bind_vertex_array(sphere_base.vertex_array);
-        graphics_device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, sphere_base.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
+        graphics_device->bind_vertex_array(sphere_vao.vertex_array);
+        graphics_device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, sphere_vao.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
+        graphics_device->unbind_vertex_array();
     }
 }
 

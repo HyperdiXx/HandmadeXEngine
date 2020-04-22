@@ -205,9 +205,11 @@ namespace xe_graphics
         this->vp = {};
         
         xe_utility::info("GAPI - GL");
-
+        
+        //@ Correct : grab useful size for vp store
         RECT rect = RECT();
-        GetClientRect(window_handle, &rect);
+        //GetClientRect(window_handle, &rect);
+        GetWindowRect(window_handle, &rect);
         this->vp.width = rect.right - rect.left;
         this->vp.height = rect.bottom - rect.top;
 
@@ -319,6 +321,8 @@ namespace xe_graphics
         glViewport(x, y, width, height);
     }
 
+    // @ Store all stuff in context state  like dx
+
     void graphics_device_gl::enable(int type)
     {
         glEnable(type);
@@ -328,10 +332,15 @@ namespace xe_graphics
     {
         glDisable(type);
     }
-
+    
     void graphics_device_gl::set_blend_func(int src, int dst)
     {
         glBlendFunc(src, dst);
+    }
+
+    void graphics_device_gl::set_depth_func(int type)
+    {
+        glDepthFunc(type);
     }
 
     void graphics_device_gl::set_cull_mode(int type)
@@ -356,7 +365,18 @@ namespace xe_graphics
         glDrawElements(gl_primitive_type, count, type, ind);
     }
 
-    void graphics_device_gl::activate_bind_texture(TEXTURE_TYPE type, const texture2D * texture)
+    void graphics_device_gl::activate_bind_texture(TEXTURE_TYPE type, const texture2D *texture)
+    {
+        if (last_bound_unit_texture != texture->id)
+        {
+            uint32 gl_texture_type = convert_texture_type_gl(type);
+            glActiveTexture(GL_TEXTURE0 + 0);
+            glBindTexture(gl_texture_type, texture->id);
+            last_bound_unit_texture = texture->id;
+        }
+    }
+
+    void graphics_device_gl::activate_bind_texture(TEXTURE_TYPE type, const cubemap *texture)
     {
         if (last_bound_unit_texture != texture->id)
         {

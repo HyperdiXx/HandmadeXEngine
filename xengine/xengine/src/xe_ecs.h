@@ -182,6 +182,8 @@ namespace xe_ecs
         glm::mat4 view = glm::mat4(1.0f), projection, view_projection;
         glm::mat4 inv_vp;
 
+        bool32 is_setuped = false;
+
         void setup_projection(real32 left, real32 right, real32 bottom, real32 top)
         {
             projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
@@ -195,6 +197,30 @@ namespace xe_ecs
             view = glm::inverse(transform);
             view_projection = projection * view;
         }
+
+        const glm::vec3& get_position() const { return position; }
+        const glm::vec3& get_rotation() const { return rotation; }
+        const glm::mat4& get_view() const { return view; };
+
+        const glm::mat4& get_view_projection() 
+        {
+            if (!is_setuped)
+            {
+                setup_projection(0, width, 0, height);
+            }
+
+            return view_projection; 
+        };
+
+        const glm::mat4& get_projection() 
+        {
+            if (!is_setuped)
+            {
+                setup_projection(0, width, 0, height);
+            }
+            return projection;
+        };
+
     };
 
 

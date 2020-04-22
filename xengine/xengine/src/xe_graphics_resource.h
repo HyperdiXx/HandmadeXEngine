@@ -172,7 +172,12 @@ namespace xe_graphics
 
     struct sphere
     {
-        xe_graphics::vertex_array  *vertex_array;
+        xe_graphics::vertex_array *vertex_array;
+    };
+
+    struct cube
+    {
+        xe_graphics::vertex_array *vertex_array;
     };
 
     struct character

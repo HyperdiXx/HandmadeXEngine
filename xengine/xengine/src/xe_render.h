@@ -22,11 +22,6 @@ namespace xe_assets
     struct mesh;
 }
 
-namespace XEngine
-{
-    class OrthoCamera;
-}
-
 namespace xe_render
 {
     static const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
@@ -65,16 +60,20 @@ namespace xe_render
     bool32 create_cubemap(xe_graphics::cubemap *cube);
     bool32 create_shadow_maps(xe_graphics::shadow_map *shadow);
     bool32 create_sphere(xe_graphics::sphere *sphre);
+    bool32 create_cube(xe_graphics::cube *cube);
 
     void draw_full_quad();
-    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam);
-    void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture, XEngine::OrthoCamera *cam);
-    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4& mod, XEngine::OrthoCamera *cam);
+    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
+    void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
+    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4& mod);
     void draw_model(xe_assets::model *mod, xe_graphics::shader *shd);    
     void draw_mesh(xe_assets::mesh *mshs, xe_graphics::shader *shd);
    
     void draw_sphere(xe_graphics::texture2D *texture_diff);
     void draw_sphere();
+
+    void draw_cube(xe_graphics::texture2D *texture_diff);
+    void draw_cube();
 
     void draw_ent(xe_ecs::entity *ent);
     void draw_ent_static(xe_ecs::entity *ent);

@@ -50,8 +50,13 @@
 #include <thirdparty/imguit/imgui_impl_opengl3.h>
 #endif 
 
+#ifdef GAPI_DX11
+#include <thirdparty/imguit/imgui_impl_dx11.h>
+#endif
+
 #ifdef PLATFORM_WINDOWS
 #include <thirdparty/imguit/imgui_impl_win32.h>
+#include <thirdparty/imguit/imgui_impl_opengl3.h>
 #endif
 
 #include "xe_input.h"
@@ -68,8 +73,8 @@ static int WINDOW_HEIGHT_SIZE = 720;
 
 static bool is_open = true;
 
-static void 
-win32_init_imgui(HWND window)
+internal void 
+win32_init_imgui_gl(HWND window)
 {
     //IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -83,6 +88,21 @@ win32_init_imgui(HWND window)
     const char* glsl_version = "#version 330";
     ImGui_ImplWin32_Init(window);
     ImGui_ImplOpenGL3_Init(glsl_version);
+}
+
+internal void 
+win32_init_imgui_dx11(HWND window, ID3D11Device *device, ID3D11DeviceContext *device_context)
+{
+    //IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+
+    ImGui_ImplWin32_Init(window);
+    ImGui_ImplDX11_Init(device, device_context);
 }
 
 internal void 
@@ -504,34 +524,23 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             graphics_device *device = new graphics_device_gl(window_handle);
             set_device(device);
             win32_init_gl_loader();
-            win32_init_imgui(window_handle);
+            win32_init_imgui_gl(window_handle);
             
             init_render_gl();
-
-#endif 
-
-#ifdef GAPI_DX11
-            graphics_device *device = new graphics_device_dx11(window_handle);
-            set_device(device);
-
-            init_render_dx11();
-#endif
             ImGuiIO &io = ImGui::GetIO();
 
             application::load_state();
 
-            xe_scene::scene new_scene = xe_scene::create_scene("TestScene");           
-            xe_scene::scene pbr_scene = xe_scene::create_scene("PBRScene"); 
+            xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
+            xe_scene::scene pbr_scene = xe_scene::create_scene("PBRScene");
 
             xe_scene::load_test_scene(&new_scene);
             xe_scene::load_spheres_scene(&pbr_scene);
 
             application::application_state *current_app_state = application::get_app_state();
             application::set_active_scene(&pbr_scene);
-          
-            //------------------------------------------------------------//
 
-            render_pass *render_pass_2D = new render_pass2D();
+            /*render_pass *render_pass_2D = new render_pass2D();
             set_render_pass(render_pass_2D);
 
             render_pass_2D->init();
@@ -548,10 +557,22 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             shadow_pass.set_scene(&current_app_state->active_scene);
 
             pbr_pass pbr_setup = {};
-            pbr_setup.init();           
+            pbr_setup.init();           */
+
+#endif 
+
+#ifdef GAPI_DX11
+            graphics_device *device = new graphics_device_dx11(window_handle);
+            set_device(device);
+           // win32_init_imgui_dx11(window_handle, );
+
+            init_render_dx11();
+#endif
+       
+            //------------------------------------------------------------//
 
             device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
-  
+            
             using namespace xe_render;
 
             while (is_open)
@@ -583,9 +604,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 gamma_correction.set_color_texture(&pass_texture);
                 gamma_correction.render();*/
 
-                main_render_pass->update(io.DeltaTime);
+                //main_render_pass->update(io.DeltaTime);
 
-                pbr_setup.update(io.DeltaTime);
+                /*pbr_setup.update(io.DeltaTime);
                 pbr_setup.render();
 
                 render_pass_2D->update(io.DeltaTime);
@@ -596,7 +617,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
                 win32_imgui_post_update();
 
-                device->check_error();
+                device->check_error();*/
 
                 device->end_execution();
             }

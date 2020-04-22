@@ -15,8 +15,13 @@ namespace xe_graphics
         
         this->vp = {};
         
+        RECT rect = RECT();
+        GetClientRect(window, &rect);
+        this->vp.width = rect.right - rect.left;
+        this->vp.height = rect.bottom - rect.top;
+
         int error;
-        HRESULT res;
+        HRESULT res = E_FAIL;
 
         IDXGIAdapter* adapter;
         IDXGIFactory* factory;
@@ -42,7 +47,7 @@ namespace xe_graphics
         res = factory->EnumAdapters(0, &adapter);
         if (FAILED(res))
         {
-            xe_utility::error("Failed to create enum adapters!");            
+            xe_utility::error("Failed to create enum adapters!");
         }
 
         res = adapter->EnumOutputs(0, &adapterOutput);
@@ -70,8 +75,8 @@ namespace xe_graphics
             xe_utility::error("Failed to fill display mode list str");
         }
 
-        uint32 numerator;
-        uint32 denominator;
+        uint32 numerator = 0;
+        uint32 denominator = 0;
 
         for (uint32 i = 0; i < num_modes; i++)
         {
@@ -291,6 +296,10 @@ namespace xe_graphics
     {
     }
 
+    void graphics_device_dx11::set_depth_func(int type)
+    {
+    }
+
     void graphics_device_dx11::set_cull_mode(int type)
     {
     }
@@ -308,6 +317,10 @@ namespace xe_graphics
     }
 
     void graphics_device_dx11::activate_bind_texture(TEXTURE_TYPE type, const texture2D * texture)
+    {
+    }
+
+    void graphics_device_dx11::activate_bind_texture(TEXTURE_TYPE type, const cubemap * texture)
     {
     }
 
@@ -364,6 +377,10 @@ namespace xe_graphics
     }
 
     void graphics_device_dx11::set_depth_buffer_attachment(const framebuffer * fbo)
+    {
+    }
+
+    void graphics_device_dx11::set_depth_buffer_attachment(uint32 w, uint32 h, const framebuffer * fbo)
     {
     }
 
@@ -459,8 +476,26 @@ namespace xe_graphics
     {
     }
 
+    void graphics_device_dx11::set_draw_buffer(uint32 type)
+    {
+    }
+
+    void graphics_device_dx11::set_draw_buffers(uint32 count, void * pointer)
+    {
+    }
+
+    void graphics_device_dx11::set_read_buffer(uint32 type)
+    {
+    }
+
+    void graphics_device_dx11::check_error()
+    {
+    }
+
     void graphics_device_dx11::start_execution()
     {
+        device_context->ClearRenderTargetView(render_target_view, clear_color_v);
+        device_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.0f, 0);
     }
 
     void graphics_device_dx11::end_execution()
@@ -473,7 +508,22 @@ namespace xe_graphics
         return bool32();
     }
 
+    bool32 graphics_device_dx11::create_texture(uint32 count, texture2D * texture)
+    {
+        return bool32();
+    }
+
     bool32 graphics_device_dx11::create_texture2D(const char * path, texture2D * texture)
+    {
+        return bool32();
+    }
+
+    bool32 graphics_device_dx11::create_texture2D(const char * path, TEXTURE_TYPE tex_type, texture2D * texture)
+    {
+        return bool32();
+    }
+
+    bool32 graphics_device_dx11::create_texture2D(const char * path, TEXTURE_TYPE tex_type, bool32 gen_mip, texture2D * texture)
     {
         return bool32();
     }

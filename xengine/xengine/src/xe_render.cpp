@@ -207,6 +207,8 @@ namespace xe_render
 
         uint32 N = 9;
 
+        bool32 res = false;
+
 #ifdef GAPI_GL
 
         /*bool32 shader_res;
@@ -232,6 +234,12 @@ namespace xe_render
         res |= graphics_device->create_shader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
         res |= graphics_device->create_shader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
         res |= graphics_device->create_shader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
+
+#endif
+
+#ifdef GAPI_DX11
+
+
 
 #endif
 

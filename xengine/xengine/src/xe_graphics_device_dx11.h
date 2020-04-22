@@ -20,14 +20,16 @@ namespace xe_graphics
         void enable(int type) override;
         void disable(int type) override;
         void set_blend_func(int src, int dst) override;
+        void set_depth_func(int type) override;
         void set_cull_mode(int type) override;
         void set_depth(bool32 type) override;
         void draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) override;
         void draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) override;
 
         void activate_bind_texture(TEXTURE_TYPE type, const texture2D *texture) override;
+        void activate_bind_texture(TEXTURE_TYPE type, const cubemap *texture) override;
         void activate_texture(uint32 index) override;
-        void bind_texture(TEXTURE_TYPE type, const texture2D *texture) override;
+        void bind_texture(TEXTURE_TYPE type, const texture2D *tetxture) override;
         void bind_shader(const shader *shader) override;
         void bind_buffer(const vertex_buffer *vb) override;
         void bind_buffer(const index_buffer *ib) override;
@@ -41,12 +43,12 @@ namespace xe_graphics
         void add_depth_texture2D(texture2D *depth, framebuffer *fbo) override;
         void add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo) override;
         void set_depth_buffer_attachment(const framebuffer *fbo) override;
+        void set_depth_buffer_attachment(uint32 w, uint32 h, const framebuffer *fbo) override;
+        texture2D& get_texture(uint32 number, const framebuffer *fbo) override;
         void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture) override;
         void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture) override;
         void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture, uint32 mip) override;
 
-        texture2D& get_texture(uint32 number, const framebuffer *fbo) override;
-        
         void check_framebuffer() override;
 
         void unbind_texture(TEXTURE_TYPE texture) override;
@@ -55,30 +57,29 @@ namespace xe_graphics
         void unbind_framebuffer() override;
         void unbind_buffer(BUFFER_TYPE type) override;
 
-        // shader
         void set_bool(const std::string &name, bool value, shader *shd) override;
-        void set_int(const std::string &namee, int32 value, shader* shd) override;
-        void set_float(const std::string& name, real32 value, shader* shd) override;
-        void set_vec2(const std::string &name, const glm::vec2 &value, shader* shd) override;
-        void set_vec2(const std::string &name, real32 x, real32 y, shader* shd) override;
-        void set_vec3(const std::string &name, const glm::vec3 &value, shader* shd) override;
-        void set_vec3(const std::string &name, real32 x, real32 y, real32 z, shader* shd) override;
-        void set_vec4(const std::string &name, const glm::vec4 &value, shader* shd) override;
-        void set_vec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, shader* shd) override;
-        void set_mat2(const std::string &name, const glm::mat2 &mat, shader* shd) override;
-        void set_mat3(const std::string &name, const glm::mat3 &mat, shader* shd) override;
-        void set_mat4(const std::string &name, const glm::mat4 &mat, shader* shd) override;
-
-        void start_execution() override;
-        void end_execution() override;
+        void set_int(const std::string &namee, int32 value, shader *shd) override;
+        void set_float(const std::string& name, real32 value, shader *shd) override;
+        void set_vec2(const std::string &name, const glm::vec2 &value, shader *shd) override;
+        void set_vec2(const std::string &name, real32 x, real32 y, shader *shd) override;
+        void set_vec3(const std::string &name, const glm::vec3 &value, shader *shd) override;
+        void set_vec3(const std::string &name, real32 x, real32 y, real32 z, shader *shd) override;
+        void set_vec4(const std::string &name, const glm::vec4 &value, shader *shd) override;
+        void set_vec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, shader *shd) override;
+        void set_mat2(const std::string &name, const glm::mat2 &mat, shader *shd) override;
+        void set_mat3(const std::string &name, const glm::mat3 &mat, shader *shd) override;
+        void set_mat4(const std::string &name, const glm::mat4 &mat, shader *shd) override;
 
         bool32 create_texture(texture2D *texture) override;
-        bool32 create_texture2D(const char *path, texture2D* texture) override;
-        bool32 create_texture2D(const char *path, const char* dir, texture2D* texture) override;
+        bool32 create_texture(uint32 count, texture2D *texture) override;
+        bool32 create_texture2D(const char *path, texture2D *texture) override;
+        bool32 create_texture2D(const char *path, TEXTURE_TYPE tex_type, texture2D *texture) override;
+        bool32 create_texture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, texture2D *texture) override;
+        bool32 create_texture2D(const char *path, const char *dir, texture2D *texture) override;
+        bool32 create_texture2D(uint32 width, uint32 height, texture2D* texture) override;
         bool32 create_texture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, texture2D* texture) override;
         bool32 create_texture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, texture2D* texture) override;
-        bool32 create_texture2D(uint32 width, uint32 height, texture2D* texture) override;
-        bool32 create_shader(const char* vertex, const char* fragment, shader* shader) override;
+        bool32 create_shader(const char* vertex, const char* fragment, shader *shader) override;
         bool32 create_framebuffer(const uint32 count, framebuffer *fbo) override;
         bool32 create_render_buffer(const uint32 count, framebuffer *fbo) override;
         bool32 create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) override;
@@ -99,6 +100,15 @@ namespace xe_graphics
         void destroy_texture2D(texture2D *tex) override;
         void destroy_framebuffer(framebuffer *fbo) override;
         void destroy_shader(uint32 id) override;
+
+        void set_draw_buffer(uint32 type) override;
+        void set_draw_buffers(uint32 count, void *pointer) override;
+        void set_read_buffer(uint32 type) override;
+
+        void check_error() override;
+
+        void start_execution() override;
+        void end_execution() override;
 
     private:        
         ID3D11Device* device;

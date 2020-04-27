@@ -207,7 +207,7 @@ namespace xe_render
 
         uint32 N = 9;
 
-        bool32 res = false;
+       bool32 res = false;
 
 #ifdef GAPI_GL
 
@@ -218,7 +218,7 @@ namespace xe_render
             shader_res |= device->create_shader(shaders_dir + std::string("simple2d.vs"), std::string(shaders_dir + "simple2d.vs").c_str(), &simple_shader);
         }*/
 
-        bool32 res = graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
+        res = graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
         res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
         res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
         res |= graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
@@ -310,6 +310,18 @@ namespace xe_render
         // hdr env map
         texture2D hdr = {};
 
+        texture2D cerberus_d = {};
+        texture2D cerberus_n = {};
+        texture2D cerberus_r = {};
+        texture2D cerberus_m = {};
+        texture2D cerberus_ao = {};
+
+        graphics_device->create_texture2D("assets/cerberus/albedo.tga", &cerberus_d);
+        graphics_device->create_texture2D("assets/cerberus/normal.tga", &cerberus_n);
+        graphics_device->create_texture2D("assets/cerberus/roughness.tga", &cerberus_r);
+        graphics_device->create_texture2D("assets/cerberus/metallic.tga", &cerberus_m);
+        graphics_device->create_texture2D("assets/cerberus/ao.tga", &cerberus_ao);
+
         graphics_device->create_texture2D("assets/pbr/rusted_iron/albedo.png", &albedo_iron);
         graphics_device->create_texture2D("assets/pbr/rusted_iron/normal.png", &normal_iron);
         graphics_device->create_texture2D("assets/pbr/rusted_iron/metallic.png", &metallic_iron);
@@ -386,6 +398,12 @@ namespace xe_render
 
         textures["hdr_env"] = hdr;
 
+        textures["cerberus_d"] = cerberus_d;
+        textures["cerberus_n"] = cerberus_n;
+        textures["cerberus_r"] = cerberus_r;
+        textures["cerberus_m"] = cerberus_m;
+        textures["cerberus_ao"] = cerberus_ao;
+
         xe_utility::info("Free textures loaded!!!");
         return true;
     }
@@ -445,9 +463,98 @@ namespace xe_render
         return &textures[name];
     }
     
-    bool32 create_mesh(xe_assets::mesh *meh)
+    bool32 create_mesh(xe_assets::mesh *meh, xe_graphics::vertex *vertex_type, bool32 calculate_tspace)
     {
-        return bool32();
+        vertex *vert = vertex_type;
+
+        meh->vao.buffers.push_back(new vertex_buffer());
+        meh->vao.ib = new index_buffer();
+
+        buffer_layout buffer_layout = {};
+
+        std::initializer_list<xe_graphics::buffer_element> init_list;
+
+        if (calculate_tspace)
+        {
+            init_list = 
+            {
+                { "aPos",       ElementType::Float3, },                
+                { "aNormal",    ElementType::Float3, },
+                { "aTangent",    ElementType::Float3, },
+                { "aBitangent",    ElementType::Float3, },
+                { "aUV",        ElementType::Float2, }
+            };
+        }
+        else
+        {
+            init_list =
+            {
+                { "aPos",       ElementType::Float3, },
+                { "aNormal",    ElementType::Float3, },
+                { "aUV",        ElementType::Float2, }
+            };
+        }
+
+        graphics_device->create_vertex_array(&meh->vao);
+        graphics_device->bind_vertex_array(&meh->vao);
+
+        graphics_device->create_vertex_buffer(&meh->vertices_fl[0], meh->vertices_fl.size(), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
+        graphics_device->create_index_buffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
+
+        graphics_device->create_buffer_layout(init_list, &buffer_layout);
+        graphics_device->set_vertex_buffer_layout(meh->vao.buffers[0], &buffer_layout);
+        graphics_device->add_vertex_buffer(&meh->vao, meh->vao.buffers[0]);
+        graphics_device->set_index_buffer(&meh->vao, meh->vao.ib);
+
+        //glGenVertexArrays(1, &meh->vao);
+        //glGenBuffers(1, &meh->vbo);
+        //glGenBuffers(1, &meh->ibo);
+
+        //device->bind_vertex_array(&meh->vao);
+        //device->bind_buffer(meh->vao.buffers[0]);
+        //glBufferData(GL_ARRAY_BUFFER, meh->vertices_tab.size() * sizeof(pos_normal_tb_uv), &meh->vertices_tab[0], GL_STATIC_DRAW);
+        
+        //device->bind_buffer(meh->vao.ib);
+        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, meh->indices.size() * sizeof(uint32), &meh->indices[0], GL_STATIC_DRAW);
+
+        //glEnableVertexAttribArray(0);
+        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)0);
+
+        //glEnableVertexAttribArray(1);
+        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, normal));
+
+        // @tangent & @bitangent
+        //glEnableVertexAttribArray(2);
+        //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, tangent));
+
+        //glEnableVertexAttribArray(3);
+        //glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, bitangent));
+
+        //glEnableVertexAttribArray(4);
+        //glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, uv));
+
+        //else
+        /*{
+            glBufferData(GL_ARRAY_BUFFER, meh->vertices.size() * sizeof(pos_normal_uv), &meh->vertices[0], GL_STATIC_DRAW);
+
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meh->ibo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, meh->indices.size() * sizeof(uint32), &meh->indices[0], GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)0);
+
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)offsetof(pos_normal_uv, normal));
+
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)offsetof(pos_normal_uv, uv));
+        }*/
+
+        graphics_device->unbind_vertex_array();
+        graphics_device->destroy_buffer(meh->vao.buffers[0]);
+        graphics_device->destroy_buffer(meh->vao.ib);
+
+        return true;       
     }
 
     bool32 create_cubemap(std::vector<const char*> paths, xe_graphics::cubemap *cube)
@@ -484,6 +591,8 @@ namespace xe_render
         q->vertex_array->ib = new xe_graphics::index_buffer;
         
         graphics_device->create_vertex_array(q->vertex_array);
+        graphics_device->bind_vertex_array(q->vertex_array);
+
         graphics_device->create_vertex_buffer(vertices, vertex_size, DRAW_TYPE::STATIC, q->vertex_array->buffers[0]);
         graphics_device->create_index_buffer(indices, indices_size, q->vertex_array->ib);
         
@@ -974,14 +1083,14 @@ namespace xe_render
         using namespace xe_ecs;
         quad_component* mesh = ent->find_component<quad_component>();
         transform_component *tr = ent->find_component<transform_component>();
-
-        if (texture != nullptr)
-            graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);
-
+        
         if (mesh == nullptr)
             return;
 
         graphics_device->bind_shader(shd);
+
+        if (texture != nullptr)
+            graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);
 
         glm::mat4 model_matrix = tr->model_matrix;
 
@@ -1199,8 +1308,8 @@ namespace xe_render
 
         glm::mat4 model_matrix = IDENTITY_MATRIX;
 
-        model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, -5.0f, -10.0f));
-        model_matrix = glm::scale(model_matrix, glm::vec3(0.4f, 0.4f, 0.4f));
+        model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, 0.0f, -2.0f));
+        model_matrix = glm::scale(model_matrix, glm::vec3(2.0f, 2.0f, 2.0f));
         
         xe_ecs::camera3d_component cam = get_camera3D();
 
@@ -1414,11 +1523,8 @@ namespace xe_render
             device->bind_texture(TEXTURE_TYPE::COLOR, mesh_texture);
         }
 
-        //if (msh->vertices.size() > 0)
-       // {
-            glBindVertexArray(msh->vao);
-            device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
-       // }
+        device->bind_vertex_array(&msh->vao);
+        device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
     }
 
     void draw_sphere(xe_graphics::texture2D *texture_diff)

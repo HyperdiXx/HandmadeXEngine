@@ -90,6 +90,8 @@ win32_init_imgui_gl(HWND window)
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
+#ifdef GAPI_DX11
+
 internal void 
 win32_init_imgui_dx11(HWND window, ID3D11Device *device, ID3D11DeviceContext *device_context)
 {
@@ -104,6 +106,8 @@ win32_init_imgui_dx11(HWND window, ID3D11Device *device, ID3D11DeviceContext *de
     ImGui_ImplWin32_Init(window);
     ImGui_ImplDX11_Init(device, device_context);
 }
+
+#endif
 
 internal void 
 win32_imgui_new_frame()
@@ -355,19 +359,33 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
 
             if (raw->header.dwType == RIM_TYPEKEYBOARD)
             {
-                
+                const RAWKEYBOARD& rawkeyboard = raw->data.keyboard;
+
+                switch (rawkeyboard.VKey)
+                {
+                case VK_ESCAPE:
+                {
+                    xe_utility::info("escape button pressed!");  
+                    break;
+                }
+                default:
+                    break;
+                }
+
             }
             else if (raw->header.dwType == RIM_TYPEMOUSE)
             {
                 const RAWMOUSE& rawmouse = raw->data.mouse;
-
+                    
                 xe_input::mouse_state *mouse = xe_input::get_mouse_state();
 
+                mouse->is_left_button_pressed = false;
+                
                 if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE)
                 {
-                    mouse->dt_position.x += rawmouse.lLastX;
-                    mouse->dt_position.y += rawmouse.lLastY;
-                   
+                    mouse->position.x = rawmouse.lLastX;
+                    mouse->position.y = rawmouse.lLastY;
+                    
                     if (rawmouse.usButtonFlags == RI_MOUSE_WHEEL)
                     {
                         mouse->wheel += float((SHORT)rawmouse.usButtonData) / float(WHEEL_DELTA);
@@ -387,9 +405,10 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
                 
                 if (rawmouse.usButtonFlags == RI_MOUSE_RIGHT_BUTTON_DOWN)
                 {
-                    mouse->is_right_button_pressed = true;
+                    mouse->dt_position.x = rawmouse.lLastX;
+                    mouse->dt_position.y = rawmouse.lLastY;
+                    mouse->is_right_button_pressed = !mouse->is_right_button_pressed;
                 }
-
             }
             return 0;
         } break;
@@ -515,20 +534,18 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         if (window_handle)
         {
             using namespace xe_graphics;
-            using namespace xe_render;
             
             xe_input::init();
 
 #ifdef GAPI_GL
 
             graphics_device *device = new graphics_device_gl(window_handle);
-            set_device(device);
-            win32_init_gl_loader();
-            win32_init_imgui_gl(window_handle);
+            xe_render::set_device(device);
             
-            init_render_gl();
-            ImGuiIO &io = ImGui::GetIO();
-
+            win32_init_gl_loader();
+            win32_init_imgui_gl(window_handle);            
+            xe_render::init_render_gl();
+            
             application::load_state();
 
             xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
@@ -540,10 +557,12 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             application::application_state *current_app_state = application::get_app_state();
             application::set_active_scene(&pbr_scene);
 
-            /*render_pass *render_pass_2D = new render_pass2D();
-            set_render_pass(render_pass_2D);
+            ImGuiIO &io = ImGui::GetIO();
 
+            render_pass *render_pass_2D = new render_pass2D();
             render_pass_2D->init();
+
+            xe_render::set_render_pass(render_pass_2D);
 
             render_pass3D *main_render_pass = new render_pass3D();
             main_render_pass->init();
@@ -557,7 +576,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             shadow_pass.set_scene(&current_app_state->active_scene);
 
             pbr_pass pbr_setup = {};
-            pbr_setup.init();           */
+            pbr_setup.init();          
 
 #endif 
 
@@ -604,9 +623,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 gamma_correction.set_color_texture(&pass_texture);
                 gamma_correction.render();*/
 
-                //main_render_pass->update(io.DeltaTime);
+                main_render_pass->update(io.DeltaTime);
 
-                /*pbr_setup.update(io.DeltaTime);
+                pbr_setup.update(io.DeltaTime);
                 pbr_setup.render();
 
                 render_pass_2D->update(io.DeltaTime);
@@ -617,7 +636,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
                 win32_imgui_post_update();
 
-                device->check_error();*/
+                device->check_error();
 
                 device->end_execution();
             }

@@ -22,8 +22,6 @@ namespace xe_graphics
         virtual void init() = 0;
         virtual void clear() = 0;
 
-        virtual void unload_resources() = 0;
-
         virtual void render() = 0;
 
         virtual void update(real32 dt) = 0;
@@ -37,8 +35,6 @@ namespace xe_graphics
     public:
         void init() override;
         void clear() override;
-
-        void unload_resources() override;
 
         void render() override;
 
@@ -61,8 +57,6 @@ namespace xe_graphics
         void init() override;
         void clear() override;
 
-        void unload_resources() override;
-
         void render() override;
 
         void update(real32 dt) override;
@@ -81,8 +75,6 @@ namespace xe_graphics
     public:
         void init() override;
         void clear() override;
-
-        void unload_resources() override;
 
         void render() override;
 
@@ -103,8 +95,6 @@ namespace xe_graphics
     public:
         void init() override;
         void clear() override;
-
-        void unload_resources() override;
 
         void render() override;
 

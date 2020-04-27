@@ -493,12 +493,10 @@ namespace xe_graphics
             fbo->depth_texture->desc.height = h;
             fbo->depth_texture->desc.dimension = TEXTURE_2D;
             fbo->depth_texture->desc.texture_type = DEPTH;
-
-            //glGenTextures(1, &fbo->depth_texture->id);
-            
+        
             create_texture(fbo->depth_texture);
             bind_texture(TEXTURE_TYPE::DEPTH, fbo->depth_texture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+            load_texture_gpu(TEXTURE_TYPE::COLOR, w, h, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
             
             set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
             set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
@@ -512,14 +510,14 @@ namespace xe_graphics
 
     void graphics_device_gl::set_depth_buffer_attachment(const framebuffer *fbo)
     {
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
+        set_renderbuffer(GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
+        set_framebuffer_renderbuffer_attachment(fbo);
     }
 
     void graphics_device_gl::set_depth_buffer_attachment(uint32 w, uint32 h, const framebuffer *fbo)
     {
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, w, h);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
+        set_renderbuffer(GL_DEPTH_COMPONENT32, w, h);
+        set_framebuffer_renderbuffer_attachment(fbo);
     }
 
     texture2D& graphics_device_gl::get_texture(uint32 number, const framebuffer *fbo)
@@ -545,6 +543,16 @@ namespace xe_graphics
     {
         uint32 tex_t = convert_texture_type_gl(tex_type);
         glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, mip);
+    }
+
+    void graphics_device_gl::set_renderbuffer(int depth_component, uint32 width, uint32 height)
+    {
+        glRenderbufferStorage(GL_RENDERBUFFER, depth_component, width, height);
+    }
+
+    void graphics_device_gl::set_framebuffer_renderbuffer_attachment(const framebuffer *fbo)
+    {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
     }
 
     void graphics_device_gl::check_framebuffer()
@@ -740,7 +748,7 @@ namespace xe_graphics
         GLenum internal_format = 0, data_format = 0;
         if (channels == 1)
         {
-            internal_format = GL_RED;
+            internal_format = GL_R8;
             data_format = GL_RED;
         }
         else if (channels == 3)
@@ -1046,6 +1054,11 @@ namespace xe_graphics
         glTexImage2D(texture_t, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
     }
 
+    void graphics_device_gl::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void * image)
+    {
+        glTexImage2D(texture_t, 0, internal_format, width, height, 0, data_format, data_type, image);
+    }
+
     void graphics_device_gl::generate_texture_mipmap(TEXTURE_TYPE texture_t)
     {
         uint32 gl_t = convert_texture_type_gl(texture_t);
@@ -1067,6 +1080,16 @@ namespace xe_graphics
     void graphics_device_gl::destroy_shader(uint32 id)
     {
         glDeleteShader(id);
+    }
+
+    void graphics_device_gl::destroy_buffer(vertex_buffer *vb)
+    {
+        glDeleteBuffers(1, &vb->id);
+    }
+
+    void graphics_device_gl::destroy_buffer(index_buffer * ib)
+    {
+        glDeleteBuffers(1, &ib->id);
     }
 
     void graphics_device_gl::set_draw_buffer(uint32 type)

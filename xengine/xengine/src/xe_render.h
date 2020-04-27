@@ -61,6 +61,7 @@ namespace xe_render
     bool32 create_shadow_maps(xe_graphics::shadow_map *shadow);
     bool32 create_sphere(xe_graphics::sphere *sphre);
     bool32 create_cube(xe_graphics::cube *cube);
+    bool32 create_mesh(xe_assets::mesh *meh, xe_graphics::vertex *vertex_type, bool32 calculate_tspace);
 
     void draw_full_quad();
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture);

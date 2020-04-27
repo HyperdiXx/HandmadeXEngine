@@ -120,18 +120,23 @@ namespace xe_graphics
 
 #define BONES_COUNT 10
 
-    struct position_vertex
+    struct vertex
+    {
+
+    };
+
+    struct position_vertex : vertex
     {
         vec3f pos;
     };
 
-    struct position_uv_vertex
+    struct position_uv_vertex : vertex
     {
         vec3f pos;
         vec2f uv;
     };
 
-    struct pos_normal_tb_uv
+    struct pos_normal_tb_uv : vertex
     {
         vec3f pos;
         vec3f normal;
@@ -140,14 +145,14 @@ namespace xe_graphics
         vec2f uv;
     };
 
-    struct pos_normal_uv
+    struct pos_normal_uv : vertex
     {
         vec3f pos;
         vec3f normal;
         vec2f uv;
     };
 
-    struct pos_normal_uv_b_w
+    struct pos_normal_uv_b_w : vertex
     {
         vec3f pos;
         vec3f normal;

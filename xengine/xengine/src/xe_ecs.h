@@ -230,7 +230,7 @@ namespace xe_ecs
         //@Config!!!
         const real32 c_yaw = -90.0f;
         const real32 c_pitch = 0.0f;
-        const real32 c_sens = 0.1f;
+        const real32 c_sens = 0.2f;
         const real32 c_zoom = 45.0f;
         const real32 c_speed = 12.0f;
 
@@ -279,12 +279,33 @@ namespace xe_ecs
             return glm::lookAt(pos, pos + target, up);
         }
 
+        void mouse_move(real32 xoffset, real32 yoffset, real32 constrainPitch = true)
+        {
+            xoffset *= c_sens;
+            yoffset *= c_sens;
+
+            cam_yaw += xoffset;
+            cam_pitch += yoffset;
+
+            if (constrainPitch)
+            {
+                // @ Add clamp
+                if (cam_pitch > 89.0f)
+                    cam_pitch = 89.0f;
+                if (cam_pitch < -89.0f)
+                    cam_pitch = -89.0f;
+            }
+
+            update_camera_dir();
+        }
+
+
         void update_camera_dir()
         {
             glm::vec3 front;
-            front.x = cos(glm::radians(c_yaw)) * cos(glm::radians(c_pitch));
-            front.y = sin(glm::radians(c_pitch));
-            front.z = sin(glm::radians(c_yaw)) * cos(glm::radians(c_pitch));
+            front.x = cos(glm::radians(cam_yaw)) * cos(glm::radians(cam_pitch));
+            front.y = sin(glm::radians(cam_pitch));
+            front.z = sin(glm::radians(cam_yaw)) * cos(glm::radians(cam_pitch));
             target = glm::normalize(front);
             right = glm::normalize(glm::cross(target, world_up));
             up = glm::normalize(glm::cross(right, target));

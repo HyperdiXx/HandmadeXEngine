@@ -45,8 +45,51 @@ void bst_test()
     BSTreeNode *max_node = max(bst.root);
 }
 
+int str_to_int(std::string &str)
+{
+    int result = 0;
+
+    for (uint32 i = 0; i < str.size(); i++)
+    {
+        result = result * 10 + str[i] - '0';
+    }
+
+    return result;
+}
+
+void swap(char &a, char &b)
+{
+    int tmp = a;
+    a = b;
+    b = tmp;
+}
+
+std::string int_to_str(int val)
+{
+    std::string result = "";
+    
+    int i = 0;
+    while (val != 0)
+    {
+        int reminder = val % 10;
+        result.push_back(reminder + '0');
+        val /= 10;
+    }
+
+    for (int i = 0, j = result.size() - 1; i < j; i++, j--)
+        swap(result[i], result[j]);
+
+    return result;
+}
+
 int main(int argc, char **argv)
 {
+    std::string stri = "12345";
+
+    int val = str_to_int(stri);
+
+    std::string back = int_to_str(val);
+
     stack_allocator_test();
 
     bst_test();

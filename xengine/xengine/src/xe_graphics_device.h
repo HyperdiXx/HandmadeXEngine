@@ -50,6 +50,8 @@ namespace xe_graphics
         virtual void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture) = 0;
         virtual void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture) = 0;
         virtual void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture, uint32 mip) = 0;
+        virtual void set_renderbuffer(int depth_compoentn, uint32 width, uint32 height) = 0;
+        virtual void set_framebuffer_renderbuffer_attachment(const framebuffer *fbo) = 0;
 
         virtual texture2D& get_texture(uint32 number, const framebuffer *fbo) = 0;
         virtual void check_framebuffer() = 0;
@@ -102,11 +104,15 @@ namespace xe_graphics
 
         virtual void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image) = 0;
         virtual void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image) = 0;
+        virtual void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void* image) = 0;
+
         virtual void generate_texture_mipmap(TEXTURE_TYPE texture_t) = 0;
         
         virtual void destroy_texture2D(texture2D *tex) = 0;
         virtual void destroy_framebuffer(framebuffer *fbo) = 0;
         virtual void destroy_shader(uint32 id) = 0;
+        virtual void destroy_buffer(vertex_buffer *vb) = 0;
+        virtual void destroy_buffer(index_buffer *ib) = 0;
 
         virtual void set_draw_buffer(uint32 type) = 0;
         virtual void set_draw_buffers(uint32 count, void *pointer) = 0;

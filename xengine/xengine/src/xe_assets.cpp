@@ -79,8 +79,6 @@ namespace xe_assets
 
                 device->create_texture2D(str.C_Str(), mdl->parent_dir.c_str(), texture_crt);
 
-                //texture.texture = Texture2D::create(str.C_Str(), model->parent_dir.c_str());
-
                 texture.texture = texture_crt;
                 texture.type = texture_type;
                 texture.path = str.C_Str();
@@ -105,6 +103,11 @@ namespace xe_assets
                 return n;
         }
         return nullptr;
+    }
+
+    vertex *get_vertex_type(model *mdl)
+    {        
+        return mdl->vertex_type;
     }
 
     void parse_animations(anim_model * model, const aiScene * ai_scene)
@@ -209,72 +212,15 @@ namespace xe_assets
         }
     }
 
-    bool32 create_mesh(mesh *meh)
-    {
-        xe_graphics::graphics_device *device = xe_render::get_device();        
-        
-        //device->create_vertex_array(&meh->vao);
-        //device->create_vertex_buffer(meh->vertices, meh->vertices.size(), &meh->vbo);
-        //device->create_index_buffer(meh->indices, meh->indices.size(), &meh->ebo);
-
-        glGenVertexArrays(1, &meh->vao);
-        glGenBuffers(1, &meh->vbo);
-        glGenBuffers(1, &meh->ibo);
-
-        glBindVertexArray(meh->vao);
-        glBindBuffer(GL_ARRAY_BUFFER, meh->vbo);
-
-        if (calculate_tspace)
-        {
-            glBufferData(GL_ARRAY_BUFFER, meh->vertices_tab.size() * sizeof(pos_normal_tb_uv), &meh->vertices_tab[0], GL_STATIC_DRAW);
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meh->ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, meh->indices.size() * sizeof(uint32), &meh->indices[0], GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)0);
-
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, normal));
-
-            // @tangent & @bitangent
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, tangent));
-
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, bitangent));
-
-            glEnableVertexAttribArray(4);
-            glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_tb_uv), (void*)offsetof(pos_normal_tb_uv, uv));
-        }
-        //else
-        /*{
-            glBufferData(GL_ARRAY_BUFFER, meh->vertices.size() * sizeof(pos_normal_uv), &meh->vertices[0], GL_STATIC_DRAW);
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meh->ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, meh->indices.size() * sizeof(uint32), &meh->indices[0], GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)0);
-
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)offsetof(pos_normal_uv, normal));
-           
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(pos_normal_uv), (void*)offsetof(pos_normal_uv, uv));
-        }*/
-        
-        glBindVertexArray(0);
-        glDeleteBuffers(1, &meh->vbo);
-        glDeleteBuffers(1, &meh->ibo);
-
-        return true;
-    }
-
     model *parse_static_model(const aiScene *scene, const std::string &path)
     {
         model *mode = new model();
 
+        if (calculate_tspace)
+            mode->vertex_type = new pos_normal_tb_uv();
+        else
+            mode->vertex_type = new pos_normal_uv();
+        
         mode->parent_dir = path.substr(0, path.find_last_of('/'));
         mode->root = parse_node(mode, scene->mRootNode, scene);
 
@@ -295,7 +241,7 @@ namespace xe_assets
         return animated_model;
     }
 
-    node * parse_node(model * model, aiNode * ai_node, const aiScene * scene)
+    node *parse_node(model * model, aiNode * ai_node, const aiScene * scene)
     {
         node* cur_node = new node();
         cur_node->name = ai_node->mName.C_Str();
@@ -317,11 +263,12 @@ namespace xe_assets
     mesh *parse_mesh(model *model, aiMesh *ai_mesh, const aiScene *scene)
     {
         mesh* mes = new mesh();
+        
         parse_vert(mes, ai_mesh);
         parse_faces(mes, ai_mesh);
         parse_materials(model, mes, ai_mesh, scene);
 
-        create_mesh(mes);
+        xe_render::create_mesh(mes, model->vertex_type, calculate_tspace);
 
         return mes;
     }
@@ -334,7 +281,9 @@ namespace xe_assets
         uint32 flags = aiProcess_Triangulate;
 
         if (calculate_tb)
-            flags |= aiProcess_CalcTangentSpace;
+        {
+            flags |= aiProcess_CalcTangentSpace;            
+        }
 
         const aiScene* scene = importer.ReadFile(path, flags);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -344,7 +293,7 @@ namespace xe_assets
         }
 
         calculate_tspace = calculate_tb;
-
+        
         model *result = parse_static_model(scene, path);
 
         if(result)
@@ -382,62 +331,55 @@ namespace xe_assets
     void parse_vert(mesh *meh, aiMesh *aimesh)
     {
         //std::vector<pos_normal_uv> vertices;
-        std::vector<pos_normal_tb_uv> vertices;
+        //std::vector<pos_normal_tb_uv> vertices;
 
-        std::vector<uint32> indices;
-        std::vector<texture_wrapper> textures;
+        //std::vector<real32> vertices;
+        //std::vector<uint32> indices;
+        //std::vector<texture_wrapper> textures;
 
+        meh->vertices_fl.reserve(aimesh->mNumVertices);
+       
         //pos_normal_uv vertex;
-        pos_normal_tb_uv vertex;
+        //pos_normal_tb_uv vertex;
         
-        vec3f vector;
-
         for (uint32 i = 0; i < aimesh->mNumVertices; i++)
         {
             if (aimesh->HasPositions())
             {
                 // @SpeedUp: memcpy above
-                vector.x = aimesh->mVertices[i].x;
-                vector.y = aimesh->mVertices[i].y;
-                vector.z = aimesh->mVertices[i].z;
-                vertex.pos = vector;
+                meh->vertices_fl.push_back(aimesh->mVertices[i].x);
+                meh->vertices_fl.push_back(aimesh->mVertices[i].y);
+                meh->vertices_fl.push_back(aimesh->mVertices[i].z);
             }
 
             if (aimesh->HasNormals())
             {
-                vector.x = aimesh->mNormals[i].x;
-                vector.y = aimesh->mNormals[i].y;
-                vector.z = aimesh->mNormals[i].z;
-                vertex.normal = vector;
+                meh->vertices_fl.push_back(aimesh->mNormals[i].x);
+                meh->vertices_fl.push_back(aimesh->mNormals[i].y);
+                meh->vertices_fl.push_back(aimesh->mNormals[i].z);
+            }
+
+            if (aimesh->HasTangentsAndBitangents())
+            {
+                meh->vertices_fl.push_back(aimesh->mTangents[i].x);
+                meh->vertices_fl.push_back(aimesh->mTangents[i].y);
+                meh->vertices_fl.push_back(aimesh->mTangents[i].z);
+
+                meh->vertices_fl.push_back(aimesh->mBitangents[i].x);
+                meh->vertices_fl.push_back(aimesh->mBitangents[i].y);
+                meh->vertices_fl.push_back(aimesh->mBitangents[i].z);
             }
 
             if (aimesh->HasTextureCoords(0))
             {
-                vec2f uv;
-
-                uv.x = aimesh->mTextureCoords[0][i].x;
-                uv.y = aimesh->mTextureCoords[0][i].y;
-
-                vertex.uv = uv;
+                meh->vertices_fl.push_back(aimesh->mTextureCoords[0][i].x);
+                meh->vertices_fl.push_back(aimesh->mTextureCoords[0][i].y);
             }
             else
-                vertex.uv = vec2f(0.0f, 0.0f);
-
-            // @Note : not using tbn right now
-            if (aimesh->HasTangentsAndBitangents())
             {
-                vector.x = aimesh->mTangents[i].x;
-                vector.y = aimesh->mTangents[i].y;
-                vector.z = aimesh->mTangents[i].z;
-                vertex.tangent = vector;
-
-                vector.x = aimesh->mBitangents[i].x;
-                vector.y = aimesh->mBitangents[i].y;
-                vector.z = aimesh->mBitangents[i].z;
-                vertex.bitangent = vector;
+                meh->vertices_fl.push_back(0.0f);
+                meh->vertices_fl.push_back(0.0f);
             }
-
-            meh->add_vertex(vertex);
         }
     }
 
@@ -449,6 +391,11 @@ namespace xe_assets
     void mesh::add_vertex(pos_normal_tb_uv vertex)
     {
         vertices_tab.push_back(vertex);
+    }
+
+    void mesh::add_vertex(real32 vertex)
+    {
+        vertices_fl.push_back(vertex);
     }
 
     void mesh::add_index(uint32 ind)

@@ -20,8 +20,11 @@ namespace xe_assets
     {
         void add_vertex(pos_normal_uv vertex);
         void add_vertex(pos_normal_tb_uv vertex);
-        
+        void add_vertex(real32 vertex);
+
         void add_index(uint32 ind);        
+
+        std::vector<real32> vertices_fl;
 
         std::vector<pos_normal_uv> vertices;
         std::vector<pos_normal_tb_uv> vertices_tab;
@@ -29,10 +32,9 @@ namespace xe_assets
         std::vector<uint32> indices;
         std::vector<texture_wrapper> mesh_textures;
 
-        //xe_graphics::vertex_array vao;
-        //xe_graphics::vertex_buffer vbo;
-        //xe_graphics::index_buffer ibo;
-        uint32 vao, vbo, ibo;
+        xe_graphics::vertex_array vao;
+       
+        //uint32 vao, vbo, ibo;
     };
 
     struct node
@@ -56,6 +58,7 @@ namespace xe_assets
     struct model
     {
         node* root;
+        vertex *vertex_type;
         std::string parent_dir;
         std::vector<texture_wrapper> model_textures;
         std::vector<node*> nodes;
@@ -83,6 +86,8 @@ namespace xe_assets
     
     anim_node *find_node(anim_node *node, std::string &name);
   
+    vertex* get_vertex_type(model *mdl);
+
     void parse_bones(anim_model *animmodel, anim_mesh *mesh, aiMesh *ai_mesh);
     void parse_animations(anim_model *model, const aiScene *ai_scene);
     void parse_materials(model *m, mesh *mesh, aiMesh* ai_mesh, const aiScene *scene);
@@ -96,8 +101,6 @@ namespace xe_assets
 
     void calc_weight(uint32 id, real32 weight, glm::ivec4& bone_id, glm::vec4& wts);
 
-    bool32 create_mesh(mesh *meh);
-   
     model *parse_static_model(const aiScene* scene, const std::string &path);
 
     anim_model *parse_anim_model(const aiScene* scene);

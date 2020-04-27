@@ -26,7 +26,7 @@ namespace xe_core
             res.size = ftell(op);
             fseek(op, 0, SEEK_SET);
 
-            res.data = malloc(res.size);
+            res.data = malloc(res.size + 1);
             fread(res.data, res.size, 1, op);
             fclose(op);
         }

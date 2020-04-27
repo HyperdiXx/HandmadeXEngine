@@ -13,9 +13,11 @@ namespace application
 
         xe_assets::model *character = xe_assets::load_model_from_file("assets/nano/nanosuit.obj");
         xe_assets::model *primitive_cube = xe_assets::load_model_from_file("assets/cube.obj");
+        xe_assets::model *cerberus = xe_assets::load_model_from_file("assets/cerberus/cerberus.obj");
 
         app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Nano", *character));
         app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cube", *primitive_cube));
+        app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cerberus", *cerberus));
 
         app_state.active_scene = {};
 

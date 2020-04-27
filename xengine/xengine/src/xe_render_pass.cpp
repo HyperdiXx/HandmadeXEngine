@@ -6,6 +6,8 @@
 
 #include "xe_scene.h"
 
+#include "app_state.h"
+
 using namespace xe_ecs;
 
 void xe_graphics::render_pass2D::init()
@@ -36,11 +38,6 @@ void xe_graphics::render_pass2D::init()
 void xe_graphics::render_pass2D::clear()
 {
   
-}
-
-void xe_graphics::render_pass2D::unload_resources()
-{
-
 }
 
 void xe_graphics::render_pass2D::render()
@@ -105,11 +102,6 @@ void xe_graphics::render_pass3D::init()
 }
 
 void xe_graphics::render_pass3D::clear()
-{
-
-}
-
-void xe_graphics::render_pass3D::unload_resources()
 {
 
 }
@@ -191,7 +183,20 @@ void xe_graphics::render_pass3D::update(real32 dt)
         //tr->position.x -= 0.8f * sin(dt);
         //tr->position.z -= 0.8f * cos(dt);
     }   
+
+    xe_input::mouse_state *mouse = xe_input::get_mouse_state();
     
+    if (mouse->is_right_button_pressed)
+    {
+        real32 xoffset = mouse->position.x - mouse->dt_position.x;
+        real32 yoffset = mouse->dt_position.y - mouse->position.y;
+        
+        printf("DX: %f\n", xoffset);
+        printf("DY: %f\n", yoffset);
+
+        camera3D.mouse_move(xoffset, yoffset);
+    }
+
     xe_ecs::entity *light_ent = current_scene->directional_light;
     if (light_ent)
     {
@@ -214,11 +219,6 @@ void xe_graphics::gamma_correction_pass::init()
 }
 
 void xe_graphics::gamma_correction_pass::clear()
-{
-
-}
-
-void xe_graphics::gamma_correction_pass::unload_resources()
 {
 
 }
@@ -319,6 +319,22 @@ void xe_graphics::pbr_pass::init()
 {
     graphics_device *device = xe_render::get_device();
 
+    constexpr int env_map_size = 1024;
+    constexpr int irradiance_map_size = 32;
+    constexpr int brdf_lut_size = 256;
+
+    glm::mat4 projection_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+
+    glm::mat4 views_to_capture[] =
+    {
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f),  glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f),  glm::vec3(0.0f,  0.0f,  1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f),  glm::vec3(0.0f,  0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f),  glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f),  glm::vec3(0.0f, -1.0f,  0.0f))
+    };
+
     device->enable(GL_DEPTH_TEST);
     device->set_depth_func(GL_LEQUAL);
     device->enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -328,15 +344,15 @@ void xe_graphics::pbr_pass::init()
 
     device->bind_framebuffer(&fbo);
     device->bind_renderbuffer(&fbo);
-    device->set_depth_buffer_attachment(512, 512, &fbo);
-
-   
+    device->set_renderbuffer(GL_DEPTH_COMPONENT24, env_map_size, env_map_size);
+    device->set_framebuffer_renderbuffer_attachment(&fbo);
+    
     device->create_texture(&env_cubemap);
     device->bind_texture(TEXTURE_TYPE::CUBEMAP, &env_cubemap);
 
     for (uint32 i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+        device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, env_map_size, env_map_size, GL_RGB16F, GL_RGB, GL_FLOAT, nullptr);
     }
 
     device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -345,19 +361,7 @@ void xe_graphics::pbr_pass::init()
 
     device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
     device->set_texture_sampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
-
-    glm::mat4 projection_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-    
-    glm::mat4 views_to_capture[] =
-    {
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-    };
-
+   
     shader *equ_to_cubemap = xe_render::get_shader("equirect");
 
     device->bind_shader(equ_to_cubemap);
@@ -367,7 +371,7 @@ void xe_graphics::pbr_pass::init()
 
     device->activate_bind_texture(TEXTURE_TYPE::COLOR, hdr_tex);
 
-    device->set_viewport(0, 0, 512, 512);
+    device->set_viewport(0, 0, env_map_size, env_map_size);
     device->bind_framebuffer(&fbo);
 
     for (uint32 i = 0; i < 6; ++i)
@@ -390,7 +394,8 @@ void xe_graphics::pbr_pass::init()
 
     for (uint32 i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
+        device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance_map_size, irradiance_map_size, GL_RGB16F, GL_RGB, GL_FLOAT, nullptr);
+        //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, irradiance_map_size, irradiance_map_size, 0, GL_RGB, GL_FLOAT, nullptr);
     }
 
     device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -402,7 +407,7 @@ void xe_graphics::pbr_pass::init()
 
     device->bind_framebuffer(&fbo);
     device->bind_renderbuffer(&fbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
+    device->set_renderbuffer(GL_DEPTH_COMPONENT24, irradiance_map_size, irradiance_map_size);
 
     shader *irradiance = xe_render::get_shader("irradiance");
 
@@ -412,7 +417,7 @@ void xe_graphics::pbr_pass::init()
 
     device->activate_bind_texture(TEXTURE_TYPE::COLOR, &env_cubemap);
 
-    device->set_viewport(0, 0, 32, 32);
+    device->set_viewport(0, 0, irradiance_map_size, irradiance_map_size);
     device->bind_framebuffer(&fbo);
 
     for (uint32 i = 0; i < 6; ++i)
@@ -431,7 +436,8 @@ void xe_graphics::pbr_pass::init()
 
     for (uint32 i = 0; i < 6; i++)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 128, 128, 0, GL_RGB, GL_FLOAT, nullptr);
+        device->load_texture_gpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, brdf_lut_size, brdf_lut_size, GL_RGB16F, GL_RGB, GL_FLOAT, nullptr);
+        //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, brdf_lut_size, brdf_lut_size, 0, GL_RGB, GL_FLOAT, nullptr);
     }
     
     device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -455,16 +461,17 @@ void xe_graphics::pbr_pass::init()
     uint32 max_mip_levels = 5;
     for (uint32 mip = 0; mip < max_mip_levels; ++mip)
     {
-        uint32 mip_width = 128 * std::pow(0.5, mip);
-        uint32 mip_height = 128 * std::pow(0.5, mip);
+        uint32 mip_width = brdf_lut_size * std::pow(0.5, mip);
+        uint32 mip_height = brdf_lut_size * std::pow(0.5, mip);
         
         device->bind_renderbuffer(&fbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mip_width, mip_height);
-    
+        device->set_renderbuffer(GL_DEPTH_COMPONENT24, mip_width, mip_height);
+        
         device->set_viewport(0, 0, mip_width, mip_height);
     
         real32 roughness = (real32)mip / (real32)(max_mip_levels - 1);
         device->set_float("roughness", roughness, prefilter);
+        
         for (uint32 i = 0; i < 6; ++i)
         {
             device->set_mat4("view", views_to_capture[i], prefilter);
@@ -481,7 +488,9 @@ void xe_graphics::pbr_pass::init()
     device->create_texture(&brdf_lut);
     device->bind_texture(TEXTURE_TYPE::COLOR, &brdf_lut);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+    device->load_texture_gpu(TEXTURE_TYPE::COLOR, env_map_size, env_map_size, GL_RG16F, GL_RG, GL_FLOAT, nullptr);
+
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, env_map_size, env_map_size, 0, GL_RG, GL_FLOAT, 0);
 
     device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
     device->set_texture_wrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -491,10 +500,10 @@ void xe_graphics::pbr_pass::init()
 
     device->bind_framebuffer(&fbo);
     device->bind_renderbuffer(&fbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+    device->set_renderbuffer(GL_DEPTH_COMPONENT24, env_map_size, env_map_size);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdf_lut.id, 0);
 
-    device->set_viewport(0, 0, 512, 512);
+    device->set_viewport(0, 0, env_map_size, env_map_size);
 
     shader *brdf = xe_render::get_shader("brdf");
 
@@ -515,10 +524,10 @@ void xe_graphics::pbr_pass::init()
 
     glm::vec3 light_pos[] =
     {
-        glm::vec3(-10.0f,  10.0f, 10.0f),
-        glm::vec3(10.0f,  10.0f, 10.0f),
-        glm::vec3(-10.0f, -10.0f, 10.0f),
-        glm::vec3(10.0f, -10.0f, 10.0f),
+        glm::vec3(-10.0f,  0.0f, 10.0f),
+        glm::vec3(10.0f,  0.0f, 10.0f),
+        glm::vec3(-10.0f, 0.0f, 10.0f),
+        glm::vec3(10.0f,  0.0f, 10.0f),
     };
 
     glm::vec3 light_colors[] =
@@ -549,11 +558,10 @@ void xe_graphics::pbr_pass::clear()
     graphics_device *device = xe_render::get_device();
 
     device->destroy_framebuffer(&fbo);
-}
 
-void xe_graphics::pbr_pass::unload_resources()
-{
-
+    device->destroy_texture2D(&env_cubemap);
+    device->destroy_texture2D(&irr_map);
+    device->destroy_texture2D(&brdf_lut);
 }
 
 void xe_graphics::pbr_pass::render()
@@ -564,7 +572,6 @@ void xe_graphics::pbr_pass::render()
 
     device->bind_shader(pbr_shader);
 
-    glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = camera3d.get_view_matrix();
 
     device->set_mat4("view", view, pbr_shader);
@@ -581,7 +588,7 @@ void xe_graphics::pbr_pass::render()
     device->activate_texture(2);
     device->bind_texture(TEXTURE_TYPE::COLOR, &brdf_lut);
 
-    texture2D *iron_albedo = xe_render::get_texture2D_resource("albedo_iron");
+   /* texture2D *iron_albedo = xe_render::get_texture2D_resource("albedo_iron");
     texture2D *iron_normal = xe_render::get_texture2D_resource("normal_iron");
     texture2D *iron_metallic = xe_render::get_texture2D_resource("metallic_iron");
     texture2D *iron_roughness = xe_render::get_texture2D_resource("roughness_iron");
@@ -610,8 +617,28 @@ void xe_graphics::pbr_pass::render()
 
     model_matrix = glm::translate(model_matrix, glm::vec3(3.0, 0.0, -5.0f));
     device->set_mat4("model", model_matrix, pbr_shader);
-    xe_render::draw_sphere();
-   
+    xe_render::draw_sphere();*/
+
+    texture2D *albedo_cerberus = xe_render::get_texture2D_resource("cerberus_d");
+    texture2D *normal_cerberus = xe_render::get_texture2D_resource("cerberus_n");
+    texture2D *metallic_cerberus = xe_render::get_texture2D_resource("cerberus_m");
+    texture2D *rougnhess_cerberus = xe_render::get_texture2D_resource("cerberus_r");
+    texture2D *ao_cerberus = xe_render::get_texture2D_resource("cerberus_ao");
+
+    device->activate_texture(3);
+    device->bind_texture(TEXTURE_TYPE::COLOR, albedo_cerberus);
+    device->activate_texture(4);
+    device->bind_texture(TEXTURE_TYPE::COLOR, normal_cerberus);
+    device->activate_texture(5);
+    device->bind_texture(TEXTURE_TYPE::COLOR, metallic_cerberus);
+    device->activate_texture(6);
+    device->bind_texture(TEXTURE_TYPE::COLOR, rougnhess_cerberus);
+    device->activate_texture(7);
+    device->bind_texture(TEXTURE_TYPE::COLOR, ao_cerberus);
+
+    xe_assets::model *cerberus = application::get_model_by_name("Cerberus");
+    xe_render::draw_model(cerberus, pbr_shader);
+
     shader *back = xe_render::get_shader("background");
     
     device->bind_shader(back);

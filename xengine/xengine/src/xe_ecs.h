@@ -36,6 +36,7 @@ namespace xe_ecs
         ENT_DIR_LIGHT,
         ENT_PRIMITIVE_OBJECT,
         ENT_ANIMATED_OBJECT,
+        ENT_WATER,
         ENT_CAMERA
     };
 
@@ -321,6 +322,13 @@ namespace xe_ecs
         xe_graphics::texture2D *normal;
         xe_graphics::texture2D *specular;
         xe_graphics::texture2D *ao;
+    };
+
+    class water_component : public component
+    {
+    public:
+
+        xe_graphics::texture2D *water_tex;
     };
 
     class spot_light : public component

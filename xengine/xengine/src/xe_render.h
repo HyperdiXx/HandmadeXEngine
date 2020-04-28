@@ -85,6 +85,8 @@ namespace xe_render
     void draw_text(const std::string &text, glm::vec2& pos);
     void draw_text(const std::string &text, real32 x, real32 y);
 
+    void draw_water_plane(xe_ecs::entity *ent);
+
     void draw_skybox();
     void draw_shadow_maps();
 

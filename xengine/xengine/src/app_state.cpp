@@ -2,6 +2,7 @@
 
 #include "xe_ecs.h"
 #include "xe_assets.h"
+#include "xe_input.h"
 
 namespace application
 {
@@ -83,5 +84,58 @@ namespace application
         result = &obj->models3D[name];
 
         return result;
+    }
+
+    void game_update(real32 dt)
+    {
+        xe_ecs::camera3d_component& camera3D = xe_render::get_camera3D();
+
+        if (xe_input::pressed(xe_input::KEYBOARD_S))
+        {
+            camera3D.pos -= camera3D.speed * dt * camera3D.target;
+        }
+
+        if (xe_input::pressed(xe_input::KEYBOARD_W))
+        {
+            camera3D.pos += camera3D.speed * dt * camera3D.target;
+        }
+
+        if (xe_input::pressed(xe_input::KEYBOARD_A))
+        {
+            camera3D.pos -= camera3D.speed * dt * camera3D.right;
+        }
+
+        if (xe_input::pressed(xe_input::KEYBOARD_D))
+        {
+            camera3D.pos += camera3D.speed * dt * camera3D.right;
+        }
+
+        if (xe_input::pressed(xe_input::KEYBOARD_V))
+        {
+            //transform_component *tr = light_ent.find_component<transform_component>();
+            //tr->position.x += 0.8f * sin(dt);
+            //tr->position.z += 0.8f * cos(dt);
+        }
+
+        if (xe_input::pressed(xe_input::KEYBOARD_B))
+        {
+            //transform_component *tr = light_ent.find_component<transform_component>();
+            //tr->position.x -= 0.8f * sin(dt);
+            //tr->position.z -= 0.8f * cos(dt);
+        }
+
+        xe_input::mouse_state *mouse = xe_input::get_mouse_state();
+
+        if (mouse->is_right_button_pressed)
+        {
+            real32 xoffset = mouse->position.x - mouse->dt_position.x;
+            real32 yoffset = mouse->dt_position.y - mouse->position.y;
+
+            printf("DX: %f\n", xoffset);
+            printf("DY: %f\n", yoffset);
+
+            camera3D.mouse_move(xoffset, yoffset);
+        }
+
     }
 }

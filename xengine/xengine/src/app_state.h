@@ -19,4 +19,6 @@ namespace application
     xe_ecs::entity *get_entity();
     xe_ecs::entity *get_entity_by_type(xe_ecs::ENTITY_TYPE type);
     xe_assets::model *get_model_by_name(const char* name);
+
+    void game_update(real32);
 }

@@ -555,7 +555,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             xe_scene::load_spheres_scene(&pbr_scene);
 
             application::application_state *current_app_state = application::get_app_state();
-            application::set_active_scene(&pbr_scene);
+            application::set_active_scene(&new_scene);
 
             ImGuiIO &io = ImGui::GetIO();
 
@@ -578,6 +578,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             pbr_pass pbr_setup = {};
             pbr_setup.init();          
 
+            pbr_scene.passes.push_back(&pbr_setup);
 #endif 
 
 #ifdef GAPI_DX11
@@ -605,6 +606,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 
                 xe_input::poll_events();
                
+                application::game_update(io.DeltaTime);
+
                 device->start_execution();
 
                 //shadow_pass.render();
@@ -615,18 +618,18 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
           
                 //shadow_pass.bind_depth_texture();
                 
-                /*main_render_pass->update(io.DeltaTime);
+                main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
                 texture2D pass_texture = main_render_pass->get_color_texture();
 
                 gamma_correction.set_color_texture(&pass_texture);
-                gamma_correction.render();*/
+                gamma_correction.render();
 
                 main_render_pass->update(io.DeltaTime);
 
-                pbr_setup.update(io.DeltaTime);
-                pbr_setup.render();
+                //pbr_setup.update(io.DeltaTime);
+                //pbr_setup.render();
 
                 render_pass_2D->update(io.DeltaTime);
                 render_pass_2D->render();

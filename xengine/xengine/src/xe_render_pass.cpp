@@ -1,7 +1,6 @@
 #include "xe_render_pass.h"
 #include "xe_render.h"
 #include "xe_assets.h"
-#include "xe_input.h"
 #include "config.h"
 
 #include "xe_scene.h"
@@ -76,6 +75,10 @@ void xe_graphics::render_pass3D::init()
     shader *model_shader = xe_render::get_shader("base3d");
     shader *color_shader = xe_render::get_shader("color");
     shader *pbr = xe_render::get_shader("pbr");
+    shader *water = xe_render::get_shader("water");
+
+    device->bind_shader(water);
+    device->set_int("tex_diff", 0, water);
 
     device->bind_shader(model_shader);
     device->set_int("tex_diff", 0, model_shader);
@@ -147,56 +150,7 @@ void xe_graphics::render_pass3D::render()
 }
 
 void xe_graphics::render_pass3D::update(real32 dt)
-{
-    xe_ecs::camera3d_component& camera3D = xe_render::get_camera3D();
-    
-    if (xe_input::pressed(xe_input::KEYBOARD_W))
-    {
-        camera3D.pos -= camera3D.speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
-    }
-
-    if (xe_input::pressed(xe_input::KEYBOARD_S))
-    {
-        camera3D.pos += camera3D.speed * dt * glm::vec3(0.0f, 0.0f, 1.0f);
-    }
-
-    if (xe_input::pressed(xe_input::KEYBOARD_A))
-    {
-        camera3D.pos -= camera3D.speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
-    }
-
-    if (xe_input::pressed(xe_input::KEYBOARD_D))
-    {
-        camera3D.pos += camera3D.speed * dt * glm::vec3(1.0f, 0.0f, 0.0f);
-    }
-
-    if (xe_input::pressed(xe_input::KEYBOARD_V))
-    {
-        //transform_component *tr = light_ent.find_component<transform_component>();
-        //tr->position.x += 0.8f * sin(dt);
-        //tr->position.z += 0.8f * cos(dt);
-    }
-
-    if (xe_input::pressed(xe_input::KEYBOARD_B))
-    {
-        //transform_component *tr = light_ent.find_component<transform_component>();
-        //tr->position.x -= 0.8f * sin(dt);
-        //tr->position.z -= 0.8f * cos(dt);
-    }   
-
-    xe_input::mouse_state *mouse = xe_input::get_mouse_state();
-    
-    if (mouse->is_right_button_pressed)
-    {
-        real32 xoffset = mouse->position.x - mouse->dt_position.x;
-        real32 yoffset = mouse->dt_position.y - mouse->position.y;
-        
-        printf("DX: %f\n", xoffset);
-        printf("DY: %f\n", yoffset);
-
-        camera3D.mouse_move(xoffset, yoffset);
-    }
-
+{   
     xe_ecs::entity *light_ent = current_scene->directional_light;
     if (light_ent)
     {
@@ -379,8 +333,8 @@ void xe_graphics::pbr_pass::init()
         device->set_mat4("view", views_to_capture[i], equ_to_cubemap);
         device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0, TEXTURE_TYPE::CUBEMAP_POSITIVE, i, &env_cubemap);
         //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, env_cubemap.id, 0);
-        device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         xe_render::draw_cube();
     }
 
@@ -477,7 +431,7 @@ void xe_graphics::pbr_pass::init()
             device->set_mat4("view", views_to_capture[i], prefilter);
             device->set_texture2D_fbo(GL_COLOR_ATTACHMENT0, TEXTURE_TYPE::CUBEMAP_POSITIVE, i, &prefilter_map, mip);
 
-            device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             xe_render::draw_cube();
         }
@@ -508,7 +462,7 @@ void xe_graphics::pbr_pass::init()
     shader *brdf = xe_render::get_shader("brdf");
 
     device->bind_shader(brdf);
-    device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     xe_render::draw_full_quad();
     
@@ -525,17 +479,17 @@ void xe_graphics::pbr_pass::init()
     glm::vec3 light_pos[] =
     {
         glm::vec3(-10.0f,  0.0f, 10.0f),
-        glm::vec3(10.0f,  0.0f, 10.0f),
-        glm::vec3(-10.0f, 0.0f, 10.0f),
+        glm::vec3(-10.0f,  0.0f, 10.0f),
+        glm::vec3(10.0f, 0.0f, 10.0f),
         glm::vec3(10.0f,  0.0f, 10.0f),
     };
 
     glm::vec3 light_colors[] =
     {
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f),
-        glm::vec3(300.0f, 300.0f, 300.0f)
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f)
     };
 
 
@@ -588,7 +542,7 @@ void xe_graphics::pbr_pass::render()
     device->activate_texture(2);
     device->bind_texture(TEXTURE_TYPE::COLOR, &brdf_lut);
 
-   /* texture2D *iron_albedo = xe_render::get_texture2D_resource("albedo_iron");
+    /*texture2D *iron_albedo = xe_render::get_texture2D_resource("albedo_iron");
     texture2D *iron_normal = xe_render::get_texture2D_resource("normal_iron");
     texture2D *iron_metallic = xe_render::get_texture2D_resource("metallic_iron");
     texture2D *iron_roughness = xe_render::get_texture2D_resource("roughness_iron");

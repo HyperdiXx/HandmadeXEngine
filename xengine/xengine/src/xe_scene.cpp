@@ -23,7 +23,7 @@ namespace xe_scene
         light_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_DIR_LIGHT);
 
         xe_ecs::entity* plane_entity = application::get_entity();
-        plane_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
+        plane_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_WATER);
 
         assert(test_entity != nullptr);
         assert(light_entity != nullptr);
@@ -76,15 +76,19 @@ namespace xe_scene
 
         xe_ecs::mesh_component *plane_mesh = new xe_ecs::mesh_component();
         plane_mesh->model_asset = application::get_model_by_name("Cube");
-        plane_mesh->draw_with_color = true;
 
         xe_ecs::transform_component *transform_plane = new xe_ecs::transform_component();
 
         transform_plane->set_translation(3.0f, -10.0f, 75.0f);
         transform_plane->set_scale(10.0f, 0.001f, 10.0f);
 
+        xe_ecs::water_component *water_component = new xe_ecs::water_component();
+
+        water_component->water_tex = xe_render::get_texture2D_resource("water");
+
         plane_entity->add_component(plane_mesh);
         plane_entity->add_component(transform_plane);
+        plane_entity->add_component(water_component);
 
         sc->entities.push_back(test_entity);
         sc->entities.push_back(light_entity);

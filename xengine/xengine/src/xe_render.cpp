@@ -200,6 +200,7 @@ namespace xe_render
         xe_graphics::shader prefilter_shader = {};
         xe_graphics::shader equirectangular_cubemap = {};
         xe_graphics::shader irradiance_shader = {};
+        xe_graphics::shader water = {};
 
         std::string shader_names[8] = {};
 
@@ -221,6 +222,7 @@ namespace xe_render
         res = graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
         res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
         res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
+        res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/water.fs", &water);
         res |= graphics_device->create_shader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
         res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
         res |= graphics_device->create_shader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
@@ -259,6 +261,7 @@ namespace xe_render
         shaders["prefilter"] = prefilter_shader;
         shaders["equirect"] = equirectangular_cubemap;
         shaders["irradiance"] = irradiance_shader;
+        shaders["water"] = water;
        
         if (!res)
         {
@@ -480,8 +483,8 @@ namespace xe_render
             {
                 { "aPos",       ElementType::Float3, },                
                 { "aNormal",    ElementType::Float3, },
-                { "aTangent",    ElementType::Float3, },
-                { "aBitangent",    ElementType::Float3, },
+                { "aTangent",   ElementType::Float3, },
+                { "aBitangent", ElementType::Float3, },
                 { "aUV",        ElementType::Float2, }
             };
         }
@@ -1202,6 +1205,35 @@ namespace xe_render
         draw_text(text, x, y, default_text_color, default_text_scale);
     }
 
+    void draw_water_plane(xe_ecs::entity *ent)
+    {
+        shader *water = xe_render::get_shader("water");
+
+        graphics_device->bind_shader(water);
+
+        xe_ecs::water_component *water_comp = ent->find_component<xe_ecs::water_component>();
+        xe_ecs::mesh_component *mesh = ent->find_component<xe_ecs::mesh_component>();
+        xe_ecs::transform_component *transform = ent->find_component<xe_ecs::transform_component>();
+
+        glm::mat4 model_matrix = transform->model_matrix;
+
+        model_matrix = glm::translate(model_matrix, transform->position);
+        model_matrix = glm::scale(model_matrix, transform->scale);
+
+        xe_ecs::camera3d_component cam = get_camera3D();
+
+        glm::mat4 view_matrix = cam.get_view_matrix();
+        glm::mat4 proj_matrix = cam.get_projection_matrix();
+
+        glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
+
+        graphics_device->set_mat4("mvp", mvp, water);
+        graphics_device->set_mat4("model", model_matrix, water);
+
+        graphics_device->activate_bind_texture(TEXTURE_TYPE::COLOR, water_comp->water_tex);
+        draw_model(mesh->model_asset, water);
+    }
+
     void draw_skybox()
     {
         graphics_device->set_depth_func(GL_LEQUAL);
@@ -1306,22 +1338,6 @@ namespace xe_render
     {
         xe_graphics::graphics_device *device = xe_render::get_device();
 
-        glm::mat4 model_matrix = IDENTITY_MATRIX;
-
-        model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, 0.0f, -2.0f));
-        model_matrix = glm::scale(model_matrix, glm::vec3(2.0f, 2.0f, 2.0f));
-        
-        xe_ecs::camera3d_component cam = get_camera3D();
-
-        glm::mat4 view_matrix = cam.get_view_matrix();
-        glm::mat4 proj_matrix = cam.get_projection_matrix();
-
-        glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
-
-        device->bind_shader(shd);
-        device->set_mat4("mvp", mvp, shd);
-        device->set_mat4("model", model_matrix, shd);
-
         xe_assets::node *root = mod->root;
 
         for (uint32 i = 0; i < root->children.size(); i++)
@@ -1374,6 +1390,9 @@ namespace xe_render
             break;
         case ENTITY_TYPE::ENT_PRIMITIVE_OBJECT:
             draw_ent_primitive(ent);
+            break;
+        case ENTITY_TYPE::ENT_WATER:
+            draw_water_plane(ent);
             break;
         default:
             xe_utility::debug("Entity type not declared!");

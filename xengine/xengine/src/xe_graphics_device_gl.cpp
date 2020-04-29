@@ -198,6 +198,20 @@ namespace xe_graphics
         return res;
     }
 
+    static PIXELFORMATDESCRIPTOR get_pixel_format_desc()
+    {
+        PIXELFORMATDESCRIPTOR pixel_format_descriptor = {};
+        pixel_format_descriptor.nSize = sizeof(pixel_format_descriptor);
+        pixel_format_descriptor.nVersion = 1;
+        pixel_format_descriptor.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
+        pixel_format_descriptor.iPixelType = PFD_TYPE_RGBA;
+        pixel_format_descriptor.cColorBits = 32;
+        pixel_format_descriptor.cDepthBits = 24;
+        pixel_format_descriptor.cAlphaBits = 8;
+        pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
+        return pixel_format_descriptor;
+    }
+
     graphics_device_gl::graphics_device_gl(HWND window_handle, bool32 vsync, bool32 fullscreen)
     {
         this->fullscreen = fullscreen;
@@ -215,15 +229,8 @@ namespace xe_graphics
 
         HDC dc = GetDC(window_handle);
 
-        PIXELFORMATDESCRIPTOR pixel_format_descriptor = {};
-        pixel_format_descriptor.nSize = sizeof(pixel_format_descriptor);
-        pixel_format_descriptor.nVersion = 1;
-        pixel_format_descriptor.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
-        pixel_format_descriptor.cColorBits = 32;
-        pixel_format_descriptor.cAlphaBits = 8;
-        pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
+        PIXELFORMATDESCRIPTOR pixel_format_descriptor = get_pixel_format_desc();
 
-   
         const int pixel_format_attrib_list[] = 
         {
              WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,

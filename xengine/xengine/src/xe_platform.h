@@ -30,10 +30,16 @@
 
 #endif
 
-
 namespace xe_platform
 {
 #ifdef PLATFORM_WINDOWS
+   
+    struct timer
+    {
+        LARGE_INTEGER start;
+        real64 frequ;
+    };
+   
     typedef HWND window_handle;
 
     inline HWND& get_window_handle()
@@ -48,24 +54,27 @@ namespace xe_platform
         return dc;
     }
 
-    bool32 load_library(const char *name);
-
-    struct timer
+    inline HINSTANCE& get_hInstance()
     {
-        LARGE_INTEGER start;
-        double frequ;
-    };
-    
+        static HINSTANCE hi;
+        return hi;
+    }
+
+    void create_platform_win32window();
+
     void start_timer(timer *time);
     void reset_timer(timer *time);   
     real32 time_elapsed(timer *time);
  
     inline LARGE_INTEGER get_wall_clock();
    
+    bool32 load_library(const char *name);
 
 #endif
 
 #ifdef PLATFORM_LINUX
+
+    void create_platform_linuxwindow();
 
 #endif
 }

@@ -7,7 +7,6 @@
 #include <rendering/render/render.h>
 
 #include <runtime/geometry/model.h>
-#include <runtime/geometry/quad.h>
 #include <runtime/geometry/model_loader.h>
 
 
@@ -45,7 +44,7 @@ namespace XEngine
             -0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f   
         };
 
-        quad = new Geometry::Quad(vec3f(0.0f, 0.0f, 0.0f));
+        //quad = new Geometry::Quad(vec3f(0.0f, 0.0f, 0.0f));
 
         triangle_shader->bind();
         triangle_shader->setInt("textureDiffuse", 0);

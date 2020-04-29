@@ -5,7 +5,6 @@
 
 #include "rendercommand.h"
 
-#include <runtime/geometry/quad.h>
 #include <rendering/api/base/texture2d.h>
 #include <rendering/pipeline/materials/basicmaterial.h>
 
@@ -35,11 +34,11 @@ namespace XEngine
                 shader->bind();
                 shader->setVec4("u_color", m_color);
 
-                m_quad->get_vertex_array()->bind();
+                //m_quad->get_vertex_array()->bind();
 
                 RenderCommand::draw_indexed(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
  
-                m_quad->get_vertex_array()->unbind();
+                //m_quad->get_vertex_array()->unbind();
 
                 shader->unbind();
             };

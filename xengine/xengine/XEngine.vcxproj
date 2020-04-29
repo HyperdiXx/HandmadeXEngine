@@ -149,11 +149,9 @@
     <ClCompile Include="src\runtime\animation\key_frame.cpp" />
     <ClCompile Include="src\runtime\application\app.cpp" />
     <ClCompile Include="src\runtime\application\testapp.cpp" />
-    <ClCompile Include="src\runtime\geometry\assetmanager.cpp" />
     <ClCompile Include="src\runtime\geometry\generator.cpp" />
     <ClCompile Include="src\runtime\geometry\model.cpp" />
     <ClCompile Include="src\runtime\geometry\model_loader.cpp" />
-    <ClCompile Include="src\runtime\geometry\quad.cpp" />
     <ClCompile Include="src\runtime\core\systems\clock.cpp" />
     <ClCompile Include="src\runtime\core\systems\filesystem.cpp" />
     <ClCompile Include="src\runtime\core\utility\log.cpp" />
@@ -162,10 +160,6 @@
     <ClCompile Include="src\runtime\core\windowsystem\windowWin.cpp" />
     <ClCompile Include="src\runtime\core\windowsystem\winWindow.cpp" />
     <ClCompile Include="src\runtime\objects\gbuffer.cpp" />
-    <ClCompile Include="src\runtime\objects\lights\dirLight.cpp" />
-    <ClCompile Include="src\runtime\objects\lights\light.cpp" />
-    <ClCompile Include="src\runtime\objects\lights\pointLight.cpp" />
-    <ClCompile Include="src\runtime\objects\lights\spotLight.cpp" />
     <ClCompile Include="src\runtime\objects\shadowmap.cpp" />
     <ClCompile Include="src\runtime\objects\skybox.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui.cpp" />
@@ -336,7 +330,6 @@
     <ClInclude Include="src\runtime\application\test.h" />
     <ClInclude Include="src\runtime\application\testapp.h" />
     <ClInclude Include="src\runtime\audio\audio.h" />
-    <ClInclude Include="src\runtime\geometry\assetmanager.h" />
     <ClInclude Include="src\runtime\geometry\generator.h" />
     <ClInclude Include="src\runtime\geometry\model.h" />
     <ClInclude Include="src\runtime\geometry\model_loader.h" />
@@ -397,13 +390,8 @@
     <ClInclude Include="src\runtime\core\windowsystem\dx12.h" />
     <ClInclude Include="src\runtime\core\windowsystem\windowWin.h" />
     <ClInclude Include="src\runtime\core\windowsystem\winWindow.h" />
-    <ClInclude Include="src\runtime\geometry\quad.h" />
     <ClInclude Include="src\runtime\geometry\resources.h" />
     <ClInclude Include="src\runtime\objects\gbuffer.h" />
-    <ClInclude Include="src\runtime\objects\lights\dirLight.h" />
-    <ClInclude Include="src\runtime\objects\lights\light.h" />
-    <ClInclude Include="src\runtime\objects\lights\pointLight.h" />
-    <ClInclude Include="src\runtime\objects\lights\spotLight.h" />
     <ClInclude Include="src\runtime\objects\shadowmap.h" />
     <ClInclude Include="src\runtime\objects\skybox.h" />
     <ClInclude Include="src\runtime\platforms\win32\platformwin32.h" />

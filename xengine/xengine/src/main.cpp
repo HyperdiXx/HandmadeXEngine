@@ -537,6 +537,15 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             
             xe_input::init();
 
+            xe_platform::timer clock_time = {};
+            xe_platform::start_timer(&clock_time);
+            
+            static real32 delta_time;
+            static real32 last_frame = 0.0f;
+            static real32 start_time = 0;
+            static uint32 frames_elapsed = 0;
+            static uint32 fps = 0;
+
 #ifdef GAPI_GL
 
             graphics_device *device = new graphics_device_gl(window_handle);
@@ -555,7 +564,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             xe_scene::load_spheres_scene(&pbr_scene);
 
             application::application_state *current_app_state = application::get_app_state();
-            application::set_active_scene(&new_scene);
+            application::set_active_scene(&pbr_scene);
 
             ImGuiIO &io = ImGui::GetIO();
 
@@ -603,10 +612,14 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                     TranslateMessage(&message);
                     DispatchMessage(&message);
                 }
+
+                real32 current_time = xe_platform::time_elapsed(&clock_time);
+                delta_time = current_time - last_frame;
+                last_frame = current_time;
                 
                 xe_input::poll_events();
                
-                application::game_update(io.DeltaTime);
+                application::game_update(delta_time);
 
                 device->start_execution();
 
@@ -618,18 +631,16 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
           
                 //shadow_pass.bind_depth_texture();
                 
-                main_render_pass->update(io.DeltaTime);
+                /*main_render_pass->update(io.DeltaTime);
                 main_render_pass->render();
                 
                 texture2D pass_texture = main_render_pass->get_color_texture();
 
                 gamma_correction.set_color_texture(&pass_texture);
-                gamma_correction.render();
+                gamma_correction.render();*/
 
-                main_render_pass->update(io.DeltaTime);
-
-                //pbr_setup.update(io.DeltaTime);
-                //pbr_setup.render();
+                pbr_setup.update(io.DeltaTime);
+                pbr_setup.render();
 
                 render_pass_2D->update(io.DeltaTime);
                 render_pass_2D->render();
@@ -642,6 +653,16 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
                 device->check_error();
 
                 device->end_execution();
+
+                ++frames_elapsed;
+
+                if (xe_platform::time_elapsed(&clock_time) - start_time > 1.0f)
+                {
+                    fps = frames_elapsed;
+                    frames_elapsed = 0;
+                    start_time += 1.0f;
+                }
+
             }
         }
 

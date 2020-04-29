@@ -50,6 +50,19 @@ namespace xe_platform
 
     bool32 load_library(const char *name);
 
+    struct timer
+    {
+        LARGE_INTEGER start;
+        double frequ;
+    };
+    
+    void start_timer(timer *time);
+    void reset_timer(timer *time);   
+    real32 time_elapsed(timer *time);
+ 
+    inline LARGE_INTEGER get_wall_clock();
+   
+
 #endif
 
 #ifdef PLATFORM_LINUX

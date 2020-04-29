@@ -590,6 +590,11 @@ void xe_graphics::pbr_pass::render()
     device->activate_texture(7);
     device->bind_texture(TEXTURE_TYPE::COLOR, ao_cerberus);
 
+    glm::mat4 model_matrix = xe_render::IDENTITY_MATRIX;
+   
+    model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, 0.0f, -2.0f));
+    device->set_mat4("model", model_matrix, pbr_shader);
+   
     xe_assets::model *cerberus = application::get_model_by_name("Cerberus");
     xe_render::draw_model(cerberus, pbr_shader);
 

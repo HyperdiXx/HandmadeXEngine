@@ -110,6 +110,5 @@ vec2 ct_brdf(float NdotV, float roughness)
 
 void main() 
 {
-    vec2 brdf = ct_brdf(uv.x, uv.y);
-    frag_color = brdf;
+    frag_color = ct_brdf(uv.x, uv.y);
 }

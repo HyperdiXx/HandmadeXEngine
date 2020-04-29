@@ -110,9 +110,7 @@
   <ItemGroup>
     <ClCompile Include="src\allocator.cpp" />
     <ClCompile Include="src\app_state.cpp" />
-    <ClCompile Include="src\events.cpp" />
     <ClCompile Include="src\glad.c" />
-    <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ortho_camera.cpp" />
     <ClCompile Include="src\perspective_camera.cpp" />
@@ -260,14 +258,9 @@
     <ClInclude Include="src\component.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\d3dx12.h" />
-    <ClInclude Include="src\enmemory.h" />
     <ClInclude Include="src\entity.h" />
     <ClInclude Include="src\entitymanager.h" />
-    <ClInclude Include="src\events.h" />
     <ClInclude Include="src\exportapi.h" />
-    <ClInclude Include="src\input.h" />
-    <ClInclude Include="src\joystick.h" />
-    <ClInclude Include="src\keyboard.h" />
     <ClInclude Include="src\mouse_event.h" />
     <ClInclude Include="src\ortho_camera.h" />
     <ClInclude Include="src\perspective_camera.h" />

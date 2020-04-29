@@ -129,9 +129,6 @@
     <ClCompile Include="src\allocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\events.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ortho_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -139,9 +136,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\transforms.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\api\base\context.cpp">
@@ -671,22 +665,13 @@
     <ClInclude Include="src\d3dx12.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\enmemory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entitymanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\events.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ortho_camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\perspective_camera.h">
@@ -714,12 +699,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mouse_event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\joystick.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\api\base\framebufferdepth.h">

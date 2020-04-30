@@ -61,8 +61,6 @@ namespace XEngine
         Rendering::Shader *skeletal_shader = nullptr;
         Rendering::BasicMaterial *base_material = nullptr;
 
-        GLui m_ui;
-
         glm::mat4 model_matrix = glm::mat4(1.0f);
 
         Assets::Model *model = nullptr;

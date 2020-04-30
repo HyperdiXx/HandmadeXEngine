@@ -2,7 +2,7 @@
 #include "xe_graphics_device_gl.h"
 #include "xe_core.h"
 
-#include "runtime/core/utility/log.h"
+#include "xe_utility.h"
 
 #include <GL/GL.h>
 #include <external/wglext.h>
@@ -1121,6 +1121,20 @@ namespace xe_graphics
         {
             const char* erro_char = (const char*)err;
         }
+    }
+
+    void graphics_device_gl::load_bindings()
+    {
+        if (!gladLoadGL())
+            printf("Failed to init OpenGL loader!\n");
+
+        const char *gl_vendor = (char*)glGetString(GL_VENDOR);
+        const char *gl_renderer = (char*)glGetString(GL_RENDERER);
+        const char *gl_version = (char*)glGetString(GL_VERSION);
+
+        xe_utility::info(gl_vendor);
+        xe_utility::info(gl_renderer);
+        xe_utility::info(gl_version);
     }
 
     void graphics_device_gl::unbind_buffer(BUFFER_TYPE type)

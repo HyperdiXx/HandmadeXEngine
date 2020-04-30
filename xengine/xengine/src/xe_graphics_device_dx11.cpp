@@ -1,6 +1,6 @@
 #include "xe_graphics_device_dx11.h"
 
-#include "runtime/core/utility/log.h"  
+#include "xe_utility.h"
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"Dxgi.lib")

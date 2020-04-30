@@ -43,8 +43,10 @@ void xe_graphics::render_pass2D::render()
 { 
     using namespace xe_render;
 
+    application::application_state *app_state = application::get_app_state();
+
     draw_quad(&main_ent, simple_shader, result_texture);
-    draw_text(ENGINE_NAME, 10, 10);     
+    draw_text("FPS: " + std::to_string(app_state->fps), 10, 10);
 }
 
 void xe_graphics::render_pass2D::update(real32 dt)

@@ -1,18 +1,9 @@
 #include "testapp.h"
 
-#include <rendering/pipeline/materials/basicmaterial.h>
-#include <rendering/api/base/vertexbuffer.h>
-#include <rendering/api/base/indexbuffer.h>
-#include <rendering/api/base/vertexarray.h>
-#include <rendering/render/render.h>
-
-#include <runtime/geometry/model.h>
-#include <runtime/geometry/model_loader.h>
-
-
 namespace XEngine
 {
-    TestApp::TestApp()
+}
+    /*TestApp::TestApp()
     {
         //window = new GLWindow("Game", 1280, 720);
 
@@ -20,7 +11,7 @@ namespace XEngine
         using namespace Rendering;
 
         triangle_shader = render_instance->create_shader("shaders/simple2d.vs", "shaders/simple2d.fs");
-        //solid_shader = render_instance->create_shader("shaders/simple2d.vs", "shaders/filledsimple2d.fs");
+        //solid_shader = render_instance->create_shader("shaders/simple2d.vs", "shaders/fi lledsimple2d.fs");
         model_shader = render_instance->create_shader("shaders/model3d.vs", "shaders/model3d.fs");
         skeletal_shader = render_instance->create_shader("shaders/skeletal.vs", "shaders/model3d.fs");
 
@@ -68,7 +59,7 @@ namespace XEngine
             onUpdate(1.0f);
             onDraw();
             onPostUpdate();
-        }*/
+        }
     }
 
     void TestApp::onDraw()
@@ -109,3 +100,4 @@ namespace XEngine
         //window->destroy();
     }
 }
+*/

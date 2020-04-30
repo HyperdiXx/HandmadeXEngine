@@ -1,10 +1,9 @@
 #include "winWindow.h"
 
-#include <rendering/render/render.h>
 
 namespace XEngine
 {
-    Window * Window::create(const char * t, const uint32 w, const uint32 h)
+    /*Window * Window::create(const char * t, const uint32 w, const uint32 h)
     {
         using namespace Rendering;
 
@@ -17,5 +16,5 @@ namespace XEngine
         }
 
         return nullptr;
-    }
+    }*/
 }

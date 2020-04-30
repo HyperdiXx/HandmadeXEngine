@@ -1,6 +1,6 @@
 #include "xe_assets.h"
 
-#include "runtime/core/utility/log.h"
+#include "xe_utility.h"
 
 #include <glad/glad.h>
 

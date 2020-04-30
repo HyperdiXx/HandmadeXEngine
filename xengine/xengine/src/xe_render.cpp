@@ -1,13 +1,12 @@
 #include "xe_render.h"
 
-#include "runtime/core/utility/log.h"
 #include "xe_ecs.h"
 #include "xe_assets.h"
 #include "perspective_camera.h"
 #include "ortho_camera.h"
 
 #include "xe_core.h"
-#include "runtime/geometry/generator.h"
+#include "xe_utility.h"
 
 #include <xenpch.h>
 

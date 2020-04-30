@@ -1,18 +1,104 @@
 #include "xe_platform.h"
 
+#include "xe_render.h"
+
+#ifdef GAPI_GL
+#include "xe_graphics_device_gl.h"
+#endif 
+
+#ifdef GAPI_DX11
+#include "xe_graphics_device_dx11.h"
+#endif
+
+#include "xe_input.h"
+
+#include "xe_utility.h"
+
 #ifdef PLATFORM_WINDOWS
 
 LRESULT CALLBACK win32_win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-void xe_platform::create_platform_win32window()
+WNDCLASS xe_platform::create_platform_win32window()
 {
-    WNDCLASS winClass = {};
-    winClass.hInstance = get_hInstance();
-    winClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    winClass.lpfnWndProc = (WNDPROC)win32_win_proc;
-    winClass.lpszClassName = "XEngine";
-    winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    winClass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+    WNDCLASS window_class = {};
+    window_class.hInstance = get_hInstance();
+    window_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    window_class.lpfnWndProc = (WNDPROC)win32_win_proc;
+    window_class.lpszClassName = "XEngine";
+    window_class.hCursor = LoadCursor(NULL, IDC_ARROW);
+    window_class.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+
+    return window_class;
+}
+
+void xe_platform::update_platform()
+{
+    MSG message;
+    while (PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
+    {
+        if (message.message == WM_QUIT)
+        {
+            win32_window_state& win_state = get_window_state();
+            win_state.is_closed = true;
+            return;
+        }
+        TranslateMessage(&message);
+        DispatchMessage(&message);
+    }
+
+    // input update...
+}
+
+bool32 xe_platform::init_win32_platform(uint32 window_w, uint32 window_h)
+{
+    HINSTANCE &hInstance = get_hInstance();
+
+    WNDCLASS window = create_platform_win32window();
+
+    if (!RegisterClass(&window))
+    {
+        xe_utility::error("Failed to register win32 window class!");
+        return false;
+    }
+
+    HWND& window_handle = xe_platform::get_window_handle();
+
+    window_handle = CreateWindowEx(0, window.lpszClassName,
+                    "Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                    CW_USEDEFAULT, CW_USEDEFAULT,
+                    window_w,
+                    window_h,
+                    0, 0, hInstance, 0);
+    
+    if (!window_handle)    
+    {
+        xe_utility::error("Failed to create win32 window class!");
+        return false;
+    }
+
+    using namespace xe_graphics;
+
+#ifdef GAPI_GL
+
+    graphics_device *device = new graphics_device_gl(window_handle);
+    xe_render::set_device(device);
+
+    device->load_bindings();
+    xe_render::init_render_gl();
+
+#endif // 
+
+
+    return true;
+}
+
+void xe_platform::destroy_platform_window()
+{
+#ifdef GAPI_GL
+    wglMakeCurrent(0, 0);
+#endif // DEBUG
+
+    DestroyWindow(get_window_handle());
 }
 
 void xe_platform::start_timer(timer *time)
@@ -55,20 +141,21 @@ LRESULT CALLBACK
 win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
 {
     LRESULT result = 0;
+    xe_platform::win32_window_state& win_state = xe_platform::get_window_state();
 
     switch (message)
     {
     case WM_CLOSE:
     {
-        //is_open = false;
+        win_state.is_closed = true;
     } break;
     case WM_DESTROY:
     {
-        //is_open = false;
+        PostQuitMessage(0);
     } break;
     case WM_QUIT:
     {
-        //is_open = false;
+        win_state.is_closed = true; 
     } break;
     case WM_INPUT:
     {
@@ -107,7 +194,7 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
         {
             const RAWMOUSE& rawmouse = raw->data.mouse;
 
-            /*xe_input::mouse_state *mouse = xe_input::get_mouse_state();
+            xe_input::mouse_state *mouse = xe_input::get_mouse_state();
 
             mouse->is_left_button_pressed = false;
 
@@ -138,7 +225,7 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
                 mouse->dt_position.x = rawmouse.lLastX;
                 mouse->dt_position.y = rawmouse.lLastY;
                 mouse->is_right_button_pressed = !mouse->is_right_button_pressed;
-            }*/
+            }
         }
         return 0;
     } break;

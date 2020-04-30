@@ -111,6 +111,8 @@ namespace xe_graphics
 
         void check_error() override;
 
+        void load_bindings() override;
+
         void start_execution() override;
         void end_execution() override;
     private:

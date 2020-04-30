@@ -3,39 +3,8 @@
 #include <thread>
 #include "app.h"
 
-#include <runtime/geometry/generator.h>
-#include "../objects/skybox.h"
-#include "../core/utility/log.h"
-
-#include <rendering/sprite.h>
-#include <rendering/batchsprite.h>
-
-#include <rendering/ui/glui.h>
-
 #include "../core/utility/clock.h"
-
-#include <rendering/texture.h>
-#include <rendering/api/base/shader.h>
-
-#include <runtime/geometry/model.h>
-
-#include <rendering/text.h>
 #include <runtime/core/windowsystem/windowWin.h>
-
-#include <rendering/scenes/scene.h>
-#include <rendering/pipeline/shadersBase.h>
-
-#include <runtime/geometry/assetmanager.h>
-
-#include <rendering/scenes/sceneObjects.h>
-
-#include <runtime/geometry/resources.h>
-#include "../objects/lights/dirLight.h"
-
-
-#include "../core/systems/textureload.h"
-
-#include "../objects/shadowmap.h"
 
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC

@@ -3,9 +3,6 @@
 #ifndef BASEAPP_H
 #define BASEAPP_H
 
-#include <rendering/render/render.h>
-#include <rendering/ui/glui.h>
-
 namespace XEngine
 {  
     class BaseApplication
@@ -19,8 +16,6 @@ namespace XEngine
         virtual void onDraw() = 0;
         virtual void onShutdown() = 0;
     private:
-
-
 
     };
 }

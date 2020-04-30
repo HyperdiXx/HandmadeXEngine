@@ -317,11 +317,21 @@ namespace xe_ecs
     {
     public:
         xe_graphics::shader *shader;
+        xe_graphics::texture2D *texture;
+    };
+
+    class pbr_material_component : public component
+    {
+    public:
+        xe_graphics::shader *shader;
 
         xe_graphics::texture2D *diffuse;
         xe_graphics::texture2D *normal;
         xe_graphics::texture2D *specular;
         xe_graphics::texture2D *ao;
+
+        real32 roughness = 0.0f;
+        real32 metallness = 0.0f;
     };
 
     class water_component : public component

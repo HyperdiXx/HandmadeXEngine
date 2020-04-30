@@ -119,6 +119,8 @@ namespace xe_graphics
         virtual void set_read_buffer(uint32 type) = 0;
         virtual void check_error() = 0;
 
+        virtual void load_bindings() = 0;
+
         inline bool32 get_is_fullscreen() const { return fullscreen; }
         inline bool32 get_is_vsync() const { return vsync; }
         inline viewport& get_viewport() { return vp; }

@@ -9,8 +9,14 @@ namespace application
         xe_scene::objects assets_3D;
         std::vector<xe_ecs::entity> entities;
         xe_scene::scene active_scene;
-    };
 
+        real32 delta_time;
+        real32 last_frame = 0.0f;
+        real32 start_time = 0;
+        uint32 frames_elapsed = 0;
+        uint32 fps = 0;
+    };
+   
     application_state *get_app_state();
     
     void set_active_scene(xe_scene::scene *sc);

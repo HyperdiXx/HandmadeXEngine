@@ -34,6 +34,11 @@ namespace xe_platform
 {
 #ifdef PLATFORM_WINDOWS
    
+    struct win32_window_state
+    {
+        bool32 is_closed;
+    };
+
     struct timer
     {
         LARGE_INTEGER start;
@@ -60,7 +65,18 @@ namespace xe_platform
         return hi;
     }
 
-    void create_platform_win32window();
+    inline win32_window_state& get_window_state()
+    {
+        static win32_window_state windows;
+        return windows;
+    }
+
+    WNDCLASS create_platform_win32window();
+
+    void update_platform();
+
+    bool32 init_win32_platform(uint32 window_w, uint32 window_h);
+    void destroy_platform_window();
 
     void start_timer(timer *time);
     void reset_timer(timer *time);   

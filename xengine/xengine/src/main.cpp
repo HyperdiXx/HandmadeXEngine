@@ -29,17 +29,8 @@
 #include "xe_platform.h"
 #include <math/xemath.h>
 #include "config.h"
-#include "xe_render.h"
 #include "xe_render_pass.h"
 #include "xe_core.h"
-
-#ifdef GAPI_GL
-#include "xe_graphics_device_gl.h"
-#endif 
-
-#ifdef GAPI_DX11
-#include "xe_graphics_device_dx11.h"
-#endif
 
 #include "png.h"
 
@@ -61,9 +52,7 @@
 
 #include "xe_input.h"
 #include "xe_scene.h"
-
-#include "runtime/core/utility/log.h"
-
+#include "xe_utility.h"
 #include "app_state.h"
 
 static int WINDOW_WIDTH_SIZE = 1280;
@@ -296,7 +285,7 @@ win32_init_gl(HWND window_handle)
     ReleaseDC(window_handle, window_dc);
 }
 
-internal
+/*internal
 void win32_init_gl_loader()
 {
     if (!gladLoadGL())
@@ -309,7 +298,7 @@ void win32_init_gl_loader()
     xe_utility::info(gl_vendor);
     xe_utility::info(gl_renderer);
     xe_utility::info(gl_version);
-}
+}*/
 
 internal 
 void update()
@@ -513,166 +502,141 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     //parse_config_file(output, &cd);
 
-    WNDCLASS window = {};
+    using namespace xe_graphics;
 
-    window.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-    window.lpfnWndProc = win32_win_proc;
-    window.hInstance = instance;
-    window.lpszClassName = "Engine";
+    xe_input::init();
 
-    if (RegisterClass(&window))
+    xe_platform::timer clock_time = {};
+    xe_platform::start_timer(&clock_time);
+
+    bool32 is_created = xe_platform::init_win32_platform(WINDOW_WIDTH_SIZE, WINDOW_HEIGHT_SIZE);
+
+    if (!is_created)
     {
-        HWND& window_handle = xe_platform::get_window_handle();
-
-        window_handle = CreateWindowEx(0, window.lpszClassName,
-                                            "Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                            CW_USEDEFAULT, CW_USEDEFAULT,
-                                            WINDOW_WIDTH_SIZE,
-                                            WINDOW_HEIGHT_SIZE,
-                                            0, 0, instance, 0);
-
-        if (window_handle)
-        {
-            using namespace xe_graphics;
-            
-            xe_input::init();
-
-            xe_platform::timer clock_time = {};
-            xe_platform::start_timer(&clock_time);
-            
-            static real32 delta_time;
-            static real32 last_frame = 0.0f;
-            static real32 start_time = 0;
-            static uint32 frames_elapsed = 0;
-            static uint32 fps = 0;
+        xe_utility::error("Failed to init window and context");
+        exit(0);
+    }
 
 #ifdef GAPI_GL
 
-            graphics_device *device = new graphics_device_gl(window_handle);
-            xe_render::set_device(device);
-            
-            win32_init_gl_loader();
-            win32_init_imgui_gl(window_handle);            
-            xe_render::init_render_gl();
-            
-            application::load_state();
+    HWND& window_handle = xe_platform::get_window_handle();
 
-            xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
-            xe_scene::scene pbr_scene = xe_scene::create_scene("PBRScene");
+    // move to context creation class
+    win32_init_imgui_gl(window_handle);
 
-            xe_scene::load_test_scene(&new_scene);
-            xe_scene::load_spheres_scene(&pbr_scene);
+    xe_platform::win32_window_state& win_state = xe_platform::get_window_state();
 
-            application::application_state *current_app_state = application::get_app_state();
-            application::set_active_scene(&pbr_scene);
+    application::load_state();
 
-            ImGuiIO &io = ImGui::GetIO();
+    xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
+    xe_scene::scene pbr_scene = xe_scene::create_scene("PBRScene");
 
-            render_pass *render_pass_2D = new render_pass2D();
-            render_pass_2D->init();
+    xe_scene::load_test_scene(&new_scene);
+    xe_scene::load_spheres_scene(&pbr_scene);
 
-            xe_render::set_render_pass(render_pass_2D);
+    application::application_state *current_app_state = application::get_app_state();
+    application::set_active_scene(&pbr_scene);
 
-            render_pass3D *main_render_pass = new render_pass3D();
-            main_render_pass->init();
-            main_render_pass->set_scene(&current_app_state->active_scene);
+    render_pass *render_pass_2D = new render_pass2D();
+    render_pass_2D->init();
 
-            gamma_correction_pass gamma_correction = {};
-            gamma_correction.init();
+    xe_render::set_render_pass(render_pass_2D);
 
-            shadow_map_pass shadow_pass = {};
-            shadow_pass.init();
-            shadow_pass.set_scene(&current_app_state->active_scene);
+    render_pass3D *main_render_pass = new render_pass3D();
+    main_render_pass->init();
+    main_render_pass->set_scene(&current_app_state->active_scene);
 
-            pbr_pass pbr_setup = {};
-            pbr_setup.init();          
+    gamma_correction_pass gamma_correction = {};
+    gamma_correction.init();
 
-            pbr_scene.passes.push_back(&pbr_setup);
+    shadow_map_pass shadow_pass = {};
+    shadow_pass.init();
+    shadow_pass.set_scene(&current_app_state->active_scene);
+
+    pbr_pass pbr_setup = {};
+    pbr_setup.init();
+
+    pbr_scene.passes.push_back(&pbr_setup);
+
+    graphics_device *device = xe_render::get_device();
+
 #endif 
 
 #ifdef GAPI_DX11
-            graphics_device *device = new graphics_device_dx11(window_handle);
-            set_device(device);
-           // win32_init_imgui_dx11(window_handle, );
+    graphics_device *device = new graphics_device_dx11(window_handle);
+    set_device(device);
+    // win32_init_imgui_dx11(window_handle, );
 
-            init_render_dx11();
+    init_render_dx11();
 #endif
-       
-            //------------------------------------------------------------//
 
-            device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
-            
-            using namespace xe_render;
+    //------------------------------------------------------------//
 
-            while (is_open)
-            {
-                MSG message = {};
-                while (PeekMessage(&message, 0, 0, 0, PM_REMOVE))
-                {
-                    TranslateMessage(&message);
-                    DispatchMessage(&message);
-                }
+    device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
 
-                real32 current_time = xe_platform::time_elapsed(&clock_time);
-                delta_time = current_time - last_frame;
-                last_frame = current_time;
-                
-                xe_input::poll_events();
-               
-                application::game_update(delta_time);
+    using namespace xe_render;
 
-                device->start_execution();
+    while (!win_state.is_closed)
+    {
+        xe_platform::update_platform();
 
-                //shadow_pass.render();
+        real32 current_time = xe_platform::time_elapsed(&clock_time);
+        current_app_state->delta_time = current_time - current_app_state->last_frame;
+        current_app_state->last_frame = current_time;
 
-                //viewport vp_state = device->get_viewport();
-                //device->set_viewport(0, 0, vp_state.width, vp_state.height);
-                //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-          
-                //shadow_pass.bind_depth_texture();
-                
-                /*main_render_pass->update(io.DeltaTime);
-                main_render_pass->render();
-                
-                texture2D pass_texture = main_render_pass->get_color_texture();
+        xe_input::poll_events();
 
-                gamma_correction.set_color_texture(&pass_texture);
-                gamma_correction.render();*/
+        application::game_update(current_app_state->delta_time);
 
-                pbr_setup.update(io.DeltaTime);
-                pbr_setup.render();
+        device->start_execution();
 
-                render_pass_2D->update(io.DeltaTime);
-                render_pass_2D->render();
-               
-                win32_imgui_new_frame();                
-                top_bar(); 
+        //shadow_pass.render();
 
-                win32_imgui_post_update();
+        //viewport vp_state = device->get_viewport();
+        //device->set_viewport(0, 0, vp_state.width, vp_state.height);
+        //device->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                device->check_error();
+        //shadow_pass.bind_depth_texture();
 
-                device->end_execution();
+        /*main_render_pass->update(io.DeltaTime);
+        main_render_pass->render();
 
-                ++frames_elapsed;
+        texture2D pass_texture = main_render_pass->get_color_texture();
 
-                if (xe_platform::time_elapsed(&clock_time) - start_time > 1.0f)
-                {
-                    fps = frames_elapsed;
-                    frames_elapsed = 0;
-                    start_time += 1.0f;
-                }
+        gamma_correction.set_color_texture(&pass_texture);
+        gamma_correction.render();*/
 
-            }
+        pbr_setup.update(current_app_state->delta_time);
+        pbr_setup.render();
+
+        render_pass_2D->update(current_app_state->delta_time);
+        render_pass_2D->render();
+
+        win32_imgui_new_frame();
+        top_bar();
+        win32_imgui_post_update();
+
+        device->check_error();
+
+        device->end_execution();
+
+        ++current_app_state->frames_elapsed;
+
+        if (xe_platform::time_elapsed(&clock_time) - current_app_state->start_time > 1.0f)
+        {
+            current_app_state->fps = current_app_state->frames_elapsed;
+            current_app_state->frames_elapsed = 0;
+            current_app_state->start_time += 1.0f;
         }
 
-        xe_render::clear();
-
-        win32_imgui_shutdown();
-        wglMakeCurrent(0, 0);
-
-        DestroyWindow(window_handle);
     }
-   
+
+    xe_render::clear();
+    
+    // move 
+    win32_imgui_shutdown();
+
+    xe_platform::destroy_platform_window();
+ 
     return (0);
 }

@@ -1,5 +1,7 @@
 #include "xe_scene.h"
 
+#include "xe_memory.h"
+
 #include "app_state.h"
 
 namespace xe_scene
@@ -100,8 +102,13 @@ namespace xe_scene
     void load_spheres_scene(scene *sc)
     {
         //@ PBR scene
+
+        
+
         xe_ecs::entity *sphere_entity = application::get_entity();
         sphere_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_PRIMITIVE_OBJECT);
+
+        xe_ecs::pbr_material_component *sphere_material = new xe_ecs::pbr_material_component();
 
         xe_ecs::sphere_component *sphere_compon = new xe_ecs::sphere_component();
         sphere_compon->diffuse = xe_render::get_texture2D_resource("albedo_iron");

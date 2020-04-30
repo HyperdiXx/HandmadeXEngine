@@ -18,24 +18,31 @@ namespace application
 }
 
 namespace xe_scene
-{
+{   
+    struct objects
+    {
+        std::map<const char*, xe_assets::model> models3D;
+    };
+
+    struct layer
+    {
+        std::string name;
+        std::vector<xe_ecs::entity*> entities;
+    };
+
     struct scene
     {
         std::string name;
         std::vector<xe_ecs::entity*> entities;
         std::vector<xe_graphics::render_pass*> passes;
+        std::vector<layer*> layers;
         xe_graphics::shadow_map_pass *shadow_pass;
         xe_ecs::entity *directional_light;
     };
 
     struct resources
     {
-        std::vector<scene*> scenes;         
-    };
-
-    struct objects
-    {
-        std::map<const char*, xe_assets::model> models3D;
+        std::vector<scene*> scenes;
     };
 
     scene create_scene(const char *name);

@@ -1,7 +1,7 @@
 #include "xe_input.h"
 
 #include "xe_platform.h"
-#include "runtime/core/utility/log.h"
+#include "xe_utility.h"
 
 #ifdef _WIN32
 

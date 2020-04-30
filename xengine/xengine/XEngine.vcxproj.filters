@@ -42,19 +42,10 @@
     <ClCompile Include="src\runtime\objects\gbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\objects\shadowmap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\objects\skybox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\core\systems\clock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\systems\filesystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\core\utility\log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\core\windowsystem\dx11.cpp">
@@ -78,37 +69,10 @@
     <ClCompile Include="src\runtime\core\windowsystem\winWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\runtime\geometry\generator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\geometry\model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\runtime\geometry\model_loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\runtime\animation\animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\animation\key_frame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\renderAPI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\text.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\batchsprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\allocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ortho_camera.cpp">
@@ -118,81 +82,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\transforms.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\base\context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\base\indexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\base\shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\base\texture2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\base\vertexarray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\base\vertexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\dx11\dx11context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\dx11\dx11indexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\dx11\dx11vertexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\dx11\dxshader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\api\dx11\dxtexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\commands\rendercommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\layers\layer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\layers\scenegraph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\pipeline\materials\basicmaterial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\pipeline\materials\bpmaterial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\pipeline\materials\pbrmaterial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\pipeline\shadersBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\pipeline\shadertype.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\render\glrender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\render\render.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\scenes\scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\ui\dxui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\ui\glui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rendering\ui\ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\png.cpp">
@@ -229,6 +118,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\app_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xe_utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -383,16 +275,7 @@
     <ClInclude Include="src\runtime\application\testapp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\audio\audio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\objects\gbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\objects\shadowmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\objects\skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\geometry\resources.h">
@@ -404,16 +287,10 @@
     <ClInclude Include="src\runtime\core\systems\filesystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\core\systems\textureload.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\core\utility\assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\utility\clock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\core\utility\log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\runtime\core\utility\string.h">
@@ -581,18 +458,6 @@
     <ClInclude Include="src\runtime\animation\skeleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\runtime\geometry\generator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\geometry\model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\geometry\model_loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\runtime\geometry\resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\runtime\platforms\win32\platformwin32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -600,27 +465,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xengine_input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\renderAPI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\texturetypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\text.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\batchsprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\allocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\component.h">
@@ -663,126 +507,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mouse_event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\framebufferdepth.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\indexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\texture2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\texturecube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\vertexarray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\framebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\base\vertexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\dx11\dx11context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\dx11\dx11indexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\dx11\dx11vertexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\dx11\dxshader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\dx11\dxtexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\dx11\dxtypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\api\dx12\dx12context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\commands\abstract_render_command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\commands\model_rendercommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\commands\quad_rendercommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\commands\rendercommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\commands\rendercommandexecutor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\layers\layer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\layers\scenegraph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\pipeline\materials\basicmaterial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\pipeline\materials\bpmaterial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\pipeline\materials\pbrmaterial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\pipeline\shaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\pipeline\shadersBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\pipeline\shadertype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\render\glrender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\render\render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\render\renderable2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\render\renderable3d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\rhi\rhi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\scenes\scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\scenes\sceneObjects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\ui\dxui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\ui\glui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\rendering\ui\ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xengine_gl.h">
@@ -834,6 +558,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\app_state.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_gui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

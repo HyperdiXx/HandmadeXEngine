@@ -103,8 +103,6 @@ namespace xe_scene
     {
         //@ PBR scene
 
-        
-
         xe_ecs::entity *sphere_entity = application::get_entity();
         sphere_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_PRIMITIVE_OBJECT);
 

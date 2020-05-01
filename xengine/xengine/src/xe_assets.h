@@ -80,7 +80,7 @@ namespace xe_assets
 
     };
 
-    glm::mat4 transposeAiMat4(aiMatrix4x4 ai_mat);
+    glm::mat4 from_ai_to_glm(const aiMatrix4x4 &ai_mat);
  
     std::vector<texture_wrapper> load_textures_from_material(model *mdl, aiMaterial *material, aiTextureType type, std::string texture_type);
     

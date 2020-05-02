@@ -3,6 +3,8 @@
 #include "xe_graphics_device.h"
 #include "xe_platform.h"
 
+#include "xe_render.h"
+
 #include <d3d11_3.h>
 #include <DXGI1_3.h>
 
@@ -48,6 +50,8 @@ namespace xe_graphics
         void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture) override;
         void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture) override;
         void set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture, uint32 mip) override;
+        void set_renderbuffer(int depth_component, uint32 width, uint32 height) override;
+        void set_framebuffer_renderbuffer_attachment(const framebuffer *fbo) override;
 
         void check_framebuffer() override;
 
@@ -95,21 +99,35 @@ namespace xe_graphics
 
         void load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image) override;
         void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image) override;
+        void load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void* image) override;
         void generate_texture_mipmap(TEXTURE_TYPE texture_t) override;
 
         void destroy_texture2D(texture2D *tex) override;
         void destroy_framebuffer(framebuffer *fbo) override;
         void destroy_shader(uint32 id) override;
+        void destroy_buffer(xe_graphics::vertex_buffer *vb) override;
+        void destroy_buffer(xe_graphics::index_buffer*ib) override;
 
         void set_draw_buffer(uint32 type) override;
         void set_draw_buffers(uint32 count, void *pointer) override;
         void set_read_buffer(uint32 type) override;
 
         void check_error() override;
+        void load_bindings() override;
 
         void start_execution() override;
         void end_execution() override;
 
+    public:
+
+        inline static graphics_device_dx11* get_context() 
+        {            
+            return (graphics_device_dx11*)xe_render::get_device();
+        };
+        
+        inline static ID3D11Device *get_api_device() { return get_context()->device; };
+        inline static ID3D11DeviceContext *get_api_device_context() { return get_context()->device_context; };
+    
     private:        
         ID3D11Device* device;
         ID3D11DeviceContext* device_context;

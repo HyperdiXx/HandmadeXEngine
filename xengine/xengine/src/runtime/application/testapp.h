@@ -5,8 +5,6 @@
 
 #include "baseapp.h"
 
-#include <entity.h>
-
 namespace XEngine
 {
     class GLWindow;
@@ -48,9 +46,6 @@ namespace XEngine
     private:
         XEngine::GLWindow *window = nullptr;
         Rendering::Render *render_instance = nullptr;
-
-        Entity m_entity;
-
         Rendering::Shader *triangle_shader = nullptr;
         Rendering::Texture2D *texture1 = nullptr;
         Rendering::VertexBuffer *v_buffer = nullptr;
@@ -60,9 +55,6 @@ namespace XEngine
         Rendering::Shader *solid_shader = nullptr;
         Rendering::Shader *skeletal_shader = nullptr;
         Rendering::BasicMaterial *base_material = nullptr;
-
-        glm::mat4 model_matrix = glm::mat4(1.0f);
-
         Assets::Model *model = nullptr;
         Geometry::Quad *quad = nullptr;
     };

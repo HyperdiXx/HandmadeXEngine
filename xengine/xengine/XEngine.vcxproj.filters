@@ -75,18 +75,6 @@
     <ClCompile Include="src\runtime\animation\key_frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ortho_camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\perspective_camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\transforms.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\png.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\xe_graphics_device_gl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -121,6 +109,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\xe_utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xe_gui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xe_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -467,25 +461,7 @@
     <ClInclude Include="src\xengine_input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\d3dx12.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entitymanager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ortho_camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\perspective_camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderable.h">
@@ -495,9 +471,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\stackll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\transforms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\types.h">
@@ -510,9 +483,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xengine_gl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xe_platform.h">
@@ -573,6 +543,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xe_utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_file_formats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\xe_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #include "xe_render_pass.h"
 #include "xe_render.h"
 #include "xe_assets.h"
-#include "config.h"
+#include "xe_config.h"
 
 #include "xe_scene.h"
 

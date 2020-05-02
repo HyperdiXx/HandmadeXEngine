@@ -398,6 +398,14 @@ namespace xe_graphics
 
     }
 
+    void graphics_device_dx11::set_renderbuffer(int depth_component, uint32 width, uint32 height)
+    {
+    }
+
+    void graphics_device_dx11::set_framebuffer_renderbuffer_attachment(const framebuffer * fbo)
+    {
+    }
+
     texture2D &graphics_device_dx11::get_texture(uint32 number, const framebuffer *fbo)
     {
         if (fbo && number >= 0 <= MAX_COLOR_ATT)
@@ -492,6 +500,10 @@ namespace xe_graphics
     {
     }
 
+    void graphics_device_dx11::load_bindings()
+    {
+    }
+
     void graphics_device_dx11::start_execution()
     {
         device_context->ClearRenderTargetView(render_target_view, clear_color_v);
@@ -563,37 +575,85 @@ namespace xe_graphics
         return bool32();
     }
 
-    bool32 graphics_device_dx11::create_vertex_buffer(real32 * vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer * vb)
+    bool32 graphics_device_dx11::create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
+    {
+        D3D11_BUFFER_DESC buffer_desc;
+        D3D11_SUBRESOURCE_DATA bind_data;
+
+        ID3D11Buffer *buffer_handle;
+        ID3D11InputLayout* input_layout;
+
+        ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
+        buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+        buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        buffer_desc.ByteWidth = sizeof(real32) * size;
+        buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        buffer_desc.MiscFlags = 0;
+        buffer_desc.StructureByteStride = 0;
+
+
+        HRESULT hr = device->CreateBuffer(&buffer_desc, &bind_data, &buffer_handle);
+
+        if (!SUCCEEDED(hr))
+        {
+            //memcpy(, data, size);
+            xe_utility::error("Failed to create vertex Buffer DX11");
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+    bool32 graphics_device_dx11::create_index_buffer(uint32 *indices, uint32 size, index_buffer *ib)
+    {
+        D3D11_BUFFER_DESC index_buffer_desc;
+
+        ZeroMemory(&index_buffer_desc, sizeof(D3D11_BUFFER_DESC));
+        index_buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
+        index_buffer_desc.ByteWidth = size * sizeof(uint16);
+        index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        index_buffer_desc.CPUAccessFlags = 0;
+        index_buffer_desc.MiscFlags = 0;
+
+        D3D11_SUBRESOURCE_DATA bind_data;
+        bind_data.pSysMem = indices;
+        
+        /*HRESULT hr = device->CreateBuffer(&index_buffer_desc, &bind_data, &ib->handle);
+
+        if (!SUCCEEDED(hr))
+        {
+            xe_utility::error("Failed to create index Buffer DX11");
+            return false;
+        }*/
+
+        return true;
+    }
+
+    bool32 graphics_device_dx11::create_vertex_array(vertex_array *va)
     {
         return bool32();
     }
 
-    bool32 graphics_device_dx11::create_index_buffer(uint32 * indices, uint32 size, index_buffer * ib)
+    bool32 graphics_device_dx11::create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout)
     {
         return bool32();
     }
 
-    bool32 graphics_device_dx11::create_vertex_array(vertex_array * va)
+    bool32 graphics_device_dx11::set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout)
+    {
+        vb->layout = *buf_layout;
+
+        return true;
+    }
+
+    bool32 graphics_device_dx11::add_vertex_buffer(vertex_array *va, vertex_buffer *vb)
     {
         return bool32();
     }
 
-    bool32 graphics_device_dx11::create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout * buf_layout)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::set_vertex_buffer_layout(vertex_buffer * vb, buffer_layout * buf_layout)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::add_vertex_buffer(vertex_array * va, vertex_buffer * vb)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::set_index_buffer(vertex_array * va, index_buffer * ib)
+    bool32 graphics_device_dx11::set_index_buffer(vertex_array *va, index_buffer *ib)
     {
         return bool32();
     }
@@ -614,6 +674,10 @@ namespace xe_graphics
     {
     }
 
+    void graphics_device_dx11::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void * image)
+    {
+    }
+
     void graphics_device_dx11::generate_texture_mipmap(TEXTURE_TYPE texture_t)
     {
     }
@@ -627,6 +691,14 @@ namespace xe_graphics
     }
 
     void graphics_device_dx11::destroy_shader(uint32 id)
+    {
+    }
+
+    void graphics_device_dx11::destroy_buffer(xe_graphics::vertex_buffer * vb)
+    {
+    }
+
+    void graphics_device_dx11::destroy_buffer(xe_graphics::index_buffer * ib)
     {
     }
 

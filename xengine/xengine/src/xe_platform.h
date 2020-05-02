@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "config.h"
+#include "xe_config.h"
 
 #ifdef _WIN32
     #define PLATFORM_WINDOWS
@@ -73,6 +73,8 @@ namespace xe_platform
 
     WNDCLASS create_platform_win32window();
 
+
+    void open_console();
     void update_platform();
 
     bool32 init_win32_platform(uint32 window_w, uint32 window_h);

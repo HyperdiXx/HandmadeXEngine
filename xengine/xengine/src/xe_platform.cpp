@@ -31,6 +31,17 @@ WNDCLASS xe_platform::create_platform_win32window()
     return window_class;
 }
 
+void xe_platform::open_console()
+{
+    AllocConsole();
+    SetConsoleTitle("Dev console");
+
+    FILE *out_f;
+    freopen_s(&out_f, "CONOUT$", "w", stdout);
+    freopen_s(&out_f, "CONIN$", "w", stdin);
+    freopen_s(&out_f, "CONERR$", "w", stderr);
+}
+
 void xe_platform::update_platform()
 {
     MSG message;
@@ -84,10 +95,20 @@ bool32 xe_platform::init_win32_platform(uint32 window_w, uint32 window_h)
     xe_render::set_device(device);
 
     device->load_bindings();
+    xe_render::init_gui();
     xe_render::init_render_gl();
 
 #endif // 
 
+#ifdef GAPI_DX11
+    graphics_device *device = new graphics_device_dx11(window_handle);
+    xe_render::set_device(device);
+
+    device->load_bindings();
+    xe_render::init_gui();
+
+    xe_render::init_render_dx11();
+#endif
 
     return true;
 }
@@ -137,9 +158,15 @@ bool32 xe_platform::load_library(const char *name)
     return true;
 }
 
+
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK
 win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
 {
+    if (ImGui_ImplWin32_WndProcHandler(window_handle, message, w_param, l_param))
+        return true;
+
     LRESULT result = 0;
     xe_platform::win32_window_state& win_state = xe_platform::get_window_state();
 

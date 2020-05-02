@@ -2,13 +2,15 @@
 
 #include "xe_ecs.h"
 #include "xe_assets.h"
-#include "perspective_camera.h"
-#include "ortho_camera.h"
 
 #include "xe_core.h"
 #include "xe_utility.h"
 
+#include "xe_gui.h"
+
 #include <xenpch.h>
+
+#include <thread>
 
 namespace xe_render
 {
@@ -39,8 +41,27 @@ namespace xe_render
 
     void init_render_gl()
     {
-        if(!load_shaders())
+        bool32 loaded_shaders = false;
+        bool32 loaded_tex = false;
+        bool32 loaded_font = false;
+
+        if (!load_shaders())
             xe_utility::error("Failed to init shader module!");
+
+        /*std::thread l_shaders([&loaded_shaders]()
+        {
+            loaded_shaders = load_shaders();
+        });*/
+
+        /*std::thread l_fre_tex([&loaded_tex]() 
+        {
+            loaded_tex = load_free_textures();        
+        });       
+
+        std::thread l_font([&loaded_font]()
+        {
+            loaded_font = load_font("assets/fonts/arial.ttf");
+        });/*/
 
         if(!load_free_textures())
             xe_utility::error("Failed to init textures module!");
@@ -55,6 +76,11 @@ namespace xe_render
     {
 
 
+    }
+
+    void init_gui()
+    {
+        xe_gui::init_imgui_impl();        
     }
 
     bool32 init_common_gpu_objects()
@@ -419,6 +445,8 @@ namespace xe_render
         {
             graphics_device->destroy_texture2D(&it->second);
         }
+
+        xe_gui::clear_context();
     }
 
     xe_ecs::camera2d_component& get_camera2D() 

@@ -35,6 +35,8 @@ namespace xe_render
     void init_render_gl();
     void init_render_dx11();
 
+    void init_gui();
+
     bool32 init_common_gpu_objects();
     bool32 load_font(const char *path);
     bool32 load_shaders();

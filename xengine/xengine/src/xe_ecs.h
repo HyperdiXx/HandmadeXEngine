@@ -185,6 +185,9 @@ namespace xe_ecs
 
         bool32 is_setuped = false;
 
+        void set_pos(const glm::vec3& pos) { position = pos; update_camera(); };
+        void set_totation(glm::vec3& rot) { rotation = rot; update_camera(); };
+
         void setup_projection(real32 left, real32 right, real32 bottom, real32 top)
         {
             projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
@@ -242,6 +245,7 @@ namespace xe_ecs
 
         real32 cam_yaw;
         real32 cam_pitch;
+        real32 cam_zoom;
         real32 speed;
 
         bool32 is_setuped = false;
@@ -259,8 +263,9 @@ namespace xe_ecs
             pos = position;
             cam_yaw = c_yaw;
             cam_pitch = c_pitch;
+            cam_zoom = c_zoom;
             speed = c_speed;
-            world_up = up;
+            world_up = up;            
             update_camera_dir();
         }
 
@@ -300,6 +305,15 @@ namespace xe_ecs
             update_camera_dir();
         }
 
+        void mouse_scroll(real32 yoffset)
+        {
+            if (cam_zoom >= 1.0f && cam_zoom <= 45.0f)
+                cam_zoom -= yoffset;
+            if (cam_zoom <= 1.0f)
+                cam_zoom = 1.0f;
+            if (cam_zoom >= 45.0f)
+                cam_zoom = 45.0f;
+        }
 
         void update_camera_dir()
         {
@@ -344,9 +358,9 @@ namespace xe_ecs
     class spot_light : public component
     {
     public:
-        real32 intensity;
         glm::vec3 color;
 
+        real32 intensity;
         real32 radius;
     };
 
@@ -365,5 +379,43 @@ namespace xe_ecs
         bool32 is_static;
         bool32 is_casting_shadows;
     };
+
+    /*template<typename component>
+    class component_manager
+    {
+    public:
+
+        component& create(entity ent)
+        {
+            m_table[entity] = m_components.size();
+            m_components.push_back(Component());
+            m_entities.push_back(entity);
+
+            return m_components.back();
+        }
+
+        bool32 is_contains(entity ent) const
+        {
+            return m_table.find(ent) != m_table.end();
+        }
+
+        entity get_entity(uint32 index) const { return m_entities[index]; }
+        inline uint32 getCount() const { return m_components.size(); }
+
+        component& operator[](uint32 index) { return m_components[index]; }
+
+    private:
+        component_manager() {};
+        component_manager(const component_manager&);
+        component_manager& operator=(component_manager&);
+
+    private:
+        std::vector<Entity> m_entities;
+        std::vector<Component> m_components;
+
+        std::unordered_map<Entity, uint32> m_table;
+        uint32 count;
+    }; */
+
 }
 #endif

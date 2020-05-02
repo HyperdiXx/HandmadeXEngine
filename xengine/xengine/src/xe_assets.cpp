@@ -43,7 +43,7 @@ namespace xe_assets
         {
             aiBone* cur_bone = ai_mesh->mBones[i];
 
-            std::shared_ptr<bone> current_bone{ new bone{cur_bone->mName.C_Str(), transposeAiMat4(cur_bone->mOffsetMatrix)} };
+            std::shared_ptr<bone> current_bone{ new bone{cur_bone->mName.C_Str(), from_ai_to_glm(cur_bone->mOffsetMatrix)} };
 
             for (uint32 j = 0; j < cur_bone->mNumWeights; j++)
             {
@@ -180,13 +180,18 @@ namespace xe_assets
         for (uint16 i = 0; i < specularMaps.size(); i++)
             mesh->mesh_textures.push_back(specularMaps[i]);
 
-        std::vector<texture_wrapper> normalMaps = load_textures_from_material(m, material, aiTextureType_HEIGHT, "tex_norm");
+        std::vector<texture_wrapper> normalMaps = load_textures_from_material(m, material, aiTextureType_NORMALS, "tex_norm");
         for (uint16 i = 0; i < normalMaps.size(); i++)
             mesh->mesh_textures.push_back(normalMaps[i]);
 
-        std::vector<texture_wrapper> heightMaps = load_textures_from_material(m, material, aiTextureType_AMBIENT, "tex_height");
-        for (uint16 i = 0; i < normalMaps.size(); i++)
-            mesh->mesh_textures.push_back(normalMaps[i]);
+        std::vector<texture_wrapper> height_tex = load_textures_from_material(m, material, aiTextureType_HEIGHT, "tex_height");
+        for (uint16 i = 0; i < height_tex.size(); i++)
+            mesh->mesh_textures.push_back(height_tex[i]);
+
+        // pbr rough
+        std::vector<texture_wrapper> roughness_tex = load_textures_from_material(m, material, aiTextureType_SHININESS, "tex_roughness");
+        for (uint16 i = 0; i < roughness_tex.size(); i++)
+            mesh->mesh_textures.push_back(roughness_tex[i]);
     }
 
     void mem_cpyvec(aiVector3D & aivec3, glm::vec3 & vec3)

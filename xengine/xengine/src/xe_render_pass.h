@@ -2,8 +2,6 @@
 
 #include "xe_graphics_resource.h"
 #include "xe_ecs.h"
-#include "perspective_camera.h"
-#include "ortho_camera.h"
 
 namespace xe_scene
 {

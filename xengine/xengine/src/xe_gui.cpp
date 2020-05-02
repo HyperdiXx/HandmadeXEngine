@@ -64,6 +64,15 @@ namespace xe_gui
     }
     }
 
+    void draw_button(const char *wo)
+    {
+        ImGui::Begin("Test");
+
+        ImGui::Text(wo);
+
+        ImGui::End();
+    }
+
     void clear_context()
     {
 #ifdef GAPI_GL

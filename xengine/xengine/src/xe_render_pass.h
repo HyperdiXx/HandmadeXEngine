@@ -10,7 +10,42 @@ namespace xe_scene
 
 namespace xe_graphics
 {
-    
+ 
+    class layer
+    {
+    public:
+
+        virtual ~layer() {}
+
+        virtual void init() = 0;
+
+        virtual void render() = 0;
+
+        virtual void update(real32 dt) = 0;
+
+    };
+
+    class layer_2D : public layer
+    {
+
+    };
+
+    class layer_3D : public layer
+    {
+
+    };
+
+    class gui_layer : public layer
+    {
+    public:
+
+        void init() override;
+
+        void render() override;
+
+        void update(real32 dt) override;
+    };
+
     class render_pass
     {
     public:

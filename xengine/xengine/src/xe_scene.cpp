@@ -4,6 +4,8 @@
 
 #include "app_state.h"
 
+#include "xe_render_pass.h"
+
 namespace xe_scene
 {
     scene create_scene(const char *name)
@@ -14,6 +16,15 @@ namespace xe_scene
         created_scene.entities.reserve(16);
         
         return created_scene;
+    }
+
+    void draw_scene_layers(scene *scn)
+    {
+        for (uint32 i = 0; i < scn->layers.size(); ++i)
+        {
+            xe_graphics::layer *lay = scn->layers[i];
+            lay->render();
+        }
     }
 
     void load_test_scene(scene *sc)

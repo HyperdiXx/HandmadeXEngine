@@ -9,5 +9,7 @@ namespace xe_gui
 
     void draw_top_bar();
 
+    void draw_button(const char *wo);
+
     void clear_context();
 }

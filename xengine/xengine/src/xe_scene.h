@@ -10,6 +10,7 @@ namespace xe_graphics
 {
     class shadow_map_pass;
     class render_pass;
+    class layer;
 }
 
 namespace application
@@ -24,18 +25,12 @@ namespace xe_scene
         std::map<const char*, xe_assets::model> models3D;
     };
 
-    struct layer
-    {
-        std::string name;
-        std::vector<xe_ecs::entity*> entities;
-    };
-
     struct scene
     {
         std::string name;
         std::vector<xe_ecs::entity*> entities;
         std::vector<xe_graphics::render_pass*> passes;
-        std::vector<layer*> layers;
+        std::vector<xe_graphics::layer*> layers;
         xe_graphics::shadow_map_pass *shadow_pass;
         xe_ecs::entity *directional_light;
     };
@@ -47,6 +42,8 @@ namespace xe_scene
 
     scene create_scene(const char *name);
    
+    void draw_scene_layers(scene *scn);
+
     // @Rework init by parsing 
     void load_test_scene(scene *sc);
     void load_spheres_scene(scene *sc);

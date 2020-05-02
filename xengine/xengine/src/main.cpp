@@ -37,8 +37,6 @@
 #include "xe_utility.h"
 #include "app_state.h"
 
-#include "xe_gui.h"
-
 static int WINDOW_WIDTH_SIZE = 1280;
 static int WINDOW_HEIGHT_SIZE = 720;
 static bool is_open = true;
@@ -97,6 +95,10 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     xe_scene::load_test_scene(&new_scene);
     xe_scene::load_spheres_scene(&pbr_scene);
     application::set_active_scene(&new_scene);
+
+    layer *gui = new gui_layer();
+
+    new_scene.layers.push_back(gui);
 
     render_pass *render_pass_2D = new render_pass2D();
     render_pass_2D->init();
@@ -168,10 +170,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
         //render_pass_2D->update(current_app_state->delta_time);
         //render_pass_2D->render();
-
-        xe_gui::start_frame();
-        xe_gui::draw_top_bar();
-        xe_gui::end_frame();
+        
+        xe_scene::draw_scene_layers(&new_scene);
 
         device->check_error();
 

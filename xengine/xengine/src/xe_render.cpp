@@ -7,6 +7,7 @@
 #include "xe_utility.h"
 
 #include "xe_gui.h"
+#include "xe_config.h"
 
 #include <xenpch.h>
 

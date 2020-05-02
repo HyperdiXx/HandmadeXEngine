@@ -4,6 +4,7 @@
 #include "xe_config.h"
 
 #include "xe_scene.h"
+#include "xe_gui.h"
 
 #include "app_state.h"
 
@@ -616,6 +617,24 @@ void xe_graphics::pbr_pass::render()
 }
 
 void xe_graphics::pbr_pass::update(real32 dt)
+{
+
+}
+
+void xe_graphics::gui_layer::init()
+{
+
+}
+
+void xe_graphics::gui_layer::render()
+{
+    xe_gui::start_frame();
+    xe_gui::draw_top_bar();
+    xe_gui::draw_button("Hi, XEngine!");
+    xe_gui::end_frame();
+}
+
+void xe_graphics::gui_layer::update(real32 dt)
 {
 
 }

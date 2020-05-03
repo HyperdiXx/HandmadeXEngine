@@ -103,9 +103,23 @@ namespace xe_scene
         plane_entity->add_component(transform_plane);
         plane_entity->add_component(water_component);
 
+        xe_ecs::entity* ent_line = application::get_entity();
+        ent_line->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_LINE);
+
+        xe_ecs::line_mesh_component *line_mesh = new xe_ecs::line_mesh_component();
+        line_mesh->line_co = alloc_mem xe_graphics::line();
+
+        glm::vec3 start_point = glm::vec3(0.0f, 1.0f, -15.0f);
+        glm::vec3 end_point = glm::vec3(5.0f, 1.0f, -15.0f);
+
+        bool32 is_create_line = xe_render::create_line_mesh(start_point, end_point, line_mesh->line_co);
+
+        ent_line->add_component(line_mesh);
+      
         sc->entities.push_back(test_entity);
         sc->entities.push_back(light_entity);
         sc->entities.push_back(plane_entity);
+        sc->entities.push_back(ent_line);
 
         sc->directional_light = light_entity;
     }

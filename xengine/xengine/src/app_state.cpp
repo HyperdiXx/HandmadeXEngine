@@ -136,6 +136,5 @@ namespace application
 
             camera3D.mouse_move(xoffset, yoffset);
         }
-
     }
 }

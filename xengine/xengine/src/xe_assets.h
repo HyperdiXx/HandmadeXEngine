@@ -7,7 +7,7 @@
 #include "xe_graphics_resource.h"
 #include "xe_render.h"
 
-#include <glm/glm.hpp>
+#include "xe_math.h"
 #include <unordered_map>
 
 #include <types.h>
@@ -33,8 +33,7 @@ namespace xe_assets
         std::vector<texture_wrapper> mesh_textures;
 
         xe_graphics::vertex_array vao;
-       
-        //uint32 vao, vbo, ibo;
+        aabb bounding_box;
     };
 
     struct node

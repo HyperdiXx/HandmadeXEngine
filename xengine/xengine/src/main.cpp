@@ -94,7 +94,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     xe_scene::load_test_scene(&new_scene);
     xe_scene::load_spheres_scene(&pbr_scene);
-    application::set_active_scene(&new_scene);
+    application::set_active_scene(&pbr_scene);
 
     layer *gui = new gui_layer();
 
@@ -161,15 +161,15 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         //main_render_pass->render();
 
         //texture2D pass_texture = main_render_pass->get_color_texture();
-
+        
         //gamma_correction.set_color_texture(&pass_texture);
         //gamma_correction.render();
 
-        //pbr_setup.update(current_app_state->delta_time);
-        //pbr_setup.render();
+        pbr_setup.update(current_app_state->delta_time);
+        pbr_setup.render();
 
-        //render_pass_2D->update(current_app_state->delta_time);
-        //render_pass_2D->render();
+        render_pass_2D->update(current_app_state->delta_time);
+        render_pass_2D->render();
         
         xe_scene::draw_scene_layers(&new_scene);
 

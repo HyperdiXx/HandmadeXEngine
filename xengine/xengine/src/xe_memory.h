@@ -2,7 +2,7 @@
 
 #include <malloc.h>
 
-#define alloc_mem new()
+#define alloc_mem new
 #define free_mem  delete
 
 inline void *operator new(size_t size)

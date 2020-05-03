@@ -170,6 +170,13 @@ namespace xe_graphics
         xe_graphics::vertex_array *vertex_array;
     };
 
+    struct line
+    {
+        uint32 vertex_count;        
+        xe_graphics::vertex_array *va;
+        glm::vec3 color;
+    };
+
     struct sphere
     {
         xe_graphics::vertex_array *vertex_array;

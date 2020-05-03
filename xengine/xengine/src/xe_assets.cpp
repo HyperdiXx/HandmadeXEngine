@@ -346,18 +346,13 @@ namespace xe_assets
 
     void parse_vert(mesh *meh, aiMesh *aimesh)
     {
-        //std::vector<pos_normal_uv> vertices;
-        //std::vector<pos_normal_tb_uv> vertices;
-
-        //std::vector<real32> vertices;
-        //std::vector<uint32> indices;
-        //std::vector<texture_wrapper> textures;
-
         meh->vertices_fl.reserve(aimesh->mNumVertices);
-       
-        //pos_normal_uv vertex;
-        //pos_normal_tb_uv vertex;
         
+        meh->bounding_box.min = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+        meh->bounding_box.max = glm::vec3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+        glm::vec3 pos;
+
         for (uint32 i = 0; i < aimesh->mNumVertices; i++)
         {
             if (aimesh->HasPositions())
@@ -366,6 +361,18 @@ namespace xe_assets
                 meh->vertices_fl.push_back(aimesh->mVertices[i].x);
                 meh->vertices_fl.push_back(aimesh->mVertices[i].y);
                 meh->vertices_fl.push_back(aimesh->mVertices[i].z);
+
+                pos.x = aimesh->mVertices[i].x;
+                pos.y = aimesh->mVertices[i].y;
+                pos.z = aimesh->mVertices[i].z;
+
+                meh->bounding_box.min.x = glm::min(pos.x, meh->bounding_box.min.x);
+                meh->bounding_box.min.y = glm::min(pos.y, meh->bounding_box.min.y);
+                meh->bounding_box.min.z = glm::min(pos.z, meh->bounding_box.min.z);
+
+                meh->bounding_box.max.x = glm::max(pos.x, meh->bounding_box.max.x);
+                meh->bounding_box.max.y = glm::max(pos.y, meh->bounding_box.max.y);
+                meh->bounding_box.max.z = glm::max(pos.z, meh->bounding_box.max.z);
             }
 
             if (aimesh->HasNormals())

@@ -25,6 +25,8 @@ namespace xe_graphics
         void set_depth_func(int type) override;
         void set_cull_mode(int type) override;
         void set_depth(bool32 type) override;
+        void set_line_width(uint32 line_width) override;
+
         void draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) override;
         void draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) override;
 

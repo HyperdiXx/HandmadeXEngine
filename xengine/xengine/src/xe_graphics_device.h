@@ -26,6 +26,8 @@ namespace xe_graphics
         virtual void set_depth_func(int type) = 0;
         virtual void set_cull_mode(int type) = 0;
         virtual void set_depth(bool32 type) = 0;
+        virtual void set_line_width(uint32 line_width) = 0;
+
         virtual void draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) = 0;
         virtual void draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) = 0;
 

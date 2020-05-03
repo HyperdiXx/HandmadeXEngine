@@ -64,6 +64,7 @@ void xe_graphics::render_pass2D::update(real32 dt)
 
     if (transform->position.y >= 720)
         transform->position.y = 0;
+    
     if (transform->scale.x >= 200.0f || transform->scale.y >= 200.0f)
     {
         transform->scale.x = 100.f;

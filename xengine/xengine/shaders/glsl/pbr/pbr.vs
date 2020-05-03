@@ -18,6 +18,6 @@ void main()
 {
     uv = aUV;
     world_pos = vec3(model * vec4(aPos, 1.0));
-    tbn = mat3(aTangent, aBitangent, aNormal);
+    tbn = mat3(model) * mat3(aTangent, aBitangent, aNormal);
     gl_Position = projection * view * vec4(world_pos, 1.0);
 }

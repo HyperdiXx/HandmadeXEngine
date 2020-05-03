@@ -9,6 +9,8 @@
 #include "xe_gui.h"
 #include "xe_config.h"
 
+#include "xe_memory.h"
+
 #include <xenpch.h>
 
 #include <thread>
@@ -18,6 +20,8 @@ namespace xe_render
     static glm::vec4 clear_color; 
     static glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
     static glm::vec3 default_cube_color = glm::vec3(0.0f, 1.0f, 0.0f);
+    static glm::vec4 default_line_color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    static uint32 default_line_width = 5;
     static real32 default_text_scale = 1.0f;
 
     static bool32 enable_shadows = false;
@@ -33,6 +37,7 @@ namespace xe_render
     xe_graphics::vertex_array quad_vao;
     xe_graphics::sphere sphere_vao;
     xe_graphics::cube cube_vao;
+    xe_graphics::line line_vao;
     
     std::map<GLchar, xe_graphics::character> characters_map;
 
@@ -227,6 +232,7 @@ namespace xe_render
         xe_graphics::shader equirectangular_cubemap = {};
         xe_graphics::shader irradiance_shader = {};
         xe_graphics::shader water = {};
+        xe_graphics::shader simple_color = {};
 
         std::string shader_names[8] = {};
 
@@ -245,7 +251,8 @@ namespace xe_render
             shader_res |= device->create_shader(shaders_dir + std::string("simple2d.vs"), std::string(shaders_dir + "simple2d.vs").c_str(), &simple_shader);
         }*/
 
-        res = graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
+        res = graphics_device->create_shader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
+        res |= graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
         res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
         res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
         res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/water.fs", &water);
@@ -271,6 +278,7 @@ namespace xe_render
 
 #endif
 
+        shaders["simple_pos"] = simple_color;
         shaders["simple2d"] = simple_shader;
         shaders["simple_tex"] = simple_texture;
         shaders["base3d"] = model_shader;
@@ -588,9 +596,53 @@ namespace xe_render
         return true;       
     }
 
+    bool32 create_line_mesh(glm::vec3 &start, glm::vec3 &end, xe_graphics::line *line_com)
+    {
+        std::vector<real32> array_vertex;
+
+        array_vertex.push_back(start.x);
+        array_vertex.push_back(start.y);
+        array_vertex.push_back(start.z);
+        array_vertex.push_back(end.x);
+        array_vertex.push_back(end.y);
+        array_vertex.push_back(end.z);
+
+        line_com->va = alloc_mem xe_graphics::vertex_array();        
+        line_com->va->buffers.push_back(alloc_mem xe_graphics::vertex_buffer());
+
+        line_com->vertex_count = array_vertex.size();
+
+        graphics_device->create_vertex_array(line_com->va);
+        graphics_device->bind_vertex_array(line_com->va);
+
+        graphics_device->create_vertex_buffer(&array_vertex[0], line_com->vertex_count, DRAW_TYPE::STATIC, line_com->va->buffers[0]);
+        
+        using namespace xe_graphics;
+
+        buffer_layout buffer_layout = {};
+
+        std::initializer_list<xe_graphics::buffer_element> init_list =
+        {
+            { "aPos",    ElementType::Float3, }
+        };
+
+        graphics_device->create_buffer_layout(init_list, &buffer_layout);
+        graphics_device->set_vertex_buffer_layout(line_com->va->buffers[0], &buffer_layout);
+        graphics_device->add_vertex_buffer(line_com->va, line_com->va->buffers[0]);
+
+        return true;
+    }
+
+    bool32 create_line_mesh(xe_graphics::line *line_com)
+    {
+        glm::vec3 start = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 end= glm::vec3(1.0f, 1.0f, 0.0f);
+        return create_line_mesh(start, end, line_com);
+    }
+
     bool32 create_cubemap(std::vector<const char*> paths, xe_graphics::cubemap *cube)
     {        
-        for (int i = 0; i < paths.size(); ++i)
+        for (uint32 i = 0; i < paths.size(); ++i)
         {
             graphics_device->create_texture2D(paths[i], cube->face_textures[i]);
         }
@@ -617,9 +669,9 @@ namespace xe_render
         int vertex_size = sizeof(vertices) / sizeof(vertices[0]); 
         int indices_size = sizeof(indices) / sizeof(indices[0]);
 
-        q->vertex_array = new xe_graphics::vertex_array;
-        q->vertex_array->buffers.push_back(new xe_graphics::vertex_buffer);
-        q->vertex_array->ib = new xe_graphics::index_buffer;
+        q->vertex_array = alloc_mem xe_graphics::vertex_array;
+        q->vertex_array->buffers.push_back(alloc_mem xe_graphics::vertex_buffer);
+        q->vertex_array->ib = alloc_mem xe_graphics::index_buffer;
         
         graphics_device->create_vertex_array(q->vertex_array);
         graphics_device->bind_vertex_array(q->vertex_array);
@@ -718,7 +770,7 @@ namespace xe_render
         graphics_device->set_vertex_buffer_layout(sky->vb, &buffer_layout);
         graphics_device->add_vertex_buffer(sky->va, sky->vb);
 
-        sky->cubemap = new cubemap();
+        sky->cubemap = alloc_mem cubemap();
 
         if (!create_cubemap(sky->cubemap))            
             return false;      
@@ -1401,6 +1453,36 @@ namespace xe_render
         graphics_device->unbind_vertex_array();
     }
 
+    void draw_line(xe_ecs::entity *ent)
+    {
+        if (!line_vao.va)
+        {
+            create_line_mesh(&line_vao);
+        }
+
+        using namespace xe_ecs;
+
+        line_mesh_component *line = ent->find_component<line_mesh_component>();
+
+        if (line)
+        {
+            shader *simple_color = get_shader("simple_pos");
+            glm::mat4 model = IDENTITY_MATRIX;
+            camera3d_component& cam = get_camera3D();
+            
+            glm::mat4 mvp = cam.get_projection_matrix() * cam.get_view_matrix() * model;
+
+            graphics_device->bind_shader(simple_color);
+            graphics_device->set_mat4("mvp", mvp, simple_color);
+            graphics_device->set_vec4("u_color", default_line_color, simple_color);
+
+            graphics_device->bind_vertex_array(line->line_co->va);
+            graphics_device->set_line_width(default_line_width);
+            graphics_device->draw_array(PRIMITIVE_TOPOLOGY::LINE, 0, line->line_co->vertex_count);
+            graphics_device->unbind_vertex_array();
+        }
+    }
+
     void draw_ent(xe_ecs::entity *ent)
     {
         using namespace xe_ecs;
@@ -1421,6 +1503,9 @@ namespace xe_render
             break;
         case ENTITY_TYPE::ENT_WATER:
             draw_water_plane(ent);
+            break;
+        case ENTITY_TYPE::ENT_LINE:
+            draw_line(ent);
             break;
         default:
             xe_utility::debug("Entity type not declared!");

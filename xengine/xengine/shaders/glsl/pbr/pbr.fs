@@ -22,6 +22,7 @@ uniform vec3 light_positions[4];
 uniform vec3 cam_pos;
 
 const float PI = 3.14159265359;
+const float MAX_REFLECTION_LOD = 4.0;
 
 // Constant Fresnel Factor for dielectrics
 const vec3 dielectric = vec3(0.04);
@@ -104,7 +105,7 @@ void main()
        
     //vec3 N = calculate_normals();
     
-    vec3 N = normalize(2.0 * texture(normal_map, uv).rgb - 1.0);
+    vec3 N = normalize(texture(normal_map, uv).rgb * 2.0 - 1.0);
 	N = normalize(tbn * N);
 
     vec3 V = normalize(cam_pos - world_pos);    
@@ -177,7 +178,6 @@ void main()
 
     // sample both the pre-filter map and the BRDF lut and combine them together
     // use split-sum appr as IBL spec
-    const float MAX_REFLECTION_LOD = 4.0;
     
     vec3 prefiltered_color = textureLod(prefilter_map, Lr,  roughness * MAX_REFLECTION_LOD).rgb;    
     vec2 specularBRDF  = texture(brdf_LUT, vec2(dotLo, roughness)).rg;

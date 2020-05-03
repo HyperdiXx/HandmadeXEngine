@@ -308,6 +308,10 @@ namespace xe_graphics
     {
     }
 
+    void graphics_device_dx11::set_line_width(uint32 line_width)
+    {
+    }
+
     void graphics_device_dx11::draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
     {
     }

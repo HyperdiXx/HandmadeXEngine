@@ -1,6 +1,9 @@
 
 #include "types.h"
 
+// @for now...
+#include <glm/glm.hpp>
+
 #define PI 					(3.1415926535897932f)	
 #define SMALL_NUMBER		(1.e-8f)
 #define DELTA			    (0.00001f)
@@ -11,7 +14,7 @@
 #define TOLERANCE 0.00000001f
 
 inline static int32 truncate_int(real32 val)
-{
+{ 
     return (int32)val;
 }
 
@@ -111,9 +114,7 @@ inline static void xe_srand(int32 val)
     return srand(val);
 }
 
-
-
-struct vec2f
+/*struct vec2f
 {
     union
     {
@@ -155,14 +156,14 @@ inline static void normalize(vec2f &a)
     }
 }
 
-inline static real32 distance(const vec2f &a, const vec2f &b)
-{
-    sqrtf(distance_sqr(a, b));
-}
-
 inline static real32 distance_sqr(const vec2f &a, const vec2f &b)
 {
     return sqrtf(b.x - a.x) + sqrtf(b.y - a.y);
+}
+
+inline static real32 distance(const vec2f &a, const vec2f &b)
+{
+    sqrtf(distance_sqr(a, b));
 }
 
 inline static vec2f max_cmp(const vec2f &a, const vec2f &b)
@@ -218,6 +219,10 @@ inline static vec3f max_cmp(const vec3f &a, const vec3f &b)
 inline static vec3f min_cmp(const vec3f &a, const vec3f &b)
 {
 
-}
+}*/
 
-
+struct aabb
+{
+    glm::vec3 min;
+    glm::vec3 max;
+};

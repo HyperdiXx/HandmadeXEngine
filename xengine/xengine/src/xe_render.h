@@ -64,6 +64,9 @@ namespace xe_render
     bool32 create_sphere(xe_graphics::sphere *sphre);
     bool32 create_cube(xe_graphics::cube *cube);
     bool32 create_mesh(xe_assets::mesh *meh, xe_graphics::vertex *vertex_type, bool32 calculate_tspace);
+    
+    bool32 create_line_mesh(glm::vec3 &start, glm::vec3 &end,  xe_graphics::line *line_com);
+    bool32 create_line_mesh(xe_graphics::line *line_com);
 
     void draw_full_quad();
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
@@ -77,6 +80,8 @@ namespace xe_render
 
     void draw_cube(xe_graphics::texture2D *texture_diff);
     void draw_cube();
+
+    void draw_line(xe_ecs::entity *ent);
 
     void draw_ent(xe_ecs::entity *ent);
     void draw_ent_static(xe_ecs::entity *ent);

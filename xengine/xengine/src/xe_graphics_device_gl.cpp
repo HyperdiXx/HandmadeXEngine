@@ -41,7 +41,7 @@ namespace xe_graphics
             res |= GL_TRIANGLE_STRIP;
             break;
         case LINE:
-            res |= GL_LINE;
+            res |= GL_LINES;
             break;
         case LINE_LOOP:
             res |= GL_LINE_LOOP;
@@ -358,6 +358,11 @@ namespace xe_graphics
     void graphics_device_gl::set_depth(bool32 type)
     {
         glDepthMask(type);
+    }
+
+    void graphics_device_gl::set_line_width(uint32 line_width)
+    {
+        glLineWidth(line_width);
     }
 
     void graphics_device_gl::draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)

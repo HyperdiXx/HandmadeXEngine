@@ -37,6 +37,7 @@ namespace xe_ecs
         ENT_PRIMITIVE_OBJECT,
         ENT_ANIMATED_OBJECT,
         ENT_WATER,
+        ENT_LINE,
         ENT_CAMERA
     };
 
@@ -285,6 +286,11 @@ namespace xe_ecs
             return glm::lookAt(pos, pos + target, up);
         }
 
+        glm::mat4 get_view_projection()
+        {
+            return projection * get_view_matrix();
+        }
+
         void mouse_move(real32 xoffset, real32 yoffset, real32 constrainPitch = true)
         {
             xoffset *= c_sens;
@@ -346,6 +352,12 @@ namespace xe_ecs
 
         real32 roughness = 0.0f;
         real32 metallness = 0.0f;
+    };
+
+    class line_mesh_component : public component
+    {
+    public:
+        xe_graphics::line *line_co;
     };
 
     class water_component : public component

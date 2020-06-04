@@ -20,6 +20,9 @@ namespace application
         app_state.animated_test_gun = xe_assets::AnimatedModel("assets/m1911/m1911.fbx");
         app_state.animated_test_gun.set_active_animation(0);
 
+        app_state.girl = xe_assets::AnimatedModel("assets/animated/animated_character.fbx");
+        app_state.girl.set_active_animation(0);
+
         app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Nano", *character));
         app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cube", *primitive_cube));
         app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cerberus", *cerberus));

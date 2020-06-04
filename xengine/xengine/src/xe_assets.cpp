@@ -42,40 +42,6 @@ namespace xe_assets
         return res;
     }
 
-    void parse_bones(anim_model *animmodel, anim_node *mesh, aiMesh *ai_mesh)
-    {
-        std::unordered_map<uint32, uint32> weight_count;       
-
-        for (uint32 i = 0; i < ai_mesh->mNumBones; i++)
-        {
-            aiBone* cur_bone = ai_mesh->mBones[i];
-            uint32 bone_index = 0;
-
-            std::string bone_name = cur_bone->mName.data;
-
-            if (animmodel->bones_map.find(bone_name) == animmodel->bones_map.end())
-            {
-                bone_index = animmodel->bone_count;
-                animmodel->bone_count++;
-                bone bone_in;
-                //mesh->bones.push_back(bone_in);
-                //mesh->bones[bone_index].offset = from_ai_to_glm(cur_bone->mOffsetMatrix);
-                animmodel->bones_map[bone_name] = bone_index;
-            }
-            else
-            {
-                bone_index = animmodel->bones_map[bone_name];
-            }
-
-            for (uint32 j = 0; j < cur_bone->mNumWeights; j++)
-            {
-                //uint32 vertex_id = mesh->bones.size() + cur_bone->mWeights[j].mVertexId;
-                //real32 weight = cur_bone->mWeights[j].mWeight;
-                //animmodel->anim_vertices[vertex_id].add_bone(bone_index, weight);
-            }
-        }
-    }
-
     std::vector<texture_wrapper> load_textures_from_material(model *mdl, aiMaterial *material, aiTextureType type, std::string texture_type)
     {
         std::vector<texture_wrapper> textures;
@@ -117,27 +83,12 @@ namespace xe_assets
         return textures;
     }
 
-    anim_node *find_node(anim_node *node, std::string &name)
-    {
-        if (name == node->name)
-            return node;
-
-        /*for (uint32 i = 0; i < node->children.size(); i++)
-        {
-            anim_node* nod = node->children[i];
-            auto n = find_node(nod, name);
-            if (n)
-                return n;
-        }*/
-        return nullptr;
-    }
-
     vertex *get_vertex_type(model *mdl)
     {        
         return mdl->vertex_type;
     }
 
-    void parse_animations(anim_model * model, const aiScene * ai_scene)
+    /*void parse_animations(anim_model * model, const aiScene * ai_scene)
     {
         for (uint32 i = 0; i < ai_scene->mNumAnimations; i++)
         {
@@ -182,7 +133,7 @@ namespace xe_assets
 
             model->animations.push_back(anim);
         }
-    }
+    }*/
 
     void parse_materials(model *m, mesh *mesh, aiMesh *ai_mesh, const aiScene *scene)
     {
@@ -261,20 +212,6 @@ namespace xe_assets
         return mode;
     }
 
-    anim_model *parse_anim_model(const aiScene *scene)
-    {
-        anim_model* animated_model = new anim_model();
-
-
-
-        if (scene->HasAnimations())
-            parse_animations(animated_model, scene);
-
-        //Log::info("Animated model " + anim_model->root->name + " loaded!");
-
-        return animated_model;
-    }
-
     node *parse_node(model * model, aiNode * ai_node, const aiScene * scene)
     {
         node* cur_node = new node();
@@ -307,11 +244,6 @@ namespace xe_assets
         return mes;
     }
 
-    anim_node* parse_anim_mesh(anim_model * model, aiMesh * ai_mesh, const aiScene * scene)
-    {
-        return nullptr;
-    }
-
     model* xe_assets::load_model_from_file(const std::string &path, bool32 calculate_tb)
     {
         Assimp::Importer importer;
@@ -342,30 +274,6 @@ namespace xe_assets
 
         return result;
     }
-
-    anim_model *load_anim_model_from_file(const std::string &path, bool32 calculate_tb)
-    {
-        Assimp::Importer importer;
-
-        uint32 flags = aiProcess_Triangulate;
-
-        if (calculate_tb)
-            flags |= aiProcess_CalcTangentSpace;
-
-        const aiScene* scene = importer.ReadFile(path, flags);
-        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-        {
-            xe_utility::error(importer.GetErrorString());
-            return nullptr;
-        }
-
-        calculate_tspace = calculate_tb;
-
-        anim_model *result = parse_anim_model(scene);
-
-        return result;
-    }
-
 
     void parse_vert(mesh *meh, aiMesh *aimesh)
     {
@@ -474,7 +382,7 @@ namespace xe_assets
 
         scene = assimp_importer->ReadFile(path.c_str(), import_flags);
         bool isAnimationsLoaded = scene->mAnimations != nullptr;
-        globalInverseTransform = glm::inverse(from_ai_to_glm(scene->mRootNode->mTransformation));
+        global_inverse_transform = glm::inverse(from_ai_to_glm(scene->mRootNode->mTransformation));
 
         uint32_t vertexCount = 0;
         uint32_t indexCount = 0;
@@ -484,15 +392,15 @@ namespace xe_assets
         {
             aiMesh *mesh = scene->mMeshes[i];
 
-            AnimMesh anim_mesh = {};
-            anim_mesh.BaseVertex = vertexCount;
-            anim_mesh.BaseIndex = indexCount;
-            anim_mesh.MaterialIndex = mesh->mMaterialIndex;
-            anim_mesh.IndexCount = mesh->mNumFaces * 3;
+            AnimatedNode anim_mesh = {};
+            anim_mesh.start_vertex = vertexCount;
+            anim_mesh.start_index = indexCount;
+            anim_mesh.index_count = mesh->mNumFaces * 3;
+            anim_mesh.material_index = mesh->mMaterialIndex;
             anim_meshes.push_back(anim_mesh);
 
             vertexCount += mesh->mNumVertices;
-            indexCount += anim_mesh.IndexCount;
+            indexCount += anim_mesh.index_count;
 
             for (size_t i = 0; i < mesh->mNumVertices; i++)
             {
@@ -509,7 +417,7 @@ namespace xe_assets
                 if (mesh->HasTextureCoords(0))
                     vertex.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 
-                vertex_info.push_back(vertex);
+                anim_vertices.push_back(vertex);
             }
 
             for (size_t i = 0; i < mesh->mNumFaces; i++)
@@ -524,7 +432,7 @@ namespace xe_assets
             for (size_t m = 0; m < scene->mNumMeshes; m++)
             {
                 aiMesh* mesh = scene->mMeshes[m];
-                AnimMesh& submesh = anim_meshes[m];
+                AnimatedNode& submesh = anim_meshes[m];
 
                 for (size_t i = 0; i < mesh->mNumBones; i++)
                 {
@@ -532,25 +440,25 @@ namespace xe_assets
                     std::string boneName(bone_loader->mName.data);
                     int boneIndex = 0;
 
-                    if (boneMapping.find(boneName) == boneMapping.end())
+                    if (bones_map.find(boneName) == bones_map.end())
                     {
-                        boneIndex = bonesCount;
-                        bonesCount++;
+                        boneIndex = bones_count;
+                        bones_count++;
                         bone bi;
-                        bonesInfos.push_back(bi);
-                        bonesInfos[boneIndex].offset = from_ai_to_glm(bone_loader->mOffsetMatrix);
-                        boneMapping[boneName] = boneIndex;
+                        bones_info.push_back(bi);
+                        bones_info[boneIndex].offset = from_ai_to_glm(bone_loader->mOffsetMatrix);
+                        bones_map[boneName] = boneIndex;
                     }
                     else
                     {
-                        boneIndex = boneMapping[boneName];
+                        boneIndex = bones_map[boneName];
                     }
 
                     for (size_t j = 0; j < bone_loader->mNumWeights; j++)
                     {
-                        int VertexID = submesh.BaseVertex + bone_loader->mWeights[j].mVertexId;
-                        float Weight = bone_loader->mWeights[j].mWeight;
-                        vertex_info[VertexID].add_bone(boneIndex, Weight);
+                        int vertexID = submesh.start_vertex + bone_loader->mWeights[j].mVertexId;
+                        float weight = bone_loader->mWeights[j].mWeight;
+                        anim_vertices[vertexID].add_bone(boneIndex, weight);
                     }
                 }
             }
@@ -565,7 +473,7 @@ namespace xe_assets
         
         device->create_vertex_array(&va);
         device->bind_vertex_array(&va);
-        device->create_vertex_buffer(vertex_info.data(), vertex_info.size() * sizeof(pos_normal_uv_b_w), DRAW_TYPE::STATIC, va.buffers[0]);
+        device->create_vertex_buffer(anim_vertices.data(), anim_vertices.size() * sizeof(pos_normal_uv_b_w), DRAW_TYPE::STATIC, va.buffers[0]);
         device->create_index_buffer(anim_indices.data(), anim_indices.size(), va.ib);
 
         using namespace xe_graphics;
@@ -595,14 +503,14 @@ namespace xe_assets
         if (activeAnimation)
         {
             float ticks_per_second = (float)(activeAnimation->mTicksPerSecond != 0 ? activeAnimation->mTicksPerSecond : 25.0f);
-            animationTime += dt * ticks_per_second;
-            animationTime = fmod(animationTime, (float)activeAnimation->mDuration);
+            animation_time += dt * ticks_per_second;
+            animation_time = fmod(animation_time, (float)activeAnimation->mDuration);
 
-            transform_bones(animationTime);
+            transformBones(animation_time);
         }        
     }
 
-    const aiNodeAnim *AnimatedModel::find_anim_node_by_name(const aiAnimation *animation, const std::string &node_name)
+    const aiNodeAnim *AnimatedModel::findAnimNodeByName(const aiAnimation *animation, const std::string &node_name)
     {
         for (uint32_t i = 0; i < animation->mNumChannels; i++)
         {
@@ -616,7 +524,7 @@ namespace xe_assets
         return nullptr;
     }
 
-    uint32_t AnimatedModel::GetTranslationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t AnimatedModel::getTranslationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {
         for (uint32_t i = 0; i < node_anim->mNumPositionKeys - 1; i++)
         {
@@ -627,7 +535,7 @@ namespace xe_assets
         return 0;
     }
 
-    uint32_t AnimatedModel::GetRotationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t AnimatedModel::getRotationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {        
         for (uint32_t i = 0; i < node_anim->mNumRotationKeys - 1; i++)
         {
@@ -638,7 +546,7 @@ namespace xe_assets
         return 0;
     }
 
-    uint32_t AnimatedModel::GetScaleIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t AnimatedModel::getScaleIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {
         for (uint32_t i = 0; i < node_anim->mNumScalingKeys - 1; i++)
         {
@@ -649,7 +557,7 @@ namespace xe_assets
         return 0;
     }
 
-    glm::vec3 AnimatedModel::GetTranslationBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::vec3 AnimatedModel::getTranslationBetweenFrames(float dt, const aiNodeAnim *na)
     {
         glm::vec3 translation = glm::vec3();
         
@@ -663,7 +571,7 @@ namespace xe_assets
             return translation;
         }      
         
-        uint32_t index_frame = GetTranslationIndexForNode(dt, na);
+        uint32_t index_frame = getTranslationIndexForNode(dt, na);
         
         uint32_t next_pos_index_frame = index_frame + 1;
 
@@ -674,8 +582,6 @@ namespace xe_assets
 
         aiVectorKey currentFrame = na->mPositionKeys[index_frame];
         aiVectorKey nextFrame = na->mPositionKeys[next_pos_index_frame];
-
-        //float deltaTime = (dt - (float)currentFrame.mTime) / (float)(nextFrame.mTime - currentFrame.mTime);
 
         const aiVector3D& start = currentFrame.mValue;
         const aiVector3D& end = nextFrame.mValue;
@@ -690,7 +596,7 @@ namespace xe_assets
         return translation;
     }
 
-    glm::quat AnimatedModel::GetRotationBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::quat AnimatedModel::getRotationBetweenFrames(float dt, const aiNodeAnim *na)
     {
         if (na->mNumRotationKeys == 1)
         {
@@ -698,7 +604,7 @@ namespace xe_assets
             return glm::quat(v.w, v.x, v.y, v.z);
         }
 
-        uint32_t RotationIndex = GetRotationIndexForNode(dt, na);
+        uint32_t RotationIndex = getRotationIndexForNode(dt, na);
         uint32_t NextRotationIndex = (RotationIndex + 1);
         
         float DeltaTime = (float)(na->mRotationKeys[NextRotationIndex].mTime - na->mRotationKeys[RotationIndex].mTime);
@@ -715,7 +621,7 @@ namespace xe_assets
         return glm::quat(q.w, q.x, q.y, q.z);
     }
 
-    glm::vec3 AnimatedModel::GetScaleBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::vec3 AnimatedModel::getScaleBetweenFrames(float dt, const aiNodeAnim *na)
     {
         glm::vec3 scale;
        
@@ -729,27 +635,16 @@ namespace xe_assets
             return scale;
         }
 
-        uint32_t index = GetScaleIndexForNode(dt, na);
+        uint32_t index = getScaleIndexForNode(dt, na);
+        uint32_t next_index = (index + 1);
         
-        /*aiVectorKey currentFrame = na->mScalingKeys[frameIndex];
-        aiVectorKey nextFrame = na->mScalingKeys[(frameIndex + 1) % na->mNumScalingKeys];
-
-        float delta = (dt - (float)currentFrame.mTime) / (float)(nextFrame.mTime - currentFrame.mTime);
-
-        const aiVector3D& start = currentFrame.mValue;
-        const aiVector3D& end = nextFrame.mValue;
-
-        auto aiVec = (start + delta * (end - start));*/
-
-        uint32_t nextIndex = (index + 1);
-        
-        float deltaTime = (float)(na->mScalingKeys[nextIndex].mTime - na->mScalingKeys[index].mTime);
+        float deltaTime = (float)(na->mScalingKeys[next_index].mTime - na->mScalingKeys[index].mTime);
         float factor = (dt - (float)na->mScalingKeys[index].mTime) / deltaTime;
         if (factor < 0.0f)
             factor = 0.0f;
         
         const auto& start = na->mScalingKeys[index].mValue;
-        const auto& end = na->mScalingKeys[nextIndex].mValue;
+        const auto& end = na->mScalingKeys[next_index].mValue;
         auto delta = end - start;
         auto aiVec = start + factor * delta;
 
@@ -762,31 +657,31 @@ namespace xe_assets
 
     void AnimatedModel::readNodeHierarchy(float anim_time, const aiNode *pNode, const glm::mat4 &parentTransform)
     {
-        std::string currentNodeName(pNode->mName.data);       
-        glm::mat4 nodeTransform(from_ai_to_glm(pNode->mTransformation));
+        std::string current_node_name(pNode->mName.data);       
+        glm::mat4 transform_node(from_ai_to_glm(pNode->mTransformation));
 
-        const aiNodeAnim* findedNode = find_anim_node_by_name(activeAnimation, currentNodeName);
+        const aiNodeAnim* findedNode = findAnimNodeByName(activeAnimation, current_node_name);
 
         if (findedNode)
         {
-            glm::vec3 translationVec = GetTranslationBetweenFrames(anim_time, findedNode);
+            glm::vec3 translationVec = getTranslationBetweenFrames(anim_time, findedNode);
             glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(translationVec.x, translationVec.y, translationVec.z));
 
-            glm::quat quaternion = GetRotationBetweenFrames(anim_time, findedNode);
+            glm::quat quaternion = getRotationBetweenFrames(anim_time, findedNode);
             glm::mat4 rotationMatrix = glm::toMat4(quaternion);
 
-            glm::vec3 scaleVec = GetScaleBetweenFrames(anim_time, findedNode);
+            glm::vec3 scaleVec = getScaleBetweenFrames(anim_time, findedNode);
             glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleVec.x, scaleVec.y, scaleVec.z));
             
-            nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
+            transform_node = translationMatrix * rotationMatrix * scaleMatrix;
         }
 
-        glm::mat4 globalTransformMatrix = parentTransform * nodeTransform;
+        glm::mat4 globalTransformMatrix = parentTransform * transform_node;
 
-        if (boneMapping.find(currentNodeName) != boneMapping.end())
+        if (bones_map.find(current_node_name) != bones_map.end())
         {
-            uint32_t BoneIndex = boneMapping[currentNodeName];
-            bonesInfos[BoneIndex].transform = globalInverseTransform * globalTransformMatrix * bonesInfos[BoneIndex].offset;
+            uint32_t BoneIndex = bones_map[current_node_name];
+            bones_info[BoneIndex].transform = global_inverse_transform * globalTransformMatrix * bones_info[BoneIndex].offset;
         }
 
         for (uint32_t i = 0; i < pNode->mNumChildren; i++)
@@ -795,13 +690,13 @@ namespace xe_assets
         }
     }
 
-    void AnimatedModel::transform_bones(float dt)
+    void AnimatedModel::transformBones(float dt)
     {
         readNodeHierarchy(dt, scene->mRootNode, glm::mat4(1.0f));
-        boneTransforms.resize(bonesCount);
-        for (uint32_t i = 0; i < bonesCount; i++)
+        bone_transformation.resize(bones_count);
+        for (uint32_t i = 0; i < bones_count; i++)
         {
-            boneTransforms[i] = bonesInfos[i].transform;
+            bone_transformation[i] = bones_info[i].transform;
         }
     }
 
@@ -811,7 +706,7 @@ namespace xe_assets
         for (uint32_t i = 0; i < node->mNumMeshes; i++)
         {
             uint32_t mesh = node->mMeshes[i];
-            anim_meshes[mesh].Transform = transform;
+            anim_meshes[mesh].transform = transform;
         }   
 
         for (uint32_t i = 0; i < node->mNumChildren; i++)

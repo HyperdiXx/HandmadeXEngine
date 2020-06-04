@@ -145,8 +145,14 @@ void xe_graphics::render_pass3D::render()
     device->disable(GL_CULL_FACE);
     
     application::application_state *app_state = application::get_app_state();
-    app_state->animated_test_gun.update(app_state->delta_time);    
-    xe_render::draw_animated_model(&app_state->animated_test_gun, glm::translate(glm::mat4(1.0f), { 0, 0, -10 }) * glm::scale(glm::mat4(1.0f), { 20, 20, 20 }));
+
+    //app_state->animated_test_gun.update(app_state->delta_time);     
+    //xe_render::draw_animated_model(&app_state->animated_test_gun, glm::translate(glm::mat4(1.0f), { 0, 0, -10 }) * glm::scale(glm::mat4(1.0f), { 20, 20, 20 }));
+    
+    app_state->girl.update(app_state->delta_time);
+    xe_render::draw_animated_model(&app_state->girl, glm::translate(xe_render::IDENTITY_MATRIX, { 0, 0, -10 })
+                                                    * glm::rotate(xe_render::IDENTITY_MATRIX, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f))
+                                                    * glm::scale(xe_render::IDENTITY_MATRIX, glm::vec3(0.2f, 0.2f, 0.2f)));
 
     xe_render::draw_skybox();
 

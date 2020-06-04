@@ -17,6 +17,7 @@ namespace application
         uint32 fps = 0;
 
         xe_assets::AnimatedModel animated_test_gun;
+        xe_assets::AnimatedModel girl;
     };
    
     application_state *get_app_state();

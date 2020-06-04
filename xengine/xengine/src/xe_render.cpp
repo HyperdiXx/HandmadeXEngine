@@ -1482,21 +1482,21 @@ namespace xe_render
 
         xe_ecs::camera3d_component &camera = get_camera3D();
 
-        for (xe_assets::AnimMesh& mesh : anim_model->anim_meshes)
+        for (xe_assets::AnimatedNode& mesh : anim_model->anim_meshes)
         {         
-            for (size_t i = 0; i < anim_model->boneTransforms.size(); i++)
+            for (size_t i = 0; i < anim_model->bone_transformation.size(); i++)
             {
                 std::string uniformName = std::string("u_bones[") + std::to_string(i) + std::string("]");
-                device->set_mat4(uniformName, anim_model->boneTransforms[i], animation_shader);
+                device->set_mat4(uniformName, anim_model->bone_transformation[i], animation_shader);
             }
 
             glm::mat4 ide_model = IDENTITY_MATRIX;
-            ide_model = transform * mesh.Transform;
+            ide_model = transform * mesh.transform;
             
             device->set_mat4("model", ide_model, animation_shader);
             device->set_mat4("vp", camera.get_view_projection(), animation_shader);
             device->bind_vertex_array(&anim_model->va);
-            device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, mesh.IndexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * mesh.BaseIndex));
+            device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, mesh.index_count, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * mesh.start_index));
         }
 
         device->unbind_shader();

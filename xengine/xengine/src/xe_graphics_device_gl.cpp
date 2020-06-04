@@ -382,7 +382,7 @@ namespace xe_graphics
         if (last_bound_unit_texture != texture->id)
         {
             uint32 gl_texture_type = convert_texture_type_gl(type);
-            glActiveTexture(GL_TEXTURE0 + 0);
+            glActiveTexture(GL_TEXTURE0);
             glBindTexture(gl_texture_type, texture->id);
             last_bound_unit_texture = texture->id;
         }
@@ -939,7 +939,7 @@ namespace xe_graphics
         return true;
     }
 
-    bool32 graphics_device_gl::create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
+    bool32 graphics_device_gl::create_vertex_buffer(void *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
     {
         vb->data = vertices;
 
@@ -948,7 +948,7 @@ namespace xe_graphics
 
         uint32 draw_type_gl = convert_draw_type_to_gl_type(draw_type);
 
-        glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat), vb->data, draw_type_gl);
+        glBufferData(GL_ARRAY_BUFFER, size, vb->data, draw_type_gl);
 
         if (vb->data)
             return true;

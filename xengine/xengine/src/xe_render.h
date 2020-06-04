@@ -20,6 +20,7 @@ namespace xe_assets
 {
     struct model;
     struct mesh;
+    class AnimatedModel;
 }
 
 namespace xe_render
@@ -80,6 +81,9 @@ namespace xe_render
 
     void draw_cube(xe_graphics::texture2D *texture_diff);
     void draw_cube();
+
+    void draw_animated_model(xe_assets::AnimatedModel *anim_model, const glm::mat4 &transform);
+    void update_anim(xe_assets::AnimatedModel *anim_model);
 
     void draw_line(xe_ecs::entity *ent);
 

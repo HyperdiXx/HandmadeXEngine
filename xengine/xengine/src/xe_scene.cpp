@@ -45,7 +45,6 @@ namespace xe_scene
         xe_ecs::mesh_component *character_mesh = new xe_ecs::mesh_component();
         character_mesh->model_asset = application::get_model_by_name("Nano");
 
-
         xe_ecs::transform_component *nano_transform = new xe_ecs::transform_component();
         nano_transform->set_translation(-20.0f, -9.0f, -50.0f);
 

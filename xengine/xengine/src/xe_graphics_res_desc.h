@@ -156,10 +156,25 @@ namespace xe_graphics
     {
         vec3f pos;
         vec3f normal;
+        vec3f tangent;
+        vec3f bitangent;
         vec2f uv;
 
-        real32 bone_ids[BONES_COUNT] = {};
-        real32 weights[BONES_COUNT] = {};
+        uint32 bone_ids[4] = { 0, 0, 0, 0 };
+        real32 weights[4]{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+        void add_bone(uint32_t boneId, real32 weight)
+        {
+            for (uint32_t size = 0; size < 4; size++)
+            {
+                if (weights[size] == 0.0f)
+                {
+                    bone_ids[size] = boneId;
+                    weights[size] = weight;
+                    return;
+                }
+            }
+        }
     };
 
     struct BPMaterialSpec

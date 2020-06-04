@@ -41,12 +41,10 @@ static int WINDOW_WIDTH_SIZE = 1280;
 static int WINDOW_HEIGHT_SIZE = 720;
 static bool is_open = true;
 
-#define DEBUG
-
 int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
 { 
-#ifdef DEBUG
+#ifdef XE_DEBUG
     xe_platform::open_console();
 #endif
 
@@ -94,7 +92,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     xe_scene::load_test_scene(&new_scene);
     xe_scene::load_spheres_scene(&pbr_scene);
-    application::set_active_scene(&pbr_scene);
+    application::set_active_scene(&new_scene);
 
     layer *gui = new gui_layer();
 
@@ -157,16 +155,16 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
         //shadow_pass.bind_depth_texture();
 
-        //main_render_pass->update(current_app_state->delta_time);
-        //main_render_pass->render();
+        main_render_pass->update(current_app_state->delta_time);
+        main_render_pass->render();
 
-        //texture2D pass_texture = main_render_pass->get_color_texture();
+        texture2D pass_texture = main_render_pass->get_color_texture();
         
-        //gamma_correction.set_color_texture(&pass_texture);
-        //gamma_correction.render();
+        gamma_correction.set_color_texture(&pass_texture);
+        gamma_correction.render();
 
-        pbr_setup.update(current_app_state->delta_time);
-        pbr_setup.render();
+        //pbr_setup.update(current_app_state->delta_time);
+        //pbr_setup.render();
 
         render_pass_2D->update(current_app_state->delta_time);
         render_pass_2D->render();

@@ -579,7 +579,7 @@ namespace xe_graphics
         return bool32();
     }
 
-    bool32 graphics_device_dx11::create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
+    bool32 graphics_device_dx11::create_vertex_buffer(void *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
     {
         D3D11_BUFFER_DESC buffer_desc;
         D3D11_SUBRESOURCE_DATA bind_data;

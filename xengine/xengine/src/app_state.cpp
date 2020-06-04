@@ -15,6 +15,10 @@ namespace application
         xe_assets::model *character = xe_assets::load_model_from_file("assets/nano/nanosuit.obj");
         xe_assets::model *primitive_cube = xe_assets::load_model_from_file("assets/cube.obj");
         xe_assets::model *cerberus = xe_assets::load_model_from_file("assets/cerberus/cerberus.obj");
+        //xe_assets::anim_model *gun = xe_assets::load_anim_model_from_file("assets/m1911/m1911.fbx");
+
+        app_state.animated_test_gun = xe_assets::AnimatedModel("assets/m1911/m1911.fbx");
+        app_state.animated_test_gun.set_active_animation(0);
 
         app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Nano", *character));
         app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cube", *primitive_cube));
@@ -131,10 +135,26 @@ namespace application
             real32 xoffset = mouse->position.x - mouse->dt_position.x;
             real32 yoffset = mouse->dt_position.y - mouse->position.y;
 
-            printf("DX: %f\n", xoffset);
-            printf("DY: %f\n", yoffset);
+            //printf("DX: %f\n", xoffset);
+            //printf("DY: %f\n", yoffset);
 
             camera3D.mouse_move(xoffset, yoffset);
+        }
+
+        if (mouse->is_left_button_pressed)
+        {
+            ray ray_cast = {};
+
+            xe_graphics::graphics_device *device = xe_render::get_device();
+            xe_graphics::viewport &vp_state = device->get_viewport();
+     
+            glm::vec2 viewport_pos_mouse = glm::vec2((mouse->position.x / vp_state.width) * 2.0f - 1.0f, ((mouse->position.y / vp_state.height) * 2.0f - 1.0f));
+            if (viewport_pos_mouse.x > -1.0f && viewport_pos_mouse.x < 1.0f && viewport_pos_mouse.y > -1.0f && viewport_pos_mouse.y < 1.0f)
+            {
+                printf("Mouse pos in NDC: \n");
+            }
+
+            mouse->is_left_button_pressed = false;
         }
     }
 }

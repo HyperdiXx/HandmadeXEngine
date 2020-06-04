@@ -15,6 +15,8 @@ namespace application
         real32 start_time = 0;
         uint32 frames_elapsed = 0;
         uint32 fps = 0;
+
+        xe_assets::AnimatedModel animated_test_gun;
     };
    
     application_state *get_app_state();

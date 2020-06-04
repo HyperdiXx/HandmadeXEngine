@@ -4,6 +4,13 @@
 
 #include <glad/glad.h>
 
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+
 namespace xe_assets
 {
     static bool32 calculate_tspace;
@@ -35,28 +42,37 @@ namespace xe_assets
         return res;
     }
 
-    void parse_bones(anim_model *animmodel, anim_mesh *mesh, aiMesh *ai_mesh)
+    void parse_bones(anim_model *animmodel, anim_node *mesh, aiMesh *ai_mesh)
     {
-        std::unordered_map<uint32, uint32> weight_count;
+        std::unordered_map<uint32, uint32> weight_count;       
 
         for (uint32 i = 0; i < ai_mesh->mNumBones; i++)
         {
             aiBone* cur_bone = ai_mesh->mBones[i];
+            uint32 bone_index = 0;
 
-            std::shared_ptr<bone> current_bone{ new bone{cur_bone->mName.C_Str(), from_ai_to_glm(cur_bone->mOffsetMatrix)} };
+            std::string bone_name = cur_bone->mName.data;
+
+            if (animmodel->bones_map.find(bone_name) == animmodel->bones_map.end())
+            {
+                bone_index = animmodel->bone_count;
+                animmodel->bone_count++;
+                bone bone_in;
+                //mesh->bones.push_back(bone_in);
+                //mesh->bones[bone_index].offset = from_ai_to_glm(cur_bone->mOffsetMatrix);
+                animmodel->bones_map[bone_name] = bone_index;
+            }
+            else
+            {
+                bone_index = animmodel->bones_map[bone_name];
+            }
 
             for (uint32 j = 0; j < cur_bone->mNumWeights; j++)
             {
-                aiVertexWeight vert_weight = cur_bone->mWeights[j];
-                if (weight_count.find(vert_weight.mVertexId) == weight_count.end())
-                    weight_count[vert_weight.mVertexId] = 0;
-
-                // if (weight_count[vert_weight.mVertexId] < 4)
-                //     mesh->add_weight(vert_weight.mVertexId, weight_count[vert_weight.mVertexId]++, i, vert_weight.mWeight);
+                //uint32 vertex_id = mesh->bones.size() + cur_bone->mWeights[j].mVertexId;
+                //real32 weight = cur_bone->mWeights[j].mWeight;
+                //animmodel->anim_vertices[vertex_id].add_bone(bone_index, weight);
             }
-
-            //model->add_bone(current_bone);
-            //mesh->bones.push_back(current_bone);
         }
     }
 
@@ -101,18 +117,18 @@ namespace xe_assets
         return textures;
     }
 
-    anim_node * find_node(anim_node * node, std::string & name)
+    anim_node *find_node(anim_node *node, std::string &name)
     {
         if (name == node->name)
             return node;
 
-        for (uint32 i = 0; i < node->nodes.size(); i++)
+        /*for (uint32 i = 0; i < node->children.size(); i++)
         {
-            anim_node* nod = node->nodes[i];
+            anim_node* nod = node->children[i];
             auto n = find_node(nod, name);
             if (n)
                 return n;
-        }
+        }*/
         return nullptr;
     }
 
@@ -127,44 +143,44 @@ namespace xe_assets
         {
             aiAnimation *ai_animation = ai_scene->mAnimations[i];
 
-            /*Animation *anim = new Animation();
+            animation anim = {};
 
-            anim->set_name(ai_animation->mName.C_Str());
-            anim->set_time(ai_animation->mTicksPerSecond);
-            anim->set_duration(ai_animation->mDuration);
+            anim.name = ai_animation->mName.C_Str();
+            anim.ticks_per_second = ai_animation->mTicksPerSecond;
+            anim.duration = ai_animation->mDuration;
 
             for (uint32 j = 0; ai_animation->mNumChannels; j++)
             {
                 aiNodeAnim* ai_channel = ai_animation->mChannels[j];
 
-                KeyFrame* frame = new KeyFrame();
-                frame->name = ai_channel->mNodeName.C_Str();
+                //KeyFrame* frame = new KeyFrame();
+                //frame->name = ai_channel->mNodeName.C_Str();
 
                 for (uint32 q = 0; q < ai_channel->mNumPositionKeys; q++)
                 {
                     aiVectorKey ai_key = ai_channel->mPositionKeys[i];
-                    PositionKey p_key = { ai_key.mTime, { ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
-                    frame->add_position_key(p_key);
+                    //PositionKey p_key = { ai_key.mTime, { ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
+                    //frame->add_position_key(p_key);
                 }
 
                 for (uint32 w = 0; w < ai_channel->mNumRotationKeys; w++)
                 {
                     aiQuatKey ai_key = ai_channel->mRotationKeys[i];
-                    RotationKey r_key = { ai_key.mTime,{ ai_key.mValue.w, ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
-                    frame->add_rotation_key(r_key);
+                    //RotationKey r_key = { ai_key.mTime,{ ai_key.mValue.w, ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
+                    //frame->add_rotation_key(r_key);
                 }
 
                 for (uint32 e = 0; e < ai_channel->mNumScalingKeys; e++)
                 {
                     aiVectorKey ai_key = ai_channel->mScalingKeys[i];
-                    PositionKey s_key = { ai_key.mTime ,{ ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
-                    frame->add_scale_key(s_key);
+                    //PositionKey s_key = { ai_key.mTime ,{ ai_key.mValue.x,ai_key.mValue.y,ai_key.mValue.z } };
+                    //frame->add_scale_key(s_key);
                 }
 
-                anim->add_keyframe(frame);
+                //anim->add_keyframe(frame);
             }
 
-            model->add_animation(anim);*/
+            model->animations.push_back(anim);
         }
     }
 
@@ -205,7 +221,7 @@ namespace xe_assets
         mat4 = glm::transpose(mat4);
     }
 
-    void calc_weight(uint32 id, real32 weight, glm::ivec4 & bone_id, glm::vec4 & wts)
+    void calc_weight(uint32 id, real32 weight, glm::ivec4 &bone_id, glm::vec4 &wts)
     {
         for (uint16 i = 0; i < 4; i++)
         {
@@ -218,7 +234,7 @@ namespace xe_assets
         }
     }
 
-    void parse_faces(mesh * mesh, aiMesh * aimesh)
+    void parse_faces(mesh *mesh, aiMesh *aimesh)
     {
         for (uint32 i = 0; i < aimesh->mNumFaces; i++)
         {
@@ -248,6 +264,8 @@ namespace xe_assets
     anim_model *parse_anim_model(const aiScene *scene)
     {
         anim_model* animated_model = new anim_model();
+
+
 
         if (scene->HasAnimations())
             parse_animations(animated_model, scene);
@@ -287,6 +305,11 @@ namespace xe_assets
         xe_render::create_mesh(mes, model->vertex_type, calculate_tspace);
 
         return mes;
+    }
+
+    anim_node* parse_anim_mesh(anim_model * model, aiMesh * ai_mesh, const aiScene * scene)
+    {
+        return nullptr;
     }
 
     model* xe_assets::load_model_from_file(const std::string &path, bool32 calculate_tb)
@@ -434,5 +457,364 @@ namespace xe_assets
     void node::add_mesh(mesh *msh)
     {
         meshes.push_back(msh);
+    }
+
+    AnimatedModel::AnimatedModel(const std::string &path)
+    {
+        static const uint32_t import_flags =
+            aiProcess_CalcTangentSpace |        // Create binormals/tangents just in case
+            aiProcess_Triangulate |             // Make sure we're triangles
+            aiProcess_SortByPType |             // Split meshes by primitive type
+            aiProcess_GenNormals |              // Make sure we have legit normals
+            aiProcess_GenUVCoords |             // Convert UVs if required 
+            aiProcess_OptimizeMeshes |          // Batch draws where possible
+            aiProcess_ValidateDataStructure;    // Validation
+
+        assimp_importer = std::make_unique<Assimp::Importer>();
+
+        scene = assimp_importer->ReadFile(path.c_str(), import_flags);
+        bool isAnimationsLoaded = scene->mAnimations != nullptr;
+        globalInverseTransform = glm::inverse(from_ai_to_glm(scene->mRootNode->mTransformation));
+
+        uint32_t vertexCount = 0;
+        uint32_t indexCount = 0;
+
+        anim_meshes.reserve(scene->mNumMeshes);
+        for (size_t i = 0; i < scene->mNumMeshes; ++i)
+        {
+            aiMesh *mesh = scene->mMeshes[i];
+
+            AnimMesh anim_mesh = {};
+            anim_mesh.BaseVertex = vertexCount;
+            anim_mesh.BaseIndex = indexCount;
+            anim_mesh.MaterialIndex = mesh->mMaterialIndex;
+            anim_mesh.IndexCount = mesh->mNumFaces * 3;
+            anim_meshes.push_back(anim_mesh);
+
+            vertexCount += mesh->mNumVertices;
+            indexCount += anim_mesh.IndexCount;
+
+            for (size_t i = 0; i < mesh->mNumVertices; i++)
+            {
+                pos_normal_uv_b_w vertex;
+                vertex.pos = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
+                vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+
+                if (mesh->HasTangentsAndBitangents())
+                {
+                    vertex.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
+                    vertex.bitangent = { mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z };
+                }
+
+                if (mesh->HasTextureCoords(0))
+                    vertex.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+
+                vertex_info.push_back(vertex);
+            }
+
+            for (size_t i = 0; i < mesh->mNumFaces; i++)
+            {
+                aiFace face = mesh->mFaces[i];
+                for (uint32 j = 0; j < face.mNumIndices; j++)
+                    anim_indices.push_back(face.mIndices[j]);
+            }
+
+            updateNodeTransform(scene->mRootNode);
+
+            for (size_t m = 0; m < scene->mNumMeshes; m++)
+            {
+                aiMesh* mesh = scene->mMeshes[m];
+                AnimMesh& submesh = anim_meshes[m];
+
+                for (size_t i = 0; i < mesh->mNumBones; i++)
+                {
+                    aiBone* bone_loader = mesh->mBones[i];
+                    std::string boneName(bone_loader->mName.data);
+                    int boneIndex = 0;
+
+                    if (boneMapping.find(boneName) == boneMapping.end())
+                    {
+                        boneIndex = bonesCount;
+                        bonesCount++;
+                        bone bi;
+                        bonesInfos.push_back(bi);
+                        bonesInfos[boneIndex].offset = from_ai_to_glm(bone_loader->mOffsetMatrix);
+                        boneMapping[boneName] = boneIndex;
+                    }
+                    else
+                    {
+                        boneIndex = boneMapping[boneName];
+                    }
+
+                    for (size_t j = 0; j < bone_loader->mNumWeights; j++)
+                    {
+                        int VertexID = submesh.BaseVertex + bone_loader->mWeights[j].mVertexId;
+                        float Weight = bone_loader->mWeights[j].mWeight;
+                        vertex_info[VertexID].add_bone(boneIndex, Weight);
+                    }
+                }
+            }
+        }
+
+        // GPU data creation
+
+        graphics_device *device = xe_render::get_device();
+
+        va.buffers.push_back(new xe_graphics::vertex_buffer);        
+        va.ib = new xe_graphics::index_buffer;
+        
+        device->create_vertex_array(&va);
+        device->bind_vertex_array(&va);
+        device->create_vertex_buffer(vertex_info.data(), vertex_info.size() * sizeof(pos_normal_uv_b_w), DRAW_TYPE::STATIC, va.buffers[0]);
+        device->create_index_buffer(anim_indices.data(), anim_indices.size(), va.ib);
+
+        using namespace xe_graphics;
+
+        buffer_layout buffer_layout = {};
+
+        std::initializer_list<xe_graphics::buffer_element> init_list =
+        {
+            { "iPos",         ElementType::Float3, },
+            { "iNormal",      ElementType::Float3, },
+            { "iTangent",     ElementType::Float3, },
+            { "iBitangent",   ElementType::Float3, },
+            { "iUV",          ElementType::Float2, },          
+            { "iBoneIDs",     ElementType::Int4, },
+            { "iBoneWeights", ElementType::Float4, }
+        };
+
+        device->create_buffer_layout(init_list, &buffer_layout);
+        device->set_vertex_buffer_layout(va.buffers[0], &buffer_layout);
+        device->add_vertex_buffer(&va, va.buffers[0]);
+        device->set_index_buffer(&va, va.ib);
+    }
+
+
+    void AnimatedModel::update(float dt)
+    {
+        if (activeAnimation)
+        {
+            float ticks_per_second = (float)(activeAnimation->mTicksPerSecond != 0 ? activeAnimation->mTicksPerSecond : 25.0f);
+            animationTime += dt * ticks_per_second;
+            animationTime = fmod(animationTime, (float)activeAnimation->mDuration);
+
+            transform_bones(animationTime);
+        }        
+    }
+
+    const aiNodeAnim *AnimatedModel::find_anim_node_by_name(const aiAnimation *animation, const std::string &node_name)
+    {
+        for (uint32_t i = 0; i < animation->mNumChannels; i++)
+        {
+            const aiNodeAnim* nodeAnim = animation->mChannels[i];
+            if (std::string(nodeAnim->mNodeName.data) == node_name)
+            {
+                return nodeAnim;
+            }
+        }
+
+        return nullptr;
+    }
+
+    uint32_t AnimatedModel::GetTranslationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    {
+        for (uint32_t i = 0; i < node_anim->mNumPositionKeys - 1; i++)
+        {
+            if (anim_time < (float)node_anim->mPositionKeys[i + 1].mTime)
+                return i;
+        }
+
+        return 0;
+    }
+
+    uint32_t AnimatedModel::GetRotationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    {        
+        for (uint32_t i = 0; i < node_anim->mNumRotationKeys - 1; i++)
+        {
+            if (anim_time < (float)node_anim->mRotationKeys[i + 1].mTime)
+                return i;
+        }
+
+        return 0;
+    }
+
+    uint32_t AnimatedModel::GetScaleIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    {
+        for (uint32_t i = 0; i < node_anim->mNumScalingKeys - 1; i++)
+        {
+            if (anim_time < (float)node_anim->mScalingKeys[i + 1].mTime)
+                return i;
+        }
+
+        return 0;
+    }
+
+    glm::vec3 AnimatedModel::GetTranslationBetweenFrames(float dt, const aiNodeAnim *na)
+    {
+        glm::vec3 translation = glm::vec3();
+        
+        if (na->mNumPositionKeys == 1)
+        {
+            auto res = na->mPositionKeys[0].mValue;
+            translation.x = res.x;
+            translation.y = res.y;
+            translation.z = res.z;
+
+            return translation;
+        }      
+        
+        uint32_t index_frame = GetTranslationIndexForNode(dt, na);
+        
+        uint32_t next_pos_index_frame = index_frame + 1;
+
+        float deltaTime = (float)(na->mPositionKeys[next_pos_index_frame].mTime - na->mPositionKeys[index_frame].mTime);
+        float Factor = (dt - (float)na->mPositionKeys[index_frame].mTime) / deltaTime;
+        if (Factor < 0.0f)
+            Factor = 0.0f;
+
+        aiVectorKey currentFrame = na->mPositionKeys[index_frame];
+        aiVectorKey nextFrame = na->mPositionKeys[next_pos_index_frame];
+
+        //float deltaTime = (dt - (float)currentFrame.mTime) / (float)(nextFrame.mTime - currentFrame.mTime);
+
+        const aiVector3D& start = currentFrame.mValue;
+        const aiVector3D& end = nextFrame.mValue;
+        aiVector3D delta = end - start;
+
+        auto aiVec = (start + Factor * delta);
+        
+        translation.x = aiVec.x;
+        translation.y = aiVec.y;
+        translation.z = aiVec.z;
+
+        return translation;
+    }
+
+    glm::quat AnimatedModel::GetRotationBetweenFrames(float dt, const aiNodeAnim *na)
+    {
+        if (na->mNumRotationKeys == 1)
+        {
+            auto v = na->mRotationKeys[0].mValue;
+            return glm::quat(v.w, v.x, v.y, v.z);
+        }
+
+        uint32_t RotationIndex = GetRotationIndexForNode(dt, na);
+        uint32_t NextRotationIndex = (RotationIndex + 1);
+        
+        float DeltaTime = (float)(na->mRotationKeys[NextRotationIndex].mTime - na->mRotationKeys[RotationIndex].mTime);
+        float Factor = (dt - (float)na->mRotationKeys[RotationIndex].mTime) / DeltaTime;
+        if (Factor < 0.0f)
+            Factor = 0.0f;
+        
+        const aiQuaternion& StartRotationQ = na->mRotationKeys[RotationIndex].mValue;
+        const aiQuaternion& EndRotationQ = na->mRotationKeys[NextRotationIndex].mValue;
+        auto q = aiQuaternion();
+        
+        aiQuaternion::Interpolate(q, StartRotationQ, EndRotationQ, Factor);
+        q = q.Normalize();
+        return glm::quat(q.w, q.x, q.y, q.z);
+    }
+
+    glm::vec3 AnimatedModel::GetScaleBetweenFrames(float dt, const aiNodeAnim *na)
+    {
+        glm::vec3 scale;
+       
+        if (na->mNumScalingKeys == 1)
+        {
+            auto scl = na->mScalingKeys[0].mValue;
+            scale.x = scl.x;
+            scale.y = scl.y;
+            scale.z = scl.z;
+
+            return scale;
+        }
+
+        uint32_t index = GetScaleIndexForNode(dt, na);
+        
+        /*aiVectorKey currentFrame = na->mScalingKeys[frameIndex];
+        aiVectorKey nextFrame = na->mScalingKeys[(frameIndex + 1) % na->mNumScalingKeys];
+
+        float delta = (dt - (float)currentFrame.mTime) / (float)(nextFrame.mTime - currentFrame.mTime);
+
+        const aiVector3D& start = currentFrame.mValue;
+        const aiVector3D& end = nextFrame.mValue;
+
+        auto aiVec = (start + delta * (end - start));*/
+
+        uint32_t nextIndex = (index + 1);
+        
+        float deltaTime = (float)(na->mScalingKeys[nextIndex].mTime - na->mScalingKeys[index].mTime);
+        float factor = (dt - (float)na->mScalingKeys[index].mTime) / deltaTime;
+        if (factor < 0.0f)
+            factor = 0.0f;
+        
+        const auto& start = na->mScalingKeys[index].mValue;
+        const auto& end = na->mScalingKeys[nextIndex].mValue;
+        auto delta = end - start;
+        auto aiVec = start + factor * delta;
+
+        scale.x = aiVec.x;
+        scale.y = aiVec.y;
+        scale.z = aiVec.z;
+
+        return scale;
+    }
+
+    void AnimatedModel::readNodeHierarchy(float anim_time, const aiNode *pNode, const glm::mat4 &parentTransform)
+    {
+        std::string currentNodeName(pNode->mName.data);       
+        glm::mat4 nodeTransform(from_ai_to_glm(pNode->mTransformation));
+
+        const aiNodeAnim* findedNode = find_anim_node_by_name(activeAnimation, currentNodeName);
+
+        if (findedNode)
+        {
+            glm::vec3 translationVec = GetTranslationBetweenFrames(anim_time, findedNode);
+            glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(translationVec.x, translationVec.y, translationVec.z));
+
+            glm::quat quaternion = GetRotationBetweenFrames(anim_time, findedNode);
+            glm::mat4 rotationMatrix = glm::toMat4(quaternion);
+
+            glm::vec3 scaleVec = GetScaleBetweenFrames(anim_time, findedNode);
+            glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleVec.x, scaleVec.y, scaleVec.z));
+            
+            nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
+        }
+
+        glm::mat4 globalTransformMatrix = parentTransform * nodeTransform;
+
+        if (boneMapping.find(currentNodeName) != boneMapping.end())
+        {
+            uint32_t BoneIndex = boneMapping[currentNodeName];
+            bonesInfos[BoneIndex].transform = globalInverseTransform * globalTransformMatrix * bonesInfos[BoneIndex].offset;
+        }
+
+        for (uint32_t i = 0; i < pNode->mNumChildren; i++)
+        {
+            readNodeHierarchy(anim_time, pNode->mChildren[i], globalTransformMatrix);
+        }
+    }
+
+    void AnimatedModel::transform_bones(float dt)
+    {
+        readNodeHierarchy(dt, scene->mRootNode, glm::mat4(1.0f));
+        boneTransforms.resize(bonesCount);
+        for (uint32_t i = 0; i < bonesCount; i++)
+        {
+            boneTransforms[i] = bonesInfos[i].transform;
+        }
+    }
+
+    void AnimatedModel::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform)
+    {
+        glm::mat4 transform = parent_transform * from_ai_to_glm(node->mTransformation);
+        for (uint32_t i = 0; i < node->mNumMeshes; i++)
+        {
+            uint32_t mesh = node->mMeshes[i];
+            anim_meshes[mesh].Transform = transform;
+        }   
+
+        for (uint32_t i = 0; i < node->mNumChildren; i++)
+            updateNodeTransform(node->mChildren[i], transform);
     }
 }

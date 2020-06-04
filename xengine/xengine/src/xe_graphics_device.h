@@ -93,7 +93,7 @@ namespace xe_graphics
         virtual bool32 create_shader(const char* vertex, const char* fragment, shader* shader) = 0;
         virtual bool32 create_framebuffer(const uint32 count, framebuffer *fbo) = 0;
         virtual bool32 create_render_buffer(const uint32 count, framebuffer *fbo) = 0;
-        virtual bool32 create_vertex_buffer(real32 *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) = 0;
+        virtual bool32 create_vertex_buffer(void *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb) = 0;
         virtual bool32 create_index_buffer(uint32* indices, uint32 size, index_buffer *ib) = 0;
         virtual bool32 create_vertex_array(vertex_array *va) = 0;
         virtual bool32 create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout) = 0;

@@ -10,7 +10,7 @@
 #endif
 
 #ifdef PLATFORM_WINDOWS
-
+#define XE_DEBUG
 #define WIN32_LEAN_AND_MEAN
 
 #include <io.h>

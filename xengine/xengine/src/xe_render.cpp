@@ -28,8 +28,8 @@ namespace xe_render
 
     xe_graphics::graphics_device *graphics_device = nullptr;
 
-    std::map<const char*, xe_graphics::shader> shaders;
-    std::map<const char*, xe_graphics::texture2D> textures;
+    std::unordered_map<const char*, xe_graphics::shader> shaders;
+    std::unordered_map<const char*, xe_graphics::texture2D> textures;
 
     xe_graphics::render_pass *active_render_pass = nullptr;
     xe_graphics::framebuffer *active_framebuffer = nullptr;
@@ -125,6 +125,10 @@ namespace xe_render
         graphics_device->bind_shader(equ_to_cubemap);
         graphics_device->set_int("equirectangular_map", 0, equ_to_cubemap);
 
+        shader *animation = get_shader("skeletal_animation");
+        graphics_device->bind_shader(animation);
+        graphics_device->set_int("tex_diff", 0, animation);
+
         return true;
     }
 
@@ -185,7 +189,7 @@ namespace xe_render
         graphics_device->create_vertex_array(va);
         graphics_device->bind_vertex_array(va);
 
-        graphics_device->create_vertex_buffer(NULL, 24, DRAW_TYPE::DYNAMIC, vb);
+        graphics_device->create_vertex_buffer(NULL, 24 * sizeof(real32), DRAW_TYPE::DYNAMIC, vb);
 
         buffer_layout buffer_layout = {};
 
@@ -233,6 +237,7 @@ namespace xe_render
         xe_graphics::shader irradiance_shader = {};
         xe_graphics::shader water = {};
         xe_graphics::shader simple_color = {};
+        xe_graphics::shader anim_model = {};
 
         std::string shader_names[8] = {};
 
@@ -252,6 +257,8 @@ namespace xe_render
         }*/
 
         res = graphics_device->create_shader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
+        
+        res |= graphics_device->create_shader("shaders/glsl/anim_model3d.vs", "shaders/glsl/simple2d.fs", &anim_model);        
         res |= graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
         res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
         res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
@@ -296,6 +303,7 @@ namespace xe_render
         shaders["equirect"] = equirectangular_cubemap;
         shaders["irradiance"] = irradiance_shader;
         shaders["water"] = water;
+        shaders["skeletal_animation"] = anim_model;
        
         if (!res)
         {
@@ -353,6 +361,8 @@ namespace xe_render
         texture2D cerberus_m = {};
         texture2D cerberus_ao = {};
 
+        texture2D gun_diff = {};
+
         graphics_device->create_texture2D("assets/cerberus/albedo.tga", &cerberus_d);
         graphics_device->create_texture2D("assets/cerberus/normal.tga", &cerberus_n);
         graphics_device->create_texture2D("assets/cerberus/roughness.tga", &cerberus_r);
@@ -389,6 +399,8 @@ namespace xe_render
         graphics_device->create_texture2D("assets/pbr/gold/roughness.png", &roughness_gold);
         graphics_device->create_texture2D("assets/pbr/gold/ao.png", &ao_gold);
 
+        graphics_device->create_texture2D("assets/m1911/m1911_color.png", &gun_diff);
+
         graphics_device->create_texture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);
 
         bool32 loaded = graphics_device->create_texture2D("assets/get.png", &wood_texture);        
@@ -399,6 +411,8 @@ namespace xe_render
             xe_utility::error("Failed to load free texture");
             return false;
         }
+
+        textures["gun_diff"] = gun_diff;
 
         textures["wood"] = wood_texture;
         textures["water"] = water_texture;
@@ -449,7 +463,7 @@ namespace xe_render
     {
         // @Clear destroy free textures
 
-        std::map<const char*, xe_graphics::texture2D>::iterator it = textures.begin();
+        std::unordered_map<const char*, xe_graphics::texture2D>::iterator it = textures.begin();
         for (uint32 i = 0; i < textures.size(); ++i)
         {
             graphics_device->destroy_texture2D(&it->second);
@@ -537,7 +551,7 @@ namespace xe_render
         graphics_device->create_vertex_array(&meh->vao);
         graphics_device->bind_vertex_array(&meh->vao);
 
-        graphics_device->create_vertex_buffer(&meh->vertices_fl[0], meh->vertices_fl.size(), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
+        graphics_device->create_vertex_buffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
         graphics_device->create_index_buffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
 
         graphics_device->create_buffer_layout(init_list, &buffer_layout);
@@ -615,7 +629,7 @@ namespace xe_render
         graphics_device->create_vertex_array(line_com->va);
         graphics_device->bind_vertex_array(line_com->va);
 
-        graphics_device->create_vertex_buffer(&array_vertex[0], line_com->vertex_count, DRAW_TYPE::STATIC, line_com->va->buffers[0]);
+        graphics_device->create_vertex_buffer(&array_vertex[0], line_com->vertex_count * sizeof(real32), DRAW_TYPE::STATIC, line_com->va->buffers[0]);
         
         using namespace xe_graphics;
 
@@ -676,7 +690,7 @@ namespace xe_render
         graphics_device->create_vertex_array(q->vertex_array);
         graphics_device->bind_vertex_array(q->vertex_array);
 
-        graphics_device->create_vertex_buffer(vertices, vertex_size, DRAW_TYPE::STATIC, q->vertex_array->buffers[0]);
+        graphics_device->create_vertex_buffer(vertices, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, q->vertex_array->buffers[0]);
         graphics_device->create_index_buffer(indices, indices_size, q->vertex_array->ib);
         
         using namespace xe_graphics;
@@ -757,7 +771,7 @@ namespace xe_render
         sky->vb = new xe_graphics::vertex_buffer();
         
         graphics_device->create_vertex_array(sky->va);
-        graphics_device->create_vertex_buffer(skybox_vertices, vertex_size, DRAW_TYPE::STATIC, sky->vb);
+        graphics_device->create_vertex_buffer(skybox_vertices, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, sky->vb);
 
         buffer_layout buffer_layout = {};
 
@@ -1037,7 +1051,7 @@ namespace xe_render
         graphics_device->create_vertex_array(sphre->vertex_array);
         graphics_device->bind_vertex_array(sphre->vertex_array);
 
-        graphics_device->create_vertex_buffer(&data[0], data.size(), DRAW_TYPE::STATIC, sphre->vertex_array->buffers[0]);
+        graphics_device->create_vertex_buffer(&data[0], data.size() * sizeof(real32), DRAW_TYPE::STATIC, sphre->vertex_array->buffers[0]);
         graphics_device->create_index_buffer(&indices[0], indices.size(), sphre->vertex_array->ib);
 
         buffer_layout buffer_layout = {};
@@ -1114,7 +1128,7 @@ namespace xe_render
 
         uint32 size = sizeof(data) / sizeof(data[0]);
 
-        graphics_device->create_vertex_buffer(&data[0], size, DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
+        graphics_device->create_vertex_buffer(&data[0], size * sizeof(real32), DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
 
         buffer_layout buffer_layout = {};
 
@@ -1317,7 +1331,7 @@ namespace xe_render
     void draw_skybox()
     {
         graphics_device->set_depth_func(GL_LEQUAL);
-        shader *cubemap_shader = &shaders["cubemap"];
+        shader *cubemap_shader = xe_render::get_shader("cubemap");
 
         graphics_device->bind_shader(cubemap_shader);
         
@@ -1451,6 +1465,47 @@ namespace xe_render
         graphics_device->bind_vertex_array(cube_vao.vertex_array);
         graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
         graphics_device->unbind_vertex_array();
+    }
+
+    void draw_animated_model(xe_assets::AnimatedModel *anim_model, const glm::mat4 &transform)
+    {
+        shader *animation_shader = xe_render::get_shader("skeletal_animation");
+        xe_graphics::graphics_device *device = xe_render::get_device();
+        device->bind_shader(animation_shader);        
+
+        xe_graphics::texture2D *texture = xe_render::get_texture2D_resource("gun_diff");
+
+        if (texture != nullptr)
+        {
+            device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);           
+        }
+
+        xe_ecs::camera3d_component &camera = get_camera3D();
+
+        for (xe_assets::AnimMesh& mesh : anim_model->anim_meshes)
+        {         
+            for (size_t i = 0; i < anim_model->boneTransforms.size(); i++)
+            {
+                std::string uniformName = std::string("u_bones[") + std::to_string(i) + std::string("]");
+                device->set_mat4(uniformName, anim_model->boneTransforms[i], animation_shader);
+            }
+
+            glm::mat4 ide_model = IDENTITY_MATRIX;
+            ide_model = transform * mesh.Transform;
+            
+            device->set_mat4("model", ide_model, animation_shader);
+            device->set_mat4("vp", camera.get_view_projection(), animation_shader);
+            device->bind_vertex_array(&anim_model->va);
+            device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, mesh.IndexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * mesh.BaseIndex));
+        }
+
+        device->unbind_shader();
+    }
+
+    void update_anim(xe_assets::AnimatedModel *anim_model)
+    {        
+       
+        
     }
 
     void draw_line(xe_ecs::entity *ent)

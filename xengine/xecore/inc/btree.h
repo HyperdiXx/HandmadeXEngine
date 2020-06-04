@@ -50,6 +50,27 @@ void rtaverse_tree_preorder(BSTreeNode *root)
     rtaverse_tree_preorder(root->right_node);
 }
 
+void postorder(BSTreeNode *root)
+{
+    if (!root)
+        return;
+
+    postorder(root->left_node);
+    postorder(root->right_node);
+
+    printf("%d\n", root->value);
+}
+
+void inorder(BSTreeNode *root)
+{
+    if (!root)
+        return;
+
+    inorder(root->left_node);
+    printf("%d\n", root->value);
+    inorder(root->right_node);
+}
+
 BSTreeNode *find(BSTreeNode *root, int d)
 {
     if (!root)

@@ -147,7 +147,7 @@ namespace xe_graphics
         uint32 id;
         uint32 element_count;
         buffer_layout layout;
-        real32 *data;
+        void *data;
     };
    
     struct texture_wrapper

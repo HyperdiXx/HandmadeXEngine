@@ -244,6 +244,14 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
             if (rawmouse.usButtonFlags == RI_MOUSE_LEFT_BUTTON_DOWN)
             {
                 mouse->is_left_button_pressed = true;
+                POINT p;
+                GetCursorPos(&p);
+                if (ScreenToClient(window_handle, &p))
+                {
+                    mouse->position.x = p.x;
+                    mouse->position.y = p.y;
+                }
+
                 xe_utility::info("left mouse button pressed!");
             }
 

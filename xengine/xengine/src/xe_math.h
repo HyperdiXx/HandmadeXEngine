@@ -226,3 +226,56 @@ struct aabb
     glm::vec3 min;
     glm::vec3 max;
 };
+
+struct ray
+{
+    glm::vec3 origin, direction;
+
+    bool isIntersects(const aabb &bb, float &t)
+    {
+        glm::vec3 dirfrac;
+        // r.dir is unit direction vector of ray
+        dirfrac.x = 1.0f / direction.x;
+        dirfrac.y = 1.0f / direction.y;
+        dirfrac.z = 1.0f / direction.z;
+        
+        // lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+        // r.org is origin of ray
+        
+        const glm::vec3& lb = bb.min;
+        const glm::vec3& rt = bb.max;
+        
+        float t1 = (lb.x - origin.x) * dirfrac.x;
+        float t2 = (rt.x - origin.x) * dirfrac.x;
+        float t3 = (lb.y - origin.y) * dirfrac.y;
+        float t4 = (rt.y - origin.y) * dirfrac.y;
+        float t5 = (lb.z - origin.z) * dirfrac.z;
+        float t6 = (rt.z - origin.z) * dirfrac.z;
+
+        float tmin = glm::max(glm::max(glm::min(t1, t2), glm::min(t3, t4)), glm::min(t5, t6));
+        float tmax = glm::min(glm::min(glm::max(t1, t2), glm::max(t3, t4)), glm::max(t5, t6));
+
+        // if tmax < 0, ray (line) is intersecting AABB, but the whole AABB is behind us
+        if (tmax < 0)
+        {
+            t = tmax;
+            return false;
+        }
+
+        // if tmin > tmax, ray doesn't intersect AABB
+        if (tmin > tmax)
+        {
+            t = tmax;
+            return false;
+        }
+
+        t = tmin;
+
+        return true;
+    }
+
+    bool isIntersectsTriangle(const glm::vec3 &a, const glm::vec3 &b, const glm::vec3& C, float& t)
+    {
+
+    }
+};

@@ -142,8 +142,11 @@ void xe_graphics::render_pass3D::render()
         
         xe_render::draw_ent(current_ent);
     }
-
     device->disable(GL_CULL_FACE);
+    
+    application::application_state *app_state = application::get_app_state();
+    app_state->animated_test_gun.update(app_state->delta_time);    
+    xe_render::draw_animated_model(&app_state->animated_test_gun, glm::translate(glm::mat4(1.0f), { 0, 0, -10 }) * glm::scale(glm::mat4(1.0f), { 20, 20, 20 }));
 
     xe_render::draw_skybox();
 

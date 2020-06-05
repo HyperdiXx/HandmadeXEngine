@@ -57,7 +57,7 @@ namespace application
         {
             if (!ents[i].active())
             {
-                ents[i].set_active(true);
+                ents[i].setActive(true);
                 result = &ents[i];
                 break;
             }
@@ -74,7 +74,7 @@ namespace application
 
         for (int i = 0; i < ents.size(); ++i)
         {
-            if (!ents[i].get_type() == type)
+            if (!ents[i].getType() == type)
             {
                 result = &ents[i];
                 break;
@@ -142,9 +142,57 @@ namespace application
             xe_graphics::graphics_device *device = xe_render::get_device();
             xe_graphics::viewport &vp_state = device->get_viewport();
      
-            glm::vec2 viewport_pos_mouse = glm::vec2((mouse->position.x / vp_state.width) * 2.0f - 1.0f, ((mouse->position.y / vp_state.height) * 2.0f - 1.0f));
-            if (viewport_pos_mouse.x > -1.0f && viewport_pos_mouse.x < 1.0f && viewport_pos_mouse.y > -1.0f && viewport_pos_mouse.y < 1.0f)
+            // Convert to NDC
+
+            glm::vec2 ray_nds = glm::vec2((2.0f * mouse->position.x) / vp_state.width - 1.0f, 1.0f - (2.0f * mouse->position.y) / vp_state.height);
+
+            if (ray_nds.x > -1.0f && ray_nds.x < 1.0f && ray_nds.y > -1.0f && ray_nds.y < 1.0f)
             {
+                glm::vec4 homogeneous_coordinates = glm::vec4(ray_nds.x, ray_nds.y, -1.0f, 1.0f);
+
+                auto inverseProj = glm::inverse(camera3D.get_projection_matrix());
+                auto inverseView = glm::inverse(glm::mat3(camera3D.get_view_matrix()));
+
+                glm::vec4 ray = inverseProj * homogeneous_coordinates;
+                glm::vec3 rayPos = camera3D.pos;
+                glm::vec3 rayDir = inverseView * glm::vec3(ray);
+                glm::normalize(rayDir);
+
+                ray_cast.origin = rayPos;
+                ray_cast.direction = rayDir;
+
+                printf("Ray dir %f %f %f", rayDir.x, rayDir.y, rayDir.z);
+
+                auto& entities = app_state.active_scene.entities;
+
+                for (uint32_t i = 0; i < entities.size(); ++i)
+                {
+                    xe_ecs::entity *ent = entities[i];
+                    
+                    xe_ecs::mesh_component *msh_component = ent->find_component<xe_ecs::mesh_component>();
+
+                    if (msh_component)
+                    {
+                        float t;
+
+                        for (uint32_t j = 0; j < msh_component->model_asset->root->children.size(); ++j)
+                        {
+                            auto &node_mesh = msh_component->model_asset->root->children[j];
+
+                            for (uint32_t z = 0; z < node_mesh->meshes.size(); ++z)
+                            {                                
+                                bool isIntersectsAABB = ray_cast.isIntersects(node_mesh->meshes[z]->bounding_box, t);
+                                if (isIntersectsAABB)
+                                {
+                                    printf("Hit mesh %s!!!\n", ent->getName());
+                                    break;
+                                }
+                            }
+                        }
+
+                    }                   
+                }
+
                 printf("Mouse pos in NDC: \n");
             }
 

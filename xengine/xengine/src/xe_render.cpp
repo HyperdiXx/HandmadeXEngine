@@ -1552,7 +1552,7 @@ namespace xe_render
     {
         using namespace xe_ecs;
 
-        ENTITY_TYPE type = ent->get_type();
+        ENTITY_TYPE type = ent->getType();
         
         switch (type)
         {

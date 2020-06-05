@@ -32,13 +32,15 @@ namespace xe_scene
         application::application_state *app_state = application::getAppState();
      
         xe_ecs::entity* test_entity = application::getEntity();
-        test_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
+        test_entity->setEntityType(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
+        test_entity->setEntityName("Nano character");
 
         xe_ecs::entity* light_entity = application::getEntity();
-        light_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_DIR_LIGHT);
+        light_entity->setEntityType(xe_ecs::ENTITY_TYPE::ENT_DIR_LIGHT);
 
         xe_ecs::entity* plane_entity = application::getEntity();
-        plane_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_WATER);
+        plane_entity->setEntityType(xe_ecs::ENTITY_TYPE::ENT_WATER);
+        plane_entity->setEntityName("Plane water");
 
         assert(test_entity != nullptr);
         assert(light_entity != nullptr);
@@ -53,10 +55,11 @@ namespace xe_scene
         test_entity->add_component(character_mesh);
         test_entity->add_component(nano_transform);
 
-        for (int i = 0; i < 10; ++i)
+        for (uint32_t i = 0; i < 10; ++i)
         {
             xe_ecs::entity* ent = application::getEntity();
-            ent->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
+            ent->setEntityType(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
+            ent->setEntityName(std::string("Cube number " + i));
 
             xe_ecs::transform_component *transform = new xe_ecs::transform_component();
             transform->set_translation(30.0f * (i - 5), 0.0f, -5.0f * (i + 1));
@@ -105,7 +108,7 @@ namespace xe_scene
         plane_entity->add_component(water_component);
 
         xe_ecs::entity* ent_line = application::getEntity();
-        ent_line->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_LINE);
+        ent_line->setEntityType(xe_ecs::ENTITY_TYPE::ENT_LINE);
 
         xe_ecs::line_mesh_component *line_mesh = new xe_ecs::line_mesh_component();
         line_mesh->line_co = alloc_mem xe_graphics::line();
@@ -130,7 +133,7 @@ namespace xe_scene
         //@ PBR scene
 
         xe_ecs::entity *sphere_entity = application::getEntity();
-        sphere_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_PRIMITIVE_OBJECT);
+        sphere_entity->setEntityType(xe_ecs::ENTITY_TYPE::ENT_PRIMITIVE_OBJECT);
 
         xe_ecs::pbr_material_component *sphere_material = new xe_ecs::pbr_material_component();
 

@@ -76,15 +76,18 @@ namespace xe_ecs
             components.push_back(comp);
         }
 
-        void set_entity_type(ENTITY_TYPE t) { type = t; }
-        void set_active(bool32 val) { is_used = val; };
+        void setEntityName(const std::string& name) { this->name = name; }
+        void setEntityType(ENTITY_TYPE t) { type = t; }
+        void setActive(bool32 val) { is_used = val; };
         inline bool32 active() { return is_used; }
-        inline ENTITY_TYPE get_type() { return type; }
+        inline ENTITY_TYPE getType() { return type; }
+        inline std::string& getName() { return name; }
     private:
         uint32_t id;
         bool32 is_used = false;
         ENTITY_TYPE type = ENTITY_TYPE::ENT_NONE;
 
+        std::string name;
         std::vector<component*> components;
     };
 

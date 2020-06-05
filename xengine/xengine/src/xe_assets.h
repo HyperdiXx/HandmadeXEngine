@@ -47,8 +47,14 @@ namespace xe_assets
         std::vector<node*> children;
     };
 
-    struct model
+    class model
     {
+    public:
+        model() = default;
+        
+        model(model && m);
+        model &operator=(model && m) noexcept;
+
         node* root;
         vertex *vertex_type;
         std::string parent_dir;
@@ -70,6 +76,7 @@ namespace xe_assets
 
     void parse_materials(model *m, mesh *mesh, aiMesh* ai_mesh, const aiScene *scene);
     void parse_vert(mesh* meh, aiMesh *aimesh);
+
     void parse_faces(mesh* mesh, aiMesh *aimesh);
     mesh* parse_mesh(model *model, aiMesh* ai_mesh, const aiScene *scene);
     
@@ -80,10 +87,10 @@ namespace xe_assets
 
     void calc_weight(uint32 id, real32 weight, glm::ivec4& bone_id, glm::vec4& wts);
 
-    model *parse_static_model(const aiScene* scene, const std::string &path);
+    model* parse_static_model(const aiScene* scene, const std::string &path);
     model* load_model_from_file(const std::string &path, bool32 calculate_tb = true);
 
-    class AnimatedNode
+    struct anim_node
     {
     public:
         uint32_t start_vertex;
@@ -94,16 +101,21 @@ namespace xe_assets
         glm::mat4 transform;
     };
 
-    class AnimatedModel
+    class anim_model
     {
     public:
-        AnimatedModel() {};
-        AnimatedModel(const std::string &path);
+        anim_model() = default;
+        anim_model(const std::string &path);
+        
+        anim_model(const anim_model &m) = default;
+        anim_model(anim_model && m);
+
+        anim_model &operator=(anim_model && m) noexcept;
 
         std::unique_ptr<Assimp::Importer> assimp_importer;
         const aiScene* scene;
 
-        std::vector<AnimatedNode> anim_meshes;
+        std::vector<anim_node> anim_meshes;
         std::unordered_map<std::string, uint32_t> bones_map;
         std::vector<bone> bones_info;
         

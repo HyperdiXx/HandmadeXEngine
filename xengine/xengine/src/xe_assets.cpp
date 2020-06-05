@@ -367,7 +367,7 @@ namespace xe_assets
         meshes.push_back(msh);
     }
 
-    AnimatedModel::AnimatedModel(const std::string &path)
+    anim_model::anim_model(const std::string &path)
     {
         static const uint32_t import_flags =
             aiProcess_CalcTangentSpace |        // Create binormals/tangents just in case
@@ -392,7 +392,7 @@ namespace xe_assets
         {
             aiMesh *mesh = scene->mMeshes[i];
 
-            AnimatedNode anim_mesh = {};
+            anim_node anim_mesh = {};
             anim_mesh.start_vertex = vertexCount;
             anim_mesh.start_index = indexCount;
             anim_mesh.index_count = mesh->mNumFaces * 3;
@@ -402,6 +402,7 @@ namespace xe_assets
             vertexCount += mesh->mNumVertices;
             indexCount += anim_mesh.index_count;
 
+            
             for (size_t i = 0; i < mesh->mNumVertices; i++)
             {
                 pos_normal_uv_b_w vertex;
@@ -432,7 +433,7 @@ namespace xe_assets
             for (size_t m = 0; m < scene->mNumMeshes; m++)
             {
                 aiMesh* mesh = scene->mMeshes[m];
-                AnimatedNode& submesh = anim_meshes[m];
+                anim_node& submesh = anim_meshes[m];
 
                 for (size_t i = 0; i < mesh->mNumBones; i++)
                 {
@@ -497,8 +498,73 @@ namespace xe_assets
         device->set_index_buffer(&va, va.ib);
     }
 
+    model::model(model && m)
+    {
+        root = m.root;
+        vertex_type = m.vertex_type;
+        parent_dir = std::move(m.parent_dir);
+        model_textures = std::move(m.model_textures);
+        nodes = std::move(m.nodes);
+    }
 
-    void AnimatedModel::update(float dt)
+    model &model::operator=(model && m) noexcept
+    {
+        root = m.root;
+        vertex_type = m.vertex_type;
+        parent_dir = std::move(m.parent_dir);
+        model_textures = std::move(m.model_textures);
+        nodes = std::move(m.nodes);
+        return *this;
+    }
+
+    anim_model::anim_model(anim_model && m)
+    {
+        activeAnimation = m.activeAnimation;
+        global_inverse_transform = std::move(m.global_inverse_transform);
+
+        assimp_importer = std::move(m.assimp_importer);;
+        scene = m.scene;
+
+        anim_meshes = std::move(m.anim_meshes);
+        bones_map = std::move(m.bones_map);
+        bones_info = std::move(m.bones_info);
+
+        anim_vertices = std::move(m.anim_vertices);
+        anim_indices = std::move(m.anim_indices);
+        bone_transformation = std::move(m.bone_transformation);
+
+        bones_count = m.bones_count;
+        animation_speed = m.animation_speed;
+        animation_time = m.animation_time;
+
+        va = std::move(m.va);
+    }
+
+    anim_model &anim_model::operator=(anim_model && m) noexcept
+    {
+        activeAnimation = m.activeAnimation;
+        global_inverse_transform = std::move(m.global_inverse_transform);
+
+        assimp_importer = std::move(m.assimp_importer);;
+        scene = m.scene;
+
+        anim_meshes = std::move(m.anim_meshes);
+        bones_map = std::move(m.bones_map);
+        bones_info = std::move(m.bones_info);
+
+        anim_vertices = std::move(m.anim_vertices);
+        anim_indices = std::move(m.anim_indices);
+        bone_transformation = std::move(m.bone_transformation);
+
+        bones_count = m.bones_count;
+        animation_speed = m.animation_speed;
+        animation_time = m.animation_time;
+
+        va = std::move(m.va);
+        return *this;
+    }
+    
+    void anim_model::update(float dt)
     {
         if (activeAnimation)
         {
@@ -510,7 +576,7 @@ namespace xe_assets
         }        
     }
 
-    const aiNodeAnim *AnimatedModel::findAnimNodeByName(const aiAnimation *animation, const std::string &node_name)
+    const aiNodeAnim *anim_model::findAnimNodeByName(const aiAnimation *animation, const std::string &node_name)
     {
         for (uint32_t i = 0; i < animation->mNumChannels; i++)
         {
@@ -524,7 +590,7 @@ namespace xe_assets
         return nullptr;
     }
 
-    uint32_t AnimatedModel::getTranslationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t anim_model::getTranslationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {
         for (uint32_t i = 0; i < node_anim->mNumPositionKeys - 1; i++)
         {
@@ -535,7 +601,7 @@ namespace xe_assets
         return 0;
     }
 
-    uint32_t AnimatedModel::getRotationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t anim_model::getRotationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {        
         for (uint32_t i = 0; i < node_anim->mNumRotationKeys - 1; i++)
         {
@@ -546,7 +612,7 @@ namespace xe_assets
         return 0;
     }
 
-    uint32_t AnimatedModel::getScaleIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t anim_model::getScaleIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {
         for (uint32_t i = 0; i < node_anim->mNumScalingKeys - 1; i++)
         {
@@ -557,7 +623,7 @@ namespace xe_assets
         return 0;
     }
 
-    glm::vec3 AnimatedModel::getTranslationBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::vec3 anim_model::getTranslationBetweenFrames(float dt, const aiNodeAnim *na)
     {
         glm::vec3 translation = glm::vec3();
         
@@ -596,7 +662,7 @@ namespace xe_assets
         return translation;
     }
 
-    glm::quat AnimatedModel::getRotationBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::quat anim_model::getRotationBetweenFrames(float dt, const aiNodeAnim *na)
     {
         if (na->mNumRotationKeys == 1)
         {
@@ -621,7 +687,7 @@ namespace xe_assets
         return glm::quat(q.w, q.x, q.y, q.z);
     }
 
-    glm::vec3 AnimatedModel::getScaleBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::vec3 anim_model::getScaleBetweenFrames(float dt, const aiNodeAnim *na)
     {
         glm::vec3 scale;
        
@@ -655,7 +721,7 @@ namespace xe_assets
         return scale;
     }
 
-    void AnimatedModel::readNodeHierarchy(float anim_time, const aiNode *pNode, const glm::mat4 &parentTransform)
+    void anim_model::readNodeHierarchy(float anim_time, const aiNode *pNode, const glm::mat4 &parentTransform)
     {
         std::string current_node_name(pNode->mName.data);       
         glm::mat4 transform_node(from_ai_to_glm(pNode->mTransformation));
@@ -690,7 +756,7 @@ namespace xe_assets
         }
     }
 
-    void AnimatedModel::transformBones(float dt)
+    void anim_model::transformBones(float dt)
     {
         readNodeHierarchy(dt, scene->mRootNode, glm::mat4(1.0f));
         bone_transformation.resize(bones_count);
@@ -700,7 +766,7 @@ namespace xe_assets
         }
     }
 
-    void AnimatedModel::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform)
+    void anim_model::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform)
     {
         glm::mat4 transform = parent_transform * from_ai_to_glm(node->mTransformation);
         for (uint32_t i = 0; i < node->mNumMeshes; i++)

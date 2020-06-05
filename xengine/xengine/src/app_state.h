@@ -16,18 +16,20 @@ namespace application
         uint32 frames_elapsed = 0;
         uint32 fps = 0;
 
-        xe_assets::AnimatedModel animated_test_gun;
-        xe_assets::AnimatedModel girl;
+        void addStaticModels(const char* name, xe_assets::model *model);
+        void addAnimatedModels(const char* name, xe_assets::anim_model *model);
+
+        xe_assets::model* getStaticModelByName(const char *name);
+        xe_assets::anim_model* getAnimatedModelByName(const char *name);
     };
    
-    application_state *get_app_state();
+    application_state *getAppState();
     
-    void set_active_scene(xe_scene::scene *sc);
+    void setActiveScene(xe_scene::scene *sc);
     
-    void load_state();
-    xe_ecs::entity *get_entity();
-    xe_ecs::entity *get_entity_by_type(xe_ecs::ENTITY_TYPE type);
-    xe_assets::model *get_model_by_name(const char* name);
+    void loadState();
+    xe_ecs::entity *getEntity();
+    xe_ecs::entity *getEntityByType(xe_ecs::ENTITY_TYPE type);
 
-    void game_update(real32);
+    void gameUpdate(real32);
 }

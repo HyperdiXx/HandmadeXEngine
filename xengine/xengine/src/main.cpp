@@ -81,18 +81,18 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     }
 
     xe_platform::win32_window_state& win_state = xe_platform::get_window_state();
-    application::application_state *current_app_state = application::get_app_state();
+    application::application_state *current_app_state = application::getAppState();
 
 #ifdef GAPI_GL
 
-    application::load_state();
+    application::loadState();
 
     xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
     xe_scene::scene pbr_scene = xe_scene::create_scene("PBRScene");
 
     xe_scene::load_test_scene(&new_scene);
     xe_scene::load_spheres_scene(&pbr_scene);
-    application::set_active_scene(&new_scene);
+    application::setActiveScene(&new_scene);
 
     layer *gui = new gui_layer();
 
@@ -143,7 +143,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
         xe_input::poll_events();
 
-        application::game_update(current_app_state->delta_time);
+        application::gameUpdate(current_app_state->delta_time);
 
         device->start_execution();
 

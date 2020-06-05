@@ -29,13 +29,15 @@ namespace xe_scene
 
     void load_test_scene(scene *sc)
     {
-        xe_ecs::entity* test_entity = application::get_entity();
+        application::application_state *app_state = application::getAppState();
+     
+        xe_ecs::entity* test_entity = application::getEntity();
         test_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
 
-        xe_ecs::entity* light_entity = application::get_entity();
+        xe_ecs::entity* light_entity = application::getEntity();
         light_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_DIR_LIGHT);
 
-        xe_ecs::entity* plane_entity = application::get_entity();
+        xe_ecs::entity* plane_entity = application::getEntity();
         plane_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_WATER);
 
         assert(test_entity != nullptr);
@@ -43,7 +45,7 @@ namespace xe_scene
         assert(plane_entity != nullptr);
 
         xe_ecs::mesh_component *character_mesh = new xe_ecs::mesh_component();
-        character_mesh->model_asset = application::get_model_by_name("Nano");
+        character_mesh->model_asset = app_state->getStaticModelByName("Nano");
 
         xe_ecs::transform_component *nano_transform = new xe_ecs::transform_component();
         nano_transform->set_translation(-20.0f, -9.0f, -50.0f);
@@ -53,7 +55,7 @@ namespace xe_scene
 
         for (int i = 0; i < 10; ++i)
         {
-            xe_ecs::entity* ent = application::get_entity();
+            xe_ecs::entity* ent = application::getEntity();
             ent->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
 
             xe_ecs::transform_component *transform = new xe_ecs::transform_component();
@@ -61,7 +63,7 @@ namespace xe_scene
             transform->set_scale(0.2f, 0.2f, 0.2f);
 
             xe_ecs::mesh_component *loading_model = new xe_ecs::mesh_component();
-            loading_model->model_asset = application::get_model_by_name("Cube");
+            loading_model->model_asset = app_state->getStaticModelByName("Cube");
             loading_model->draw_with_color = true;
 
             ent->add_component(transform);
@@ -71,7 +73,7 @@ namespace xe_scene
         }
 
         xe_ecs::mesh_component *cube_mesh = new xe_ecs::mesh_component();
-        cube_mesh->model_asset = application::get_model_by_name("Cube");
+        cube_mesh->model_asset = app_state->getStaticModelByName("Cube");
         cube_mesh->draw_with_color = true;
 
         xe_ecs::dir_light *dl = new xe_ecs::dir_light();
@@ -87,7 +89,7 @@ namespace xe_scene
         light_entity->add_component(cube_mesh);
 
         xe_ecs::mesh_component *plane_mesh = new xe_ecs::mesh_component();
-        plane_mesh->model_asset = application::get_model_by_name("Cube");
+        plane_mesh->model_asset = app_state->getStaticModelByName("Cube");
 
         xe_ecs::transform_component *transform_plane = new xe_ecs::transform_component();
 
@@ -102,7 +104,7 @@ namespace xe_scene
         plane_entity->add_component(transform_plane);
         plane_entity->add_component(water_component);
 
-        xe_ecs::entity* ent_line = application::get_entity();
+        xe_ecs::entity* ent_line = application::getEntity();
         ent_line->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_LINE);
 
         xe_ecs::line_mesh_component *line_mesh = new xe_ecs::line_mesh_component();
@@ -127,7 +129,7 @@ namespace xe_scene
     {
         //@ PBR scene
 
-        xe_ecs::entity *sphere_entity = application::get_entity();
+        xe_ecs::entity *sphere_entity = application::getEntity();
         sphere_entity->set_entity_type(xe_ecs::ENTITY_TYPE::ENT_PRIMITIVE_OBJECT);
 
         xe_ecs::pbr_material_component *sphere_material = new xe_ecs::pbr_material_component();

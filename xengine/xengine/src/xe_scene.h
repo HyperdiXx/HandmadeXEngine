@@ -22,7 +22,8 @@ namespace xe_scene
 {   
     struct objects
     {
-        std::map<const char*, xe_assets::model> models3D;
+        std::unordered_map<const char*, xe_assets::model> models3D;
+        std::unordered_map<const char*, xe_assets::anim_model> animModels3D;
     };
 
     struct scene

@@ -127,7 +127,8 @@ namespace xe_render
 
         shader *animation = get_shader("skeletal_animation");
         graphics_device->bind_shader(animation);
-        graphics_device->set_int("tex_diff", 0, animation);
+        graphics_device->set_int("tex_diff1", 0, animation);
+        //graphics_device->set_int("tex_norm1", 1, animation);
 
         return true;
     }
@@ -258,7 +259,7 @@ namespace xe_render
 
         res = graphics_device->create_shader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
         
-        res |= graphics_device->create_shader("shaders/glsl/anim_model3d.vs", "shaders/glsl/simple2d.fs", &anim_model);        
+        res |= graphics_device->create_shader("shaders/glsl/anim_model3d.vs", "shaders/glsl/base3d.fs", &anim_model);        
         res |= graphics_device->create_shader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
         res |= graphics_device->create_shader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
         res |= graphics_device->create_shader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
@@ -362,6 +363,7 @@ namespace xe_render
         texture2D cerberus_ao = {};
 
         texture2D gun_diff = {};
+        texture2D character_diff = {};
 
         graphics_device->create_texture2D("assets/cerberus/albedo.tga", &cerberus_d);
         graphics_device->create_texture2D("assets/cerberus/normal.tga", &cerberus_n);
@@ -400,6 +402,7 @@ namespace xe_render
         graphics_device->create_texture2D("assets/pbr/gold/ao.png", &ao_gold);
 
         graphics_device->create_texture2D("assets/m1911/m1911_color.png", &gun_diff);
+        graphics_device->create_texture2D("assets/animated/character_diff.jpg", &character_diff);
 
         graphics_device->create_texture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);
 
@@ -413,6 +416,7 @@ namespace xe_render
         }
 
         textures["gun_diff"] = gun_diff;
+        textures["girl_diffuse"] = character_diff;
 
         textures["wood"] = wood_texture;
         textures["water"] = water_texture;
@@ -1231,6 +1235,61 @@ namespace xe_render
         graphics_device->unbind_shader();
     }
 
+    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, const glm::mat4 &transform)
+    {
+        xe_graphics::graphics_device *device = xe_render::get_device();
+        xe_assets::node *root = mod->root;
+
+        for (uint32 i = 0; i < root->children.size(); i++)
+        {
+            xe_assets::node* curr_node = root->children[i];
+
+            for (uint32 j = 0; j < curr_node->meshes.size(); j++)
+            {
+                xe_assets::mesh *cur_mesh = curr_node->meshes.at(j);
+                draw_mesh(cur_mesh, shd);
+            }
+        }
+
+        device->unbind_shader();
+    }
+
+    void draw_model(xe_assets::anim_model *mod, xe_graphics::shader *shd, const glm::mat4 &transform)
+    {
+        xe_graphics::graphics_device *device = xe_render::get_device();
+        device->bind_shader(shd);
+
+        xe_graphics::texture2D *texture_diff = xe_render::get_texture2D_resource("girl_diffuse");
+        xe_graphics::texture2D *texture_norm = xe_render::get_texture2D_resource("girl_norm");
+
+        if (texture_diff != nullptr && texture_norm != nullptr)
+        {
+            device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture_diff);
+            //device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture_diff);
+        }
+
+        xe_ecs::camera3d_component &camera = get_camera3D();
+       
+        for (xe_assets::anim_node& mesh : mod->anim_meshes)
+        {
+            for (size_t i = 0; i < mod->bone_transformation.size(); i++)
+            {
+                std::string uniformName = std::string("u_bones[") + std::to_string(i) + std::string("]");
+                device->set_mat4(uniformName, mod->bone_transformation[i], shd);
+            }
+
+            glm::mat4 ide_model = IDENTITY_MATRIX;
+            ide_model = transform * mesh.transform;
+
+            device->set_mat4("model", ide_model, shd);
+            device->set_mat4("vp", camera.get_view_projection(), shd);
+            device->bind_vertex_array(&mod->va);
+            device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, mesh.index_count, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * mesh.start_index));
+        }
+
+        device->unbind_shader();
+    }
+
     void draw_text(const std::string &text, real32 x, real32 y, glm::vec3 &color, real32 scale)
     {
         graphics_device->enable(GL_BLEND);
@@ -1428,24 +1487,16 @@ namespace xe_render
 
     }
 
-    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd)
+    void draw_model(xe_assets::model *mod, const glm::mat4 &transform)
     {
-        xe_graphics::graphics_device *device = xe_render::get_device();
+        shader *static_model_shader = xe_render::get_shader("model3d");
+        draw_model(mod, static_model_shader, transform);
+    }
 
-        xe_assets::node *root = mod->root;
-
-        for (uint32 i = 0; i < root->children.size(); i++)
-        {
-            xe_assets::node* curr_node = root->children[i];
-
-            for (uint32 j = 0; j < curr_node->meshes.size(); j++)
-            {
-                xe_assets::mesh *cur_mesh = curr_node->meshes.at(j);
-                draw_mesh(cur_mesh, shd);
-            }
-        }
-
-        device->unbind_shader();
+    void draw_model(xe_assets::anim_model *mod, const glm::mat4 &transform)
+    {
+        shader *animation_shader = xe_render::get_shader("skeletal_animation");
+        draw_model(mod, animation_shader, transform);
     }
 
     void draw_cube(xe_graphics::texture2D *texture_diff)
@@ -1465,47 +1516,6 @@ namespace xe_render
         graphics_device->bind_vertex_array(cube_vao.vertex_array);
         graphics_device->draw_array(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
         graphics_device->unbind_vertex_array();
-    }
-
-    void draw_animated_model(xe_assets::AnimatedModel *anim_model, const glm::mat4 &transform)
-    {
-        shader *animation_shader = xe_render::get_shader("skeletal_animation");
-        xe_graphics::graphics_device *device = xe_render::get_device();
-        device->bind_shader(animation_shader);        
-
-        xe_graphics::texture2D *texture = xe_render::get_texture2D_resource("gun_diff");
-
-        if (texture != nullptr)
-        {
-            device->activate_bind_texture(TEXTURE_TYPE::COLOR, texture);           
-        }
-
-        xe_ecs::camera3d_component &camera = get_camera3D();
-
-        for (xe_assets::AnimatedNode& mesh : anim_model->anim_meshes)
-        {         
-            for (size_t i = 0; i < anim_model->bone_transformation.size(); i++)
-            {
-                std::string uniformName = std::string("u_bones[") + std::to_string(i) + std::string("]");
-                device->set_mat4(uniformName, anim_model->bone_transformation[i], animation_shader);
-            }
-
-            glm::mat4 ide_model = IDENTITY_MATRIX;
-            ide_model = transform * mesh.transform;
-            
-            device->set_mat4("model", ide_model, animation_shader);
-            device->set_mat4("vp", camera.get_view_projection(), animation_shader);
-            device->bind_vertex_array(&anim_model->va);
-            device->draw_indexed(PRIMITIVE_TOPOLOGY::TRIANGLE, mesh.index_count, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * mesh.start_index));
-        }
-
-        device->unbind_shader();
-    }
-
-    void update_anim(xe_assets::AnimatedModel *anim_model)
-    {        
-       
-        
     }
 
     void draw_line(xe_ecs::entity *ent)

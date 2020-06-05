@@ -8,24 +8,26 @@ namespace application
 {
     application_state app_state = {};
 
-    void load_state()
+    void loadState()
     {
         using namespace xe_ecs;
 
         xe_assets::model *character = xe_assets::load_model_from_file("assets/nano/nanosuit.obj");
         xe_assets::model *primitive_cube = xe_assets::load_model_from_file("assets/cube.obj");
-        xe_assets::model *cerberus = xe_assets::load_model_from_file("assets/cerberus/cerberus.obj");
-        //xe_assets::anim_model *gun = xe_assets::load_anim_model_from_file("assets/m1911/m1911.fbx");
+        xe_assets::model *cerberus = xe_assets::load_model_from_file("assets/cerberus/cerberus.obj");        
+        
+        xe_assets::anim_model gun = xe_assets::anim_model("assets/m1911/m1911.fbx");
+        gun.set_active_animation(0);
 
-        app_state.animated_test_gun = xe_assets::AnimatedModel("assets/m1911/m1911.fbx");
-        app_state.animated_test_gun.set_active_animation(0);
+        xe_assets::anim_model girl = xe_assets::anim_model("assets/animated/animated_character.fbx");
+        girl.set_active_animation(0);
 
-        app_state.girl = xe_assets::AnimatedModel("assets/animated/animated_character.fbx");
-        app_state.girl.set_active_animation(0);
+        app_state.addStaticModels("Nano", character);
+        app_state.addStaticModels("Cube", primitive_cube);
+        app_state.addStaticModels("Cerberus", cerberus);
 
-        app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Nano", *character));
-        app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cube", *primitive_cube));
-        app_state.assets_3D.models3D.insert(std::pair<const char*, xe_assets::model>("Cerberus", *cerberus));
+        app_state.addAnimatedModels("Gun", &gun);
+        app_state.addAnimatedModels("Girl", &girl);
 
         app_state.active_scene = {};
 
@@ -35,17 +37,17 @@ namespace application
             app_state.entities.push_back(entity());
     }
 
-    application_state * get_app_state()
+    application_state *getAppState()
     {
         return &app_state;
     }
 
-    void set_active_scene(xe_scene::scene *sc)
+    void setActiveScene(xe_scene::scene *sc)
     {
         app_state.active_scene = *sc;
     }
 
-    xe_ecs::entity* get_entity()
+    xe_ecs::entity* getEntity()
     {
         xe_ecs::entity *result = nullptr;
         
@@ -64,7 +66,7 @@ namespace application
         return result;
     }
 
-    xe_ecs::entity *get_entity_by_type(xe_ecs::ENTITY_TYPE type)
+    xe_ecs::entity *getEntityByType(xe_ecs::ENTITY_TYPE type)
     {
         xe_ecs::entity *result = nullptr;
 
@@ -82,18 +84,7 @@ namespace application
         return result;
     }
 
-    xe_assets::model *get_model_by_name(const char *name)
-    {
-        xe_assets::model *result = nullptr;
-
-        xe_scene::objects *obj = &app_state.assets_3D;
-       
-        result = &obj->models3D[name];
-
-        return result;
-    }
-
-    void game_update(real32 dt)
+    void gameUpdate(real32 dt)
     {
         xe_ecs::camera3d_component& camera3D = xe_render::get_camera3D();
 
@@ -159,5 +150,27 @@ namespace application
 
             mouse->is_left_button_pressed = false;
         }
+    }
+
+    void application_state::addStaticModels(const char* name, xe_assets::model *model)
+    {
+        assert(model != nullptr);
+        assets_3D.models3D[name] = std::move(*model);
+    }
+
+    void application_state::addAnimatedModels(const char* name, xe_assets::anim_model *model)
+    {
+        assert(model != nullptr);
+        assets_3D.animModels3D[name] = std::move(*model);
+    }
+
+    xe_assets::model *application_state::getStaticModelByName(const char *name)
+    {
+        return &assets_3D.models3D[name];
+    }
+
+    xe_assets::anim_model *application_state::getAnimatedModelByName(const char *name)
+    {
+        return &assets_3D.animModels3D[name];
     }
 }

@@ -20,7 +20,7 @@ namespace xe_assets
 {
     struct model;
     struct mesh;
-    class AnimatedModel;
+    class anim_model;
 }
 
 namespace xe_render
@@ -73,7 +73,12 @@ namespace xe_render
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
     void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
     void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4& mod);
-    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd);    
+    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
+    void draw_model(xe_assets::anim_model *mod, xe_graphics::shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
+
+    void draw_model(xe_assets::model *mod, const glm::mat4 &transform = glm::mat4(1.0f));
+    void draw_model(xe_assets::anim_model *mod, const glm::mat4 &transform = glm::mat4(1.0f));
+
     void draw_mesh(xe_assets::mesh *mshs, xe_graphics::shader *shd);
    
     void draw_sphere(xe_graphics::texture2D *texture_diff);
@@ -81,9 +86,6 @@ namespace xe_render
 
     void draw_cube(xe_graphics::texture2D *texture_diff);
     void draw_cube();
-
-    void draw_animated_model(xe_assets::AnimatedModel *anim_model, const glm::mat4 &transform);
-    void update_anim(xe_assets::AnimatedModel *anim_model);
 
     void draw_line(xe_ecs::entity *ent);
 

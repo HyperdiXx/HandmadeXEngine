@@ -55,7 +55,7 @@ namespace xe_scene
         test_entity->add_component(character_mesh);
         test_entity->add_component(nano_transform);
 
-        for (uint32_t i = 0; i < 10; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             xe_ecs::entity* ent = application::getEntity();
             ent->setEntityType(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);

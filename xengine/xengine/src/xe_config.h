@@ -14,13 +14,13 @@
 
 namespace xe_config
 {
-    struct config_data
+    struct ConfigData
     {
         const char *name;
         bool32 windowed;
     };
 
-    static void parse_config_file(const char *data, config_data *cd);
+    void parseConfigFile(const char *data, ConfigData *cd);
 }
 
 #endif

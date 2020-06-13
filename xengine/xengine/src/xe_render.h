@@ -7,20 +7,20 @@
 
 namespace xe_ecs
 {
-    class entity;
-    class camera2d_component;
-    class camera3d_component;
-    class dir_light;
-    class spot_light;
-    class point_light;
-    class transform_component;
+    class Entity;
+    class Camera2DComponent;
+    class Camera3DComponent;
+    class DirLight;
+    class SpotLight;
+    class PointLight;
+    class TransformComponent;
 }
 
 namespace xe_assets
 {
-    struct model;
-    struct mesh;
-    class anim_model;
+    struct Mesh;
+    struct Model;
+    class AnimModel;
 }
 
 namespace xe_render
@@ -33,81 +33,81 @@ namespace xe_render
         struct texture_font_t;
     }
 
-    void init_render_gl();
-    void init_render_dx11();
+    void initRenderGL();
+    void initRenderDX11();
 
-    void init_gui();
+    void initGui();
 
-    bool32 init_common_gpu_objects();
-    bool32 load_font(const char *path);
-    bool32 load_shaders();
-    bool32 load_free_textures();
+    bool32 initCommonGpuResources();
+    bool32 loadFont(const char *path);
+    bool32 loadShaders();
+    bool32 loadFreeTextures();
 
     void clear();
 
-    void set_device(xe_graphics::graphics_device *device);
-    void set_render_pass(xe_graphics::render_pass *pass);
-    void set_active_framebuffer(xe_graphics::framebuffer *fbo);
+    void setDevice(xe_graphics::GraphicsDevice *device);
+    void setRenderPass(xe_graphics::RenderPass *pass);
+    void setActiveFramebuffer(xe_graphics::Framebuffer *fbo);
     
-    xe_graphics::graphics_device* get_device();
+    xe_graphics::GraphicsDevice* getDevice();
 
-    xe_graphics::shader *get_shader(const char* name);
-    xe_graphics::texture2D *get_texture2D_resource(const char* name);
+    xe_graphics::Shader *getShader(const char* name);
+    xe_graphics::Texture2D *getTexture2DResource(const char* name);
 
-    xe_ecs::camera2d_component& get_camera2D();
-    xe_ecs::camera3d_component& get_camera3D();
+    xe_ecs::Camera2DComponent& getCamera2D();
+    xe_ecs::Camera3DComponent& getCamera3D();
     
-    bool32 create_quad(xe_graphics::quad *q);
-    bool32 create_full_quad();
-    bool32 create_skybox(xe_graphics::skybox *sky);
-    bool32 create_cubemap(xe_graphics::cubemap *cube);
-    bool32 create_shadow_maps(xe_graphics::shadow_map *shadow);
-    bool32 create_sphere(xe_graphics::sphere *sphre);
-    bool32 create_cube(xe_graphics::cube *cube);
-    bool32 create_mesh(xe_assets::mesh *meh, xe_graphics::vertex *vertex_type, bool32 calculate_tspace);
+    bool32 createQuad(xe_graphics::Quad *q);
+    bool32 createFullquad();
+    bool32 createSkybox(xe_graphics::Skybox *sky);
+    bool32 createCubemap(xe_graphics::Cubemap *cube);
+    bool32 createShadowMaps(xe_graphics::ShadowMap *shadow);
+    bool32 createSphere(xe_graphics::Sphere *sphre);
+    bool32 createCube(xe_graphics::Cube *cube);
+    bool32 createMesh(xe_assets::Mesh *meh, xe_graphics::Vertex *vertex_type, bool32 calculate_tspace);
     
-    bool32 create_line_mesh(glm::vec3 &start, glm::vec3 &end,  xe_graphics::line *line_com);
-    bool32 create_line_mesh(xe_graphics::line *line_com);
+    bool32 createLineMesh(glm::vec3 &start, glm::vec3 &end,  xe_graphics::Line *line_com);
+    bool32 createLineMesh(xe_graphics::Line *line_com);
 
-    void draw_full_quad();
-    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
-    void draw_quad(xe_ecs::entity *ent, xe_graphics::shader *shd, xe_graphics::texture2D *texture);
-    void draw_quad(const xe_graphics::quad *q, xe_graphics::shader *shd, xe_graphics::texture2D *texture, glm::mat4& mod);
-    void draw_model(xe_assets::model *mod, xe_graphics::shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
-    void draw_model(xe_assets::anim_model *mod, xe_graphics::shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
+    void drawFullquad();
+    void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
+    void drawQuad(xe_ecs::Entity *ent, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
+    void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture, glm::mat4& mod);
+    void drawModel(xe_assets::Model *mod, xe_graphics::Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
+    void drawModel(xe_assets::AnimModel *mod, xe_graphics::Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
 
-    void draw_model(xe_assets::model *mod, const glm::mat4 &transform = glm::mat4(1.0f));
-    void draw_model(xe_assets::anim_model *mod, const glm::mat4 &transform = glm::mat4(1.0f));
+    void drawModel(xe_assets::Model *mod, const glm::mat4 &transform = glm::mat4(1.0f));
+    void drawModel(xe_assets::AnimModel *mod, const glm::mat4 &transform = glm::mat4(1.0f));
 
-    void draw_mesh(xe_assets::mesh *mshs, xe_graphics::shader *shd);
+    void drawMesh(xe_assets::Mesh *mshs, xe_graphics::Shader *shd);
    
-    void draw_sphere(xe_graphics::texture2D *texture_diff);
-    void draw_sphere();
+    void drawSphere(xe_graphics::Texture2D *texture_diff);
+    void drawSphere();
 
-    void draw_cube(xe_graphics::texture2D *texture_diff);
-    void draw_cube();
+    void drawCube(xe_graphics::Texture2D *texture_diff);
+    void drawCube();
 
-    void draw_line(xe_ecs::entity *ent);
+    void drawLine(xe_ecs::Entity *ent);
 
-    void draw_ent(xe_ecs::entity *ent);
-    void draw_ent_static(xe_ecs::entity *ent);
-    void draw_ent_with_shader(xe_ecs::entity *ent, xe_graphics::shader *shd);
-    void draw_ent_primitive(xe_ecs::entity *ent);
+    void drawEnt(xe_ecs::Entity *ent);
+    void drawEntStatic(xe_ecs::Entity *ent);
+    void drawEntWithShader(xe_ecs::Entity *ent, xe_graphics::Shader *shd);
+    void drawEntPrimitive(xe_ecs::Entity *ent);
 
-    void draw_text(const std::string &text, glm::vec2& pos, glm::vec3& color);
-    void draw_text(const std::string &text, glm::vec2& pos);
-    void draw_text(const std::string &text, real32 x, real32 y);
+    void drawText(const std::string &text, glm::vec2& pos, glm::vec3& color);
+    void drawText(const std::string &text, glm::vec2& pos);
+    void drawText(const std::string &text, real32 x, real32 y);
 
-    void draw_water_plane(xe_ecs::entity *ent);
+    void drawWaterPlane(xe_ecs::Entity *ent);
 
-    void draw_skybox();
-    void draw_shadow_maps();
+    void drawSkybox();
+    void drawShadowMaps();
 
-    void apply_shadow_map(xe_graphics::shadow_map *shadow);
+    void applyShadowMap(xe_graphics::ShadowMap *shadow);
 
-    void apply_transform(xe_ecs::transform_component *transform, xe_graphics::shader *shd);
-    void apply_dir_light(xe_graphics::shader *shd, xe_ecs::dir_light *directional_light, xe_ecs::transform_component *transform);
-    void apply_spot_light(xe_graphics::shader *shd, xe_ecs::spot_light *directional_light, xe_ecs::transform_component *transform);
-    void apply_point_light(xe_graphics::shader *shd, xe_ecs::point_light *directional_light, xe_ecs::transform_component *transform);
+    void applyTransform(xe_ecs::TransformComponent *transform, xe_graphics::Shader *shd);
+    void applyDirLight(xe_graphics::Shader *shd, xe_ecs::DirLight *directional_light, xe_ecs::TransformComponent *transform);
+    void applySpotLight(xe_graphics::Shader *shd, xe_ecs::SpotLight *directional_light, xe_ecs::TransformComponent *transform);
+    void applyPointLight(xe_graphics::Shader *shd, xe_ecs::PointLight *directional_light, xe_ecs::TransformComponent *transform);
 }
 #endif // !XENGINE_RENDERING_H

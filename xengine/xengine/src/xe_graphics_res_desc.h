@@ -88,7 +88,7 @@ namespace xe_graphics
         POINT
     };
 
-    struct texture_desc
+    struct TextureDesc
     {
         TEXTURE_DIMENSION dimension;
         TEXTURE_TYPE texture_type;
@@ -98,17 +98,17 @@ namespace xe_graphics
         uint32 mip_level;
     };
 
-    struct rasterizer_state
+    struct rasterizerState
     {
 
     };
 
-    struct blend_state
+    struct blendState
     {
 
     };
 
-    struct viewport
+    struct Viewport
     {
         uint32 width = 0;
         uint32 height = 0;
@@ -120,23 +120,23 @@ namespace xe_graphics
 
 #define BONES_COUNT 10
 
-    struct vertex
+    struct Vertex
     {
 
     };
 
-    struct position_vertex : vertex
+    struct PositionVertex : Vertex
     {
         vec3f pos;
     };
 
-    struct position_uv_vertex : vertex
+    struct PositionUVVertex : Vertex
     {
         vec3f pos;
         vec2f uv;
     };
 
-    struct pos_normal_tb_uv : vertex
+    struct PositionNormalTBUV : Vertex
     {
         vec3f pos;
         vec3f normal;
@@ -145,14 +145,14 @@ namespace xe_graphics
         vec2f uv;
     };
 
-    struct pos_normal_uv : vertex
+    struct PositionNormalUV : Vertex
     {
         vec3f pos;
         vec3f normal;
         vec2f uv;
     };
 
-    struct pos_normal_uv_b_w : vertex
+    struct PositionNormalUVBW : Vertex
     {
         vec3f pos;
         vec3f normal;
@@ -163,7 +163,7 @@ namespace xe_graphics
         uint32 bone_ids[4] = { 0, 0, 0, 0 };
         real32 weights[4]{ 0.0f, 0.0f, 0.0f, 0.0f };
 
-        void add_bone(uint32_t boneId, real32 weight)
+        void addBone(uint32_t boneId, real32 weight)
         {
             for (uint32_t size = 0; size < 4; size++)
             {

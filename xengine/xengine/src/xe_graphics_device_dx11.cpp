@@ -8,7 +8,7 @@
 
 namespace xe_graphics
 {
-    graphics_device_dx11::graphics_device_dx11(HWND window, bool32 vsync, bool32 fullscreen)
+    GraphicsDeviceDX11::GraphicsDeviceDX11(HWND window, bool32 vsync, bool32 fullscreen)
     {    
         this->fullscreen = fullscreen;
         this->vsync = vsync;
@@ -33,7 +33,7 @@ namespace xe_graphics
        
         DXGI_SWAP_CHAIN_DESC swap_chain_desc;       
         ID3D11Texture2D* back_buffer_ptr;
-        D3D11_TEXTURE2D_DESC depth_buffer_desc;
+        D3D11_TEXTURE2D_DESC depth_buffer_desc;        
         D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
         D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc;
         D3D11_RASTERIZER_DESC raster_desc;
@@ -192,7 +192,7 @@ namespace xe_graphics
 
         if (FAILED(res))
         {
-            xe_utility::error("Failed to create back buffer texture2D!");
+            xe_utility::error("Failed to create back buffer Texture2D!");
         }
 
         ZeroMemory(&depth_stencil_desc, sizeof(depth_stencil_desc));
@@ -238,7 +238,7 @@ namespace xe_graphics
 
         device_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
         
-        set_viewport(vp.x, vp.y, vp.width, vp.height);
+        setViewport(vp.x, vp.y, vp.width, vp.height);
         
         real32 fov = 45.0f, aspect_ratio = vp.width / vp.height;
 
@@ -251,18 +251,18 @@ namespace xe_graphics
         ortho = XMMatrixOrthographicLH(vp.width, vp.height, vp.min_depth, vp.max_depth);*/
     }
 
-    graphics_device_dx11::~graphics_device_dx11()
+    GraphicsDeviceDX11::~GraphicsDeviceDX11()
     {
 
     }
 
-    void graphics_device_dx11::clear(int flags)
+    void GraphicsDeviceDX11::clear(int flags)
     {
         device_context->ClearRenderTargetView(render_target_view, clear_color_v);
         device_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
     }
 
-    void graphics_device_dx11::clear_color(real32 r, real32 g, real32 b, real32 a)
+    void GraphicsDeviceDX11::clearColor(real32 r, real32 g, real32 b, real32 a)
     {       
         clear_color_v[0] = r;
         clear_color_v[1] = g;
@@ -270,7 +270,7 @@ namespace xe_graphics
         clear_color_v[3] = a;
     }
 
-    void graphics_device_dx11::set_viewport(int32 x, int32 y, int32 width, int32 height)
+    void GraphicsDeviceDX11::setViewport(int32 x, int32 y, int32 width, int32 height)
     {
         D3D11_VIEWPORT viewport_dx11;
 
@@ -284,302 +284,303 @@ namespace xe_graphics
         device_context->RSSetViewports(1, &viewport_dx11);
     }
 
-    void graphics_device_dx11::enable(int type)
+    void GraphicsDeviceDX11::enable(int type)
     {
     }
 
-    void graphics_device_dx11::disable(int type)
+    void GraphicsDeviceDX11::disable(int type)
     {
     }
 
-    void graphics_device_dx11::set_blend_func(int src, int dst)
+    void GraphicsDeviceDX11::setBlendFunc(int src, int dst)
     {
     }
 
-    void graphics_device_dx11::set_depth_func(int type)
+    void GraphicsDeviceDX11::setDepthFunc(int type)
     {
     }
 
-    void graphics_device_dx11::set_cull_mode(int type)
+    void GraphicsDeviceDX11::setCullMode(int type)
     {
     }
 
-    void graphics_device_dx11::set_depth(bool32 type)
+    void GraphicsDeviceDX11::setDepth(bool32 type)
     {
     }
 
-    void graphics_device_dx11::set_line_width(uint32 line_width)
+    void GraphicsDeviceDX11::setLineWidth(uint32 line_width)
     {
     }
 
-    void graphics_device_dx11::draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
+    void GraphicsDeviceDX11::drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
     {
     }
 
-    void graphics_device_dx11::draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void * ind)
+    void GraphicsDeviceDX11::drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void * ind)
     {
     }
 
-    void graphics_device_dx11::activate_bind_texture(TEXTURE_TYPE type, const texture2D * texture)
+    void GraphicsDeviceDX11::activateBindTexture(TEXTURE_TYPE type, const Texture2D * texture)
     {
     }
 
-    void graphics_device_dx11::activate_bind_texture(TEXTURE_TYPE type, const cubemap * texture)
+    void GraphicsDeviceDX11::activateBindTexture(TEXTURE_TYPE type, const Cubemap * texture)
     {
     }
 
-    void graphics_device_dx11::activate_texture(uint32 index)
+    void GraphicsDeviceDX11::activateTexture(uint32 index)
     {
     }
 
-    void graphics_device_dx11::bind_texture(TEXTURE_TYPE type, const texture2D * texture)
+    void GraphicsDeviceDX11::bindTexture(TEXTURE_TYPE type, const Texture2D * texture)
     {
     }
 
-    void graphics_device_dx11::bind_shader(const shader * shader)
+    void GraphicsDeviceDX11::bindShader(const Shader *Shader)
+    {
+        //device_context->VSSetShader(//Shader);
+    }
+
+    void GraphicsDeviceDX11::bindBuffer(const VertexBuffer * vb)
     {
     }
 
-    void graphics_device_dx11::bind_buffer(const vertex_buffer * vb)
+    void GraphicsDeviceDX11::bindBuffer(const IndexBuffer * ib)
     {
     }
 
-    void graphics_device_dx11::bind_buffer(const index_buffer * ib)
+    void GraphicsDeviceDX11::bindVertexArray(const VertexArray * va)
     {
     }
 
-    void graphics_device_dx11::bind_vertex_array(const vertex_array * va)
+    void GraphicsDeviceDX11::bindFramebuffer(const Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::bind_framebuffer(const framebuffer * fbo)
+    void GraphicsDeviceDX11::bindRenderbuffer(const Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::bind_renderbuffer(const framebuffer * fbo)
+    void GraphicsDeviceDX11::bindForRead(const Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::bind_for_read(const framebuffer * fbo)
+    void GraphicsDeviceDX11::bindForWrite(const Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::bind_for_write(const framebuffer * fbo)
+    void GraphicsDeviceDX11::addColorTexture2D(Texture2D * texture, uint32 color_attachment_id, Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::add_color_texture2D(texture2D * texture, uint32 color_attachment_id, framebuffer * fbo)
+    void GraphicsDeviceDX11::addDepthTexture2D(Texture2D * depth, Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::add_depth_texture2D(texture2D * depth, framebuffer * fbo)
+    void GraphicsDeviceDX11::addDepthTexture2D(uint32 w, uint32 h, Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::add_depth_texture2D(uint32 w, uint32 h, framebuffer * fbo)
+    void GraphicsDeviceDX11::setDepthBufferAttachment(const Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::set_depth_buffer_attachment(const framebuffer * fbo)
+    void GraphicsDeviceDX11::setDepthBufferAttachment(uint32 w, uint32 h, const Framebuffer * fbo)
     {
     }
 
-    void graphics_device_dx11::set_depth_buffer_attachment(uint32 w, uint32 h, const framebuffer * fbo)
-    {
-    }
-
-    void graphics_device_dx11::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture)
-    {
-
-    }
-
-    void graphics_device_dx11::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D *texture)
-    {
-    }
-
-    void graphics_device_dx11::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D * texture, uint32 mip)
+    void GraphicsDeviceDX11::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture)
     {
 
     }
 
-    void graphics_device_dx11::set_renderbuffer(int depth_component, uint32 width, uint32 height)
+    void GraphicsDeviceDX11::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D *texture)
     {
     }
 
-    void graphics_device_dx11::set_framebuffer_renderbuffer_attachment(const framebuffer * fbo)
+    void GraphicsDeviceDX11::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture, uint32 mip)
+    {
+
+    }
+
+    void GraphicsDeviceDX11::setRenderbuffer(int depth_component, uint32 width, uint32 height)
     {
     }
 
-    texture2D &graphics_device_dx11::get_texture(uint32 number, const framebuffer *fbo)
+    void GraphicsDeviceDX11::setFramebufferRenderbufferAttachment(const Framebuffer * fbo)
+    {
+    }
+
+    Texture2D &GraphicsDeviceDX11::getTexture(uint32 number, const Framebuffer *fbo)
     {
         if (fbo && number >= 0 <= MAX_COLOR_ATT)
             return *fbo->color_textures[number];
     }
 
-    void graphics_device_dx11::check_framebuffer()
+    void GraphicsDeviceDX11::checkFramebuffer()
     {
     }
 
-    void graphics_device_dx11::unbind_texture(TEXTURE_TYPE texture)
+    void GraphicsDeviceDX11::unbindTexture(TEXTURE_TYPE texture)
     {
     }
 
-    void graphics_device_dx11::unbind_vertex_array()
+    void GraphicsDeviceDX11::unbindVertexArray()
     {
     }
 
-    void graphics_device_dx11::unbind_shader()
+    void GraphicsDeviceDX11::unbindShader()
     {
     }
 
-    void graphics_device_dx11::unbind_framebuffer()
+    void GraphicsDeviceDX11::unbindFramebuffer()
     {
     }
 
-    void graphics_device_dx11::unbind_buffer(BUFFER_TYPE type)
+    void GraphicsDeviceDX11::unbindBuffer(BUFFER_TYPE type)
     {
     }
 
-    void graphics_device_dx11::set_bool(const std::string & name, bool value, shader * shd)
+    void GraphicsDeviceDX11::setBool(const std::string & name, bool value, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_int(const std::string & namee, int32 value, shader * shd)
+    void GraphicsDeviceDX11::setInt(const std::string & namee, int32 value, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_float(const std::string & name, real32 value, shader * shd)
+    void GraphicsDeviceDX11::setFloat(const std::string & name, real32 value, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_vec2(const std::string & name, const glm::vec2 & value, shader * shd)
+    void GraphicsDeviceDX11::setVec2(const std::string & name, const glm::vec2 & value, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_vec2(const std::string & name, real32 x, real32 y, shader * shd)
+    void GraphicsDeviceDX11::setVec2(const std::string & name, real32 x, real32 y, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_vec3(const std::string & name, const glm::vec3 & value, shader * shd)
+    void GraphicsDeviceDX11::setVec3(const std::string & name, const glm::vec3 & value, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_vec3(const std::string & name, real32 x, real32 y, real32 z, shader * shd)
+    void GraphicsDeviceDX11::setVec3(const std::string & name, real32 x, real32 y, real32 z, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_vec4(const std::string & name, const glm::vec4 & value, shader * shd)
+    void GraphicsDeviceDX11::setVec4(const std::string & name, const glm::vec4 & value, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_vec4(const std::string & name, real32 x, real32 y, real32 z, real32 w, shader * shd)
+    void GraphicsDeviceDX11::setVec4(const std::string & name, real32 x, real32 y, real32 z, real32 w, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_mat2(const std::string & name, const glm::mat2 & mat, shader * shd)
+    void GraphicsDeviceDX11::setMat2(const std::string & name, const glm::mat2 & mat, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_mat3(const std::string & name, const glm::mat3 & mat, shader * shd)
+    void GraphicsDeviceDX11::setMat3(const std::string & name, const glm::mat3 & mat, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_mat4(const std::string & name, const glm::mat4 & mat, shader * shd)
+    void GraphicsDeviceDX11::setMat4(const std::string & name, const glm::mat4 & mat, Shader * shd)
     {
     }
 
-    void graphics_device_dx11::set_draw_buffer(uint32 type)
+    void GraphicsDeviceDX11::setDrawBuffer(uint32 type)
     {
     }
 
-    void graphics_device_dx11::set_draw_buffers(uint32 count, void * pointer)
+    void GraphicsDeviceDX11::setDrawBuffers(uint32 count, void * pointer)
     {
     }
 
-    void graphics_device_dx11::set_read_buffer(uint32 type)
+    void GraphicsDeviceDX11::setReadBuffer(uint32 type)
     {
     }
 
-    void graphics_device_dx11::check_error()
+    void GraphicsDeviceDX11::checkError()
     {
     }
 
-    void graphics_device_dx11::load_bindings()
+    void GraphicsDeviceDX11::loadBindings()
     {
     }
 
-    void graphics_device_dx11::start_execution()
+    void GraphicsDeviceDX11::startExecution()
     {
         device_context->ClearRenderTargetView(render_target_view, clear_color_v);
         device_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.0f, 0);
     }
 
-    void graphics_device_dx11::end_execution()
+    void GraphicsDeviceDX11::endExecution()
     {
         swap_chain->Present(vsync, 0);
     }
 
-    bool32 graphics_device_dx11::create_texture(texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture(Texture2D *texture)
+    {
+        return true;
+    }
+
+    bool32 GraphicsDeviceDX11::createTexture(uint32 count, Texture2D * texture)
+    {
+        return true;
+    }
+
+    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, Texture2D * texture)
+    {
+        return true;
+    }
+
+    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, TEXTURE_TYPE tex_type, Texture2D * texture)
+    {
+        return true;
+    }
+
+    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, TEXTURE_TYPE tex_type, bool32 gen_mip, Texture2D * texture)
+    {
+        return true;
+    }
+
+    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, const char * dir, Texture2D * texture)
+    {
+        return true;
+    }
+
+    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, const char * dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D * texture)
+    {
+        return true;
+    }
+
+    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, const char * dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, Texture2D * texture)
     {
         return bool32();
     }
 
-    bool32 graphics_device_dx11::create_texture(uint32 count, texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture2D(uint32 width, uint32 height, Texture2D *texture)
     {
-        return bool32();
+        return true;
     }
 
-    bool32 graphics_device_dx11::create_texture2D(const char * path, texture2D * texture)
+    bool32 GraphicsDeviceDX11::createShader(const char *vertex, const char *fragment, Shader *shader)
     {
-        return bool32();
+        return true;
     }
 
-    bool32 graphics_device_dx11::create_texture2D(const char * path, TEXTURE_TYPE tex_type, texture2D * texture)
+    bool32 GraphicsDeviceDX11::createFramebuffer(const uint32 count, Framebuffer *fbo)
     {
-        return bool32();
+        return true;
     }
 
-    bool32 graphics_device_dx11::create_texture2D(const char * path, TEXTURE_TYPE tex_type, bool32 gen_mip, texture2D * texture)
+    bool32 GraphicsDeviceDX11::createRenderbuffer(const uint32 count, Framebuffer *fbo)
     {
-        return bool32();
+        return true;
     }
 
-    bool32 graphics_device_dx11::create_texture2D(const char * path, const char * dir, texture2D * texture)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::create_texture2D(const char * path, const char * dir, TEXTURE_TYPE type, bool32 generate_mipmap, texture2D * texture)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::create_texture2D(const char * path, const char * dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, texture2D * texture)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::create_texture2D(uint32 width, uint32 height, texture2D * texture)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::create_shader(const char * vertex, const char * fragment, shader * shader)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::create_framebuffer(const uint32 count, framebuffer * fbo)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::create_render_buffer(const uint32 count, framebuffer * fbo)
-    {
-        return bool32();
-    }
-
-    bool32 graphics_device_dx11::create_vertex_buffer(void *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
+    bool32 GraphicsDeviceDX11::createVertexBuffer(void *vertices, uint32 size, DRAW_TYPE draw_type, VertexBuffer *vb)
     {
         D3D11_BUFFER_DESC buffer_desc;
         D3D11_SUBRESOURCE_DATA bind_data;
@@ -610,7 +611,7 @@ namespace xe_graphics
         return true;
     }
 
-    bool32 graphics_device_dx11::create_index_buffer(uint32 *indices, uint32 size, index_buffer *ib)
+    bool32 GraphicsDeviceDX11::createIndexBuffer(uint32 *indices, uint32 size, IndexBuffer *ib)
     {
         D3D11_BUFFER_DESC index_buffer_desc;
 
@@ -635,74 +636,74 @@ namespace xe_graphics
         return true;
     }
 
-    bool32 graphics_device_dx11::create_vertex_array(vertex_array *va)
+    bool32 GraphicsDeviceDX11::createVertexArray(VertexArray *va)
     {
         return bool32();
     }
 
-    bool32 graphics_device_dx11::create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout)
+    bool32 GraphicsDeviceDX11::createBufferLayout(std::initializer_list<BufferElement>& element, BufferLayout *buf_layout)
     {
         return bool32();
     }
 
-    bool32 graphics_device_dx11::set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout)
+    bool32 GraphicsDeviceDX11::setVertexBufferLayout(VertexBuffer *vb, BufferLayout *buf_layout)
     {
         vb->layout = *buf_layout;
 
         return true;
     }
 
-    bool32 graphics_device_dx11::add_vertex_buffer(vertex_array *va, vertex_buffer *vb)
+    bool32 GraphicsDeviceDX11::addVertexBuffer(VertexArray *va, VertexBuffer *vb)
     {
-        return bool32();
+        return true;
     }
 
-    bool32 graphics_device_dx11::set_index_buffer(vertex_array *va, index_buffer *ib)
+    bool32 GraphicsDeviceDX11::setIndexBuffer(VertexArray *va, IndexBuffer *ib)
     {
-        return bool32();
+        return true;
     }
 
-    void graphics_device_dx11::set_texture_wrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler)
-    {
-    }
-
-    void graphics_device_dx11::set_texture_sampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler)
+    void GraphicsDeviceDX11::setTextureWrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler)
     {
     }
 
-    void graphics_device_dx11::load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image)
+    void GraphicsDeviceDX11::setTextureSampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler)
     {
     }
 
-    void graphics_device_dx11::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image)
+    void GraphicsDeviceDX11::loadTextureGpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void* image)
     {
     }
 
-    void graphics_device_dx11::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void * image)
+    void GraphicsDeviceDX11::loadTextureGpu(int texture_t, int width, int height, int internal_format, int data_format, const void* image)
     {
     }
 
-    void graphics_device_dx11::generate_texture_mipmap(TEXTURE_TYPE texture_t)
+    void GraphicsDeviceDX11::loadTextureGpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void * image)
     {
     }
 
-    void graphics_device_dx11::destroy_texture2D(texture2D * tex)
+    void GraphicsDeviceDX11::generateTextureMipmap(TEXTURE_TYPE texture_t)
     {
     }
 
-    void graphics_device_dx11::destroy_framebuffer(framebuffer * fbo)
+    void GraphicsDeviceDX11::destroyTexture2D(Texture2D *tex)
     {
     }
 
-    void graphics_device_dx11::destroy_shader(uint32 id)
+    void GraphicsDeviceDX11::destroyFramebuffer(Framebuffer *fbo)
     {
     }
 
-    void graphics_device_dx11::destroy_buffer(xe_graphics::vertex_buffer * vb)
+    void GraphicsDeviceDX11::destroyShader(uint32 id)
     {
     }
 
-    void graphics_device_dx11::destroy_buffer(xe_graphics::index_buffer * ib)
+    void GraphicsDeviceDX11::destroyBuffer(VertexBuffer *vb)
+    {
+    }
+
+    void GraphicsDeviceDX11::destroyBuffer(IndexBuffer *ib)
     {
     }
 

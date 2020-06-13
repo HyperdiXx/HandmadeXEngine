@@ -91,12 +91,12 @@ bool32 xe_platform::init_win32_platform(uint32 window_w, uint32 window_h)
 
 #ifdef GAPI_GL
 
-    graphics_device *device = new graphics_device_gl(window_handle);
-    xe_render::set_device(device);
+    GraphicsDevice *device = new GraphicsDeviceGL(window_handle);
+    xe_render::setDevice(device);
 
-    device->load_bindings();
-    xe_render::init_gui();
-    xe_render::init_render_gl();
+    device->loadBindings();
+    xe_render::initGui();
+    xe_render::initRenderGL();
 
 #endif // 
 

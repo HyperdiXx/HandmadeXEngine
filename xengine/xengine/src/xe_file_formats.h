@@ -52,7 +52,7 @@ namespace xe_reader_writer
 
 #define CONSUME(File, type) (type*)consume_size(File, sizeof(type))
 
-    void* consume_size(xe_core::file *file, uint32 size)
+    void* consume_size(xe_core::XEFile *file, uint32 size)
     {
         void* res = 0;
 
@@ -70,11 +70,11 @@ namespace xe_reader_writer
         return res;
     }
 
-    void parse_png(xe_core::file f)
+    void parse_png(xe_core::XEFile f)
     {
         printf("PNG size: %d\n", f.size);
 
-        xe_core::file *read = &f;
+        xe_core::XEFile *read = &f;
 
         png_head *pngheader = CONSUME(read, png_head);
 
@@ -123,7 +123,7 @@ namespace xe_reader_writer
 
         fprintf(stdout, "Loading PNG %s...\n", read_filename);
 
-        xe_core::file png_image = xe_core::read_whole_file(read_filename);
+        xe_core::XEFile png_image = xe_core::readWholeFile(read_filename);
 
         parse_png(png_image);
     }

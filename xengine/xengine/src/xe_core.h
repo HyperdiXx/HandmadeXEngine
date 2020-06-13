@@ -8,17 +8,17 @@
 
 namespace xe_core
 {
-    struct file
+    struct XEFile
     {
         uint32 size;
         void *data;
     };
 
-    file read_whole_file(const char *file_name);
-    std::string read_file_string(const char *file_path);
-    unsigned char* load_texture_from_disc(const char* path, int &width, int &height, int &channels, int flag, bool32 flip);
-    float *load_texturef_from_disc(const char* path, int &width, int &height, int &channels, int flag, bool32 flip);
-    void delete_data(void *data);
+    XEFile readWholeFile(const char *file_name);
+    std::string readFileString(const char *file_path);
+    unsigned char* loadTextureFromDisc(const char* path, int &width, int &height, int &channels, int flag, bool32 flip);
+    float *loadTextureFloatFromDisc(const char* path, int &width, int &height, int &channels, int flag, bool32 flip);
+    void deleteData(void *data);
 }
 
 #endif // !XENGINE_CORE_H

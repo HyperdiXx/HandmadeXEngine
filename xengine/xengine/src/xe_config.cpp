@@ -4,9 +4,8 @@
 
 namespace xe_config
 {
-    void parse_config_file(const char * data, config_data * cd)
+    static void parseConfigFile(const char * data, ConfigData * cd)
     {
-
         char data_string[128];
         strcpy(data_string, data);
 

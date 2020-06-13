@@ -22,7 +22,7 @@
 
 namespace xe_gui
 {
-    void draw_top_bar()
+    void drawTopBar()
     {
         bool show_log = true;
         bool *open = &show_log;
@@ -64,7 +64,7 @@ namespace xe_gui
     }
     }
 
-    void draw_button(const char *wo)
+    void drawButton(const char *wo)
     {
         ImGui::Begin("Test");
 
@@ -73,7 +73,7 @@ namespace xe_gui
         ImGui::End();
     }
 
-    void clear_context()
+    void clearContext()
     {
 #ifdef GAPI_GL
         ImGui_ImplOpenGL3_Shutdown();
@@ -87,9 +87,9 @@ namespace xe_gui
         ImGui::DestroyContext();
     }
 
-    void init_imgui_impl()
+    void initImguiImpl()
     {
-        xe_graphics::graphics_device *device = xe_render::get_device();
+        xe_graphics::GraphicsDevice *device = xe_render::getDevice();
         HWND &wnd_handle = xe_platform::get_window_handle();
         
         IMGUI_CHECKVERSION();
@@ -114,9 +114,9 @@ namespace xe_gui
 #endif 
     }
 
-    void start_frame()
+    void startFrame()
     {
-        xe_graphics::graphics_device *device = xe_render::get_device();
+        xe_graphics::GraphicsDevice *device = xe_render::getDevice();
 #ifdef GAPI_GL
         ImGui_ImplOpenGL3_NewFrame();
 #endif // GAPI_GL
@@ -128,7 +128,7 @@ namespace xe_gui
         ImGui::NewFrame();
     }
 
-    void end_frame()
+    void endFrame()
     {
         ImGui::Render();
 

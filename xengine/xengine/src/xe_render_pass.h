@@ -5,17 +5,16 @@
 
 namespace xe_scene
 {
-    struct scene;
+    struct Scene;
 }
 
 namespace xe_graphics
-{
- 
-    class layer
+{ 
+    class Layer
     {
     public:
 
-        virtual ~layer() {}
+        virtual ~Layer() {}
 
         virtual void init() = 0;
 
@@ -25,17 +24,17 @@ namespace xe_graphics
 
     };
 
-    class layer_2D : public layer
+    class Layer2D : public Layer
     {
 
     };
 
-    class layer_3D : public layer
+    class Layer3D : public Layer
     {
 
     };
 
-    class gui_layer : public layer
+    class GUILayer : public Layer
     {
     public:
 
@@ -46,11 +45,11 @@ namespace xe_graphics
         void update(real32 dt) override;
     };
 
-    class render_pass
+    class RenderPass
     {
     public:
 
-        virtual ~render_pass() {}
+        virtual ~RenderPass() {}
 
         virtual void init() = 0;
         virtual void clear() = 0;
@@ -63,7 +62,7 @@ namespace xe_graphics
         
     };
 
-    class render_pass2D : public render_pass
+    class RenderPass2D : public RenderPass
     {
     public:
         void init() override;
@@ -73,17 +72,14 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        const texture2D *get_result_texture() { return result_texture; };
-
-        //inline XEngine::OrthoCamera& get_camera2d() { return camera2D; };
+        const Texture2D *getResultTexture() { return result_texture; };
     private:
-        //XEngine::OrthoCamera camera2D;
-        texture2D *result_texture;
-        shader* simple_shader;
-        xe_ecs::entity main_ent;      
+        Texture2D *result_texture;
+        Shader* simple_shader;
+        xe_ecs::Entity main_ent;      
     };
 
-    class render_pass3D : public render_pass
+    class RenderPass3D : public RenderPass
     {
     public:
 
@@ -94,16 +90,16 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        void set_scene(xe_scene::scene *scene) { current_scene = scene; };
+        void set_scene(xe_scene::Scene *scene) { current_scene = scene; };
        
-        inline xe_graphics::texture2D& get_color_texture() { return color_texture; }
+        inline xe_graphics::Texture2D& get_color_texture() { return color_texture; }
     private:            
-        xe_graphics::framebuffer fbo;
-        xe_graphics::texture2D color_texture;
-        xe_scene::scene *current_scene;
+        xe_graphics::Framebuffer fbo;
+        xe_graphics::Texture2D color_texture;
+        xe_scene::Scene *current_scene;
     };
 
-    class pbr_pass : public render_pass
+    class PbrPass : public RenderPass
     {
     public:
         void init() override;
@@ -114,16 +110,16 @@ namespace xe_graphics
         void update(real32 dt) override;
     
     private:
-        xe_graphics::framebuffer fbo;
-        xe_graphics::texture2D env_cubemap;
-        xe_graphics::texture2D irr_map;
-        xe_graphics::texture2D prefilter_map;
-        xe_graphics::texture2D brdf_lut;
-        xe_graphics::texture2D color_texture;
-        xe_scene::scene *current_scene;
+        xe_graphics::Framebuffer fbo;
+        xe_graphics::Texture2D env_cubemap;
+        xe_graphics::Texture2D irr_map;
+        xe_graphics::Texture2D prefilter_map;
+        xe_graphics::Texture2D brdf_lut;
+        xe_graphics::Texture2D color_texture;
+        xe_scene::Scene *current_scene;
     };
 
-    class gamma_correction_pass : public render_pass
+    class GammaCorrectionPass : public RenderPass
     {
     public:
         void init() override;
@@ -133,31 +129,31 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        void set_color_texture(texture2D *tex) { texture = tex; }
+        void setColorTexture(Texture2D *tex) { texture = tex; }
     private:
-        shader* gmshd;
-        texture2D *texture;
+        Shader* gmshd;
+        Texture2D *texture;
     };
 
-    class shadow_map_pass
+    class ShadowMapPass
     {
     public:
         void init();
         void clear();
 
-        void unload_resources();
+        void unloadResources();
 
         void render();
 
         void update(real32 dt);
 
-        void bind_depth_texture() const;
+        void bindDepthTexture() const;
 
-        void set_scene(xe_scene::scene *active_sc) { current_scene = active_sc; };
+        void setScene(xe_scene::Scene *active_sc) { current_scene = active_sc; };
 
     private:
-        xe_graphics::shadow_map *shadow;
-        xe_scene::scene *current_scene;
+        xe_graphics::ShadowMap *shadow;
+        xe_scene::Scene *current_scene;
 
         glm::vec3 light_pos = glm::vec3(-2.0f, 4.0f, -2.0f);
     };

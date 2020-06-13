@@ -2,14 +2,14 @@
 
 namespace xe_gui
 {
-    void init_imgui_impl();
+    void initImguiImpl();
 
-    void start_frame();
-    void end_frame();
+    void startFrame();
+    void endFrame();
 
-    void draw_top_bar();
+    void drawTopBar();
 
-    void draw_button(const char *wo);
+    void drawButton(const char *wo);
 
-    void clear_context();
+    void clearContext();
 }

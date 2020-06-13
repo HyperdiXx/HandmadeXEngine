@@ -15,14 +15,14 @@ namespace xe_ecs
 {
     static uint32_t id_create = 0;
 
-    enum COMPONENT_TYPE
+    enum Component_TYPE
     {
         TRANSFORM,
         DIR_LIGHT,
         SPOT_LIGHT,
         POINT_LIGHT,
-        QUAD_COMPONENT,
-        MESH_COMPONENT,
+        QUAD_Component,
+        MESH_Component,
         CAMERA2D,
         CAMERA3D,
         UPDATE,
@@ -41,28 +41,28 @@ namespace xe_ecs
         ENT_CAMERA
     };
 
-    class component
+    class Component
     {
     public:
-        virtual ~component() {};
+        virtual ~Component() {};
     };
 
-    class entity
+    class Entity
     {
     public:
 
-        entity()
+        Entity()
         {
-            components.reserve(16);
+            Components.reserve(16);
             id = id_create++;
         }
 
         template<class T>
-        inline T* find_component()
+        inline T* findComponent()
         {
-            for (int i = 0; i < components.size(); ++i)
+            for (int i = 0; i < Components.size(); ++i)
             {
-                component *comp = components[i];
+                Component *comp = Components[i];
 
                 if (dynamic_cast<T*>(comp))
                     return dynamic_cast<T*>(comp);
@@ -71,9 +71,9 @@ namespace xe_ecs
             return nullptr;
         }
         
-        void add_component(component *comp)
+        void addComponent(Component *comp)
         {
-            components.push_back(comp);
+            Components.push_back(comp);
         }
 
         void setEntityName(const std::string& name) { this->name = name; }
@@ -88,10 +88,10 @@ namespace xe_ecs
         ENTITY_TYPE type = ENTITY_TYPE::ENT_NONE;
 
         std::string name;
-        std::vector<component*> components;
+        std::vector<Component*> Components;
     };
 
-    class transform_component : public component
+    class TransformComponent : public Component
     {
     public:
         uint32 state = 0;
@@ -102,80 +102,78 @@ namespace xe_ecs
 
         glm::mat4 model_matrix = xe_render::IDENTITY_MATRIX;
 
-        void set_transform(glm::vec3 &pos, glm::vec3 &rot, glm::vec3 &scale)
+        void setTransform(glm::vec3 &pos, glm::vec3 &rot, glm::vec3 &scale)
         {
-            set_translation(pos.x, pos.y, pos.z);
-            set_rotation(rot.x, rot.y, rot.z);
-            set_scale(scale.x, scale.y, scale.z);
+            setTranslation(pos.x, pos.y, pos.z);
+            setRotation(rot.x, rot.y, rot.z);
+            setScale(scale.x, scale.y, scale.z);
         }
 
-        void set_translation(real32 x, real32 y, real32 z)
+        void setTranslation(real32 x, real32 y, real32 z)
         {
             if (position.x != x || position.y != y || position.z != z)
             {
                 position.x = x;
                 position.y = y;
                 position.z = z;
-                set_dirty();
+                setDirty();
             }
         }
 
-        void set_rotation(real32 x_eul, real32 y_eul, real32 z_eul)
+        void setRotation(real32 x_eul, real32 y_eul, real32 z_eul)
         {
             if (rotation.x != x_eul || rotation.y != y_eul || rotation.z != z_eul)
             {
                 scale.x = x_eul;
                 scale.y = y_eul;
                 scale.z = z_eul;
-                set_dirty();
+                setDirty();
             }
         }
 
-        void set_scale(real32 x, real32 y, real32 z)
+        void setScale(real32 x, real32 y, real32 z)
         {
             if (scale.x != x || scale.y != y || scale.z != z)
             {
                 scale.x = x;
                 scale.y = y;
                 scale.z = z;
-                set_dirty();
+                setDirty();
             }
         }
 
-        void set_dirty() { state = true; };
-        inline bool32 is_dirty() const { return state; };
+        void setDirty() { state = true; };
+        inline bool32 isDirty() const { return state; };
     };
    
-    class update_component : public component
+    class UpdateComponent : public Component
     {
     public:
-
         void update(float dt);
-    
     };
 
-    class quad_component : public component
+    class QuadComponent : public Component
     {
     public:
-        xe_graphics::quad *quad_mesh;
+        xe_graphics::Quad *quad_mesh;
     };
 
-    class sphere_component : public component
+    class SphereComponent : public Component
     {
     public:
-        xe_graphics::sphere *sphere_mesh;
-        xe_graphics::texture2D *diffuse;
+        xe_graphics::Sphere *sphere_mesh;
+        xe_graphics::Texture2D *diffuse;
     };
 
-    class mesh_component : public component
+    class MeshComponent : public Component
     {
     public:
-        xe_assets::model *model_asset;
+        xe_assets::Model *model_asset;
         
         bool32 draw_with_color = false;
     };
     
-    class camera2d_component : public component
+    class Camera2DComponent : public Component
     {
     public:
         real32 width = 0.0f;
@@ -232,7 +230,7 @@ namespace xe_ecs
     };
 
 
-    class camera3d_component : public component
+    class Camera3DComponent : public Component
     {
     public:
         //@Config!!!
@@ -262,7 +260,7 @@ namespace xe_ecs
 
         glm::mat4 projection = glm::mat4(1.0f);
 
-        camera3d_component(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f))
+        Camera3DComponent(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f))
         {
             pos = position;
             cam_yaw = c_yaw;
@@ -336,41 +334,41 @@ namespace xe_ecs
         }
     };
 
-    class material_component : public component
+    class MaterialComponent : public Component
     {
     public:
-        xe_graphics::shader *shader;
-        xe_graphics::texture2D *texture;
+        xe_graphics::Shader *shader;
+        xe_graphics::Texture2D *texture;
     };
 
-    class pbr_material_component : public component
+    class PBRMaterialComponent : public Component
     {
     public:
-        xe_graphics::shader *shader;
+        xe_graphics::Shader *shader;
 
-        xe_graphics::texture2D *diffuse;
-        xe_graphics::texture2D *normal;
-        xe_graphics::texture2D *specular;
-        xe_graphics::texture2D *ao;
+        xe_graphics::Texture2D *diffuse;
+        xe_graphics::Texture2D *normal;
+        xe_graphics::Texture2D *specular;
+        xe_graphics::Texture2D *ao;
 
         real32 roughness = 0.0f;
         real32 metallness = 0.0f;
     };
 
-    class line_mesh_component : public component
+    class LineMeshComponent : public Component
     {
     public:
-        xe_graphics::line *line_co;
+        xe_graphics::Line *line_co;
     };
 
-    class water_component : public component
+    class WaterComponent : public Component
     {
     public:
 
-        xe_graphics::texture2D *water_tex;
+        xe_graphics::Texture2D *water_tex;
     };
 
-    class spot_light : public component
+    class SpotLight : public Component
     {
     public:
         glm::vec3 color;
@@ -379,13 +377,13 @@ namespace xe_ecs
         real32 radius;
     };
 
-    class point_light : public component
+    class PointLight : public Component
     {
     public:
         glm::vec3 direction;
     };
 
-    class dir_light : public component
+    class DirLight : public Component
     {
     public:
         real32 intensity;
@@ -395,18 +393,18 @@ namespace xe_ecs
         bool32 is_casting_shadows;
     };
 
-    /*template<typename component>
-    class component_manager
+    /*template<typename Component>
+    class Component_manager
     {
     public:
 
-        component& create(entity ent)
+        Component& create(entity ent)
         {
-            m_table[entity] = m_components.size();
-            m_components.push_back(Component());
+            m_table[entity] = m_Components.size();
+            m_Components.push_back(Component());
             m_entities.push_back(entity);
 
-            return m_components.back();
+            return m_Components.back();
         }
 
         bool32 is_contains(entity ent) const
@@ -415,18 +413,18 @@ namespace xe_ecs
         }
 
         entity get_entity(uint32 index) const { return m_entities[index]; }
-        inline uint32 getCount() const { return m_components.size(); }
+        inline uint32 getCount() const { return m_Components.size(); }
 
-        component& operator[](uint32 index) { return m_components[index]; }
+        Component& operator[](uint32 index) { return m_Components[index]; }
 
     private:
-        component_manager() {};
-        component_manager(const component_manager&);
-        component_manager& operator=(component_manager&);
+        Component_manager() {};
+        Component_manager(const Component_manager&);
+        Component_manager& operator=(Component_manager&);
 
     private:
         std::vector<Entity> m_entities;
-        std::vector<Component> m_components;
+        std::vector<Component> m_Components;
 
         std::unordered_map<Entity, uint32> m_table;
         uint32 count;

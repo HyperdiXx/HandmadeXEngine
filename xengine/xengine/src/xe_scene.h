@@ -8,44 +8,44 @@
 
 namespace xe_graphics
 {
-    class shadow_map_pass;
-    class render_pass;
-    class layer;
+    class ShadowMapPass;
+    class RenderPass;
+    class Layer;
 }
 
 namespace application
 {
-    struct application_state;
+    struct ApplicationState;
 }
 
 namespace xe_scene
 {   
-    struct objects
+    struct Objects
     {
-        std::unordered_map<const char*, xe_assets::model> models3D;
-        std::unordered_map<const char*, xe_assets::anim_model> animModels3D;
+        std::unordered_map<const char*, xe_assets::Model> models3D;
+        std::unordered_map<const char*, xe_assets::AnimModel> animModels3D;
     };
 
-    struct scene
+    struct Scene
     {
         std::string name;
-        std::vector<xe_ecs::entity*> entities;
-        std::vector<xe_graphics::render_pass*> passes;
-        std::vector<xe_graphics::layer*> layers;
-        xe_graphics::shadow_map_pass *shadow_pass;
-        xe_ecs::entity *directional_light;
+        std::vector<xe_ecs::Entity*> entities;
+        std::vector<xe_graphics::RenderPass*> passes;
+        std::vector<xe_graphics::Layer*> layers;
+        xe_graphics::ShadowMapPass *shadow_pass;
+        xe_ecs::Entity *directional_light;
     };
 
-    struct resources
+    struct Resources
     {
-        std::vector<scene*> scenes;
+        std::vector<Scene*> scenes;
     };
 
-    scene create_scene(const char *name);
+    Scene createScene(const char *name);
    
-    void draw_scene_layers(scene *scn);
+    void drawSceneLayers(Scene *scn);
 
     // @Rework init by parsing 
-    void load_test_scene(scene *sc);
-    void load_spheres_scene(scene *sc);
+    void loadTestScene(Scene *sc);
+    void loadSpheresScene(Scene *sc);
 }

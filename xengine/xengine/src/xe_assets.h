@@ -17,80 +17,91 @@ namespace xe_assets
 {
     using namespace xe_graphics;
 
-    struct mesh
+    struct Mesh
     {
-        void add_vertex(pos_normal_uv vertex);
-        void add_vertex(pos_normal_tb_uv vertex);
-        void add_vertex(real32 vertex);
+        void addVertex(PositionNormalUV vertex);
+        void addVertex(PositionNormalTBUV vertex);
+        void addVertex(real32 vertex);
 
-        void add_index(uint32 ind);        
+        void addIndex(uint32 ind);        
 
         std::vector<real32> vertices_fl;
 
-        std::vector<pos_normal_uv> vertices;
-        std::vector<pos_normal_tb_uv> vertices_tab;
+        std::vector<PositionNormalUV> vertices;
+        std::vector<PositionNormalTBUV> vertices_tab;
 
         std::vector<uint32> indices;
-        std::vector<texture_wrapper> mesh_textures;
+        std::vector<TextureWrapper> mesh_textures;
 
-        xe_graphics::vertex_array vao;
+        xe_graphics::VertexArray vao;
         aabb bounding_box;
     };
 
-    struct node
+    struct Node
     {
-        void add_child(node* child);
-        void add_mesh(mesh *msh);
+        void addChild(Node* child);
+        void addMesh(Mesh *msh);
 
         std::string name;
-        std::vector<mesh*> meshes;
-        std::vector<node*> children;
+        std::vector<Mesh*> meshes;
+        std::vector<Node*> children;
     };
 
-    class model
+    struct Model
     {
     public:
-        model() = default;
+        Model() = default;
         
-        model(model && m);
-        model &operator=(model && m) noexcept;
+        Model(Model && m);
+        Model &operator=(Model && m) noexcept;
 
-        node* root;
-        vertex *vertex_type;
+        Node* root;
+        Vertex *vertex_type;
         std::string parent_dir;
-        std::vector<texture_wrapper> model_textures;
-        std::vector<node*> nodes;
+        std::vector<TextureWrapper> model_textures;
+        std::vector<Node*> nodes;
     };
 
-    struct bone
+    struct Bone
     {
         glm::mat4 transform;
         glm::mat4 offset;        
     };
 
-    glm::mat4 from_ai_to_glm(const aiMatrix4x4 &ai_mat);
+    glm::mat4 fromAiToGlm(const aiMatrix4x4 &ai_mat);
  
-    std::vector<texture_wrapper> load_textures_from_material(model *mdl, aiMaterial *material, aiTextureType type, std::string texture_type);    
+    std::vector<TextureWrapper> loadTexturesFromMaterial(Model *mdl, aiMaterial *material, aiTextureType type, std::string texture_type);    
     
-    vertex* get_vertex_type(model *mdl);
+    Vertex* getVertexType(Model *mdl);
 
-    void parse_materials(model *m, mesh *mesh, aiMesh* ai_mesh, const aiScene *scene);
-    void parse_vert(mesh* meh, aiMesh *aimesh);
+    void parseMaterials(Model *m, Mesh *Mesh, aiMesh* ai_Mesh, const aiScene *scene);
+    void parseVert(Mesh* meh, aiMesh *aiMesh);
 
-    void parse_faces(mesh* mesh, aiMesh *aimesh);
-    mesh* parse_mesh(model *model, aiMesh* ai_mesh, const aiScene *scene);
+    void parseFaces(Mesh* Mesh, aiMesh *aiMesh);
+    Mesh* parseMesh(Model *Model, aiMesh* ai_Mesh, const aiScene *scene);
     
-    node* parse_node(model* model, aiNode* ai_node, const aiScene *scene);
+    Node* parseNode(Model* Model, aiNode* ai_node, const aiScene *scene);
 
-    void mem_cpyvec(aiVector3D & aivec3, glm::vec3 &vec3);
-    void mem_cpymatrix(aiMatrix4x4 & aimat, glm::mat4 &mat4);
+    void memCpyvec(aiVector3D & aivec3, glm::vec3 &vec3);
+    void memCpymatrix(aiMatrix4x4 & aimat, glm::mat4 &mat4);
 
-    void calc_weight(uint32 id, real32 weight, glm::ivec4& bone_id, glm::vec4& wts);
+    void calcWeight(uint32 id, real32 weight, glm::ivec4& bone_id, glm::vec4& wts);
 
-    model* parse_static_model(const aiScene* scene, const std::string &path);
-    model* load_model_from_file(const std::string &path, bool32 calculate_tb = true);
+    Model* parseStaticModel(const aiScene* scene, const std::string &path);
+    Model* loadModelFromFile(const std::string &path, bool32 calculate_tb = true);
 
-    struct anim_node
+    struct Animation
+    {
+        std::string name;
+        float duration = 0.0f;
+        float animation_speed = 0.75f;
+        float animation_time = 0.0f;
+        float ticks_per_second = 0.0f;
+
+        bool is_playing = true;
+    };
+
+    struct AnimNode
     {
     public:
         uint32_t start_vertex;
@@ -101,27 +112,27 @@ namespace xe_assets
         glm::mat4 transform;
     };
 
-    class anim_model
+    class AnimModel
     {
     public:
-        anim_model() = default;
-        anim_model(const std::string &path);
+        AnimModel() = default;
+        AnimModel(const std::string &path);
         
-        anim_model(const anim_model &m) = default;
-        anim_model(anim_model && m);
+        AnimModel(const AnimModel &m) = default;
+        AnimModel(AnimModel && m);
 
-        anim_model &operator=(anim_model && m) noexcept;
+        AnimModel &operator=(AnimModel && m) noexcept;
 
         std::unique_ptr<Assimp::Importer> assimp_importer;
         const aiScene* scene;
 
-        std::vector<anim_node> anim_meshes;
+        std::vector<AnimNode> anim_meshes;
         std::unordered_map<std::string, uint32_t> bones_map;
-        std::vector<bone> bones_info;
+        std::vector<Bone> bones_info;
         
         glm::mat4 global_inverse_transform;
         
-        std::vector<pos_normal_uv_b_w> anim_vertices;
+        std::vector<PositionNormalUVBW> anim_vertices;
         std::vector<uint32_t> anim_indices;
         std::vector<glm::mat4> bone_transformation;
 
@@ -131,7 +142,7 @@ namespace xe_assets
         float animation_time = 0.0f;
 
         aiAnimation* activeAnimation;
-        vertex_array va;
+        VertexArray va;
 
         void set_active_animation(uint32_t anim_index)
         {
@@ -154,17 +165,5 @@ namespace xe_assets
 
         void transformBones(float dt);
         void updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform = glm::mat4(1.0f));
-    };
-
-
-    class Animation
-    {
-        std::string name;
-        float duration = 0.0f;
-        float animation_speed = 0.75f;
-        float animation_time = 0.0f;
-        float ticks_per_second = 0.0f;
-
-        bool is_playing = true;
     };
 }

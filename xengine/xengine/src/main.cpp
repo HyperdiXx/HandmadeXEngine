@@ -48,7 +48,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     xe_platform::open_console();
 #endif
 
-    xe_config::config_data cd = {};
+    xe_config::ConfigData cd = {};
 
     const char* config_filename = "config.txt";
     FILE *config = fopen(config_filename, "r");
@@ -81,40 +81,39 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     }
 
     xe_platform::win32_window_state& win_state = xe_platform::get_window_state();
-    application::application_state *current_app_state = application::getAppState();
+    application::ApplicationState *current_app_state = application::getAppState();
 
 #ifdef GAPI_GL
 
     application::loadState();
 
-    xe_scene::scene new_scene = xe_scene::create_scene("TestScene");
-    xe_scene::scene pbr_scene = xe_scene::create_scene("PBRScene");
+    xe_scene::Scene new_scene = xe_scene::createScene("TestScene");
+    xe_scene::Scene pbr_scene = xe_scene::createScene("PBRScene");
 
-    xe_scene::load_test_scene(&new_scene);
-    xe_scene::load_spheres_scene(&pbr_scene);
+    xe_scene::loadTestScene(&new_scene);
+    xe_scene::loadSpheresScene(&pbr_scene);
     application::setActiveScene(&new_scene);
 
-    layer *gui = new gui_layer();
-
+    Layer *gui = new GUILayer();
     new_scene.layers.push_back(gui);
 
-    render_pass *render_pass_2D = new render_pass2D();
+    RenderPass *render_pass_2D = new RenderPass2D();
     render_pass_2D->init();
 
-    xe_render::set_render_pass(render_pass_2D);
+    xe_render::setRenderPass(render_pass_2D);
 
-    render_pass3D *main_render_pass = new render_pass3D();
+    RenderPass3D *main_render_pass = new RenderPass3D();
     main_render_pass->init();
     main_render_pass->set_scene(&current_app_state->active_scene);
 
-    gamma_correction_pass gamma_correction = {};
+    GammaCorrectionPass gamma_correction = {};
     gamma_correction.init();
 
-    shadow_map_pass shadow_pass = {};
+    ShadowMapPass shadow_pass = {};
     shadow_pass.init();
-    shadow_pass.set_scene(&current_app_state->active_scene);
-
-    pbr_pass pbr_setup = {};
+    shadow_pass.setScene(&current_app_state->active_scene);
+ 
+    PbrPass pbr_setup = {};
     pbr_setup.init();
 
     pbr_scene.passes.push_back(&pbr_setup);
@@ -127,9 +126,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 #endif
 
     //------------------------------------------------------------//
-   
-    graphics_device *device = xe_render::get_device();
-    device->clear_color(0.1f, 0.1f, 0.1f, 1.0f);
+    GraphicsDevice *device = xe_render::getDevice();
+    device->clearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
     using namespace xe_render;
 
@@ -145,7 +143,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
         application::gameUpdate(current_app_state->delta_time);
 
-        device->start_execution();
+        device->startExecution();
 
         //shadow_pass.render();
 
@@ -158,9 +156,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         main_render_pass->update(current_app_state->delta_time);
         main_render_pass->render();
 
-        texture2D pass_texture = main_render_pass->get_color_texture();
+        Texture2D pass_texture = main_render_pass->get_color_texture();
         
-        gamma_correction.set_color_texture(&pass_texture);
+        gamma_correction.setColorTexture(&pass_texture);
         gamma_correction.render();
 
         //pbr_setup.update(current_app_state->delta_time);
@@ -169,11 +167,11 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         render_pass_2D->update(current_app_state->delta_time);
         render_pass_2D->render();
         
-        xe_scene::draw_scene_layers(&new_scene);
+        xe_scene::drawSceneLayers(&new_scene);
 
-        device->check_error();
+        device->checkError();
 
-        device->end_execution();
+        device->endExecution();
 
         ++current_app_state->frames_elapsed;
 

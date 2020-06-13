@@ -11,34 +11,34 @@
 
 namespace xe_graphics
 {
-    class graphics_device;
+    class GraphicsDevice;
 
-    struct texture2D
+    struct Texture2D
     {
         uint32 id;
         bool32 is_valid;
-        texture_desc desc;
+        TextureDesc desc;
     };
 
-    struct shader
+    struct Shader
     {
         uint32 id;
     };
    
-    struct index_buffer
+    struct IndexBuffer
     {
         uint32 id;
         uint32 count;
         uint32 *data;
     };
 
-    struct framebuffer
+    struct Framebuffer
     {
         uint32 fbo_id;
         uint32 rb_id;
-        std::vector<texture2D*> color_textures;
-        texture2D *depth_texture;
-        texture2D *stencil_texture;
+        std::vector<Texture2D*> color_textures;
+        Texture2D *depth_texture;
+        Texture2D *stencil_texture;
         std::vector<GLenum> buffers;
     };
 
@@ -58,21 +58,21 @@ namespace xe_graphics
         Mat4x4
     };
 
-    struct buffer_element
+    struct BufferElement
     {
         std::string name; // own string impl 
         ElementType type;
         uint32 size;
         uint32 offset = 0;
         
-        buffer_element(const std::string& name , ElementType type)
+        BufferElement(const std::string& name , ElementType type)
         {
             this->name = name;
             this->type = type;
-            this->size = type_sizeof(type);
+            this->size = typeSizeof(type);
         }
 
-        uint32 type_sizeof(ElementType type)
+        uint32 typeSizeof(ElementType type)
         {
             switch (type)
             {
@@ -105,7 +105,7 @@ namespace xe_graphics
             return 0;
         }
 
-        uint32 element_type_count()
+        uint32 elementTypeCount()
         {
             switch (type)
             {
@@ -136,58 +136,58 @@ namespace xe_graphics
         }
     };
 
-    struct buffer_layout
+    struct BufferLayout
     {
-        std::vector<buffer_element> elements;
+        std::vector<BufferElement> elements;
         uint32 stride = 0;
     };
 
-    struct vertex_buffer
+    struct VertexBuffer
     {
         uint32 id;
         uint32 element_count;
-        buffer_layout layout;
+        BufferLayout layout;
         void *data;
     };
    
-    struct texture_wrapper
+    struct TextureWrapper
     {
-        texture2D *texture = nullptr;
+        Texture2D *texture = nullptr;
         std::string path;
         std::string type;
     };
 
-    struct vertex_array
+    struct VertexArray
     {
         uint32 id;
         uint32 ibuffer_index = 0;
-        std::vector<vertex_buffer*> buffers;
-        index_buffer *ib;
+        std::vector<VertexBuffer*> buffers;
+        IndexBuffer *ib;
     };
 
-    struct quad
+    struct Quad
     {
-        xe_graphics::vertex_array *vertex_array;
+        xe_graphics::VertexArray *vertex_array;
     };
 
-    struct line
+    struct Line
     {
         uint32 vertex_count;        
-        xe_graphics::vertex_array *va;
+        xe_graphics::VertexArray *va;
         glm::vec3 color;
     };
 
-    struct sphere
+    struct Sphere
     {
-        xe_graphics::vertex_array *vertex_array;
+        xe_graphics::VertexArray *vertex_array;
     };
 
-    struct cube
+    struct Cube
     {
-        xe_graphics::vertex_array *vertex_array;
+        xe_graphics::VertexArray *vertex_array;
     };
 
-    struct character
+    struct Character
     {
         GLuint     texture_id;
         glm::ivec2 size;
@@ -195,31 +195,31 @@ namespace xe_graphics
         GLuint     advance;
     };
 
-    struct text
+    struct Text
     {
-        quad *q;
-        texture2D *texture;
+        Quad *q;
+        Texture2D *texture;
     };
 
-    struct cubemap
+    struct Cubemap
     {
         uint32 id;
-        std::vector<texture2D*> face_textures;
+        std::vector<Texture2D*> face_textures;
     };
 
-    struct skybox
+    struct Skybox
     {
-        vertex_array *va;
-        vertex_buffer *vb;
-        cubemap *cubemap;
+        VertexArray *va;
+        VertexBuffer *vb;
+        Cubemap *cubemap;
     };
 
-    struct shadow_map
+    struct ShadowMap
     {
         uint32 w;
         uint32 h;
         glm::mat4 light_projection_matrix = glm::mat4(1.0f);
-        framebuffer depth_fbo;
+        Framebuffer depth_fbo;
     };
 }
 #endif

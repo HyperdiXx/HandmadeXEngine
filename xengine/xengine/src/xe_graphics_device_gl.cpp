@@ -212,7 +212,7 @@ namespace xe_graphics
         return pixel_format_descriptor;
     }
 
-    graphics_device_gl::graphics_device_gl(HWND window_handle, bool32 vsync, bool32 fullscreen)
+    GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 fullscreen)
     {
         this->fullscreen = fullscreen;
         this->vsync = vsync;
@@ -304,18 +304,18 @@ namespace xe_graphics
         ReleaseDC(window_handle, dc);
     }
 
-    graphics_device_gl::~graphics_device_gl()
+    GraphicsDeviceGL::~GraphicsDeviceGL()
     {
 
     }
 
-    void graphics_device_gl::clear(int flags)
+    void GraphicsDeviceGL::clear(int flags)
     {
         glClearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
         glClear(flags);
     }
 
-    void graphics_device_gl::clear_color(real32 r, real32 g, real32 b, real32 a)
+    void GraphicsDeviceGL::clearColor(real32 r, real32 g, real32 b, real32 a)
     {
         clear_color_v[0] = r;
         clear_color_v[1] = g;
@@ -323,61 +323,61 @@ namespace xe_graphics
         clear_color_v[3] = a;
     }
 
-    void graphics_device_gl::set_viewport(int32 x, int32 y, int32 width, int32 height)
+    void GraphicsDeviceGL::setViewport(int32 x, int32 y, int32 width, int32 height)
     {
         glViewport(x, y, width, height);
     }
 
     // @ Store all stuff in context state  like dx
 
-    void graphics_device_gl::enable(int type)
+    void GraphicsDeviceGL::enable(int type)
     {
         glEnable(type);
     }
 
-    void graphics_device_gl::disable(int type)
+    void GraphicsDeviceGL::disable(int type)
     {
         glDisable(type);
     }
     
-    void graphics_device_gl::set_blend_func(int src, int dst)
+    void GraphicsDeviceGL::setBlendFunc(int src, int dst)
     {
         glBlendFunc(src, dst);
     }
 
-    void graphics_device_gl::set_depth_func(int type)
+    void GraphicsDeviceGL::setDepthFunc(int type)
     {
         glDepthFunc(type);
     }
 
-    void graphics_device_gl::set_cull_mode(int type)
+    void GraphicsDeviceGL::setCullMode(int type)
     {
         glCullFace(type);
     }
 
-    void graphics_device_gl::set_depth(bool32 type)
+    void GraphicsDeviceGL::setDepth(bool32 type)
     {
         glDepthMask(type);
     }
 
-    void graphics_device_gl::set_line_width(uint32 line_width)
+    void GraphicsDeviceGL::setLineWidth(uint32 line_width)
     {
         glLineWidth(line_width);
     }
 
-    void graphics_device_gl::draw_array(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
+    void GraphicsDeviceGL::drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
     {
         uint32 gl_primitive_type = convert_primitive_type(mode);
         glDrawArrays(gl_primitive_type, first, count);
     }
 
-    void graphics_device_gl::draw_indexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind)
+    void GraphicsDeviceGL::drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind)
     {
         uint32 gl_primitive_type = convert_primitive_type(mode);
         glDrawElements(gl_primitive_type, count, type, ind);
     }
 
-    void graphics_device_gl::activate_bind_texture(TEXTURE_TYPE type, const texture2D *texture)
+    void GraphicsDeviceGL::activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture)
     {
         if (last_bound_unit_texture != texture->id)
         {
@@ -388,7 +388,7 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::activate_bind_texture(TEXTURE_TYPE type, const cubemap *texture)
+    void GraphicsDeviceGL::activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture)
     {
         if (last_bound_unit_texture != texture->id)
         {
@@ -399,12 +399,12 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::activate_texture(uint32 index)
+    void GraphicsDeviceGL::activateTexture(uint32 index)
     {
         glActiveTexture(GL_TEXTURE0 + index);
     }
 
-    void graphics_device_gl::bind_texture(TEXTURE_TYPE type, const texture2D *texture)
+    void GraphicsDeviceGL::bindTexture(TEXTURE_TYPE type, const Texture2D *texture)
     {
         if (last_bound_unit_texture != texture->id)
         {
@@ -414,7 +414,7 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::bind_buffer(const vertex_buffer *vb)
+    void GraphicsDeviceGL::bindBuffer(const VertexBuffer *vb)
     {
         if (last_bound_unit_vbuffer != vb->id)
         {
@@ -423,7 +423,7 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::bind_buffer(const index_buffer *ib)
+    void GraphicsDeviceGL::bindBuffer(const IndexBuffer *ib)
     {
         if (last_bound_unit_ibuffer != ib->id)
         {
@@ -432,16 +432,16 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::bind_shader(const shader *shader)
+    void GraphicsDeviceGL::bindShader(const Shader *Shader)
     {
-        if (last_bound_unit_shader != shader->id)
+        if (last_bound_unit_shader != Shader->id)
         {
-            glUseProgram(shader->id);
-            last_bound_unit_shader = shader->id;
+            glUseProgram(Shader->id);
+            last_bound_unit_shader = Shader->id;
         }
     }
 
-    void graphics_device_gl::bind_vertex_array(const vertex_array *va)
+    void GraphicsDeviceGL::bindVertexArray(const VertexArray *va)
     {
         if (last_bound_unit_vao != va->id)
         {
@@ -450,7 +450,7 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::bind_framebuffer(const framebuffer *fbo)
+    void GraphicsDeviceGL::bindFramebuffer(const Framebuffer *fbo)
     {
         if (last_bound_unit_fbo != fbo->fbo_id)
         {
@@ -459,22 +459,22 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::bind_renderbuffer(const framebuffer *fbo)
+    void GraphicsDeviceGL::bindRenderbuffer(const Framebuffer *fbo)
     {
         glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb_id);
     }
 
-    void graphics_device_gl::bind_for_read(const framebuffer *fbo)
+    void GraphicsDeviceGL::bindForRead(const Framebuffer *fbo)
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->fbo_id);
     }
 
-    void graphics_device_gl::bind_for_write(const framebuffer *fbo)
+    void GraphicsDeviceGL::bindForWrite(const Framebuffer *fbo)
     {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->fbo_id);
     }
 
-    void graphics_device_gl::add_color_texture2D(texture2D *texture, uint32 color_attachment_id, framebuffer *fbo)
+    void GraphicsDeviceGL::addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo)
     {
         if (color_attachment_id > MAX_COLOR_ATT)
             return;
@@ -482,92 +482,92 @@ namespace xe_graphics
         GLuint type_of_tex = GL_COLOR_ATTACHMENT0 + color_attachment_id;
 
         fbo->color_textures.push_back(texture);
-        texture2D *color_texture = fbo->color_textures[color_attachment_id];
+        Texture2D *color_texture = fbo->color_textures[color_attachment_id];
 
-        set_texture2D_fbo(type_of_tex, TEXTURE_TYPE::COLOR, texture);
+        setTexture2DFbo(type_of_tex, TEXTURE_TYPE::COLOR, texture);
         fbo->buffers.push_back(type_of_tex);
         glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());
     }
 
-    void graphics_device_gl::add_depth_texture2D(texture2D *depth, framebuffer *fbo)
+    void GraphicsDeviceGL::addDepthTexture2D(Texture2D *depth, Framebuffer *fbo)
     {
         fbo->depth_texture = depth;
-        bind_renderbuffer(fbo);
-        set_depth_buffer_attachment(fbo);
+        bindRenderbuffer(fbo);
+        setDepthBufferAttachment(fbo);
     }
 
-    void graphics_device_gl::add_depth_texture2D(uint32 w, uint32 h, framebuffer *fbo)
+    void GraphicsDeviceGL::addDepthTexture2D(uint32 w, uint32 h, Framebuffer *fbo)
     {
         if (!fbo->depth_texture)
         {
-            fbo->depth_texture = new texture2D();
+            fbo->depth_texture = new Texture2D();
             fbo->depth_texture->desc.width = w;
             fbo->depth_texture->desc.height = h;
             fbo->depth_texture->desc.dimension = TEXTURE_2D;
             fbo->depth_texture->desc.texture_type = DEPTH;
         
-            create_texture(fbo->depth_texture);
-            bind_texture(TEXTURE_TYPE::DEPTH, fbo->depth_texture);
-            load_texture_gpu(TEXTURE_TYPE::COLOR, w, h, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+            createTexture(fbo->depth_texture);
+            bindTexture(TEXTURE_TYPE::DEPTH, fbo->depth_texture);
+            loadTextureGpu(TEXTURE_TYPE::COLOR, w, h, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
             
-            set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
-            set_texture_sampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+            setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+            setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
             
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo->depth_texture->id, 0);
         }
 
-        bind_renderbuffer(fbo);
-        set_depth_buffer_attachment(fbo);
+        bindRenderbuffer(fbo);
+        setDepthBufferAttachment(fbo);
     }
 
-    void graphics_device_gl::set_depth_buffer_attachment(const framebuffer *fbo)
+    void GraphicsDeviceGL::setDepthBufferAttachment(const Framebuffer *fbo)
     {
-        set_renderbuffer(GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
-        set_framebuffer_renderbuffer_attachment(fbo);
+        setRenderbuffer(GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
+        setFramebufferRenderbufferAttachment(fbo);
     }
 
-    void graphics_device_gl::set_depth_buffer_attachment(uint32 w, uint32 h, const framebuffer *fbo)
+    void GraphicsDeviceGL::setDepthBufferAttachment(uint32 w, uint32 h, const Framebuffer *fbo)
     {
-        set_renderbuffer(GL_DEPTH_COMPONENT32, w, h);
-        set_framebuffer_renderbuffer_attachment(fbo);
+        setRenderbuffer(GL_DEPTH_COMPONENT32, w, h);
+        setFramebufferRenderbufferAttachment(fbo);
     }
 
-    texture2D& graphics_device_gl::get_texture(uint32 number, const framebuffer *fbo)
+    Texture2D& GraphicsDeviceGL::getTexture(uint32 number, const Framebuffer *fbo)
     {
         if (fbo && number >= 0 <= MAX_COLOR_ATT)
             return *fbo->color_textures[number];
         // @Add return;
     }
 
-    void graphics_device_gl::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, texture2D *texture)
+    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture)
     {
         uint32 tex_t = convert_texture_type_gl(tex_type);
         glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t, texture->id, 0);
     }
 
-    void graphics_device_gl::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D * texture)
+    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture)
     {
         uint32 tex_t = convert_texture_type_gl(tex_type);
         glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, 0);
     }
 
-    void graphics_device_gl::set_texture2D_fbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, texture2D * texture, uint32 mip)
+    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture, uint32 mip)
     {
         uint32 tex_t = convert_texture_type_gl(tex_type);
         glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, mip);
     }
 
-    void graphics_device_gl::set_renderbuffer(int depth_component, uint32 width, uint32 height)
+    void GraphicsDeviceGL::setRenderbuffer(int depth_component, uint32 width, uint32 height)
     {
         glRenderbufferStorage(GL_RENDERBUFFER, depth_component, width, height);
     }
 
-    void graphics_device_gl::set_framebuffer_renderbuffer_attachment(const framebuffer *fbo)
+    void GraphicsDeviceGL::setFramebufferRenderbufferAttachment(const Framebuffer *fbo)
     {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
     }
 
-    void graphics_device_gl::check_framebuffer()
+    void GraphicsDeviceGL::checkFramebuffer()
     {
         GLuint error = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -578,118 +578,118 @@ namespace xe_graphics
             switch (error)
             {
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+                xe_utility::error("GL_Framebuffer_INCOMPLETE_ATTACHMENT");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+                xe_utility::error("GL_Framebuffer_INCOMPLETE_MISSING_ATTACHMENT");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+                xe_utility::error("GL_Framebuffer_INCOMPLETE_DRAW_BUFFER");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-                xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
+                xe_utility::error("GL_Framebuffer_INCOMPLETE_LAYER_TARGETS");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+                xe_utility::error("GL_Framebuffer_INCOMPLETE_READ_BUFFER");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-                xe_utility::error("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
+                xe_utility::error("GL_Framebuffer_INCOMPLETE_MULTISAMPLE");
                 break;
             }
         }
     }
 
-    void graphics_device_gl::unbind_texture(TEXTURE_TYPE texture)
+    void GraphicsDeviceGL::unbindTexture(TEXTURE_TYPE texture)
     {
         uint32 gl_texture_type = convert_texture_type_gl(texture);
         glBindTexture(gl_texture_type, 0);
         last_bound_unit_texture = 0;
     }
 
-    void graphics_device_gl::unbind_vertex_array()
+    void GraphicsDeviceGL::unbindVertexArray()
     {
         glBindVertexArray(0);
         last_bound_unit_vao = 0;
     }
 
-    void graphics_device_gl::unbind_shader()
+    void GraphicsDeviceGL::unbindShader()
     {
         glUseProgram(0);
         last_bound_unit_shader = 0;
     }
 
-    void graphics_device_gl::unbind_framebuffer()
+    void GraphicsDeviceGL::unbindFramebuffer()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         last_bound_unit_fbo = 0;
     }
 
-    void graphics_device_gl::set_bool(const std::string & name, bool value, shader *shd)
+    void GraphicsDeviceGL::setBool(const std::string & name, bool value, Shader *shd)
     {
         glUniform1i(glGetUniformLocation(shd->id, name.c_str()), (int)value);
     }
 
-    void graphics_device_gl::set_int(const std::string & name, int32 value, shader* shd)
+    void GraphicsDeviceGL::setInt(const std::string & name, int32 value, Shader* shd)
     {
         glUniform1i(glGetUniformLocation(shd->id, name.c_str()), value);
     }
 
-    void graphics_device_gl::set_float(const std::string & name, real32 value, shader *shd)
+    void GraphicsDeviceGL::setFloat(const std::string & name, real32 value, Shader *shd)
     {
         glUniform1f(glGetUniformLocation(shd->id, name.c_str()), value);
     }
 
-    void graphics_device_gl::set_vec2(const std::string & name, const glm::vec2& value, shader *shd)
+    void GraphicsDeviceGL::setVec2(const std::string & name, const glm::vec2& value, Shader *shd)
     {
         glUniform2fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
     }
 
-    void graphics_device_gl::set_vec2(const std::string & name, real32 x, real32 y, shader *shd)
+    void GraphicsDeviceGL::setVec2(const std::string & name, real32 x, real32 y, Shader *shd)
     {
         glUniform2f(glGetUniformLocation(shd->id, name.c_str()), x, y);
     }
 
-    void graphics_device_gl::set_vec3(const std::string & name, const glm::vec3& value, shader *shd)
+    void GraphicsDeviceGL::setVec3(const std::string & name, const glm::vec3& value, Shader *shd)
     {
         glUniform3fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
     }
 
-    void graphics_device_gl::set_vec3(const std::string & name, real32 x, real32 y, real32 z, shader *shd)
+    void GraphicsDeviceGL::setVec3(const std::string & name, real32 x, real32 y, real32 z, Shader *shd)
     {
         glUniform3f(glGetUniformLocation(shd->id, name.c_str()), x, y, z);
     }
 
-    void graphics_device_gl::set_vec4(const std::string & name, const glm::vec4 & value, shader *shd)
+    void GraphicsDeviceGL::setVec4(const std::string & name, const glm::vec4 & value, Shader *shd)
     {
         glUniform4fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
     }
 
-    void graphics_device_gl::set_vec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, shader *shd)
+    void GraphicsDeviceGL::setVec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, Shader *shd)
     {
         glUniform4f(glGetUniformLocation(shd->id, name.c_str()), x, y, z, w);
     }
 
-    void graphics_device_gl::set_mat2(const std::string &name, const glm::mat2 &mat, shader *shd)
+    void GraphicsDeviceGL::setMat2(const std::string &name, const glm::mat2 &mat, Shader *shd)
     {
         glUniformMatrix2fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    void graphics_device_gl::set_mat3(const std::string &name, const glm::mat3 &mat, shader *shd)
+    void GraphicsDeviceGL::setMat3(const std::string &name, const glm::mat3 &mat, Shader *shd)
     {
         glUniformMatrix3fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    void graphics_device_gl::set_mat4(const std::string &name, const glm::mat4 &mat, shader *shd)
+    void GraphicsDeviceGL::setMat4(const std::string &name, const glm::mat4 &mat, Shader *shd)
     {
         glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    bool32 graphics_device_gl::create_texture(texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture(Texture2D *texture)
     {
-        return create_texture(1, texture);
+        return createTexture(1, texture);
     }
 
-    bool32 graphics_device_gl::create_texture(uint32 count, texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture(uint32 count, Texture2D *texture)
     {
         assert(count > 0);
         glGenTextures(count, &texture->id);
@@ -697,27 +697,27 @@ namespace xe_graphics
         return true;
     }
 
-    bool32 graphics_device_gl::create_texture2D(const char *path, texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, Texture2D *texture)
     {
-        return create_texture2D(path, nullptr, texture);
+        return createTexture2D(path, nullptr, texture);
     }
 
-    bool32 graphics_device_gl::create_texture2D(const char *path, TEXTURE_TYPE tex_type, texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, TEXTURE_TYPE tex_type, Texture2D *texture)
     {
-        return create_texture2D(path, nullptr, tex_type, false, texture);
+        return createTexture2D(path, nullptr, tex_type, false, texture);
     }
 
-    bool32 graphics_device_gl::create_texture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, Texture2D *texture)
     {
-        return create_texture2D(path, nullptr, tex_type, 0, gen_mip, texture);
+        return createTexture2D(path, nullptr, tex_type, 0, gen_mip, texture);
     }
 
-    bool32 graphics_device_gl::create_texture2D(const char *path, const char *dir, texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char *dir, Texture2D *texture)
     {
-        return create_texture2D(path, dir, TEXTURE_TYPE::COLOR, true, texture);
+        return createTexture2D(path, dir, TEXTURE_TYPE::COLOR, true, texture);
     }
 
-    bool32 graphics_device_gl::create_texture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, texture2D* texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, Texture2D* texture)
     {
         const char *path_res;
 
@@ -742,10 +742,10 @@ namespace xe_graphics
         case xe_graphics::LUT:
         case xe_graphics::CUBEMAP:
         case xe_graphics::DEPTH:
-            image = xe_core::load_texture_from_disc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
+            image = xe_core::loadTextureFromDisc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
             break;
         case xe_graphics::HDR:
-            image = xe_core::load_texturef_from_disc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
+            image = xe_core::loadTextureFloatFromDisc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
             break;
         default:
             break;
@@ -774,41 +774,41 @@ namespace xe_graphics
             data_format = GL_RGBA;
         }
 
-        create_texture(texture);
-        bind_texture(type, texture);
+        createTexture(texture);
+        bindTexture(type, texture);
 
         switch (type)
         {
         case xe_graphics::COLOR:
         case xe_graphics::LUT:
             glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-            load_texture_gpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
+            loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
 
-            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
-            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
 
-            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
-            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
 
             break;
         case xe_graphics::GREYSCALE:
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-            load_texture_gpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
-            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
-            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+            loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
+            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
 
-            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
-            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
             break;
         case xe_graphics::HDR:
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
             
-            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
-            set_texture_wrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
 
-            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
-            set_texture_sampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
             break;
         case xe_graphics::CUBEMAP:
@@ -822,16 +822,16 @@ namespace xe_graphics
 
 
         if (generate_mipmap)
-            generate_texture_mipmap(type);
+            generateTextureMipmap(type);
 
-        unbind_texture(type);
+        unbindTexture(type);
 
-        xe_core::delete_data(image);
+        xe_core::deleteData(image);
 
         return true;
     }
 
-    bool32 graphics_device_gl::create_texture2D(uint32 width, uint32 height, texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(uint32 width, uint32 height, Texture2D *texture)
     {
         texture->desc.width = width;
         texture->desc.height = height;
@@ -850,15 +850,15 @@ namespace xe_graphics
         return true;
     }
 
-    bool32 graphics_device_gl::create_texture2D(const char *path, const char *dir, TEXTURE_TYPE type, bool32 generate_mipmap, texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char *dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D *texture)
     {
-        return create_texture2D(path, dir, type, 0, generate_mipmap, texture);
+        return createTexture2D(path, dir, type, 0, generate_mipmap, texture);
     }
 
-    bool32 graphics_device_gl::create_shader(const char *vertex_code, const char *fragment_code, shader *shd)
+    bool32 GraphicsDeviceGL::createShader(const char *vertex_code, const char *fragment_code, Shader *shd)
     {
-        std::string file_vs = xe_core::read_file_string(vertex_code);
-        std::string file_fs = xe_core::read_file_string(fragment_code);
+        std::string file_vs = xe_core::readFileString(vertex_code);
+        std::string file_fs = xe_core::readFileString(fragment_code);
 
         const GLchar *vs_file_code = (GLchar*)file_vs.c_str();
         const GLchar *fs_file_code = (GLchar*)file_fs.c_str();
@@ -885,7 +885,7 @@ namespace xe_graphics
             GLint buflength;
             glGetShaderInfoLog(vertex, length, &buflength, buffer);
 
-            xe_utility::error("Vertex shader: " + std::string(vertex_code));
+            xe_utility::error("Vertex Shader: " + std::string(vertex_code));
             xe_utility::error(buffer);
 
             delete[] buffer;
@@ -905,7 +905,7 @@ namespace xe_graphics
             GLint buflength;
             glGetShaderInfoLog(fragment, length, &buflength, buffer);
 
-            xe_utility::error("Fragment shader: " + std::string(fragment_code));
+            xe_utility::error("Fragment Shader: " + std::string(fragment_code));
             xe_utility::error(buffer);
 
             delete[] buffer;
@@ -919,27 +919,27 @@ namespace xe_graphics
         glLinkProgram(shd->id);
         glValidateProgram(shd->id);
 
-        destroy_shader(vertex);
-        destroy_shader(fragment);
+        destroyShader(vertex);
+        destroyShader(fragment);
 
         return true;
     }
 
-    bool32 graphics_device_gl::create_framebuffer(uint32 count, framebuffer *fbo)
+    bool32 GraphicsDeviceGL::createFramebuffer(uint32 count, Framebuffer *fbo)
     {
         glGenFramebuffers(count, &fbo->fbo_id);
         
         return true;
     }
 
-    bool32 graphics_device_gl::create_render_buffer(uint32 count, framebuffer *fbo)
+    bool32 GraphicsDeviceGL::createRenderbuffer(uint32 count, Framebuffer *fbo)
     {
         glGenRenderbuffers(count, &fbo->rb_id);
 
         return true;
     }
 
-    bool32 graphics_device_gl::create_vertex_buffer(void *vertices, uint32 size, DRAW_TYPE draw_type, vertex_buffer *vb)
+    bool32 GraphicsDeviceGL::createVertexBuffer(void *vertices, uint32 size, DRAW_TYPE draw_type, VertexBuffer *vb)
     {
         vb->data = vertices;
 
@@ -956,7 +956,7 @@ namespace xe_graphics
         return false;
     }
 
-    bool32 graphics_device_gl::create_index_buffer(uint32 *indices, uint32 size, index_buffer *ib)
+    bool32 GraphicsDeviceGL::createIndexBuffer(uint32 *indices, uint32 size, IndexBuffer *ib)
     {
         ib->data = indices;
         ib->count = size;
@@ -971,14 +971,14 @@ namespace xe_graphics
         return false;
     }
 
-    bool32 graphics_device_gl::create_vertex_array(vertex_array *va)
+    bool32 GraphicsDeviceGL::createVertexArray(VertexArray *va)
     {
         glGenVertexArrays(1, &va->id);
 
         return true;
     }
 
-    bool32 graphics_device_gl::create_buffer_layout(std::initializer_list<buffer_element>& element, buffer_layout *buf_layout)
+    bool32 GraphicsDeviceGL::createBufferLayout(std::initializer_list<BufferElement>& element, BufferLayout *buf_layout)
     {
         buf_layout->elements = element;
 
@@ -996,18 +996,18 @@ namespace xe_graphics
         return true;
     }
 
-    bool32 graphics_device_gl::set_vertex_buffer_layout(vertex_buffer *vb, buffer_layout *buf_layout)
+    bool32 GraphicsDeviceGL::setVertexBufferLayout(VertexBuffer *vb, BufferLayout *buf_layout)
     {
         vb->layout = *buf_layout;
 
         return true;
     }
 
-    bool32 graphics_device_gl::add_vertex_buffer(vertex_array *va, vertex_buffer *vb)
+    bool32 GraphicsDeviceGL::addVertexBuffer(VertexArray *va, VertexBuffer *vb)
     {
-        bind_vertex_array(va);
+        bindVertexArray(va);
         if (vb != nullptr)
-            bind_buffer(vb);
+            bindBuffer(vb);
 
         const auto& buffer_layout = vb->layout;
 
@@ -1015,7 +1015,7 @@ namespace xe_graphics
         {
             auto cur_element = buffer_layout.elements.at(i);
             glEnableVertexAttribArray(va->ibuffer_index);
-            glVertexAttribPointer(va->ibuffer_index, cur_element.element_type_count(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (void*)cur_element.offset);
+            glVertexAttribPointer(va->ibuffer_index, cur_element.elementTypeCount(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (void*)cur_element.offset);
             va->ibuffer_index++;
         }
 
@@ -1024,13 +1024,13 @@ namespace xe_graphics
         return false;
     }
 
-    bool32 graphics_device_gl::set_index_buffer(vertex_array *va, index_buffer *ib)
+    bool32 GraphicsDeviceGL::setIndexBuffer(VertexArray *va, IndexBuffer *ib)
     {
         // assert 
         if (ib != nullptr)
         {
-            bind_vertex_array(va);
-            bind_buffer(ib);
+            bindVertexArray(va);
+            bindBuffer(ib);
             va->ib = ib;
             return true;
         }
@@ -1038,7 +1038,7 @@ namespace xe_graphics
         return false;
     }
 
-    void graphics_device_gl::set_texture_wrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler)
+    void GraphicsDeviceGL::setTextureWrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler)
     {
         uint32 gl_texture_type = convert_texture_type_gl(type);
         uint32 gl_wrapping_axis = convert_texture_wrapping_axis_type_gl(wrapping_axis);
@@ -1046,7 +1046,7 @@ namespace xe_graphics
         glTexParameteri(gl_texture_type, gl_wrapping_axis, gl_wrapping);
     }
 
-    void graphics_device_gl::set_texture_sampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler)
+    void GraphicsDeviceGL::setTextureSampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler)
     {
         uint32 gl_texture_type = convert_texture_type_gl(type);
         uint32 gl_texture_filter = convert_texture_filter_operation_gl(filter_operation);
@@ -1054,72 +1054,72 @@ namespace xe_graphics
         glTexParameteri(gl_texture_type, gl_texture_filter, gl_texture_sampling);
     }
 
-    void graphics_device_gl::load_texture_gpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void *image)
+    void GraphicsDeviceGL::loadTextureGpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void *image)
     {
         uint32 gl_texture_type = convert_texture_type_gl(texture_t);
         glTexImage2D(gl_texture_type, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
     }
 
     // @Special cubemap
-    void graphics_device_gl::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, const void *image)
+    void GraphicsDeviceGL::loadTextureGpu(int texture_t, int width, int height, int internal_format, int data_format, const void *image)
     {
         glTexImage2D(texture_t, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
     }
 
-    void graphics_device_gl::load_texture_gpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void * image)
+    void GraphicsDeviceGL::loadTextureGpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void * image)
     {
         glTexImage2D(texture_t, 0, internal_format, width, height, 0, data_format, data_type, image);
     }
 
-    void graphics_device_gl::generate_texture_mipmap(TEXTURE_TYPE texture_t)
+    void GraphicsDeviceGL::generateTextureMipmap(TEXTURE_TYPE texture_t)
     {
         uint32 gl_t = convert_texture_type_gl(texture_t);
         glGenerateMipmap(gl_t);
     }
 
-    void graphics_device_gl::destroy_texture2D(texture2D *tex)
+    void GraphicsDeviceGL::destroyTexture2D(Texture2D *tex)
     {
         if (!tex->is_valid)
             return;
         glDeleteTextures(1, &tex->id);
     }
 
-    void graphics_device_gl::destroy_framebuffer(framebuffer *fbo)
+    void GraphicsDeviceGL::destroyFramebuffer(Framebuffer *fbo)
     {
         glDeleteFramebuffers(1, &fbo->fbo_id);
     }
 
-    void graphics_device_gl::destroy_shader(uint32 id)
+    void GraphicsDeviceGL::destroyShader(uint32 id)
     {
         glDeleteShader(id);
     }
 
-    void graphics_device_gl::destroy_buffer(vertex_buffer *vb)
+    void GraphicsDeviceGL::destroyBuffer(VertexBuffer *vb)
     {
         glDeleteBuffers(1, &vb->id);
     }
 
-    void graphics_device_gl::destroy_buffer(index_buffer * ib)
+    void GraphicsDeviceGL::destroyBuffer(IndexBuffer * ib)
     {
         glDeleteBuffers(1, &ib->id);
     }
 
-    void graphics_device_gl::set_draw_buffer(uint32 type)
+    void GraphicsDeviceGL::setDrawBuffer(uint32 type)
     {
         glDrawBuffer(type);
     }
 
-    void graphics_device_gl::set_draw_buffers(uint32 count, void *pointer)
+    void GraphicsDeviceGL::setDrawBuffers(uint32 count, void *pointer)
     {
-        glDrawBuffers(2, (uint32*)pointer);
+        glDrawBuffers(count, (uint32*)pointer);
     }
 
-    void graphics_device_gl::set_read_buffer(uint32 type)
+    void GraphicsDeviceGL::setReadBuffer(uint32 type)
     {
         glReadBuffer(type);
     }
 
-    void graphics_device_gl::check_error()
+    void GraphicsDeviceGL::checkError()
     {
         GLenum err;
         while ((err = glGetError()) != GL_NO_ERROR)
@@ -1128,7 +1128,7 @@ namespace xe_graphics
         }
     }
 
-    void graphics_device_gl::load_bindings()
+    void GraphicsDeviceGL::loadBindings()
     {
         if (!gladLoadGL())
             printf("Failed to init OpenGL loader!\n");
@@ -1142,19 +1142,19 @@ namespace xe_graphics
         xe_utility::info(gl_version);
     }
 
-    void graphics_device_gl::unbind_buffer(BUFFER_TYPE type)
+    void GraphicsDeviceGL::unbindBuffer(BUFFER_TYPE type)
     {
         uint32 type_gl = convert_buffer_type_gl(type);
         glBindBuffer(type_gl, 0);
     }
 
-    void graphics_device_gl::start_execution()
+    void GraphicsDeviceGL::startExecution()
     {
-        clear_color(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
+        clearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
         clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void graphics_device_gl::end_execution()
+    void GraphicsDeviceGL::endExecution()
     {       
         SwapBuffers(xe_platform::get_dc());
     }

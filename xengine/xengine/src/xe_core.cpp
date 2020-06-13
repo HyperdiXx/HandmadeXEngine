@@ -14,9 +14,9 @@
 
 namespace xe_core
 {
-    file read_whole_file(const char *file_name)
+    XEFile readWholeFile(const char *file_name)
     {
-        file res = {};
+        XEFile res = {};
 
         FILE *op = fopen(file_name, "rb");
 
@@ -38,7 +38,7 @@ namespace xe_core
         return res;
     }
 
-    std::string read_file_string(const char *file_path)
+    std::string readFileString(const char *file_path)
     {
         std::ifstream file(file_path);
         if (file.fail() || !file.is_open())
@@ -58,21 +58,21 @@ namespace xe_core
         return source;
     }
 
-    unsigned char *load_texture_from_disc(const char *path, int &width, int &height, int &channels, int flag, bool32 flip)
+    unsigned char *loadTextureFromDisc(const char *path, int &width, int &height, int &channels, int flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         stbi_uc* image = stbi_load(path, &width, &height, &channels, flag);
         return image;
     }
 
-    float *load_texturef_from_disc(const char * path, int & width, int & height, int & channels, int flag, bool32 flip)
+    float *loadTextureFloatFromDisc(const char * path, int & width, int & height, int & channels, int flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         real32 *image = stbi_loadf(path, &width, &height, &channels, flag);
         return image;
     }
 
-    void delete_data(void *data)
+    void deleteData(void *data)
     {
         if(data != nullptr)
             stbi_image_free(data);

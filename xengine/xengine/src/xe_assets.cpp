@@ -15,7 +15,7 @@ namespace xe_assets
 {
     static bool32 calculate_tspace;
 
-    glm::mat4 xe_assets::from_ai_to_glm(const aiMatrix4x4 &ai_mat)
+    glm::mat4 xe_assets::fromAiToGlm(const aiMatrix4x4 &ai_mat)
     {
         glm::mat4 res;
 
@@ -42,9 +42,9 @@ namespace xe_assets
         return res;
     }
 
-    std::vector<texture_wrapper> load_textures_from_material(model *mdl, aiMaterial *material, aiTextureType type, std::string texture_type)
+    std::vector<TextureWrapper> loadTexturesFromMaterial(Model *mdl, aiMaterial *material, aiTextureType type, std::string texture_type)
     {
-        std::vector<texture_wrapper> textures;
+        std::vector<TextureWrapper> textures;
         for (uint32 i = 0; i < material->GetTextureCount(type); i++)
         {
             aiString str;
@@ -63,14 +63,14 @@ namespace xe_assets
 
             if (!skip)
             {
-                texture_wrapper texture;
+                TextureWrapper texture;
 
-                xe_graphics::graphics_device *device = xe_render::get_device();
+                xe_graphics::GraphicsDevice *device = xe_render::getDevice();
 
-                texture2D* texture_crt = new texture2D();
+                Texture2D* texture_crt = new Texture2D();
                 texture_crt->desc.dimension = TEXTURE_2D;
 
-                device->create_texture2D(str.C_Str(), mdl->parent_dir.c_str(), texture_crt);
+                device->createTexture2D(str.C_Str(), mdl->parent_dir.c_str(), texture_crt);
 
                 texture.texture = texture_crt;
                 texture.type = texture_type;
@@ -83,7 +83,7 @@ namespace xe_assets
         return textures;
     }
 
-    vertex *get_vertex_type(model *mdl)
+    Vertex *getVertexType(Model *mdl)
     {        
         return mdl->vertex_type;
     }
@@ -135,44 +135,44 @@ namespace xe_assets
         }
     }*/
 
-    void parse_materials(model *m, mesh *mesh, aiMesh *ai_mesh, const aiScene *scene)
+    void parseMaterials(Model *m, Mesh *mesh, aiMesh *ai_mesh, const aiScene *scene)
     {
         aiMaterial* material = scene->mMaterials[ai_mesh->mMaterialIndex];
 
-        std::vector<texture_wrapper> diffuseMaps = load_textures_from_material(m, material, aiTextureType_DIFFUSE, "tex_diff");
+        std::vector<TextureWrapper> diffuseMaps = loadTexturesFromMaterial(m, material, aiTextureType_DIFFUSE, "tex_diff");
         for (uint16 i = 0; i < diffuseMaps.size(); i++)
             mesh->mesh_textures.push_back(diffuseMaps[i]);
 
-        std::vector<texture_wrapper> specularMaps = load_textures_from_material(m, material, aiTextureType_SPECULAR, "tex_spec");
+        std::vector<TextureWrapper> specularMaps = loadTexturesFromMaterial(m, material, aiTextureType_SPECULAR, "tex_spec");
         for (uint16 i = 0; i < specularMaps.size(); i++)
             mesh->mesh_textures.push_back(specularMaps[i]);
 
-        std::vector<texture_wrapper> normalMaps = load_textures_from_material(m, material, aiTextureType_NORMALS, "tex_norm");
+        std::vector<TextureWrapper> normalMaps = loadTexturesFromMaterial(m, material, aiTextureType_NORMALS, "tex_norm");
         for (uint16 i = 0; i < normalMaps.size(); i++)
             mesh->mesh_textures.push_back(normalMaps[i]);
 
-        std::vector<texture_wrapper> height_tex = load_textures_from_material(m, material, aiTextureType_HEIGHT, "tex_height");
+        std::vector<TextureWrapper> height_tex = loadTexturesFromMaterial(m, material, aiTextureType_HEIGHT, "tex_height");
         for (uint16 i = 0; i < height_tex.size(); i++)
             mesh->mesh_textures.push_back(height_tex[i]);
 
         // pbr rough
-        std::vector<texture_wrapper> roughness_tex = load_textures_from_material(m, material, aiTextureType_SHININESS, "tex_roughness");
+        std::vector<TextureWrapper> roughness_tex = loadTexturesFromMaterial(m, material, aiTextureType_SHININESS, "tex_roughness");
         for (uint16 i = 0; i < roughness_tex.size(); i++)
             mesh->mesh_textures.push_back(roughness_tex[i]);
     }
 
-    void mem_cpyvec(aiVector3D & aivec3, glm::vec3 & vec3)
+    void memCpyvec(aiVector3D &aivec3, glm::vec3 &vec3)
     {
         memcpy(&vec3, &aivec3, sizeof(aivec3));
     }
 
-    void mem_cpymatrix(aiMatrix4x4 & aimat, glm::mat4 & mat4)
+    void memCpymatrix(aiMatrix4x4 & aimat, glm::mat4 &mat4)
     {
         memcpy(&mat4, &aimat, sizeof(aimat));
         mat4 = glm::transpose(mat4);
     }
 
-    void calc_weight(uint32 id, real32 weight, glm::ivec4 &bone_id, glm::vec4 &wts)
+    void calcWeight(uint32 id, real32 weight, glm::ivec4 &bone_id, glm::vec4 &wts)
     {
         for (uint16 i = 0; i < 4; i++)
         {
@@ -185,66 +185,66 @@ namespace xe_assets
         }
     }
 
-    void parse_faces(mesh *mesh, aiMesh *aimesh)
+    void parseFaces(Mesh *mesh, aiMesh *aimesh)
     {
         for (uint32 i = 0; i < aimesh->mNumFaces; i++)
         {
             aiFace face = aimesh->mFaces[i];
             for (uint32 j = 0; j < face.mNumIndices; j++)
-                mesh->add_index(face.mIndices[j]);
+                mesh->addIndex(face.mIndices[j]);
         }
     }
 
-    model *parse_static_model(const aiScene *scene, const std::string &path)
+    Model *parseStaticModel(const aiScene *scene, const std::string &path)
     {
-        model *mode = new model();
+        Model *mode = new Model();
 
         if (calculate_tspace)
-            mode->vertex_type = new pos_normal_tb_uv();
+            mode->vertex_type = new PositionNormalTBUV();
         else
-            mode->vertex_type = new pos_normal_uv();
+            mode->vertex_type = new PositionNormalUV();
         
         mode->parent_dir = path.substr(0, path.find_last_of('/'));
-        mode->root = parse_node(mode, scene->mRootNode, scene);
+        mode->root = parseNode(mode, scene->mRootNode, scene);
 
         //Log::info("Static model " + model->root->name + " loaded!");
 
         return mode;
     }
 
-    node *parse_node(model * model, aiNode * ai_node, const aiScene * scene)
+    Node *parseNode(Model *model, aiNode *ai_node, const aiScene *scene)
     {
-        node* cur_node = new node();
+        Node* cur_node = new Node();
         cur_node->name = ai_node->mName.C_Str();
 
         for (uint16 i = 0; i < ai_node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[ai_node->mMeshes[i]];
-            cur_node->add_mesh(parse_mesh(model, mesh, scene));
+            cur_node->addMesh(parseMesh(model, mesh, scene));
         }
 
         for (uint16 i = 0; i < ai_node->mNumChildren; i++)
         {
-            cur_node->add_child(parse_node(model, ai_node->mChildren[i], scene));
+            cur_node->addChild(parseNode(model, ai_node->mChildren[i], scene));
         }
 
         return cur_node;
     }
 
-    mesh *parse_mesh(model *model, aiMesh *ai_mesh, const aiScene *scene)
+    Mesh *parseMesh(Model *model, aiMesh *ai_mesh, const aiScene *scene)
     {
-        mesh* mes = new mesh();
+        Mesh* mes = new Mesh();
         
-        parse_vert(mes, ai_mesh);
-        parse_faces(mes, ai_mesh);
-        parse_materials(model, mes, ai_mesh, scene);
+        parseVert(mes, ai_mesh);
+        parseFaces(mes, ai_mesh);
+        parseMaterials(model, mes, ai_mesh, scene);
 
-        xe_render::create_mesh(mes, model->vertex_type, calculate_tspace);
+        xe_render::createMesh(mes, model->vertex_type, calculate_tspace);
 
         return mes;
     }
 
-    model* xe_assets::load_model_from_file(const std::string &path, bool32 calculate_tb)
+    Model* xe_assets::loadModelFromFile(const std::string &path, bool32 calculate_tb)
     {
         Assimp::Importer importer;
 
@@ -265,7 +265,7 @@ namespace xe_assets
 
         calculate_tspace = calculate_tb;
         
-        model *result = parse_static_model(scene, path);
+        Model *result = parseStaticModel(scene, path);
 
         if(result)
             xe_utility::info("Model " + result->root->name + " was loaded!");
@@ -275,7 +275,7 @@ namespace xe_assets
         return result;
     }
 
-    void parse_vert(mesh *meh, aiMesh *aimesh)
+    void parseVert(Mesh *meh, aiMesh *aimesh)
     {
         meh->vertices_fl.reserve(aimesh->mNumVertices);
         
@@ -337,37 +337,37 @@ namespace xe_assets
         }
     }
 
-    void mesh::add_vertex(pos_normal_uv vertex)
+    void Mesh::addVertex(PositionNormalUV vertex)
     {
         vertices.push_back(vertex);
     }
 
-    void mesh::add_vertex(pos_normal_tb_uv vertex)
+    void Mesh::addVertex(PositionNormalTBUV vertex)
     {
         vertices_tab.push_back(vertex);
     }
 
-    void mesh::add_vertex(real32 vertex)
+    void Mesh::addVertex(real32 vertex)
     {
         vertices_fl.push_back(vertex);
     }
 
-    void mesh::add_index(uint32 ind)
+    void Mesh::addIndex(uint32 ind)
     {
         indices.push_back(ind);
     }
 
-    void node::add_child(node *child)
+    void Node::addChild(Node *child)
     {
         children.push_back(child);
     }
 
-    void node::add_mesh(mesh *msh)
+    void Node::addMesh(Mesh *msh)
     {
         meshes.push_back(msh);
     }
 
-    anim_model::anim_model(const std::string &path)
+    AnimModel::AnimModel(const std::string &path)
     {
         static const uint32_t import_flags =
             aiProcess_CalcTangentSpace |        // Create binormals/tangents just in case
@@ -382,17 +382,18 @@ namespace xe_assets
 
         scene = assimp_importer->ReadFile(path.c_str(), import_flags);
         bool isAnimationsLoaded = scene->mAnimations != nullptr;
-        global_inverse_transform = glm::inverse(from_ai_to_glm(scene->mRootNode->mTransformation));
+        global_inverse_transform = glm::inverse(fromAiToGlm(scene->mRootNode->mTransformation));
 
         uint32_t vertexCount = 0;
         uint32_t indexCount = 0;
 
         anim_meshes.reserve(scene->mNumMeshes);
+         
         for (size_t i = 0; i < scene->mNumMeshes; ++i)
         {
             aiMesh *mesh = scene->mMeshes[i];
 
-            anim_node anim_mesh = {};
+            AnimNode anim_mesh = {};
             anim_mesh.start_vertex = vertexCount;
             anim_mesh.start_index = indexCount;
             anim_mesh.index_count = mesh->mNumFaces * 3;
@@ -405,7 +406,7 @@ namespace xe_assets
             
             for (size_t i = 0; i < mesh->mNumVertices; i++)
             {
-                pos_normal_uv_b_w vertex;
+                PositionNormalUVBW vertex;
                 vertex.pos = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
                 vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 
@@ -433,7 +434,7 @@ namespace xe_assets
             for (size_t m = 0; m < scene->mNumMeshes; m++)
             {
                 aiMesh* mesh = scene->mMeshes[m];
-                anim_node& submesh = anim_meshes[m];
+                AnimNode& node = anim_meshes[m];
 
                 for (size_t i = 0; i < mesh->mNumBones; i++)
                 {
@@ -445,9 +446,9 @@ namespace xe_assets
                     {
                         boneIndex = bones_count;
                         bones_count++;
-                        bone bi;
+                        Bone bi;
                         bones_info.push_back(bi);
-                        bones_info[boneIndex].offset = from_ai_to_glm(bone_loader->mOffsetMatrix);
+                        bones_info[boneIndex].offset = fromAiToGlm(bone_loader->mOffsetMatrix);
                         bones_map[boneName] = boneIndex;
                     }
                     else
@@ -457,9 +458,9 @@ namespace xe_assets
 
                     for (size_t j = 0; j < bone_loader->mNumWeights; j++)
                     {
-                        int vertexID = submesh.start_vertex + bone_loader->mWeights[j].mVertexId;
+                        int vertexID = node.start_vertex + bone_loader->mWeights[j].mVertexId;
                         float weight = bone_loader->mWeights[j].mWeight;
-                        anim_vertices[vertexID].add_bone(boneIndex, weight);
+                        anim_vertices[vertexID].addBone(boneIndex, weight);
                     }
                 }
             }
@@ -467,21 +468,21 @@ namespace xe_assets
 
         // GPU data creation
 
-        graphics_device *device = xe_render::get_device();
+        GraphicsDevice *device = xe_render::getDevice();
 
-        va.buffers.push_back(new xe_graphics::vertex_buffer);        
-        va.ib = new xe_graphics::index_buffer;
+        va.buffers.push_back(new xe_graphics::VertexBuffer);        
+        va.ib = new xe_graphics::IndexBuffer;
         
-        device->create_vertex_array(&va);
-        device->bind_vertex_array(&va);
-        device->create_vertex_buffer(anim_vertices.data(), anim_vertices.size() * sizeof(pos_normal_uv_b_w), DRAW_TYPE::STATIC, va.buffers[0]);
-        device->create_index_buffer(anim_indices.data(), anim_indices.size(), va.ib);
+        device->createVertexArray(&va);
+        device->bindVertexArray(&va);
+        device->createVertexBuffer(anim_vertices.data(), anim_vertices.size() * sizeof(PositionNormalUVBW), DRAW_TYPE::STATIC, va.buffers[0]);
+        device->createIndexBuffer(anim_indices.data(), anim_indices.size(), va.ib);
 
         using namespace xe_graphics;
 
-        buffer_layout buffer_layout = {};
+        BufferLayout buffer_layout = {};
 
-        std::initializer_list<xe_graphics::buffer_element> init_list =
+        std::initializer_list<xe_graphics::BufferElement> init_list =
         {
             { "iPos",         ElementType::Float3, },
             { "iNormal",      ElementType::Float3, },
@@ -492,13 +493,13 @@ namespace xe_assets
             { "iBoneWeights", ElementType::Float4, }
         };
 
-        device->create_buffer_layout(init_list, &buffer_layout);
-        device->set_vertex_buffer_layout(va.buffers[0], &buffer_layout);
-        device->add_vertex_buffer(&va, va.buffers[0]);
-        device->set_index_buffer(&va, va.ib);
+        device->createBufferLayout(init_list, &buffer_layout);
+        device->setVertexBufferLayout(va.buffers[0], &buffer_layout);
+        device->addVertexBuffer(&va, va.buffers[0]);
+        device->setIndexBuffer(&va, va.ib);
     }
 
-    model::model(model && m)
+    Model::Model(Model && m)
     {
         root = m.root;
         vertex_type = m.vertex_type;
@@ -507,7 +508,7 @@ namespace xe_assets
         nodes = std::move(m.nodes);
     }
 
-    model &model::operator=(model && m) noexcept
+    Model &Model::operator=(Model && m) noexcept
     {
         root = m.root;
         vertex_type = m.vertex_type;
@@ -517,7 +518,7 @@ namespace xe_assets
         return *this;
     }
 
-    anim_model::anim_model(anim_model && m)
+    AnimModel::AnimModel(AnimModel && m)
     {
         activeAnimation = m.activeAnimation;
         global_inverse_transform = std::move(m.global_inverse_transform);
@@ -540,7 +541,7 @@ namespace xe_assets
         va = std::move(m.va);
     }
 
-    anim_model &anim_model::operator=(anim_model && m) noexcept
+    AnimModel &AnimModel::operator=(AnimModel && m) noexcept
     {
         activeAnimation = m.activeAnimation;
         global_inverse_transform = std::move(m.global_inverse_transform);
@@ -564,7 +565,7 @@ namespace xe_assets
         return *this;
     }
     
-    void anim_model::update(float dt)
+    void AnimModel::update(float dt)
     {
         if (activeAnimation)
         {
@@ -576,7 +577,7 @@ namespace xe_assets
         }        
     }
 
-    const aiNodeAnim *anim_model::findAnimNodeByName(const aiAnimation *animation, const std::string &node_name)
+    const aiNodeAnim *AnimModel::findAnimNodeByName(const aiAnimation *animation, const std::string &node_name)
     {
         for (uint32_t i = 0; i < animation->mNumChannels; i++)
         {
@@ -590,7 +591,7 @@ namespace xe_assets
         return nullptr;
     }
 
-    uint32_t anim_model::getTranslationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t AnimModel::getTranslationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {
         for (uint32_t i = 0; i < node_anim->mNumPositionKeys - 1; i++)
         {
@@ -601,7 +602,7 @@ namespace xe_assets
         return 0;
     }
 
-    uint32_t anim_model::getRotationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t AnimModel::getRotationIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {        
         for (uint32_t i = 0; i < node_anim->mNumRotationKeys - 1; i++)
         {
@@ -612,7 +613,7 @@ namespace xe_assets
         return 0;
     }
 
-    uint32_t anim_model::getScaleIndexForNode(float anim_time, const aiNodeAnim *node_anim)
+    uint32_t AnimModel::getScaleIndexForNode(float anim_time, const aiNodeAnim *node_anim)
     {
         for (uint32_t i = 0; i < node_anim->mNumScalingKeys - 1; i++)
         {
@@ -623,7 +624,7 @@ namespace xe_assets
         return 0;
     }
 
-    glm::vec3 anim_model::getTranslationBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::vec3 AnimModel::getTranslationBetweenFrames(float dt, const aiNodeAnim *na)
     {
         glm::vec3 translation = glm::vec3();
         
@@ -662,7 +663,7 @@ namespace xe_assets
         return translation;
     }
 
-    glm::quat anim_model::getRotationBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::quat AnimModel::getRotationBetweenFrames(float dt, const aiNodeAnim *na)
     {
         if (na->mNumRotationKeys == 1)
         {
@@ -687,7 +688,7 @@ namespace xe_assets
         return glm::quat(q.w, q.x, q.y, q.z);
     }
 
-    glm::vec3 anim_model::getScaleBetweenFrames(float dt, const aiNodeAnim *na)
+    glm::vec3 AnimModel::getScaleBetweenFrames(float dt, const aiNodeAnim *na)
     {
         glm::vec3 scale;
        
@@ -721,10 +722,10 @@ namespace xe_assets
         return scale;
     }
 
-    void anim_model::readNodeHierarchy(float anim_time, const aiNode *pNode, const glm::mat4 &parentTransform)
+    void AnimModel::readNodeHierarchy(float anim_time, const aiNode *pNode, const glm::mat4 &parentTransform)
     {
         std::string current_node_name(pNode->mName.data);       
-        glm::mat4 transform_node(from_ai_to_glm(pNode->mTransformation));
+        glm::mat4 transform_node(fromAiToGlm(pNode->mTransformation));
 
         const aiNodeAnim* findedNode = findAnimNodeByName(activeAnimation, current_node_name);
 
@@ -756,7 +757,7 @@ namespace xe_assets
         }
     }
 
-    void anim_model::transformBones(float dt)
+    void AnimModel::transformBones(float dt)
     {
         readNodeHierarchy(dt, scene->mRootNode, glm::mat4(1.0f));
         bone_transformation.resize(bones_count);
@@ -766,9 +767,9 @@ namespace xe_assets
         }
     }
 
-    void anim_model::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform)
+    void AnimModel::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform)
     {
-        glm::mat4 transform = parent_transform * from_ai_to_glm(node->mTransformation);
+        glm::mat4 transform = parent_transform * fromAiToGlm(node->mTransformation);
         for (uint32_t i = 0; i < node->mNumMeshes; i++)
         {
             uint32_t mesh = node->mMeshes[i];

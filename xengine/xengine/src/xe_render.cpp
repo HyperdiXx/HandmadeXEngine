@@ -34,7 +34,8 @@ namespace xe_render
     xe_graphics::RenderPass *active_render_pass = nullptr;
     xe_graphics::Framebuffer *active_framebuffer = nullptr;
 
-    xe_graphics::VertexArray Quad_vao;
+    xe_graphics::VertexArray quad_vao;
+    xe_graphics::Quad rect_vao;
     xe_graphics::Sphere sphere_vao;
     xe_graphics::Cube cube_vao;
     xe_graphics::Line line_vao;
@@ -96,6 +97,8 @@ namespace xe_render
         
         bool32 is_skybox_created = createSkybox(skybox_obj);
         
+        createQuad();
+
         if (!is_skybox_created)
         {
             xe_utility::error("Failed to init skybox!");
@@ -610,7 +613,7 @@ namespace xe_render
     bool32 createLineMesh(xe_graphics::Line *line_com)
     {
         glm::vec3 start = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 end= glm::vec3(1.0f, 1.0f, 0.0f);
+        glm::vec3 end = glm::vec3(1.0f, 1.0f, 0.0f);
         return createLineMesh(start, end, line_com);
     }
 
@@ -671,9 +674,14 @@ namespace xe_render
         return true;
     }
 
+    bool32 createQuad()
+    {
+        return createQuad(&rect_vao);
+    }
+
     bool32 createFullquad()
     {
-        glGenVertexArrays(1, &Quad_vao.id);
+        glGenVertexArrays(1, &quad_vao.id);
 
         return true;
     }
@@ -1076,22 +1084,34 @@ namespace xe_render
 
     void drawFullquad()
     {
-        graphics_device->bindVertexArray(&Quad_vao);
+        graphics_device->bindVertexArray(&quad_vao);
         graphics_device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
         graphics_device->unbindVertexArray();
     }
 
-    void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture)
+    void drawQuad(xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture)
     {
         if (texture != nullptr)
             graphics_device->bindTexture(TEXTURE_TYPE::COLOR, texture);
+        
+        if (!q->vertex_array)
+        {
+            q->vertex_array = rect_vao.vertex_array;
+        }
 
         glm::mat4 model = IDENTITY_MATRIX;
         
         graphics_device->bindShader(shd);
         
-        model = glm::translate(model, glm::vec3(300, 200, 0));
-        model = glm::scale(model, glm::vec3(100, 100, 100));
+        if (q->w == 0 || q->h == 0)
+        {
+            q->w = 10;
+            q->h = 10;
+        }
+
+        model = glm::translate(model, glm::vec3(q->x, q->y, 0));
+        model = glm::scale(model, glm::vec3(q->w, q->h, 1.0f));
+
         xe_ecs::Camera2DComponent camera2d = getCamera2D();
 
         glm::mat4 view_projection = camera2d.get_view_projection();

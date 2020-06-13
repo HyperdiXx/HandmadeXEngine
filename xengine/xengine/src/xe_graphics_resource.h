@@ -5,8 +5,8 @@
 
 #include "xe_graphics_res_desc.h"
 
-#include <glm/glm.hpp>
 #include <vector>
+#include <glm/glm.hpp>
 #include <glad/glad.h>
 
 namespace xe_graphics
@@ -167,6 +167,7 @@ namespace xe_graphics
 
     struct Quad
     {
+        int x, y, w, h;
         xe_graphics::VertexArray *vertex_array;
     };
 

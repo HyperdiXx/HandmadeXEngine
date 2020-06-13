@@ -58,6 +58,8 @@ namespace xe_render
     xe_ecs::Camera3DComponent& getCamera3D();
     
     bool32 createQuad(xe_graphics::Quad *q);
+    bool32 createQuad();
+
     bool32 createFullquad();
     bool32 createSkybox(xe_graphics::Skybox *sky);
     bool32 createCubemap(xe_graphics::Cubemap *cube);
@@ -70,7 +72,7 @@ namespace xe_render
     bool32 createLineMesh(xe_graphics::Line *line_com);
 
     void drawFullquad();
-    void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
+    void drawQuad(xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
     void drawQuad(xe_ecs::Entity *ent, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
     void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture, glm::mat4& mod);
     void drawModel(xe_assets::Model *mod, xe_graphics::Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));

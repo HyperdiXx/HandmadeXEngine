@@ -464,9 +464,6 @@
     <ClInclude Include="src\d3dx12.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\resourceobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>

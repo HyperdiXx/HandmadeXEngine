@@ -22,6 +22,8 @@
 
 namespace xe_gui
 {
+    static ElementHolder gui = {};
+
     void drawTopBar()
     {
         bool show_log = true;
@@ -85,6 +87,79 @@ namespace xe_gui
 
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
+    }
+
+    void drawUI()
+    {
+        if (gui.uiStates.size() == 0)
+            return;
+
+        using namespace xe_render;
+        using namespace xe_graphics;
+        for (uint32 i = 0; i < gui.uiStates.size(); ++i)
+        {
+            UIElement &element = gui.uiStates[i];
+            switch (element.type)
+            {
+            case UI_BUTTON:
+            {   
+                Quad q = {};
+
+                q.x = element.x;
+                q.y = element.y;
+                q.w = element.width;
+                q.h = element.height;
+                
+                Shader *color = getShader("simple_pos");
+                if (color)
+                {
+                    drawQuad(&q, color, nullptr);
+                }
+            } break;               
+            case UI_WIDGET:
+            {
+
+            } break;            
+            default:
+                break;
+            }
+
+        }
+    }
+
+    bool makeButton(uint64 id, real32 x, real32 y, real32 w, real32 h, const char *text)
+    {
+        UIElement *elem = NULL;
+
+        for (uint32_t i = 0; i < gui.uiStates.size(); ++i)
+        {
+            if (gui.uiStates[i].id == id)
+            {
+                elem = &gui.uiStates[i];
+                break;
+            }
+        }
+
+        if (elem)
+        {
+            
+
+        }
+        else
+        {
+            UIElement button = {};
+
+            button.id = id;
+            button.x = x;
+            button.y = y;
+            button.width = w;
+            button.height = h;
+            button.type = ElementType::UI_BUTTON;
+
+            gui.uiStates.push_back(button);
+        }
+
+        return true;
     }
 
     void initImguiImpl()

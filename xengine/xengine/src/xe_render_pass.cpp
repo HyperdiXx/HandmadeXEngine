@@ -48,6 +48,8 @@ void xe_graphics::RenderPass2D::render()
 
     drawQuad(&main_ent, simple_shader, result_texture);
     drawText("FPS: " + std::to_string(app_state->fps), 10, 10);
+
+    xe_gui::drawUI();
 }
 
 void xe_graphics::RenderPass2D::update(real32 dt)
@@ -69,6 +71,11 @@ void xe_graphics::RenderPass2D::update(real32 dt)
     {
         transform->scale.x = 100.f;
         transform->scale.y = 100.f;
+    }
+
+    if (xe_gui::makeButton(1, 350.0f, 350.0f, 100.0f, 100.0f, "hello"))
+    {
+
     }
 }
 

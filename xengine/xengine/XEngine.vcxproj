@@ -214,7 +214,6 @@
     <ClInclude Include="src\d3dx12.h" />
     <ClInclude Include="src\exportapi.h" />
     <ClInclude Include="src\mouse_event.h" />
-    <ClInclude Include="src\renderable.h" />
     <ClInclude Include="src\resourceobject.h" />
     <ClInclude Include="src\stackll.h" />
     <ClInclude Include="src\types.h" />

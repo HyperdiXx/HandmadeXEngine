@@ -43,7 +43,8 @@ namespace xe_scene
 
     Scene createScene(const char *name);
    
-    void drawSceneLayers(Scene *scn);
+    void updateSceneLayers(const Scene *scn);
+    void drawSceneLayers(const Scene *scn);
 
     // @Rework init by parsing 
     void loadTestScene(Scene *sc);

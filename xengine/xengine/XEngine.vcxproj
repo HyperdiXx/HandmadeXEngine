@@ -129,6 +129,7 @@
     <ClCompile Include="src\thirdparty\imguit\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_impl_win32.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_widgets.cpp" />
+    <ClCompile Include="src\xe_animation.cpp" />
     <ClCompile Include="src\xe_assets.cpp" />
     <ClCompile Include="src\xe_config.cpp" />
     <ClCompile Include="src\xe_core.cpp" />
@@ -210,16 +211,15 @@
     <ClInclude Include="src\app_state.h" />
     <ClInclude Include="inc\external\wglext.h" />
     <ClInclude Include="inc\stb_image\stb_image.h" />
+    <ClInclude Include="src\xe_animation.h" />
     <ClInclude Include="src\xe_config.h" />
     <ClInclude Include="src\d3dx12.h" />
     <ClInclude Include="src\exportapi.h" />
-    <ClInclude Include="src\mouse_event.h" />
     <ClInclude Include="src\resourceobject.h" />
-    <ClInclude Include="src\stackll.h" />
     <ClInclude Include="src\types.h" />
-    <ClInclude Include="src\vector.h" />
     <ClInclude Include="src\xe_assets.h" />
     <ClInclude Include="src\xe_audio.h" />
+    <ClInclude Include="src\xe_containers.h" />
     <ClInclude Include="src\xe_ecs.h" />
     <ClInclude Include="src\xe_file_formats.h" />
     <ClInclude Include="src\xe_graphics_device.h" />

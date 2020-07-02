@@ -86,6 +86,8 @@ namespace application
 
     void gameUpdate(real32 dt)
     {
+        xe_input::update();
+
         xe_ecs::Camera3DComponent& camera3D = xe_render::getCamera3D();
 
         if (xe_input::pressed(xe_input::KEYBOARD_S))
@@ -122,12 +124,12 @@ namespace application
             //tr->position.z -= 0.8f * cos(dt);
         }
 
-        xe_input::mouse_state *mouse = xe_input::get_mouse_state();
+        xe_input::MouseState *mouse = xe_input::getMouseState();
 
-        if (mouse->is_right_button_pressed)
+        if (mouse->isRightButtonPressed)
         {
-            real32 xoffset = mouse->position.x - mouse->dt_position.x;
-            real32 yoffset = mouse->dt_position.y - mouse->position.y;
+            real32 xoffset = mouse->position.x - mouse->dtPosition.x;
+            real32 yoffset = mouse->dtPosition.y - mouse->position.y;
 
             //printf("DX: %f\n", xoffset);
             //printf("DY: %f\n", yoffset);
@@ -135,7 +137,7 @@ namespace application
             camera3D.mouse_move(xoffset, yoffset);
         }
 
-        if (mouse->is_left_button_pressed)
+        if (mouse->isLeftButtonPressed)
         {
             ray ray_cast = {};
 
@@ -195,8 +197,6 @@ namespace application
 
                 printf("Mouse pos in NDC: \n");
             }
-
-            mouse->is_left_button_pressed = false;
         }
     }
 

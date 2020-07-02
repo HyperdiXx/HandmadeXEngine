@@ -221,9 +221,7 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
         {
             const RAWMOUSE& rawmouse = raw->data.mouse;
 
-            xe_input::mouse_state *mouse = xe_input::get_mouse_state();
-
-            mouse->is_left_button_pressed = false;
+            xe_input::MouseState *mouse = xe_input::getMouseState();
 
             if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE)
             {
@@ -243,7 +241,7 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
 
             if (rawmouse.usButtonFlags == RI_MOUSE_LEFT_BUTTON_DOWN)
             {
-                mouse->is_left_button_pressed = true;
+                //mouse->isLeftButtonPressed = true;
                 POINT p;
                 GetCursorPos(&p);
                 if (ScreenToClient(window_handle, &p))
@@ -257,9 +255,9 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
 
             if (rawmouse.usButtonFlags == RI_MOUSE_RIGHT_BUTTON_DOWN)
             {
-                mouse->dt_position.x = rawmouse.lLastX;
-                mouse->dt_position.y = rawmouse.lLastY;
-                mouse->is_right_button_pressed = !mouse->is_right_button_pressed;
+                mouse->dtPosition.x = rawmouse.lLastX;
+                mouse->dtPosition.y = rawmouse.lLastY;
+                mouse->isRightButtonPressed = !mouse->isRightButtonPressed;
             }
         }
         return 0;

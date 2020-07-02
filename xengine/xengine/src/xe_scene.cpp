@@ -18,7 +18,18 @@ namespace xe_scene
         return created_scene;
     }
 
-    void drawSceneLayers(Scene *scn)
+    void updateSceneLayers(const Scene *scn)
+    {
+        application::ApplicationState *app_state = application::getAppState();
+     
+        for (uint32 i = 0; i < scn->layers.size(); ++i)
+        {
+            xe_graphics::Layer *lay = scn->layers[i];
+            lay->update(app_state->delta_time);
+        }
+    }
+
+    void drawSceneLayers(const Scene *scn)
     {
         for (uint32 i = 0; i < scn->layers.size(); ++i)
         {

@@ -191,32 +191,32 @@ struct vec3f
     vec3f(real32 x, real32 y, real32 z) : x(x), y(y), z(z) {};
 };
 
-inline static real32 dot_product(const vec3f &a, const vec3f &b)
+inline real32 dot_product(const vec3f &a, const vec3f &b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-inline static vec3f cross_product(const vec3f &a, const vec3f &b)
+inline vec3f cross_product(const vec3f &a, const vec3f &b)
 {
     return vec3f(a.y * b.z - b.z * a.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
 
-inline static real32 distance(const vec3f &a, const vec3f &b)
+inline real32 distance(const vec3f &a, const vec3f &b)
 {
     
 }
 
-inline static real32 distance_sqr(const vec3f &a, const vec3f &b)
+inline real32 distance_sqr(const vec3f &a, const vec3f &b)
 {
 
 }
 
-inline static vec3f max_cmp(const vec3f &a, const vec3f &b)
+inline vec3f max_cmp(const vec3f &a, const vec3f &b)
 {
 
 }
 
-inline static vec3f min_cmp(const vec3f &a, const vec3f &b)
+inline vec3f min_cmp(const vec3f &a, const vec3f &b)
 {
 
 }*/
@@ -279,3 +279,14 @@ struct ray
 
     }
 };
+
+inline bool isIntersects(real32 x, real32 y, const glm::vec2& min, const glm::vec2 &max)
+{
+    return x >= min.x && x <= max.x && y <= min.y && y >= max.y;
+}
+
+inline bool isIntersects(real32 x, real32 y, const aabb &bb)
+{
+    return isIntersects(x, y, bb.min, bb.max);
+}
+

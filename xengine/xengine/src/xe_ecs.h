@@ -213,6 +213,7 @@ namespace xe_ecs
             if (!is_setuped)
             {
                 setup_projection(0, width, 0, height);
+                is_setuped = true;
             }
 
             return view_projection; 
@@ -223,6 +224,7 @@ namespace xe_ecs
             if (!is_setuped)
             {
                 setup_projection(0, width, 0, height);
+                is_setuped = true;
             }
             return projection;
         };
@@ -391,6 +393,16 @@ namespace xe_ecs
 
         bool32 is_static;
         bool32 is_casting_shadows;
+    };
+
+    class AnimationCotroller : public Component
+    {
+    public:
+        
+        void update(float dt);
+
+
+
     };
 
     /*template<typename Component>

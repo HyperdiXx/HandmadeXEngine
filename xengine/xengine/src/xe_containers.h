@@ -1,5 +1,18 @@
 #pragma once
 
+#ifndef XE_CONTAINERS
+#define XE_CONTAINERS
+
+namespace XEngine
+{
+    template<typename T>
+    struct Stack
+    {
+        T data;
+        Stack *next;
+    };
+}
+
 #include <memory>
 #include <string>
 
@@ -25,7 +38,7 @@ public:
         this->n = s;
         first = (T*)malloc(sizeof(T) * capacity);
     }
-    
+
     vector(const vector<T>& v)
     {
         this->capacity = v.capacity;
@@ -88,7 +101,7 @@ public:
     void push_back(T d)
     {
         if (n == capacity)
-                resize(capacity << 1);
+            resize(capacity << 1);
         first[n] = d;
         ++n;
     }
@@ -99,7 +112,7 @@ public:
 
         for (size_t el = n - 1; el > pos; --el)
         {
-           first[el] = first[el - 1];
+            first[el] = first[el - 1];
         }
 
         first[pos] = d;
@@ -111,7 +124,7 @@ public:
         {
             first[i] = first[i + 1];
         }
-       --n;
+        --n;
     }
 
     bool empty()
@@ -131,7 +144,7 @@ public:
         }
     }
 
-   
+
     void erase(const int pos)
     {
         first[pos] = 0;
@@ -165,7 +178,7 @@ public:
 
     size_t end() const
     {
-        if(n != 0)
+        if (n != 0)
             return n - 1;
         else
             std::cout << "Vector is empty!\n";
@@ -233,8 +246,9 @@ std::ostream& operator<<(std::ostream& os, const vector<T>& v)
     {
         os << v.at(i) << " ";
     }
-   
+
     return os;
 }
 
+#endif // !XE_CONTAINERS
 

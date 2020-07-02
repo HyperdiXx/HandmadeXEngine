@@ -167,6 +167,9 @@ namespace xe_graphics
 
     struct Quad
     {
+        Quad() {};
+        Quad(int xPos, int yPos, int wi, int he) : x(xPos), y(yPos), w(wi), h(he) {};
+
         int x, y, w, h;
         xe_graphics::VertexArray *vertex_array;
     };

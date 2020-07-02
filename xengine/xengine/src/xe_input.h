@@ -19,22 +19,30 @@ namespace xe_input
         GAMEPAD_Y
 
     };
+
+    enum State
+    {
+        NONE,
+        UP, 
+        PRESS,
+        HOLD
+    };
     
-    struct gamepad
+    struct Gamepad
     {
 
     };
 
-    struct mouse_state
+    struct MouseState
     {
         vec2i position = vec2i(0, 0);
-        vec2i dt_position = vec2i(0, 0);
+        vec2i dtPosition = vec2i(0, 0);
         real32 wheel = 0;
-        bool32 is_left_button_pressed = false;
-        bool32 is_right_button_pressed = false;
+        bool32 isLeftButtonPressed = false;
+        bool32 isRightButtonPressed = false;
     };
 
-    struct keyboard_buttons
+    struct KeyBoardStates
     {
         bool32 buttons[256] = {};
     };
@@ -45,5 +53,7 @@ namespace xe_input
     
     void poll_events();
 
-    mouse_state *get_mouse_state();
+    void update();
+
+    MouseState *getMouseState();
 }

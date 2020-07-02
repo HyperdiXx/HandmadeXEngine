@@ -1089,15 +1089,30 @@ namespace xe_render
         graphics_device->unbindVertexArray();
     }
 
+    void drawQuad(xe_graphics::Quad *q)
+    {
+        Shader *color = getShader("simple_pos");
+        drawQuad(q, color, nullptr);
+    }
+
+    void drawQuad(xe_graphics::Quad *q, const glm::vec4 &color)
+    {
+        Shader *color_shader = getShader("simple_pos");
+        graphics_device->bindShader(color_shader);
+        graphics_device->setVec4("u_color", color, color_shader);
+
+        drawQuad(q, color_shader, nullptr);
+    }
+
     void drawQuad(xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture)
     {
         if (texture != nullptr)
             graphics_device->bindTexture(TEXTURE_TYPE::COLOR, texture);
         
-        if (!q->vertex_array)
-        {
+        //if (!q->vertex_array)
+        //{
             q->vertex_array = rect_vao.vertex_array;
-        }
+        //}
 
         glm::mat4 model = IDENTITY_MATRIX;
         
@@ -1112,7 +1127,7 @@ namespace xe_render
         model = glm::translate(model, glm::vec3(q->x, q->y, 0));
         model = glm::scale(model, glm::vec3(q->w, q->h, 1.0f));
 
-        xe_ecs::Camera2DComponent camera2d = getCamera2D();
+        xe_ecs::Camera2DComponent& camera2d = getCamera2D();
 
         glm::mat4 view_projection = camera2d.get_view_projection();
         graphics_device->setMat4("mvp", view_projection * model, shd);
@@ -1142,7 +1157,7 @@ namespace xe_render
         model_matrix = glm::translate(model_matrix, tr->position);
         model_matrix = glm::scale(model_matrix, tr->scale);
         
-        xe_ecs::Camera2DComponent camera2d = getCamera2D();
+        xe_ecs::Camera2DComponent& camera2d = getCamera2D();
 
         glm::mat4 view_projection = camera2d.get_view_projection();
         glm::mat4 mvp = view_projection * model_matrix;
@@ -1245,8 +1260,12 @@ namespace xe_render
         graphics_device->setVec3("color", color, text_shader);
         
         graphics_device->activateTexture(0);
-        glBindVertexArray(1);
-       
+
+        VertexArray va = {};
+        va.id = 1;
+
+        graphics_device->bindVertexArray(&va);
+        
         std::string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)
         {            

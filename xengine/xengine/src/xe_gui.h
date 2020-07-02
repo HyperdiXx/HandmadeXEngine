@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include <glm/fwd.hpp>
 #include <vector>
 
 namespace xe_gui
@@ -18,6 +19,7 @@ namespace xe_gui
         real32 x, y;
         real32 width;
         real32 height;
+        const char *text;
     };
     
     struct ElementHolder
@@ -27,6 +29,8 @@ namespace xe_gui
 
     void drawUI();
     bool makeButton(uint64 id, real32 x, real32 y, real32 w, real32 h, const char* text);
+    bool makeButton(real32 x, real32 y, real32 w, real32 h, const char* text);
+    bool makeButton(uint64 id, real32 x, real32 y, real32 w, real32 h, const glm::vec4 &color);
 
     void initImguiImpl();
 

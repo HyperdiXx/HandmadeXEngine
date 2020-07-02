@@ -72,6 +72,8 @@ namespace xe_render
     bool32 createLineMesh(xe_graphics::Line *line_com);
 
     void drawFullquad();
+    void drawQuad(xe_graphics::Quad *q);
+    void drawQuad(xe_graphics::Quad *q, const glm::vec4 &color);
     void drawQuad(xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
     void drawQuad(xe_ecs::Entity *ent, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
     void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture, glm::mat4& mod);

@@ -167,6 +167,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         render_pass_2D->update(current_app_state->delta_time);
         render_pass_2D->render();
         
+        xe_scene::updateSceneLayers(&new_scene);
         xe_scene::drawSceneLayers(&new_scene);
 
         device->checkError();

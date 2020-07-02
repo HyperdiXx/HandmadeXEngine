@@ -34,8 +34,12 @@ namespace xe_input
 
     std::vector<uint8_t*> loop_mess;
 
-    mouse_state mouse;
-    keyboard_buttons keyboard;
+    static MouseState currentMouseState = {};
+    static MouseState prevMouseState = {};
+    static KeyBoardStates keyboard = {};
+
+    static State inputMouseState = {};
+    static State inputKeyboardState = {};
 
     void init()
     {
@@ -148,9 +152,46 @@ namespace xe_input
         }
     }
 
-    mouse_state *get_mouse_state()
+    void update()
     {
-        return &mouse;
+        if (prevMouseState.isLeftButtonPressed == false && currentMouseState.isLeftButtonPressed == false)
+        {
+            inputMouseState = State::UP;
+        }
+
+        if (prevMouseState.isLeftButtonPressed && currentMouseState.isLeftButtonPressed)
+        {
+            inputMouseState = State::HOLD;
+        }
+        
+        if (prevMouseState.isLeftButtonPressed == false && currentMouseState.isLeftButtonPressed)
+        {
+            inputKeyboardState = State::PRESS;
+        }
+
+        prevMouseState.isLeftButtonPressed = currentMouseState.isLeftButtonPressed;
+        prevMouseState.isRightButtonPressed = currentMouseState.isRightButtonPressed;
+
+        switch (inputMouseState)
+        {
+        case State::PRESS:
+        {
+
+        } break;
+        case State::UP:
+        {
+            //currentMouseState.is_left_button_pressed = false;
+        } break;
+
+        default:
+            break;
+        }
+
+    }
+
+    MouseState *getMouseState()
+    {
+        return &currentMouseState;
     }
 
 }

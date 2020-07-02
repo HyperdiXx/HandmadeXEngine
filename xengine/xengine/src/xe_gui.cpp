@@ -2,7 +2,9 @@
 
 #include "xe_platform.h"
 #include "xe_render.h"
+#include "xe_math.h"
 #include "xe_utility.h"
+#include "xe_input.h"
 
 // ImGui
 #include <thirdparty/imguit/imgui.h>
@@ -18,11 +20,12 @@
 
 #ifdef PLATFORM_WINDOWS
 #include <thirdparty/imguit/imgui_impl_win32.h>
-#endif
+#endif 
 
 namespace xe_gui
 {
     static ElementHolder gui = {};
+    static uint32_t id = 0;
 
     void drawTopBar()
     {
@@ -110,11 +113,14 @@ namespace xe_gui
                 q.w = element.width;
                 q.h = element.height;
                 
-                Shader *color = getShader("simple_pos");
-                if (color)
+                //drawQuad(&q);
+
+                if (element.text)
                 {
-                    drawQuad(&q, color, nullptr);
+                    glm::vec2 pos = glm::vec2(q.x, q.y);
+                    drawText(element.text, pos);
                 }
+               
             } break;               
             case UI_WIDGET:
             {
@@ -129,6 +135,31 @@ namespace xe_gui
 
     bool makeButton(uint64 id, real32 x, real32 y, real32 w, real32 h, const char *text)
     {
+        xe_input::MouseState *mouse = xe_input::getMouseState();
+        
+        xe_graphics::GraphicsDevice *device = xe_render::getDevice();
+        xe_graphics::Viewport vp = device->getViewport();
+
+        bool intertsects = false;
+
+        using namespace xe_graphics;
+
+        float halfWidth = w * 0.5f;
+        float halfHeight = h * 0.5f;
+
+        float height = vp.height;
+        float windowHalfHieght = height * 0.5f;
+
+        xe_render::drawQuad(&Quad(x - halfWidth, y + halfHeight, 4.0f, 4.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        xe_render::drawQuad(&Quad(x + halfWidth, y + halfHeight, 4.0f, 4.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        xe_render::drawQuad(&Quad(x - halfWidth, y - halfHeight, 4.0f, 4.0f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
+        xe_render::drawQuad(&Quad(x + halfWidth, y - halfHeight, 4.0f, 4.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+        if (mouse->isLeftButtonPressed)
+        {
+            intertsects = isIntersects(mouse->position.x, mouse->position.y, glm::vec2(x - halfWidth, height - y), glm::vec2(x + halfWidth, height - y - h));
+        }
+
         UIElement *elem = NULL;
 
         for (uint32_t i = 0; i < gui.uiStates.size(); ++i)
@@ -142,7 +173,11 @@ namespace xe_gui
 
         if (elem)
         {
-            
+            elem->x = x;
+            elem->y = y;
+
+            elem->text = text;
+
 
         }
         else
@@ -154,11 +189,23 @@ namespace xe_gui
             button.y = y;
             button.width = w;
             button.height = h;
+            button.text = text;
             button.type = ElementType::UI_BUTTON;
 
             gui.uiStates.push_back(button);
         }
 
+        return intertsects;
+    }
+
+    bool makeButton(real32 x, real32 y, real32 w, real32 h, const char * text)
+    {
+        return makeButton(++id, x, y, w, h, text);
+    }
+
+    bool makeButton(uint64 id, real32 x, real32 y, real32 w, real32 h, const glm::vec4 & color)
+    {
+        //return makeButton(id, x, y, w, h);
         return true;
     }
 

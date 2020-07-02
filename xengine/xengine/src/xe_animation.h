@@ -12,35 +12,18 @@
 
 #include <glm/glm.hpp>
 
+namespace xe_graphics
+{
+    struct PositionNormalUVBW;
+}
+
 namespace xe_animation
 {
-    struct xe_graphics::PositionNormalUVBW;
-
     enum AnimKeyType
     {
         Position, 
         Rotation,
         Scale
-    };
-
-    class Animation
-    {
-    public:
-        Animation() {}
-        ~Animation() {}
-
-        inline const uint32 getAnimTracksCount() const { return anim_tracks.size(); }
-
-    public:
-        std::vector<AnimNode*> anim_tracks;
-    private:
-        std::string name;
-        float duration = 0.0f;
-        float animation_speed = 0.75f;
-        float animation_time = 0.0f;
-        float ticks_per_second = 0.0f;
-
-        bool is_playing = true;
     };
 
     struct AnimVectorKey
@@ -53,12 +36,6 @@ namespace xe_animation
     {
         real64 time;
         glm::quat value;
-    };
-
-    struct Bone
-    {
-        glm::mat4 transform;
-        glm::mat4 offset;
     };
 
     struct AnimNode
@@ -85,6 +62,12 @@ namespace xe_animation
         Node *chidren;
     };
 
+    struct Bone
+    {
+        glm::mat4 transform;
+        glm::mat4 offset;
+    };
+
     class Skeleton
     {
     public:        
@@ -103,6 +86,26 @@ namespace xe_animation
         std::vector<Bone> bones_info;
         std::unordered_map<std::string, uint32_t> bones_map;
         std::vector<glm::mat4> bone_transformation;
+    };
+
+    class Animation
+    {
+    public:
+        Animation() {}
+        ~Animation() {}
+
+        inline const uint32 getAnimTracksCount() const { return anim_tracks.size(); }
+
+    public:
+        std::vector<AnimNode*> anim_tracks;
+    private:
+        std::string name;
+        float duration = 0.0f;
+        float animation_speed = 0.75f;
+        float animation_time = 0.0f;
+        float ticks_per_second = 0.0f;
+
+        bool is_playing = true;
     };
 
     class AnimModel

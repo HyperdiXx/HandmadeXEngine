@@ -9,7 +9,7 @@
 #include <dxgi1_2.h>
 #include <d3dcompiler.h>
 
-#include "d3dx12.h"
+#include "thirdparty/d3dx12.h"
 
 #pragma comment (lib, "d3d12.lib")
 #pragma comment (lib, "dxgi.lib")

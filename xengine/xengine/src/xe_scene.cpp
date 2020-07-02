@@ -4,7 +4,7 @@
 
 #include "app_state.h"
 
-#include "xe_render_pass.h"
+#include "xe_layer.h"
 
 namespace xe_scene
 {

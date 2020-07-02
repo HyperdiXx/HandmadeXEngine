@@ -85,7 +85,7 @@ namespace xe_animation
 
             for (size_t i = 0; i < mesh->mNumVertices; i++)
             {
-                xe_graphics::PositionNormalUVBW vertex;
+                xe_graphics::PositionNormalUVBW vertex = {};
                 vertex.pos = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
                 vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 
@@ -164,7 +164,7 @@ namespace xe_animation
         for (uint32 i = 0; i < animation->getAnimTracksCount(); i++)
         {
             const AnimNode* anim_node = animation->anim_tracks[i];
-            if (std::string(anim_node->node_name.data) == node_name)
+            if (std::string(anim_node->node_name) == node_name)
             {
                 return anim_node;
             }
@@ -183,7 +183,7 @@ namespace xe_animation
         {   
             for (uint32 i = 0; i < node_anim->positionKeys.size(); i++)
             {
-                if (anim_time < (float)node_anim->positionKeys[i + 1].time)
+                if (anim_time < (float)node_anim->positionKeys[i].time)
                 {
                     index = i;
                 }
@@ -194,7 +194,7 @@ namespace xe_animation
         {
             for (uint32 i = 0; i < node_anim->rotationKeys.size(); i++)
             {
-                if (anim_time < (float)node_anim->rotationKeys[i + 1].time)
+                if (anim_time < (float)node_anim->rotationKeys[i].time)
                 {
                     index = i;
                 }                   
@@ -206,7 +206,7 @@ namespace xe_animation
         {
             for (uint32 i = 0; i < node_anim->scaleKeys.size(); i++)
             {
-                if (anim_time < (float)node_anim->scaleKeys[i + 1].time)
+                if (anim_time < (float)node_anim->scaleKeys[i].time)
                 {
                     index = i;                    
                 }
@@ -220,18 +220,13 @@ namespace xe_animation
         return index;
     }
 
-    glm::vec3 AnimModel::getTranslationBetweenFrames(float dt, const AnimNode *na)
+    glm::vec3 AnimModel::getTranslationBetweenFrames(real32 dt, const AnimNode *na)
     {
         glm::vec3 translation = glm::vec3();
 
         if (na->positionKeys.size() == 1)
         {
-            auto res = na->positionKeys[0].value;
-            translation.x = res.x;
-            translation.y = res.y;
-            translation.z = res.z;
-
-            return translation;
+            return na->positionKeys[0].value;
         }
 
         uint32 index_frame = getIndexForNode(AnimKeyType::Position, dt, na);
@@ -259,12 +254,11 @@ namespace xe_animation
         return translation;
     }
 
-    glm::quat AnimModel::getRotationBetweenFrames(float dt, const AnimNode *na)
+    glm::quat AnimModel::getRotationBetweenFrames(real32 dt, const AnimNode *na)
     {
         if (na->rotationKeys.size() == 1)
         {
-            auto v = na->rotationKeys[0].value;
-            return glm::quat(v.w, v.x, v.y, v.z);
+            return na->rotationKeys[0].value;
         }
 
         uint32_t rotation_index = getIndexForNode(AnimKeyType::Rotation, dt, na);
@@ -284,18 +278,13 @@ namespace xe_animation
         return q;
     }
 
-    glm::vec3 AnimModel::getScaleBetweenFrames(float dt, const AnimNode *na)
+    glm::vec3 AnimModel::getScaleBetweenFrames(real32 dt, const AnimNode *na)
     {
         glm::vec3 scale = {};
 
         if (na->scaleKeys.size() == 1)
         {
-            auto scl = na->scaleKeys[0].value;
-            scale.x = scl.x;
-            scale.y = scl.y;
-            scale.z = scl.z;
-
-            return scale;
+            return na->scaleKeys[0].value;
         }
 
         uint32_t index = getIndexForNode(AnimKeyType::Scale, dt, na);
@@ -303,13 +292,15 @@ namespace xe_animation
 
         float deltaTime = (float)(na->scaleKeys[next_index].time - na->scaleKeys[index].time);
         float factor = (dt - (float)na->scaleKeys[index].time) / deltaTime;
+        
         if (factor < 0.0f)
             factor = 0.0f;
 
-        const auto& start = na->scaleKeys[index].value;
-        const auto& end = na->scaleKeys[next_index].value;
-        auto delta = end - start;
-        auto aiVec = start + factor * delta;
+        const glm::vec3& start = na->scaleKeys[index].value;
+        const glm::vec3& end = na->scaleKeys[next_index].value;
+        
+        glm::vec3 delta = end - start;
+        glm::vec3 aiVec = start + factor * delta;
 
         scale.x = aiVec.x;
         scale.y = aiVec.y;
@@ -318,7 +309,7 @@ namespace xe_animation
         return scale;
     }
 
-    void AnimModel::readNodeHierarchy(float anim_time, const aiNode* ptr_node, const glm::mat4& parent_transform)
+    void AnimModel::readNodeHierarchy(real32 anim_time, const aiNode* ptr_node, const glm::mat4& parent_transform)
     {
         std::string current_node_name(ptr_node->mName.data);
         glm::mat4 transform_node(fromAiToGlm(ptr_node->mTransformation));
@@ -356,7 +347,7 @@ namespace xe_animation
         }
     }
 
-    void AnimModel::transformBones(float dt)
+    void AnimModel::transformBones(real32 dt)
     {
         //readNodeHierarchy(dt, scene->mRootNode, glm::mat4(1.0f));
 
@@ -370,7 +361,7 @@ namespace xe_animation
         }
     }
 
-    void AnimModel::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform = glm::mat4(1.0f))
+    void AnimModel::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform)
     {
         glm::mat4 transform = parent_transform * fromAiToGlm(node->mTransformation);
         for (uint32_t i = 0; i < node->mNumMeshes; i++)

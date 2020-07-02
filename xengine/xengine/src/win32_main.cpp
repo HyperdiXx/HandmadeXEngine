@@ -30,6 +30,7 @@
 #include <math/xemath.h>
 #include "xe_config.h"
 #include "xe_render_pass.h"
+#include "xe_layer.h"
 #include "xe_core.h"
 
 #include "xe_input.h"

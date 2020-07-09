@@ -82,7 +82,6 @@ namespace xe_animation
             vertexCount += mesh->mNumVertices;
             indexCount += anim_mesh.index_count;
 
-
             for (size_t i = 0; i < mesh->mNumVertices; i++)
             {
                 xe_graphics::PositionNormalUVBW vertex = {};
@@ -149,6 +148,38 @@ namespace xe_animation
                 }
             }
         }
+
+        // GPU data creation
+
+        /*xe_graphics::GraphicsDevice *device = xe_render::getDevice();
+
+        va.buffers.push_back(new xe_graphics::VertexBuffer);
+        va.ib = new xe_graphics::IndexBuffer;
+
+        device->createVertexArray(&va);
+        device->bindVertexArray(&va);
+        device->createVertexBuffer(anim_vertices.data(), anim_vertices.size() * sizeof(PositionNormalUVBW), DRAW_TYPE::STATIC, va.buffers[0]);
+        device->createIndexBuffer(anim_indices.data(), anim_indices.size(), va.ib);
+
+        using namespace xe_graphics;
+
+        BufferLayout buffer_layout = {};
+
+        std::initializer_list<xe_graphics::BufferElement> init_list =
+        {
+            { "iPos",         ElementType::Float3, },
+            { "iNormal",      ElementType::Float3, },
+            { "iTangent",     ElementType::Float3, },
+            { "iBitangent",   ElementType::Float3, },
+            { "iUV",          ElementType::Float2, },
+            { "iBoneIDs",     ElementType::Int4, },
+            { "iBoneWeights", ElementType::Float4, }
+        };
+
+        device->createBufferLayout(init_list, &buffer_layout);
+        device->setVertexBufferLayout(va.buffers[0], &buffer_layout);
+        device->addVertexBuffer(&va, va.buffers[0]);
+        device->setIndexBuffer(&va, va.ib);*/
     }
 
     void AnimModel::setActiveAnimation(uint32 anim_index)

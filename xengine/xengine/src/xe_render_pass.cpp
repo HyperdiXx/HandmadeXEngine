@@ -6,8 +6,6 @@
 #include "xe_scene.h"
 #include "xe_gui.h"
 
-#include "app_state.h"
-
 #include "xe_utility.h"
 
 using namespace xe_ecs;
@@ -16,7 +14,7 @@ void xe_graphics::RenderPass2D::init()
 {
     GraphicsDevice *device = xe_render::getDevice();
 
-    result_texture = xe_render::getTexture2DResource("water");
+    color_texture = xe_render::getTexture2DResource("water");
 
     simple_shader = xe_render::getShader("simple2d");
 
@@ -46,10 +44,10 @@ void xe_graphics::RenderPass2D::render()
 { 
     using namespace xe_render;
 
-    application::ApplicationState *app_state = application::getAppState();
+    //application::ApplicationState *app_state = application::getAppState();
 
-    drawQuad(&main_ent, simple_shader, result_texture);
-    drawText("FPS: " + std::to_string(app_state->fps), 10, 10);
+    drawQuad(&main_ent, simple_shader, color_texture);
+    //drawText("FPS: " + std::to_string(app_state->fps), 10, 10);
 }
 
 void xe_graphics::RenderPass2D::update(real32 dt)
@@ -104,8 +102,6 @@ void xe_graphics::RenderPass3D::init()
 
     device->checkFramebuffer();
     device->unbindFramebuffer();
-
-
 }
 
 void xe_graphics::RenderPass3D::clear()
@@ -143,14 +139,13 @@ void xe_graphics::RenderPass3D::render()
         xe_render::drawEnt(current_ent);
     }
     device->disable(GL_CULL_FACE);
+   
+    xe_assets::AnimModel *girl = xe_scene::getAnimatedModelByName(current_scene, "Girl");
+    xe_assets::AnimModel *gun = xe_scene::getAnimatedModelByName(current_scene, "Gun");
     
-    application::ApplicationState *app_state = application::getAppState();
-
-    xe_assets::AnimModel *girl = app_state->getAnimatedModelByName("Girl");    
-    xe_assets::AnimModel *gun = app_state->getAnimatedModelByName("Gun");
-
-    gun->update(app_state->delta_time);
-    girl->update(app_state->delta_time);
+    //XD
+    gun->update(0.016f);
+    girl->update(0.016f);
 
     xe_render::drawModel(gun, glm::translate(xe_render::IDENTITY_MATRIX, { 0, 0, -10 }) * glm::scale(xe_render::IDENTITY_MATRIX, { 20, 20, 20 }));
     xe_render::drawModel(girl, glm::translate(xe_render::IDENTITY_MATRIX, { 5, -10, 0})
@@ -196,9 +191,11 @@ void xe_graphics::GammaCorrectionPass::render()
 
     device->bindShader(gmshd);
 
-    if(texture != nullptr)
-        device->activateBindTexture(TEXTURE_TYPE::COLOR, texture);
-    
+    if (color_texture != nullptr)
+    {
+        device->activateBindTexture(TEXTURE_TYPE::COLOR, color_texture);
+    }
+
     xe_render::drawFullquad();
 
     device->unbindTexture(TEXTURE_TYPE::COLOR);
@@ -602,10 +599,10 @@ void xe_graphics::PbrPass::render()
     model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, 0.0f, -2.0f));
     device->setMat4("model", model_matrix, pbr_shader);
    
-    application::ApplicationState *appState = application::getAppState();
+    //application::ApplicationState *appState = application::getAppState();
 
-    xe_assets::Model *cerberus = appState->getStaticModelByName("Cerberus");
-    xe_render::drawModel(cerberus, pbr_shader);
+    //xe_assets::Model *cerberus = appState->getStaticModelByName("Cerberus");
+    //xe_render::drawModel(cerberus, pbr_shader);
 
     Shader *back = xe_render::getShader("background");
     

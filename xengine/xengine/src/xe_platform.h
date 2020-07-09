@@ -1,12 +1,15 @@
 
 #pragma once
 
+#ifndef XE_PLATFORM_H
+#define XE_PLATFORM_H
+
 #include "xe_config.h"
 
 #ifdef _WIN32
-    #define PLATFORM_WINDOWS
+#define PLATFORM_WINDOWS
 #else
-    #define PLATFORM_LINUX
+#define PLATFORM_LINUX
 #endif
 
 #ifdef PLATFORM_WINDOWS
@@ -19,10 +22,10 @@
 #include <types.h>
 #include <memory>
 
-    #ifdef GAPI_DX11
-        #include <DirectXMath.h>
-        #include <DirectXPackedVector.h>       
-    #endif // 
+#ifdef GAPI_DX11
+#include <DirectXMath.h>
+#include <DirectXPackedVector.h>       
+#endif // 
 
 #endif 
 
@@ -33,7 +36,7 @@
 namespace xe_platform
 {
 #ifdef PLATFORM_WINDOWS
-   
+
     struct win32_window_state
     {
         bool32 is_closed;
@@ -44,7 +47,7 @@ namespace xe_platform
         LARGE_INTEGER start;
         real64 frequ;
     };
-   
+
     typedef HWND window_handle;
 
     inline HWND& get_window_handle()
@@ -81,12 +84,14 @@ namespace xe_platform
     void destroy_platform_window();
 
     void start_timer(timer *time);
-    void reset_timer(timer *time);   
+    void reset_timer(timer *time);
     real32 time_elapsed(timer *time);
- 
+
     inline LARGE_INTEGER get_wall_clock();
-   
+
     bool32 load_library(const char *name);
+
+    void shutdownApp();
 
 #endif
 
@@ -97,4 +102,5 @@ namespace xe_platform
 #endif
 }
 
+#endif // !XE_PLATFORM_H
 

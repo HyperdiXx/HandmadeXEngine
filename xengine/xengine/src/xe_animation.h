@@ -6,16 +6,16 @@
 #include "xenpch.h"
 #include "types.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include <assimp/include/assimp/Importer.hpp>
+#include <assimp/include/assimp/scene.h>
+#include <assimp/include/assimp/postprocess.h>
 
 #include <glm/glm.hpp>
 
 namespace xe_graphics
 {
     struct PositionNormalUVBW;
-}
+} 
 
 namespace xe_animation
 {
@@ -123,8 +123,6 @@ namespace xe_animation
         //const aiScene* scene;
 
         glm::mat4 global_inverse_transform;
-
-
         std::vector<AnimNode> anim_meshes;
         std::vector<xe_graphics::PositionNormalUVBW> anim_vertices;
         std::vector<uint32> anim_indices;
@@ -146,10 +144,11 @@ namespace xe_animation
         void readNodeHierarchy(real32 anim_time, const aiNode* ptr_node, const glm::mat4& parent_transform);
         void transformBones(real32 dt);
         void updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform = glm::mat4(1.0f));
+    
+    private:
 
         Animation* active_animation;
-        std::vector<Animation*> animation_list;
-
+        std::vector<Animation*> animation_list;        
         Skeleton skelet;
     };
 }

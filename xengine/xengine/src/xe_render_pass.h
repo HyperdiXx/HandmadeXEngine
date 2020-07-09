@@ -23,6 +23,9 @@ namespace xe_graphics
 
         virtual void update(real32 dt) = 0;
 
+        virtual void setScene(xe_scene::Scene *scene) = 0;
+        virtual void setColorTexture(Texture2D *clrTex) = 0;
+        virtual Texture2D *getColorTexture() = 0;
     private:
         
     };
@@ -37,9 +40,12 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        const Texture2D *getResultTexture() { return result_texture; };
+        void setScene(xe_scene::Scene *scene) override {};
+        void setColorTexture(Texture2D *clrTex) override { color_texture = clrTex;  };
+
+        Texture2D *getColorTexture() override { return color_texture; };
     private:
-        Texture2D *result_texture;
+        Texture2D *color_texture;
         Shader* simple_shader;
         xe_ecs::Entity main_ent;      
     };
@@ -55,9 +61,11 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        void set_scene(xe_scene::Scene *scene) { current_scene = scene; };
-       
-        inline xe_graphics::Texture2D& get_color_texture() { return color_texture; }
+        void setScene(xe_scene::Scene *scene) override { current_scene = scene; };
+        void setColorTexture(Texture2D *clrTex) override { color_texture = *clrTex; };
+
+        Texture2D *getColorTexture() override { return &color_texture; };
+
     private:            
         xe_graphics::Framebuffer fbo;
         xe_graphics::Texture2D color_texture;
@@ -73,7 +81,11 @@ namespace xe_graphics
         void render() override;
 
         void update(real32 dt) override;
-    
+
+        void setScene(xe_scene::Scene *scene) override { current_scene = scene; };
+        void setColorTexture(Texture2D *clrTex) override { color_texture = *clrTex; };
+
+        Texture2D *getColorTexture() override { return &color_texture; };
     private:
         xe_graphics::Framebuffer fbo;
         xe_graphics::Texture2D env_cubemap;
@@ -94,10 +106,15 @@ namespace xe_graphics
 
         void update(real32 dt) override;
 
-        void setColorTexture(Texture2D *tex) { texture = tex; }
+        void setScene(xe_scene::Scene *scene) override { current_scene = scene; };
+        void setColorTexture(Texture2D *clrTex) override { color_texture = clrTex; };
+
+        Texture2D *getColorTexture() override { return color_texture; };
+
     private:
         Shader* gmshd;
-        Texture2D *texture;
+        Texture2D *color_texture;
+        xe_scene::Scene *current_scene;
     };
 
     class ShadowMapPass

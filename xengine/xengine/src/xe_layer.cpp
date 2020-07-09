@@ -36,3 +36,58 @@ void xe_graphics::GUILayer::update(real32 dt)
     }
 }
 
+void xe_graphics::Layer2D::init()
+{
+    GraphicsDevice *device = xe_render::getDevice();
+
+    Texture2D *water = xe_render::getTexture2DResource("water");
+    Shader *simple_shader = xe_render::getShader("simple2d");
+
+    using namespace xe_ecs;
+
+    Entity ent = {};
+
+    ent.addComponent(new QuadComponent());
+    ent.addComponent(new TransformComponent());
+    ent.addComponent(new UpdateComponent());
+
+    QuadComponent* mesh = ent.findComponent<QuadComponent>();
+    TransformComponent *transform = ent.findComponent<TransformComponent>();
+
+    transform->position = glm::vec3(200.0f, 200.0f, 0.0f);
+    transform->scale = glm::vec3(100.0f, 100.0f, 100.0f);
+
+    mesh->quad_mesh = new Quad();
+    xe_render::createQuad(mesh->quad_mesh);
+
+    device->bindShader(simple_shader);
+    device->setInt("tex_diff", 0, simple_shader);
+}
+
+void xe_graphics::Layer2D::render()
+{
+
+}
+
+void xe_graphics::Layer2D::update(real32 dt)
+{
+
+}
+
+void xe_graphics::Layer2D::addEntity(xe_ecs::Entity* ent)
+{
+    entities.push_back(*ent);
+}
+
+void xe_graphics::Layer3D::init()
+{
+
+}
+
+void xe_graphics::Layer3D::render()
+{
+}
+
+void xe_graphics::Layer3D::update(real32 dt)
+{
+}

@@ -1,17 +1,15 @@
 #pragma once
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include <assimp/include/assimp/Importer.hpp>
+#include <assimp/include/assimp/scene.h>
+#include <assimp/include/assimp/postprocess.h>
 
 #include "xe_graphics_resource.h"
 #include "xe_render.h"
 
 #include "xe_math.h"
-#include <unordered_map>
-
-#include <types.h>
-#include <glm/glm.hpp>
+#include "xenpch.h"
+#include "types.h"
 
 namespace xe_assets
 {

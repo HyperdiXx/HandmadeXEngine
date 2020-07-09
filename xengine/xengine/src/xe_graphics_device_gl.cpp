@@ -721,16 +721,19 @@ namespace xe_graphics
     {
         const char *path_res;
 
+        std::string filename(path);
+        
         if (dir)
         {
-            std::string filename(path);
             std::string dirname(dir);
             filename = dirname + '/' + filename;
             path_res = filename.c_str();
         }
         else
+        {
             path_res = path;
-
+        }
+            
         int channels = 0;
 
         void *image = nullptr;

@@ -116,7 +116,7 @@ bool32 xe_platform::init_win32_platform(uint32 window_w, uint32 window_h)
 void xe_platform::destroy_platform_window()
 {
 #ifdef GAPI_GL
-    wglMakeCurrent(0, 0);
+    
 #endif // DEBUG
 
     DestroyWindow(get_window_handle());
@@ -156,6 +156,11 @@ bool32 xe_platform::load_library(const char *name)
     if (library)
         return false;
     return true;
+}
+
+void xe_platform::shutdownApp()
+{
+    exit(0);
 }
 
 

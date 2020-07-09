@@ -157,7 +157,7 @@ namespace xe_gui
 
         if (mouse->isLeftButtonPressed)
         {
-            intertsects = isIntersects(mouse->position.x, mouse->position.y, glm::vec2(x - halfWidth, height - y), glm::vec2(x + halfWidth, height - y - h));
+            intertsects = Intersection::isIntersects(mouse->position.x, mouse->position.y, glm::vec2(x - halfWidth, height - y), glm::vec2(x + halfWidth, height - y - h));
         }
 
         UIElement *elem = NULL;

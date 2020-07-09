@@ -3,8 +3,7 @@
 #include "xe_ecs.h"
 #include "xe_core.h"
 
-#include <vector>
-#include <map>
+#include "xenpch.h"
 
 namespace xe_graphics
 {
@@ -20,7 +19,7 @@ namespace application
 
 namespace xe_scene
 {   
-    struct Objects
+    struct LoadedObjects
     {
         std::unordered_map<const char*, xe_assets::Model> models3D;
         std::unordered_map<const char*, xe_assets::AnimModel> animModels3D;
@@ -30,7 +29,10 @@ namespace xe_scene
     {
         std::string name;
         std::vector<xe_ecs::Entity*> entities;
-        std::vector<xe_graphics::RenderPass*> passes;
+        
+        LoadedObjects *objects;
+
+        std::unordered_map<const char*, xe_graphics::RenderPass*> passes;
         std::vector<xe_graphics::Layer*> layers;
         xe_graphics::ShadowMapPass *shadow_pass;
         xe_ecs::Entity *directional_light;
@@ -43,10 +45,19 @@ namespace xe_scene
 
     Scene createScene(const char *name);
    
-    void updateSceneLayers(const Scene *scn);
+    void updateSceneLayers(const Scene *scn, real32 dt);
     void drawSceneLayers(const Scene *scn);
 
-    // @Rework init by parsing 
-    void loadTestScene(Scene *sc);
-    void loadSpheresScene(Scene *sc);
+    void pushLayer(Scene *scene, xe_graphics::Layer *layr);   
+    xe_graphics::Layer *getLayerByName(Scene *scene, xe_graphics::Layer *layr);
+
+    void pushPass(Scene *scene, const char *pass_name, xe_graphics::RenderPass *pass);
+    xe_graphics::RenderPass *getPassByName(Scene *scene, const char *pass_name);
+
+    void pushStaticModels(Scene *scene, const char* name, xe_assets::Model *model);
+    void pushAnimatedModels(Scene *scene, const char* name, xe_assets::AnimModel *model);
+
+    xe_assets::Model* getStaticModelByName(const Scene *scene, const char *name);
+    xe_assets::AnimModel* getAnimatedModelByName(const Scene *scene, const char *name);
+
 }

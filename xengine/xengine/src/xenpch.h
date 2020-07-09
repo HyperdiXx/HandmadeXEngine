@@ -3,10 +3,6 @@
 #ifndef UTILITYH
 #define UTILITYH
 
-#include <ft2build.h>
-#include FT_FREETYPE_H  
-#define GLEW_STATIC
-
 #ifdef _WIN32
     #define APIENTRY __stdcall
 #endif

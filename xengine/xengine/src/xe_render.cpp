@@ -15,6 +15,10 @@
 
 #include <thread>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H  
+#define GLEW_STATIC
+
 namespace xe_render
 {
     static glm::vec4 clear_color; 
@@ -141,13 +145,17 @@ namespace xe_render
         FT_Library lib;
 
         if (FT_Init_FreeType(&lib))
+        {
             xe_utility::error("FREETYPE: Couldnt init free type lib");
-
+        }
+            
         FT_Face face;
 
         if (FT_New_Face(lib, path, 0, &face))
+        {
             xe_utility::error("FREETYPE: Failed to load font");
-
+        }
+            
         FT_Set_Pixel_Sizes(face, 0, 48);
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -407,7 +415,7 @@ namespace xe_render
         graphics_device->createTexture2D("assets/m1911/m1911_color.png", &gun_diff);
         graphics_device->createTexture2D("assets/animated/character_diff.jpg", &character_diff);
 
-        graphics_device->createTexture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);
+        //graphics_device->createTexture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);
 
         bool32 loaded = graphics_device->createTexture2D("assets/get.png", &wood_texture);
         graphics_device->createTexture2D("assets/water-texture.jpg", &water_texture);
@@ -765,12 +773,12 @@ namespace xe_render
         cube->face_textures.reserve(16);
 
         std::vector<const char*> skybox_faces;
-        skybox_faces.push_back("right.jpg");
-        skybox_faces.push_back("left.jpg");
-        skybox_faces.push_back("top.jpg");
-        skybox_faces.push_back("bottom.jpg");
-        skybox_faces.push_back("front.jpg");
-        skybox_faces.push_back("back.jpg");
+        skybox_faces.push_back("lakes_rt.tga");
+        skybox_faces.push_back("lakes_lf.tga");
+        skybox_faces.push_back("lakes_up.tga");
+        skybox_faces.push_back("lakes_dn.tga");
+        skybox_faces.push_back("lakes_bk.tga");
+        skybox_faces.push_back("lakes_ft.tga");
 
         Texture2D *cubemap_texture = new Texture2D();
         cubemap_texture->desc.texture_type = CUBEMAP;
@@ -905,7 +913,7 @@ namespace xe_render
             //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
            
-            graphics_device->addColorTexture2D(p_color_buffer + i, i, p_fbo + i);
+            //graphics_device->addColorTexture2D(p_color_buffer + i, i, p_fbo + i);
             //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingcolorBuffer[i], 0);
 
             graphics_device->checkFramebuffer();

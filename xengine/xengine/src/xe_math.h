@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef XE_MATH_H
+#define XE_MATH_H
+
 
 #include "types.h"
 
@@ -14,7 +19,7 @@
 #define TOLERANCE 0.00000001f
 
 inline static int32 truncate_int(real32 val)
-{ 
+{
     return (int32)val;
 }
 
@@ -109,7 +114,7 @@ inline static real32 xe_pow(real32 a, real32 b) { return powf(a, b); }
 
 inline static int32 xe_rand() { return rand(); }
 
-inline static void xe_srand(int32 val) 
+inline static void xe_srand(int32 val)
 {
     return srand(val);
 }
@@ -172,7 +177,7 @@ inline static vec2f max_cmp(const vec2f &a, const vec2f &b)
 }
 
 inline static vec2f min_cmp(const vec2f &a, const vec2f &b)
-{    
+{
     return vec2f();
 }
 
@@ -203,7 +208,7 @@ inline vec3f cross_product(const vec3f &a, const vec3f &b)
 
 inline real32 distance(const vec3f &a, const vec3f &b)
 {
-    
+
 }
 
 inline real32 distance_sqr(const vec3f &a, const vec3f &b)
@@ -234,17 +239,18 @@ struct ray
     bool isIntersects(const aabb &bb, float &t)
     {
         glm::vec3 dirfrac;
+        
         // r.dir is unit direction vector of ray
         dirfrac.x = 1.0f / direction.x;
         dirfrac.y = 1.0f / direction.y;
         dirfrac.z = 1.0f / direction.z;
-        
+
         // lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
         // r.org is origin of ray
-        
+
         const glm::vec3& lb = bb.min;
         const glm::vec3& rt = bb.max;
-        
+
         float t1 = (lb.x - origin.x) * dirfrac.x;
         float t2 = (rt.x - origin.x) * dirfrac.x;
         float t3 = (lb.y - origin.y) * dirfrac.y;
@@ -280,13 +286,21 @@ struct ray
     }
 };
 
-inline bool isIntersects(real32 x, real32 y, const glm::vec2& min, const glm::vec2 &max)
+class Intersection
 {
-    return x >= min.x && x <= max.x && y <= min.y && y >= max.y;
-}
+public:
 
-inline bool isIntersects(real32 x, real32 y, const aabb &bb)
-{
-    return isIntersects(x, y, bb.min, bb.max);
-}
+    static bool isIntersects(real32 x, real32 y, const glm::vec2& min, const glm::vec2 &max)
+    {
+        return x >= min.x && x <= max.x && y <= min.y && y >= max.y;
+    }
+
+    static bool isIntersects(real32 x, real32 y, const aabb &bb)
+    {
+        return isIntersects(x, y, bb.min, bb.max);
+    }
+};
+
+#endif // !XE_MATH
+
 

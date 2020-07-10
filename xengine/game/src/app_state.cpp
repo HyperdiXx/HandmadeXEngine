@@ -264,7 +264,6 @@ namespace application
         RenderPass *main_pass = xe_scene::getPassByName(&app_state.active_scene, "layer3D");
         RenderPass *render_pass_2D = xe_scene::getPassByName(&app_state.active_scene, "layer2D");
         RenderPass *gamma_correction = xe_scene::getPassByName(&app_state.active_scene, "gammaCorrectionLayer");
-
        
         render_pass_2D->update(dt);
         xe_scene::updateSceneLayers(&app_state.active_scene, dt);
@@ -351,6 +350,8 @@ namespace application
 
         if (mouse->isLeftButtonPressed)
         {
+            mouse->isLeftButtonPressed = false;
+            
             ray ray_cast = {};
 
             xe_graphics::GraphicsDevice *device = xe_render::getDevice();

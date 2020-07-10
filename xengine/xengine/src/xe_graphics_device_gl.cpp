@@ -283,7 +283,9 @@ namespace xe_graphics
         
         // create modern gl context attribs
         if (wglCreateContextAttribsARB)
+        {
             gl_render_context = wglCreateContextAttribsARB(dc, 0, attributes);
+        }
 
         // create context modern gl 
         gl_render_context = wglCreateContext(dc);
@@ -295,10 +297,13 @@ namespace xe_graphics
 
         // set swap interval
         if (wglSwapIntervalEXT && vsync)
+        {
             wglSwapIntervalEXT(1);
+        }
         else
+        {
             wglSwapIntervalEXT(0);
-
+        }
 #endif 
        
         ReleaseDC(window_handle, dc);
@@ -375,6 +380,36 @@ namespace xe_graphics
     {
         uint32 gl_primitive_type = convert_primitive_type(mode);
         glDrawElements(gl_primitive_type, count, type, ind);
+    }
+
+    void GraphicsDeviceGL::drawLines2D()
+    {
+        //gState.model = matrix4x4::Identity();
+
+        //setVec3(gState.inputShaderColorUniformName, gState.whiteColor, &gState.baseShader);
+        //setMat4("model", gState.model, &gState.baseShader);
+
+        //bindVertexArray(&gState.lineVa);
+        //setLineWidth(gState.defaultLineWidth);
+        drawArray(PRIMITIVE_TOPOLOGY::LINE, 0, 2 * lines2D.size());
+    }
+
+    void GraphicsDeviceGL::drawLines3D()
+    {
+        //gState.model = matrix4x4::Identity();
+
+        //setVec3(gState.inputShaderColorUniformName, gState.whiteColor, &gState.baseShader);
+        //setMat4("model", gState.model, &gState.baseShader);
+
+        //bindVertexArray(&gState.lineVa);
+        //setLineWidth(gState.defaultLineWidth);
+        drawArray(PRIMITIVE_TOPOLOGY::LINE, 0, 2 * lines3D.size());
+    }
+
+    void GraphicsDeviceGL::pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, const void *data)
+    {
+        uint32 buf_type = convert_buffer_type_gl(type);
+        glBufferSubData(buf_type, offset, size, data);
     }
 
     void GraphicsDeviceGL::activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture)
@@ -1159,6 +1194,22 @@ namespace xe_graphics
 
     void GraphicsDeviceGL::endExecution()
     {       
+        if (lines2D.size() > 0)
+        {
+            uint32 offset = 0;
+            bindBuffer(&graphics_state.line2D_vertex_buffer);
+            pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(Line2D) * lines2D.size(), lines2D.data());
+            //drawLines2D();
+        }
+
+        if (lines3D.size() > 0)
+        {
+            uint32 offset = 0;
+            bindBuffer(&graphics_state.line3D_vertex_buffer);
+            pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(Line3D) * lines3D.size(), lines3D.data());
+            //drawLines3D();
+        }
+
         SwapBuffers(xe_platform::get_dc());
     }
 }

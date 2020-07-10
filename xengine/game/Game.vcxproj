@@ -62,7 +62,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)xengine\inc\assimp\win64\assimp.lib;$(SolutionDir)xengine\lib\freetype.lib;xengine.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)xengine\inc\assimp\win64\assimp.lib;$(SolutionDir)xengine\lib\freetype.lib;$(SolutionDir)out\xengine\Debugx64\bin\xengine.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -91,9 +91,6 @@
   <ItemGroup>
     <ProjectReference Include="..\math\math.vcxproj">
       <Project>{8f481b9d-b899-49e3-b818-a04a1d65afd0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\XEngineSTL\XEngineSTL.vcxproj">
-      <Project>{53272607-1563-4fe3-a524-a63cdd5eb299}</Project>
     </ProjectReference>
     <ProjectReference Include="..\xengine\xengine.vcxproj">
       <Project>{48815f50-9ac5-47c7-a7e3-ff1b38114635}</Project>

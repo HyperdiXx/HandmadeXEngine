@@ -140,7 +140,7 @@ void xe_graphics::RenderPass3D::render()
     }
     device->disable(GL_CULL_FACE);
    
-    xe_assets::AnimModel *girl = xe_scene::getAnimatedModelByName(current_scene, "Girl");
+    /*xe_assets::AnimModel *girl = xe_scene::getAnimatedModelByName(current_scene, "Girl");
     xe_assets::AnimModel *gun = xe_scene::getAnimatedModelByName(current_scene, "Gun");
     
     //XD
@@ -150,7 +150,7 @@ void xe_graphics::RenderPass3D::render()
     xe_render::drawModel(gun, glm::translate(xe_render::IDENTITY_MATRIX, { 0, 0, -10 }) * glm::scale(xe_render::IDENTITY_MATRIX, { 20, 20, 20 }));
     xe_render::drawModel(girl, glm::translate(xe_render::IDENTITY_MATRIX, { 5, -10, 0})
                                                     * glm::rotate(xe_render::IDENTITY_MATRIX, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f))
-                                                    * glm::scale(xe_render::IDENTITY_MATRIX, glm::vec3(0.2f, 0.2f, 0.2f)));
+                                                    * glm::scale(xe_render::IDENTITY_MATRIX, glm::vec3(0.2f, 0.2f, 0.2f)));*/
     xe_render::drawSkybox();
 
     device->disable(GL_DEPTH_TEST);

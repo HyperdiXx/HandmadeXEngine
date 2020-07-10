@@ -225,5 +225,42 @@ namespace xe_graphics
         glm::mat4 light_projection_matrix = glm::mat4(1.0f);
         Framebuffer depth_fbo;
     };
+
+    struct Line2D
+    {
+        real32 x, y;
+
+        Line2D(real32 x_l, real32 y_l) : x(x_l), y(y_l) {};
+    };
+
+    struct Line3D
+    {
+        real32 x, y, z;
+
+        Line3D(real32 x_l, real32 y_l, real32 z_l) : x(x_l), y(y_l), z(z_l) {};
+    };
+
+    struct RenderState
+    {
+        uint32 draw_calls;
+
+        VertexBuffer line2D_vertex_buffer;
+        VertexBuffer line3D_vertex_buffer;
+    };
+
+    struct Color3RGB
+    {
+        real32 x, y, z;
+
+        Color3RGB(real32 x_c, real32 y_c, real32 z_c) : x(x_c), y(y_c), z(z_c) {};
+    };
+
+    struct Color4RGBA
+    {
+        real32 x, y, z, a;
+
+        Color4RGBA(real32 x_c, real32 y_c, real32 z_c, real32 a_c) : x(x_c), y(y_c), z(z_c), a(a_c) {};
+    };
+
 }
 #endif

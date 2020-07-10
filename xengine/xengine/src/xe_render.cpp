@@ -21,10 +21,10 @@
 
 namespace xe_render
 {
-    static glm::vec4 clear_color; 
-    static glm::vec3 default_text_color = glm::vec3(1.0f, 1.0f, 1.0f);
-    static glm::vec3 default_cube_color = glm::vec3(0.0f, 1.0f, 0.0f);
-    static glm::vec4 default_line_color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    static xe_graphics::Color3RGB default_text_color = xe_graphics::Color3RGB(1.0f, 1.0f, 1.0f);
+    static xe_graphics::Color3RGB default_cube_color = xe_graphics::Color3RGB(0.0f, 1.0f, 0.0f);
+    static xe_graphics::Color4RGBA default_line_color = xe_graphics::Color4RGBA(1.0f, 0.0f, 0.0f, 1.0f);
+    
     static uint32 default_line_width = 5;
     static real32 default_text_scale = 1.0f;
 
@@ -1321,12 +1321,14 @@ namespace xe_render
 
     void drawText(const std::string &text, glm::vec2 &pos)
     {
-        drawText(text, pos.x, pos.y, default_text_color, default_text_scale);
+        glm::vec3 text_color = convertToVec3(default_text_color);
+        drawText(text, pos.x, pos.y, text_color, default_text_scale);
     }
 
     void drawText(const std::string &text, real32 x, real32 y)
     {
-        drawText(text, x, y, default_text_color, default_text_scale);
+        glm::vec3 text_color = convertToVec3(default_text_color);
+        drawText(text, x, y, text_color, default_text_scale);
     }
 
     void drawWaterPlane(xe_ecs::Entity *ent)
@@ -1458,6 +1460,20 @@ namespace xe_render
 
     }
 
+    glm::vec3 convertToVec3(xe_graphics::Color3RGB color)
+    {
+        return glm::vec3(color.x, color.y, color.z);
+    }
+
+    glm::vec4 convertToVec4(xe_graphics::Color4RGBA color)
+    {
+        return glm::vec4(color.x, color.y, color.z, color.a);
+    }
+
+    void convertToVec4(xe_graphics::Color3RGB color)
+    {
+    }
+
     void drawModel(xe_assets::Model *mod, const glm::mat4 &transform)
     {
         Shader *static_model_shader = xe_render::getShader("model3d");
@@ -1510,13 +1526,47 @@ namespace xe_render
 
             graphics_device->bindShader(simple_color);
             graphics_device->setMat4("mvp", mvp, simple_color);
-            graphics_device->setVec4("u_color", default_line_color, simple_color);
+            graphics_device->setVec4("u_color", convertToVec4(default_line_color), simple_color);
 
             graphics_device->bindVertexArray(line->line_co->va);
             graphics_device->setLineWidth(default_line_width);
             graphics_device->drawArray(PRIMITIVE_TOPOLOGY::LINE, 0, line->line_co->vertex_count);
             graphics_device->unbindVertexArray();
         }
+    }
+
+    void drawLine(real32 x, real32 y)
+    {
+        xe_graphics::Color3RGB default_color = xe_graphics::Color3RGB(1.0f, 0.0f, 0.0f);
+        drawLine(x, y, default_color);
+    }
+
+    void drawLine(real32 x, real32 y, real32 z)
+    {
+    }
+
+    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color4RGBA color)
+    {
+    }
+
+    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color3RGB color)
+    {
+    }
+
+    void drawLine(real32 x, real32 y, xe_graphics::Color4RGBA color)
+    {
+    }
+
+    void drawLine(real32 x, real32 y, xe_graphics::Color3RGB color)
+    {
+    }
+
+    void drawLine(const glm::vec2 line)
+    {
+    }
+
+    void drawLine(const glm::vec3 line)
+    {
     }
 
     void drawEnt(xe_ecs::Entity *ent)
@@ -1574,7 +1624,7 @@ namespace xe_render
 
             if (model->draw_with_color)
             {
-                device->setVec3("color", default_cube_color, shader_to_draw);
+                device->setVec3("color", convertToVec3(default_cube_color), shader_to_draw);
             }
            
             applyTransform(transform, shader_to_draw);
@@ -1648,7 +1698,7 @@ namespace xe_render
             Shader *shd = xe_render::getShader("color");
 
             graphics_device->bindShader(shd);
-            graphics_device->setVec3("color", default_cube_color, shd);
+            graphics_device->setVec3("color", convertToVec3(default_cube_color), shd);
 
             if (sphere->diffuse)
             {

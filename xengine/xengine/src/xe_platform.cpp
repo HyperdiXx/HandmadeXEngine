@@ -246,7 +246,8 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
 
             if (rawmouse.usButtonFlags == RI_MOUSE_LEFT_BUTTON_DOWN)
             {
-                //mouse->isLeftButtonPressed = true;
+                mouse->isLeftButtonPressed = true;
+                
                 POINT p;
                 GetCursorPos(&p);
                 if (ScreenToClient(window_handle, &p))

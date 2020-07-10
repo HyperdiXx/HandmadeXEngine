@@ -93,6 +93,18 @@ namespace xe_render
 
     void drawLine(xe_ecs::Entity *ent);
 
+    void drawLine(real32 x, real32 y);
+    void drawLine(real32 x, real32 y, real32 z);
+
+    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color4RGBA color);
+    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color3RGB color);
+
+    void drawLine(real32 x, real32 y, xe_graphics::Color4RGBA color);
+    void drawLine(real32 x, real32 y, xe_graphics::Color3RGB color);
+
+    void drawLine(const glm::vec2 line);
+    void drawLine(const glm::vec3 line);
+
     void drawEnt(xe_ecs::Entity *ent);
     void drawEntStatic(xe_ecs::Entity *ent);
     void drawEntWithShader(xe_ecs::Entity *ent, xe_graphics::Shader *shd);
@@ -113,5 +125,8 @@ namespace xe_render
     void applyDirLight(xe_graphics::Shader *shd, xe_ecs::DirLight *directional_light, xe_ecs::TransformComponent *transform);
     void applySpotLight(xe_graphics::Shader *shd, xe_ecs::SpotLight *directional_light, xe_ecs::TransformComponent *transform);
     void applyPointLight(xe_graphics::Shader *shd, xe_ecs::PointLight *directional_light, xe_ecs::TransformComponent *transform);
+
+    glm::vec3 convertToVec3(xe_graphics::Color3RGB color);
+    glm::vec4 convertToVec4(xe_graphics::Color4RGBA color);
 }
 #endif // !XENGINE_RENDERING_H

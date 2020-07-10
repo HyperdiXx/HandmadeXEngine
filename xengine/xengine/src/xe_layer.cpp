@@ -91,3 +91,8 @@ void xe_graphics::Layer3D::render()
 void xe_graphics::Layer3D::update(real32 dt)
 {
 }
+
+void xe_graphics::Layer3D::addEntity(xe_ecs::Entity *ent)
+{
+    entities.push_back(*ent);
+}

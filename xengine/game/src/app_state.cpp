@@ -257,9 +257,8 @@ namespace application
     void gameSubmitRenderPasses(real32 dt)
     {
         using namespace xe_graphics;
-        GraphicsDevice *device = xe_render::getDevice();
-
-        device->startExecution();
+        
+        xe_render::beginFrame();
 
         RenderPass *main_pass = xe_scene::getPassByName(&app_state.active_scene, "layer3D");
         RenderPass *render_pass_2D = xe_scene::getPassByName(&app_state.active_scene, "layer2D");
@@ -290,9 +289,7 @@ namespace application
         //guiLayer.update(current_app_state->delta_time);
         //guiLayer.render();
 
-        device->checkError();
-
-        device->endExecution();    
+        xe_render::endFrame();
     }
 
     void gameUpdate(real32 dt)

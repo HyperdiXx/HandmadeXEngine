@@ -382,30 +382,6 @@ namespace xe_graphics
         glDrawElements(gl_primitive_type, count, type, ind);
     }
 
-    void GraphicsDeviceGL::drawLines2D()
-    {
-        //gState.model = matrix4x4::Identity();
-
-        //setVec3(gState.inputShaderColorUniformName, gState.whiteColor, &gState.baseShader);
-        //setMat4("model", gState.model, &gState.baseShader);
-
-        //bindVertexArray(&gState.lineVa);
-        //setLineWidth(gState.defaultLineWidth);
-        drawArray(PRIMITIVE_TOPOLOGY::LINE, 0, 2 * lines2D.size());
-    }
-
-    void GraphicsDeviceGL::drawLines3D()
-    {
-        //gState.model = matrix4x4::Identity();
-
-        //setVec3(gState.inputShaderColorUniformName, gState.whiteColor, &gState.baseShader);
-        //setMat4("model", gState.model, &gState.baseShader);
-
-        //bindVertexArray(&gState.lineVa);
-        //setLineWidth(gState.defaultLineWidth);
-        drawArray(PRIMITIVE_TOPOLOGY::LINE, 0, 2 * lines3D.size());
-    }
-
     void GraphicsDeviceGL::pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, const void *data)
     {
         uint32 buf_type = convert_buffer_type_gl(type);
@@ -446,6 +422,16 @@ namespace xe_graphics
             uint32 gl_texture_type = convert_texture_type_gl(type);
             glBindTexture(gl_texture_type, texture->id);
             last_bound_unit_texture = texture->id;
+        }
+    }
+
+    void GraphicsDeviceGL::bindTexture(TEXTURE_TYPE type, uint32 index)
+    {
+        if (last_bound_unit_texture != index)
+        {
+            uint32 gl_texture_type = convert_texture_type_gl(type);
+            glBindTexture(gl_texture_type, index);
+            last_bound_unit_texture = index;
         }
     }
 
@@ -1193,23 +1179,7 @@ namespace xe_graphics
     }
 
     void GraphicsDeviceGL::endExecution()
-    {       
-        if (lines2D.size() > 0)
-        {
-            uint32 offset = 0;
-            bindBuffer(&graphics_state.line2D_vertex_buffer);
-            pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(Line2D) * lines2D.size(), lines2D.data());
-            //drawLines2D();
-        }
-
-        if (lines3D.size() > 0)
-        {
-            uint32 offset = 0;
-            bindBuffer(&graphics_state.line3D_vertex_buffer);
-            pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(Line3D) * lines3D.size(), lines3D.data());
-            //drawLines3D();
-        }
-
+    {      
         SwapBuffers(xe_platform::get_dc());
     }
 }

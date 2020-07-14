@@ -71,6 +71,8 @@ namespace xe_render
     bool32 createLineMesh(glm::vec3 &start, glm::vec3 &end,  xe_graphics::Line *line_com);
     bool32 createLineMesh(xe_graphics::Line *line_com);
 
+    bool32 createLinesBuffer();
+
     void drawFullquad();
     void drawQuad(xe_graphics::Quad *q);
     void drawQuad(xe_graphics::Quad *q, const glm::vec4 &color);
@@ -93,17 +95,16 @@ namespace xe_render
 
     void drawLine(xe_ecs::Entity *ent);
 
-    void drawLine(real32 x, real32 y);
-    void drawLine(real32 x, real32 y, real32 z);
+    void drawLine(real32 x, real32 y, real32 x_end, real32 y_end);
+    void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end);
 
-    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color4RGBA color);
-    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color3RGB color);
+    void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, xe_graphics::Color4RGBA color);
+    void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, xe_graphics::Color3RGB color);
 
-    void drawLine(real32 x, real32 y, xe_graphics::Color4RGBA color);
-    void drawLine(real32 x, real32 y, xe_graphics::Color3RGB color);
+    void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, xe_graphics::Color4RGBA color);
+    void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, xe_graphics::Color3RGB color);
 
-    void drawLine(const glm::vec2 line);
-    void drawLine(const glm::vec3 line);
+    void drawLines();
 
     void drawEnt(xe_ecs::Entity *ent);
     void drawEntStatic(xe_ecs::Entity *ent);
@@ -125,6 +126,9 @@ namespace xe_render
     void applyDirLight(xe_graphics::Shader *shd, xe_ecs::DirLight *directional_light, xe_ecs::TransformComponent *transform);
     void applySpotLight(xe_graphics::Shader *shd, xe_ecs::SpotLight *directional_light, xe_ecs::TransformComponent *transform);
     void applyPointLight(xe_graphics::Shader *shd, xe_ecs::PointLight *directional_light, xe_ecs::TransformComponent *transform);
+
+    void beginFrame();
+    void endFrame();
 
     glm::vec3 convertToVec3(xe_graphics::Color3RGB color);
     glm::vec4 convertToVec4(xe_graphics::Color4RGBA color);

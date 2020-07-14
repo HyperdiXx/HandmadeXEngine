@@ -48,6 +48,8 @@ namespace xe_render
 
     xe_graphics::Skybox *skybox_obj;
 
+    xe_graphics::RenderState graphics_state = {};
+    
     using namespace xe_graphics;
 
     void initRenderGL()
@@ -57,8 +59,9 @@ namespace xe_render
         bool32 loaded_font = false;
 
         if (!loadShaders())
+        {
             xe_utility::error("Failed to init shader module!");
-
+        }
         /*std::thread l_shaders([&loaded_shaders]()
         {
             loaded_shaders = load_shaders();
@@ -74,12 +77,16 @@ namespace xe_render
             loaded_font = load_font("assets/fonts/arial.ttf");
         });/*/
 
-        if(!loadFreeTextures())
+        if (!loadFreeTextures())
+        {
             xe_utility::error("Failed to init textures module!");
+        }
 
         if (!loadFont("assets/fonts/arial.ttf"))
+        {
             xe_utility::error("Failed to init font module!");
-
+        }
+        
         initCommonGpuResources();
     }
 
@@ -136,7 +143,10 @@ namespace xe_render
         graphics_device->bindShader(animation);
         graphics_device->setInt("tex_diff1", 0, animation);
         //graphics_device->set_int("tex_norm1", 1, animation);
+        
 
+        createLinesBuffer();
+         
         return true;
     }
 
@@ -251,6 +261,8 @@ namespace xe_render
         xe_graphics::Shader simple_color = {};
         xe_graphics::Shader anim_model = {};
 
+        xe_graphics::Shader lines = {};
+        
         std::string shader_names[8] = {};
 
         const char *shaders_dir = "shaders/glsl/";
@@ -267,6 +279,8 @@ namespace xe_render
         {
             shader_res |= device->create_shader(shaders_dir + std::string("simple2d.vs"), std::string(shaders_dir + "simple2d.vs").c_str(), &simple_shader);
         }*/
+
+        res = graphics_device->createShader("shaders/glsl/lines.vs", "shaders/glsl/lines.fs", &lines);
 
         res = graphics_device->createShader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
         
@@ -296,7 +310,7 @@ namespace xe_render
 
 
 #endif
-
+        shaders["line"] = lines;
         shaders["simple_pos"] = simple_color;
         shaders["simple2d"] = simple_shader;
         shaders["simple_tex"] = simple_texture;
@@ -319,7 +333,7 @@ namespace xe_render
        
         if (!res)
         {
-            xe_utility::error("loading shader");
+            xe_utility::error("Loading shaders!!!");
             return false;
         }
     
@@ -623,6 +637,42 @@ namespace xe_render
         glm::vec3 start = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 end = glm::vec3(1.0f, 1.0f, 0.0f);
         return createLineMesh(start, end, line_com);
+    }
+
+    bool32 createLinesBuffer()
+    {   
+        graphics_state.line_vb_base = alloc_mem LineVertexMesh[graphics_state.max_line_vert];
+
+        graphics_device->createVertexArray(&graphics_state.line_vertex_array);
+        
+        graphics_device->createVertexBuffer(nullptr, graphics_state.max_line_vert * sizeof(LineVertexMesh), DRAW_TYPE::DYNAMIC, &graphics_state.line_vertex_buffer);
+
+        BufferLayout buffer_layout3 = {};
+
+        std::initializer_list<xe_graphics::BufferElement> init_list3 =
+        {
+            { "aPos",       ElementType::Float3, },
+            { "aColor",     ElementType::Float4 }
+        };
+
+        graphics_device->createBufferLayout(init_list3, &buffer_layout3);
+        graphics_device->setVertexBufferLayout(&graphics_state.line_vertex_buffer, &buffer_layout3);
+        graphics_device->addVertexBuffer(&graphics_state.line_vertex_array, &graphics_state.line_vertex_buffer);
+        
+        uint32* line_ind = alloc_mem uint32[graphics_state.max_line_ind];
+        for (uint32_t i = 0; i < graphics_state.max_line_ind; i++)
+        {
+            line_ind[i] = i;
+        }
+
+        xe_graphics::IndexBuffer *ib = alloc_mem xe_graphics::IndexBuffer();
+
+        graphics_device->createIndexBuffer(line_ind, graphics_state.max_line_ind, ib);
+        graphics_device->setIndexBuffer(&graphics_state.line_vertex_array, ib);
+
+        free_mem[] line_ind;
+
+        return true;
     }
 
     bool32 createCubemap(std::vector<const char*> paths, xe_graphics::Cubemap *cube)
@@ -1262,7 +1312,7 @@ namespace xe_render
         graphics_device->enable(GL_BLEND);
         graphics_device->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        Shader *text_shader = &shaders["text"];
+        Shader *text_shader = getShader("text");
 
         graphics_device->bindShader(text_shader);
         graphics_device->setVec3("color", color, text_shader);
@@ -1295,9 +1345,9 @@ namespace xe_render
                 { xpos + w, ypos + h,   1.0, 0.0 }
             };
 
-            //graphics_device->bind_texture2d();
+            graphics_device->bindTexture(TEXTURE_TYPE::COLOR, ch.texture_id);
 
-            glBindTexture(GL_TEXTURE_2D, ch.texture_id);
+            //glBindTexture(GL_TEXTURE_2D, ch.texture_id);
 
             glBindBuffer(GL_ARRAY_BUFFER, 1);
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);            
@@ -1460,6 +1510,30 @@ namespace xe_render
 
     }
 
+    void beginFrame()
+    {
+        graphics_state.line_index_count = 0;
+        graphics_state.line_vb_ptr = graphics_state.line_vb_base;
+
+        graphics_device->startExecution();
+    }
+
+    void endFrame()
+    {
+        uint32 lineSize = (uint8*)graphics_state.line_vb_ptr - (uint8*)graphics_state.line_vb_base;
+
+        if (lineSize > 0)
+        {
+            uint32 offset = 0;
+            graphics_device->bindBuffer(&graphics_state.line_vertex_buffer);
+            graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(LineVertexMesh) * lineSize, graphics_state.line_vb_base);
+            drawLines();
+        }
+
+        graphics_device->checkError();
+        graphics_device->endExecution();
+    }
+
     glm::vec3 convertToVec3(xe_graphics::Color3RGB color)
     {
         return glm::vec3(color.x, color.y, color.z);
@@ -1535,38 +1609,81 @@ namespace xe_render
         }
     }
 
-    void drawLine(real32 x, real32 y)
+    void drawLine(real32 x, real32 y, real32 x_end, real32 y_end)
     {
         xe_graphics::Color3RGB default_color = xe_graphics::Color3RGB(1.0f, 0.0f, 0.0f);
-        drawLine(x, y, default_color);
+        drawLine(x, y, x_end, y_end, default_color);
     }
 
-    void drawLine(real32 x, real32 y, real32 z)
+    void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end)
     {
+        xe_graphics::Color3RGB default_color = xe_graphics::Color3RGB(1.0f, 0.0f, 0.0f);
+        drawLine(x, y, z, x_end, y_end, z_end, default_color);
     }
 
-    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color4RGBA color)
+    void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, xe_graphics::Color4RGBA color)
     {
+        if (graphics_state.line_index_count >= RenderState::max_line_ind)
+        {
+            //FlushAndResetLines();
+        }
+
+        graphics_state.lines_count++;
+
+        graphics_state.line_vb_ptr->pos = glm::vec3(x, y, z);
+        graphics_state.line_vb_ptr->color = color;
+        graphics_state.line_vb_ptr++;
+
+        graphics_state.line_vb_ptr->pos = glm::vec3(x_end, y_end, z_end);
+        graphics_state.line_vb_ptr->color = color;
+        graphics_state.line_vb_ptr++;
+
+        graphics_state.line_index_count += 2;
     }
 
-    void drawLine(real32 x, real32 y, real32 z, xe_graphics::Color3RGB color)
+    void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, xe_graphics::Color3RGB color)
     {
+        drawLine(x, y, z, x_end, y_end, z_end, Color4RGBA(color.x, color.y, color.z, 1.0f));
     }
 
-    void drawLine(real32 x, real32 y, xe_graphics::Color4RGBA color)
+    void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, xe_graphics::Color4RGBA color)
     {
+        if (graphics_state.line_index_count >= RenderState::max_line_ind)
+        {
+            //FlushAndResetLines();
+        }
+
+        graphics_state.lines_count++;
+
+        graphics_state.line_vb_ptr->pos = glm::vec3(x, y, 0);
+        graphics_state.line_vb_ptr->color = color;
+        graphics_state.line_vb_ptr++;
+
+        graphics_state.line_vb_ptr->pos = glm::vec3(x_end, y_end, 0);
+        graphics_state.line_vb_ptr->color = color;
+        graphics_state.line_vb_ptr++;
+
+        graphics_state.line_index_count += 2;
     }
 
-    void drawLine(real32 x, real32 y, xe_graphics::Color3RGB color)
+    void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, xe_graphics::Color3RGB color)
     {
+        drawLine(x, y, x_end, y_end, Color4RGBA(color.x, color.y, color.z, 1.0f));
     }
-
-    void drawLine(const glm::vec2 line)
+    
+    void drawLines()
     {
-    }
+        xe_ecs::Camera3DComponent& camera = getCamera3D();
+        Shader *line = getShader("line");
+        graphics_device->bindShader(line);
 
-    void drawLine(const glm::vec3 line)
-    {
+        graphics_device->setMat4("vp", camera.get_view_projection(), line);
+
+        graphics_device->bindVertexArray(&graphics_state.line_vertex_array);
+        graphics_device->setLineWidth(graphics_state.default_line_width);
+        graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::LINE, graphics_state.line_index_count, GL_UNSIGNED_INT, 0);
+
+        graphics_state.draw_calls++;
     }
 
     void drawEnt(xe_ecs::Entity *ent)

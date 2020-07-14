@@ -13,6 +13,21 @@ namespace xe_graphics
 {
     class GraphicsDevice;
 
+    struct Color3RGB
+    {
+        real32 x, y, z;
+
+        Color3RGB(real32 x_c, real32 y_c, real32 z_c) : x(x_c), y(y_c), z(z_c) {};
+    };
+
+    struct Color4RGBA
+    {
+        real32 x, y, z, a;
+
+        Color4RGBA() : x(0.0f), y(0.0f), z(0.0f), a(1.0f) {};
+        Color4RGBA(real32 x_c, real32 y_c, real32 z_c, real32 a_c) : x(x_c), y(y_c), z(z_c), a(a_c) {};
+    };
+
     struct Texture2D
     {
         uint32 id;
@@ -226,41 +241,39 @@ namespace xe_graphics
         Framebuffer depth_fbo;
     };
 
-    struct Line2D
+    struct LineVertexMesh
     {
-        real32 x, y;
+        glm::vec3 pos;
+        Color4RGBA color; 
 
-        Line2D(real32 x_l, real32 y_l) : x(x_l), y(y_l) {};
-    };
-
-    struct Line3D
-    {
-        real32 x, y, z;
-
-        Line3D(real32 x_l, real32 y_l, real32 z_l) : x(x_l), y(y_l), z(z_l) {};
+        LineVertexMesh() {};
     };
 
     struct RenderState
     {
+        static const uint32_t max_quads_count = 20000;
+        static const uint32_t max_vert = max_quads_count * 4;
+        static const uint32_t max_indices = max_quads_count * 6;
+        static const uint32_t max_texture_slots = 32;
+
+        static const uint32_t max_line_count = 10000;
+        static const uint32_t max_line_vert = max_line_count * 2;
+        static const uint32_t max_line_ind = max_line_count * 6;
+
         uint32 draw_calls;
+        uint32 quads_count;
+        uint32 geometry_count;
+        uint32 lines_count;
+        uint32 default_line_width = 2;
 
-        VertexBuffer line2D_vertex_buffer;
-        VertexBuffer line3D_vertex_buffer;
+        std::string inputShaderColorUniformName = "u_color";
+
+        VertexArray line_vertex_array;
+        VertexBuffer line_vertex_buffer;
+
+        uint32 line_index_count = 0;
+        LineVertexMesh* line_vb_base = nullptr;
+        LineVertexMesh* line_vb_ptr = nullptr;
     };
-
-    struct Color3RGB
-    {
-        real32 x, y, z;
-
-        Color3RGB(real32 x_c, real32 y_c, real32 z_c) : x(x_c), y(y_c), z(z_c) {};
-    };
-
-    struct Color4RGBA
-    {
-        real32 x, y, z, a;
-
-        Color4RGBA(real32 x_c, real32 y_c, real32 z_c, real32 a_c) : x(x_c), y(y_c), z(z_c), a(a_c) {};
-    };
-
 }
 #endif

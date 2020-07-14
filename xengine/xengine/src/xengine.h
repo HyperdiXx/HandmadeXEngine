@@ -1,6 +1,5 @@
 #pragma once
 
-#include "app_state.h"
 #include "xe_animation.h"
 #include "xe_assets.h"
 #include "xe_audio.h"

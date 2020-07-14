@@ -13,6 +13,8 @@
 
 #include <xenpch.h>
 
+#include "xe_math.h"
+
 #include <thread>
 
 #include <ft2build.h>
@@ -1433,6 +1435,46 @@ namespace xe_render
         graphics_device->setDepthFunc(GL_LESS);
     }
 
+    void drawAABB(const aabb &bb)
+    {
+        glm::vec4 min = { bb.min.x, bb.min.y, bb.min.z, 1.0f };
+        glm::vec4 max = { bb.max.x, bb.max.y, bb.max.z, 1.0f };
+
+        glm::vec3 corners[8] =
+        {
+            glm::vec3 { min.x, min.y, max.z},
+            glm::vec3 { min.x, max.y, max.z},
+            glm::vec3 { max.x, max.y, max.z},
+            glm::vec3 { max.x, min.y, max.z},
+
+            glm::vec3 { min.x, min.y, min.z},
+            glm::vec3 { min.x, max.y, min.z},
+            glm::vec3 { max.x, max.y, min.z},
+            glm::vec3 { max.x, min.y, min.z}
+        };
+
+        for (uint32_t i = 0; i < 4; i++)
+        {
+            auto &corner = corners[i];
+            auto &corner_next = corners[(i + 1) % 4];
+            drawLine(corner.x, corner.y, corner.z, corner_next.x, corner_next.y, corner_next.z);
+        }
+            
+        for (uint32_t i = 0; i < 4; i++)
+        {
+            auto &corner = corners[i + 4];
+            auto &corner_next = corners[((i + 1) % 4) + 4];
+            drawLine(corner.x, corner.y, corner.z, corner_next.x, corner_next.y, corner_next.z);
+        }
+
+        for (uint32_t i = 0; i < 4; i++)
+        {
+            auto &corner = corners[i];
+            auto &corner_next = corners[i + 4];
+            drawLine(corner.x, corner.y, corner.z, corner_next.x, corner_next.y, corner_next.z);
+        }
+    }
+
     void applyShadowMap(xe_graphics::ShadowMap *shadow)
     {        
         real32 near_p = 1.0f;
@@ -1762,11 +1804,15 @@ namespace xe_render
                 {
                     xe_assets::Mesh *cur_mesh = curr_node->meshes.at(j);
                     drawMesh(cur_mesh, shader_to_draw);
+                    
+                    aabb &bb = cur_mesh->bounding_box;
+
+                    drawAABB(bb);
                 }
             }
 
             device->unbindShader();
-        }           
+        }   
     }
 
     void drawEntWithShader(xe_ecs::Entity *ent, xe_graphics::Shader *shd)

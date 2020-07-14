@@ -5,6 +5,8 @@
 
 #include "xe_graphics_device.h"
 
+struct aabb;
+
 namespace xe_ecs
 {
     class Entity;
@@ -119,6 +121,8 @@ namespace xe_render
 
     void drawSkybox();
     void drawShadowMaps();
+
+    void drawAABB(const aabb& bb);
 
     void applyShadowMap(xe_graphics::ShadowMap *shadow);
 

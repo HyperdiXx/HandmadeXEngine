@@ -48,8 +48,6 @@ void xe_graphics::RenderPass2D::render()
 
     drawQuad(&main_ent, simple_shader, color_texture);
     //drawText("FPS: " + std::to_string(app_state->fps), 10, 10);
-
-    xe_render::drawLine(0.0f, 0.0f, 520.0f, 520.0f, Color3RGB(0.0f, 1.0f, 1.0f));
 }
 
 void xe_graphics::RenderPass2D::update(real32 dt)

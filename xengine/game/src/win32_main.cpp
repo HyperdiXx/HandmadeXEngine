@@ -29,6 +29,8 @@
 
 #include <xengine.h>
 
+#include "app_state.h"
+
 /*#include "xe_platform.h"
 #include <math/xemath.h>
 #include "xe_config.h"

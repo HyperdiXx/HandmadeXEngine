@@ -39,6 +39,9 @@ namespace application
     void loadSpheresScene(xe_scene::Scene *sc);
 
     void loadState();
+
+    std::vector<xe_ecs::Entity*> &getEntities();
+    
     xe_ecs::Entity *getEntity();
     xe_ecs::Entity *getEntityByType(xe_ecs::ENTITY_TYPE type);
 

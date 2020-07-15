@@ -5,6 +5,7 @@
 #include "xe_input.h"
 #include "xe_layer.h"
 #include "xe_render_pass.h"
+#include "xe_utility.h"
 
 namespace application
 {
@@ -41,6 +42,11 @@ namespace application
         {
             pushEmptyEntity();
         }
+    }
+
+    std::vector<xe_ecs::Entity*>& getEntities()
+    {
+       return app_state.active_scene.entities;
     }
 
     ApplicationState *getAppState()
@@ -88,7 +94,7 @@ namespace application
         {
             xe_ecs::Entity* ent = application::getEntity();
             ent->setEntityType(xe_ecs::ENTITY_TYPE::ENT_STATIC_OBJECT);
-            ent->setEntityName(std::string("Cube number " + i));
+            ent->setEntityName(std::string("Cube") + std::to_string(i));
 
             xe_ecs::TransformComponent *transform = new xe_ecs::TransformComponent();
             transform->setTranslation(30.0f * (i - 5), 0.0f, -5.0f * (i + 1));
@@ -373,35 +379,48 @@ namespace application
                 //ray_cast.origin = rayPos;
                 //ray_cast.direction = rayDir;
 
-                printf("Ray dir %f %f %f", rayDir.x, rayDir.y, rayDir.z);
+                printf("Ray dir %f %f %f\n", rayDir.x, rayDir.y, rayDir.z);
 
-                auto& entities = app_state.active_scene.entities;
+                bool32 is_ent_hitted = false;
+
+                auto& entities = getEntities();
 
                 for (uint32 i = 0; i < entities.size(); ++i)
                 {
+                    if (is_ent_hitted)
+                    {
+                        break;
+                    }
+
                     xe_ecs::Entity *ent = entities[i];
 
                     xe_ecs::MeshComponent *msh_component = ent->findComponent<xe_ecs::MeshComponent>();
+                    xe_ecs::TransformComponent *transform = ent->findComponent<xe_ecs::TransformComponent>();
 
-                    if (msh_component)
+                    if (msh_component && transform)
                     {
                         real32 t = FLT_MAX;
                         real32 lastT = std::numeric_limits<float>::max();
                        
+                        glm::mat4 transformMatrix = xe_render::IDENTITY_MATRIX;
+
+                        transformMatrix = glm::translate(transformMatrix, transform->position);
+                        transformMatrix = glm::scale(transformMatrix, transform->scale);
+
                         for (uint32 j = 0; j < msh_component->model_asset->root->children.size(); ++j)
                         {
                             auto &node_mesh = msh_component->model_asset->root->children[j];
 
-                            //ray_cast.origin = glm::inverse(m_MeshEntity->GetTransform() * node_mesh.Transform) * glm::vec4(rayPos, 1.0f);
-                            //ray_cast.direction = glm::inverse(glm::mat3(m_MeshEntity->GetTransform()) * glm::mat3(submesh.Transform)) * rayDir;
+                            ray_cast.origin = glm::inverse(transformMatrix) * glm::vec4(rayPos, 1.0f);
+                            ray_cast.direction = glm::inverse(glm::mat3(transformMatrix)) * rayDir;
 
                             for (uint32 z = 0; z < node_mesh->meshes.size(); ++z)
                             {
                                 bool isIntersectsAABB = ray_cast.isIntersects(node_mesh->meshes[z]->bounding_box, t);
                                 if (isIntersectsAABB)
-                                {
-                                    
-                                    printf("Hit mesh %s!!!\n", ent->getName());
+                                {                                    
+                                    xe_utility::info(ent->getName() + "\n");
+                                    is_ent_hitted = true;
                                     break;
                                 }
                             }

@@ -1212,7 +1212,7 @@ namespace xe_render
         if (texture != nullptr)
             graphics_device->activateBindTexture(TEXTURE_TYPE::COLOR, texture);
 
-        glm::mat4 model_matrix = tr->model_matrix;
+        glm::mat4 model_matrix = IDENTITY_MATRIX;
 
         model_matrix = glm::translate(model_matrix, tr->position);
         model_matrix = glm::scale(model_matrix, tr->scale);
@@ -1393,7 +1393,7 @@ namespace xe_render
         xe_ecs::MeshComponent *mesh = ent->findComponent<xe_ecs::MeshComponent>();
         xe_ecs::TransformComponent *transform = ent->findComponent<xe_ecs::TransformComponent>();
 
-        glm::mat4 model_matrix = transform->model_matrix;
+        glm::mat4 model_matrix = IDENTITY_MATRIX;
 
         model_matrix = glm::translate(model_matrix, transform->position);
         model_matrix = glm::scale(model_matrix, transform->scale);
@@ -1435,22 +1435,22 @@ namespace xe_render
         graphics_device->setDepthFunc(GL_LESS);
     }
 
-    void drawAABB(const aabb &bb)
+    void drawAABB(const aabb &bb, const glm::mat4 &matrix)
     {
         glm::vec4 min = { bb.min.x, bb.min.y, bb.min.z, 1.0f };
         glm::vec4 max = { bb.max.x, bb.max.y, bb.max.z, 1.0f };
 
-        glm::vec3 corners[8] =
+        glm::vec4 corners[8] =
         {
-            glm::vec3 { min.x, min.y, max.z},
-            glm::vec3 { min.x, max.y, max.z},
-            glm::vec3 { max.x, max.y, max.z},
-            glm::vec3 { max.x, min.y, max.z},
+            matrix * glm::vec4 { min.x, min.y, max.z, 1.0f},
+            matrix * glm::vec4 { min.x, max.y, max.z, 1.0f},
+            matrix * glm::vec4 { max.x, max.y, max.z, 1.0f},
+            matrix * glm::vec4 { max.x, min.y, max.z, 1.0f},
 
-            glm::vec3 { min.x, min.y, min.z},
-            glm::vec3 { min.x, max.y, min.z},
-            glm::vec3 { max.x, max.y, min.z},
-            glm::vec3 { max.x, min.y, min.z}
+            matrix * glm::vec4 { min.x, min.y, min.z, 1.0f},
+            matrix * glm::vec4 { min.x, max.y, min.z, 1.0f},
+            matrix * glm::vec4 { max.x, max.y, min.z, 1.0f},
+            matrix * glm::vec4 { max.x, min.y, min.z, 1.0f}
         };
 
         for (uint32_t i = 0; i < 4; i++)
@@ -1483,9 +1483,9 @@ namespace xe_render
         shadow->light_projection_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_p, far_p);
     }
 
-    void applyTransform(xe_ecs::TransformComponent *transform, xe_graphics::Shader *shd)
+    glm::mat4& applyTransform(xe_ecs::TransformComponent *transform, xe_graphics::Shader *shd)
     {
-        glm::mat4 model_matrix = transform->model_matrix;
+        glm::mat4 model_matrix = IDENTITY_MATRIX;
 
         model_matrix = glm::translate(model_matrix, transform->position);
         model_matrix = glm::scale(model_matrix, transform->scale);
@@ -1523,6 +1523,8 @@ namespace xe_render
         {
             graphics_device->setBool("shadows_enabled", false, shd);
         }
+
+        return model_matrix;
     }
 
     void applyDirLight(xe_graphics::Shader *shd, xe_ecs::DirLight *directional_light, xe_ecs::TransformComponent *transform)
@@ -1786,14 +1788,14 @@ namespace xe_render
                 device->setVec3("color", convertToVec3(default_cube_color), shader_to_draw);
             }
            
-            applyTransform(transform, shader_to_draw);
+            glm::mat4 transformMatrix = applyTransform(transform, shader_to_draw);
 
             /*if (model->diffuse_texture != nullptr)
             {
                 device->set_int("tex_diff1", 0, shader_to_draw);
                 device->activate_bind_texture(TEXTURE_TYPE::COLOR, model->diffuse_texture);
             }*/
-
+            
             xe_assets::Node *root = model->model_asset->root;
 
             for (uint32 i = 0; i < root->children.size(); i++)
@@ -1806,8 +1808,7 @@ namespace xe_render
                     drawMesh(cur_mesh, shader_to_draw);
                     
                     aabb &bb = cur_mesh->bounding_box;
-
-                    drawAABB(bb);
+                    drawAABB(bb, transformMatrix);
                 }
             }
 

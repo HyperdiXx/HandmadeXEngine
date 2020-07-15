@@ -122,11 +122,11 @@ namespace xe_render
     void drawSkybox();
     void drawShadowMaps();
 
-    void drawAABB(const aabb& bb);
+    void drawAABB(const aabb &bb, const glm::mat4 &matrix);
 
     void applyShadowMap(xe_graphics::ShadowMap *shadow);
 
-    void applyTransform(xe_ecs::TransformComponent *transform, xe_graphics::Shader *shd);
+    glm::mat4& applyTransform(xe_ecs::TransformComponent *transform, xe_graphics::Shader *shd);
     void applyDirLight(xe_graphics::Shader *shd, xe_ecs::DirLight *directional_light, xe_ecs::TransformComponent *transform);
     void applySpotLight(xe_graphics::Shader *shd, xe_ecs::SpotLight *directional_light, xe_ecs::TransformComponent *transform);
     void applyPointLight(xe_graphics::Shader *shd, xe_ecs::PointLight *directional_light, xe_ecs::TransformComponent *transform);

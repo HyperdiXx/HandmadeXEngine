@@ -100,8 +100,6 @@ namespace xe_ecs
         glm::vec3 rotation;
         glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-        glm::mat4 model_matrix = xe_render::IDENTITY_MATRIX;
-
         void setTransform(glm::vec3 &pos, glm::vec3 &rot, glm::vec3 &scale)
         {
             setTranslation(pos.x, pos.y, pos.z);

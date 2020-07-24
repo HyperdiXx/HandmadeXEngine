@@ -139,6 +139,7 @@
     <ClCompile Include="src\xe_assets.cpp" />
     <ClCompile Include="src\xe_config.cpp" />
     <ClCompile Include="src\xe_core.cpp" />
+    <ClCompile Include="src\xe_gizmo.cpp" />
     <ClCompile Include="src\xe_graphics_device.cpp" />
     <ClCompile Include="src\xe_graphics_device_dx11.cpp" />
     <ClCompile Include="src\xe_gui.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="src\xe_containers.h" />
     <ClInclude Include="src\xe_ecs.h" />
     <ClInclude Include="src\xe_file_formats.h" />
+    <ClInclude Include="src\xe_gizmo.h" />
     <ClInclude Include="src\xe_graphics_device.h" />
     <ClInclude Include="src\xe_graphics_device_dx11.h" />
     <ClInclude Include="src\xe_graphics_device_gl.h" />

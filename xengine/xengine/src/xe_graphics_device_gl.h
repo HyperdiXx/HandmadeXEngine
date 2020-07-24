@@ -43,7 +43,7 @@ namespace xe_graphics
         void bindForRead(const Framebuffer *fbo) override;
         void bindForWrite(const Framebuffer *fbo) override;
 
-        void addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo) override;
+        void addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo) override;        
         void addDepthTexture2D(Texture2D *depth, Framebuffer *fbo) override;
         void addDepthTexture2D(uint32 w, uint32 h, Framebuffer *fbo) override;
         void setDepthBufferAttachment(const Framebuffer *fbo) override;
@@ -80,11 +80,11 @@ namespace xe_graphics
         bool32 createTexture(uint32 count, Texture2D *texture) override;
         bool32 createTexture2D(const char *path, Texture2D *texture) override;
         bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, Texture2D *texture) override;
-        bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, Texture2D *texture) override;
+        bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, uint32 samples, bool32 gen_mip, Texture2D *texture) override;
         bool32 createTexture2D(const char *path, const char *dir, Texture2D *texture) override;
         bool32 createTexture2D(uint32 width, uint32 height, Texture2D* texture) override;
         bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D* texture) override;
-        bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, Texture2D* texture) override;
+        bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) override;
         bool32 createShader(const char* vertex, const char* fragment, Shader *Shader) override;
         bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) override;
         bool32 createRenderbuffer(const uint32 count, Framebuffer *fbo) override;

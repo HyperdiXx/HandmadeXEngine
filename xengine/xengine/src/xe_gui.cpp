@@ -140,20 +140,20 @@ namespace xe_gui
         xe_graphics::GraphicsDevice *device = xe_render::getDevice();
         xe_graphics::Viewport vp = device->getViewport();
 
-        bool intertsects = false;
+        bool32 intertsects = false;
 
         using namespace xe_graphics;
 
-        float halfWidth = w * 0.5f;
-        float halfHeight = h * 0.5f;
+        real32 halfWidth = w * 0.5f;
+        real32 halfHeight = h * 0.5f;
 
-        float height = vp.height;
-        float windowHalfHieght = height * 0.5f;
+        real32 height = vp.height;
+        real32 windowHalfHieght = height * 0.5f;
 
-        xe_render::drawQuad(&Quad(x - halfWidth, y + halfHeight, 4.0f, 4.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        xe_render::drawQuad(&Quad(x + halfWidth, y + halfHeight, 4.0f, 4.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-        xe_render::drawQuad(&Quad(x - halfWidth, y - halfHeight, 4.0f, 4.0f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
-        xe_render::drawQuad(&Quad(x + halfWidth, y - halfHeight, 4.0f, 4.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+        xe_render::drawQuad(x - halfWidth, y + halfHeight, 4.0f, 4.0f, Color4RGBA(0.0f, 0.0f, 0.0f, 1.0f));
+        xe_render::drawQuad(x + halfWidth, y + halfHeight, 4.0f, 4.0f, Color4RGBA(0.0f, 0.0f, 1.0f, 1.0f));
+        xe_render::drawQuad(x - halfWidth, y - halfHeight, 4.0f, 4.0f, Color4RGBA(0.0f, 1.0f, 1.0f, 1.0f));
+        xe_render::drawQuad(x + halfWidth, y - halfHeight, 4.0f, 4.0f, Color4RGBA(1.0f, 1.0f, 0.0f, 1.0f));
 
         if (mouse->isLeftButtonPressed)
         {

@@ -6,6 +6,7 @@
 #include "xe_layer.h"
 #include "xe_render_pass.h"
 #include "xe_utility.h"
+#include "xe_gizmo.h"
 
 namespace application
 {
@@ -146,7 +147,7 @@ namespace application
         ent_line->setEntityType(xe_ecs::ENTITY_TYPE::ENT_LINE);
 
         xe_ecs::LineMeshComponent *line_mesh = new xe_ecs::LineMeshComponent();
-        line_mesh->line_co = new xe_graphics::Line();
+        line_mesh->line_co = new xe_graphics::LineMesh();
 
         glm::vec3 start_point = glm::vec3(0.0f, 1.0f, -15.0f);
         glm::vec3 end_point = glm::vec3(5.0f, 1.0f, -15.0f);
@@ -295,6 +296,8 @@ namespace application
         //guiLayer.update(current_app_state->delta_time);
         //guiLayer.render();
 
+
+
         xe_render::endFrame();
     }
 
@@ -387,7 +390,7 @@ namespace application
 
                 for (uint32 i = 0; i < entities.size(); ++i)
                 {
-                    if (is_ent_hitted)
+                    if (app_state.activate_gizmo)
                     {
                         break;
                     }
@@ -416,11 +419,11 @@ namespace application
 
                             for (uint32 z = 0; z < node_mesh->meshes.size(); ++z)
                             {
-                                bool isIntersectsAABB = ray_cast.isIntersects(node_mesh->meshes[z]->bounding_box, t);
+                                bool32 isIntersectsAABB = ray_cast.isIntersects(node_mesh->meshes[z]->bounding_box, t);
                                 if (isIntersectsAABB)
-                                {                                    
+                                {                                   
                                     xe_utility::info(ent->getName() + "\n");
-                                    is_ent_hitted = true;
+                                    app_state.activate_gizmo = true;
                                     break;
                                 }
                             }
@@ -431,6 +434,11 @@ namespace application
 
                 printf("Mouse pos in NDC: \n");
             }
+        }
+
+        if (app_state.activate_gizmo)
+        {
+            xe_gizmo::updateGizmo();
         }
     }
 

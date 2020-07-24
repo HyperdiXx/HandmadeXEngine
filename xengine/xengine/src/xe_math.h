@@ -226,6 +226,12 @@ inline vec3f min_cmp(const vec3f &a, const vec3f &b)
 
 }*/
 
+struct Sphere
+{
+    real32 radius;
+    glm::vec3 center;
+};
+
 struct aabb
 {
     glm::vec3 min;
@@ -290,17 +296,34 @@ class Intersection
 {
 public:
 
-    static bool isIntersects(real32 x, real32 y, const glm::vec2& min, const glm::vec2 &max)
+    static bool32 isIntersects(real32 x, real32 y, const glm::vec2& min, const glm::vec2 &max)
     {
         return x >= min.x && x <= max.x && y <= min.y && y >= max.y;
     }
 
-    static bool isIntersects(real32 x, real32 y, const aabb &bb)
+    static bool32 isIntersects(real32 x, real32 y, const aabb &bb)
     {
         return isIntersects(x, y, bb.min, bb.max);
     }
+
+    static bool32 isIntersects(const Sphere &sphere1, const Sphere &sphere2)
+    {
+        glm::vec3 distance = sphere1.center - sphere2.center;
+        real32 distSqr = glm::dot(distance, distance);
+
+        real32 radiusSum = sphere1.radius + sphere2.radius;
+        real32 radiusSumSqr = radiusSum * radiusSum;
+        return distSqr <= radiusSumSqr;
+    }
 };
 
+struct Quad
+{
+    Quad() {};
+    Quad(uint32 xPos, uint32 yPos, uint32 wi, uint32 he) : x(xPos), y(yPos), w(wi), h(he) {};
+
+    uint32 x, y, w, h;
+};
 #endif // !XE_MATH
 
 

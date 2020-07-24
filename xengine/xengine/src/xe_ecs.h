@@ -153,13 +153,13 @@ namespace xe_ecs
     class QuadComponent : public Component
     {
     public:
-        xe_graphics::Quad *quad_mesh;
+        //xe_graphics::Quad *quad_mesh;
     };
 
     class SphereComponent : public Component
     {
     public:
-        xe_graphics::Sphere *sphere_mesh;
+        xe_graphics::SphereMesh *sphere_mesh;
         xe_graphics::Texture2D *diffuse;
     };
 
@@ -358,7 +358,7 @@ namespace xe_ecs
     class LineMeshComponent : public Component
     {
     public:
-        xe_graphics::Line *line_co;
+        xe_graphics::LineMesh *line_co;
     };
 
     class WaterComponent : public Component

@@ -88,10 +88,10 @@ namespace xe_graphics
         virtual bool32 createTexture(uint32 count, Texture2D *texture) = 0;
         virtual bool32 createTexture2D(const char *path, Texture2D* texture) = 0;
         virtual bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, Texture2D *texture) = 0;
-        virtual bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, Texture2D *texture) = 0;
+        virtual bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, uint32 samples, bool32 gen_mip, Texture2D *texture) = 0;
         virtual bool32 createTexture2D(const char *path, const char* dir, Texture2D* texture) = 0;
         virtual bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D* texture) = 0;
-        virtual bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, Texture2D* texture) = 0;
+        virtual bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) = 0;
         virtual bool32 createTexture2D(uint32 width, uint32 height, Texture2D* texture) = 0;
         virtual bool32 createShader(const char* vertex, const char* fragment, Shader* Shader) = 0;
         virtual bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) = 0;

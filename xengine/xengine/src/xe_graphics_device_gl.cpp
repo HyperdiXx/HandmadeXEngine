@@ -728,9 +728,9 @@ namespace xe_graphics
         return createTexture2D(path, nullptr, tex_type, false, texture);
     }
 
-    bool32 GraphicsDeviceGL::createTexture2D(const char *path, TEXTURE_TYPE tex_type, bool32 gen_mip, Texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, TEXTURE_TYPE tex_type, uint32 samples, bool32 gen_mip, Texture2D *texture)
     {
-        return createTexture2D(path, nullptr, tex_type, 0, gen_mip, texture);
+        return createTexture2D(path, nullptr, tex_type, 0, samples, gen_mip, texture);
     }
 
     bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char *dir, Texture2D *texture)
@@ -738,7 +738,7 @@ namespace xe_graphics
         return createTexture2D(path, dir, TEXTURE_TYPE::COLOR, true, texture);
     }
 
-    bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, Texture2D* texture)
+    bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture)
     {
         const char *path_res;
 
@@ -798,53 +798,64 @@ namespace xe_graphics
             data_format = GL_RGBA;
         }
 
-        createTexture(texture);
-        bindTexture(type, texture);
-
-        switch (type)
+        if (samples > 1)
         {
-        case xe_graphics::COLOR:
-        case xe_graphics::LUT:
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-            loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
+            glGenTextures(1, &texture->id);
+            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture->id);
+            texture->is_valid = true;
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA8, texture->desc.width, texture->desc.height, GL_FALSE);
+            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+        }
+        else
+        {
+            createTexture(texture);
+            bindTexture(type, texture);
 
-            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
-            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+            switch (type)
+            {
+            case xe_graphics::COLOR:
+            case xe_graphics::LUT:
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+                loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
 
-            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
-            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+                setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+                setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
 
-            break;
-        case xe_graphics::GREYSCALE:
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
 
-            loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
-            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
-            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+                break;
+            case xe_graphics::GREYSCALE:
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
-            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
-            break;
-        case xe_graphics::HDR:
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
-            
-            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
-            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+                loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
+                setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
+                setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
 
-            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
-            setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+                break;
+            case xe_graphics::HDR:
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
 
-            break;
-        case xe_graphics::CUBEMAP:
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
-            break;
-        case xe_graphics::DEPTH:
-            break;
-        default:
-            break;
+                setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+                setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+                break;
+            case xe_graphics::CUBEMAP:
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
+                break;
+            case xe_graphics::DEPTH:
+                break;
+            default:
+                break;
+            }
         }
 
-
+        
         if (generate_mipmap)
             generateTextureMipmap(type);
 
@@ -876,7 +887,7 @@ namespace xe_graphics
 
     bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char *dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D *texture)
     {
-        return createTexture2D(path, dir, type, 0, generate_mipmap, texture);
+        return createTexture2D(path, dir, type, 0, 1, generate_mipmap, texture);
     }
 
     bool32 GraphicsDeviceGL::createShader(const char *vertex_code, const char *fragment_code, Shader *shd)
@@ -1149,6 +1160,7 @@ namespace xe_graphics
         while ((err = glGetError()) != GL_NO_ERROR)
         {
             const char* erro_char = (const char*)err;
+            //xe_utility::error(std::string(erro_char));
         }
     }
 

@@ -180,28 +180,26 @@ namespace xe_graphics
         IndexBuffer *ib;
     };
 
-    struct Quad
+    struct QuadMesh
     {
-        Quad() {};
-        Quad(int xPos, int yPos, int wi, int he) : x(xPos), y(yPos), w(wi), h(he) {};
-
-        int x, y, w, h;
-        xe_graphics::VertexArray *vertex_array;
+        uint32 vertex_count;
+        glm::vec3 color;
+        glm::vec2 uv;
     };
 
-    struct Line
+    struct LineMesh
     {
         uint32 vertex_count;        
         xe_graphics::VertexArray *va;
         glm::vec3 color;
     };
 
-    struct Sphere
+    struct SphereMesh
     {
         xe_graphics::VertexArray *vertex_array;
     };
 
-    struct Cube
+    struct CubeMesh
     {
         xe_graphics::VertexArray *vertex_array;
     };
@@ -216,7 +214,6 @@ namespace xe_graphics
 
     struct Text
     {
-        Quad *q;
         Texture2D *texture;
     };
 
@@ -249,11 +246,19 @@ namespace xe_graphics
         LineVertexMesh() {};
     };
 
+    struct QuadVertexMesh
+    {
+        glm::vec3 pos;
+        Color4RGBA color;
+
+        QuadVertexMesh() {};
+    };
+
     struct RenderState
     {
         static const uint32_t max_quads_count = 20000;
-        static const uint32_t max_vert = max_quads_count * 4;
-        static const uint32_t max_indices = max_quads_count * 6;
+        static const uint32_t max_quad_vert = max_quads_count * 4;
+        static const uint32_t max_quad_indices = max_quads_count * 6;
         static const uint32_t max_texture_slots = 32;
 
         static const uint32_t max_line_count = 10000;
@@ -271,9 +276,18 @@ namespace xe_graphics
         VertexArray line_vertex_array;
         VertexBuffer line_vertex_buffer;
 
+        VertexArray quad_vertex_array;
+        VertexBuffer quad_vertex_buffer;
+       
         uint32 line_index_count = 0;
         LineVertexMesh* line_vb_base = nullptr;
         LineVertexMesh* line_vb_ptr = nullptr;
+
+        uint32 quad_index_count = 0;
+        QuadVertexMesh *quad_vb_base = nullptr;
+        QuadVertexMesh *quad_vb_ptr = nullptr;
+
+        glm::vec4 quad_vertex_data[4];
     };
 }
 #endif

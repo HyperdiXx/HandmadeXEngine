@@ -57,8 +57,8 @@ void xe_graphics::Layer2D::init()
     transform->position = glm::vec3(200.0f, 200.0f, 0.0f);
     transform->scale = glm::vec3(100.0f, 100.0f, 100.0f);
 
-    mesh->quad_mesh = new Quad();
-    xe_render::createQuad(mesh->quad_mesh);
+    /*mesh->quad_mesh = new Quad();
+    xe_render::createQuad(mesh->quad_mesh);*/
 
     device->bindShader(simple_shader);
     device->setInt("tex_diff", 0, simple_shader);

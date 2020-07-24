@@ -41,10 +41,10 @@ namespace xe_render
     xe_graphics::Framebuffer *active_framebuffer = nullptr;
 
     xe_graphics::VertexArray quad_vao;
-    xe_graphics::Quad rect_vao;
-    xe_graphics::Sphere sphere_vao;
-    xe_graphics::Cube cube_vao;
-    xe_graphics::Line line_vao;
+    //xe_graphics::Quad rect_vao;
+    xe_graphics::SphereMesh sphere_vao;
+    xe_graphics::CubeMesh cube_vao;
+    xe_graphics::LineMesh line_vao;
     
     std::map<GLchar, xe_graphics::Character> characters_map;
 
@@ -108,10 +108,8 @@ namespace xe_render
         if (skybox_obj == nullptr)
             skybox_obj = new xe_graphics::Skybox();
         
-        bool32 is_skybox_created = createSkybox(skybox_obj);
-        
-        createQuad();
-
+        bool32 is_skybox_created = createSkybox(skybox_obj);        
+       
         if (!is_skybox_created)
         {
             xe_utility::error("Failed to init skybox!");
@@ -148,7 +146,8 @@ namespace xe_render
         
 
         createLinesBuffer();
-         
+        createQuadBuffer();
+
         return true;
     }
 
@@ -597,7 +596,7 @@ namespace xe_render
         return true;       
     }
 
-    bool32 createLineMesh(glm::vec3 &start, glm::vec3 &end, xe_graphics::Line *line_com)
+    bool32 createLineMesh(glm::vec3 &start, glm::vec3 &end, xe_graphics::LineMesh *line_com)
     {
         std::vector<real32> array_vertex;
 
@@ -634,7 +633,7 @@ namespace xe_render
         return true;
     }
 
-    bool32 createLineMesh(xe_graphics::Line *line_com)
+    bool32 createLineMesh(xe_graphics::LineMesh *line_com)
     {
         glm::vec3 start = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 end = glm::vec3(1.0f, 1.0f, 0.0f);
@@ -677,6 +676,57 @@ namespace xe_render
         return true;
     }
 
+    bool32 createQuadBuffer()
+    {
+        graphics_state.quad_vertex_data[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+        graphics_state.quad_vertex_data[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+        graphics_state.quad_vertex_data[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+        graphics_state.quad_vertex_data[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+   
+        graphics_state.quad_vb_base = alloc_mem QuadVertexMesh[graphics_state.max_quad_vert];
+
+        graphics_device->createVertexArray(&graphics_state.quad_vertex_array);
+
+        graphics_device->createVertexBuffer(nullptr, graphics_state.max_quad_vert * sizeof(QuadVertexMesh), DRAW_TYPE::DYNAMIC, &graphics_state.quad_vertex_buffer);
+
+        BufferLayout quad_buffer_layout = {};
+
+        std::initializer_list<xe_graphics::BufferElement> quad_init_list =
+        {
+            { "aPos",       ElementType::Float3, },
+            { "aColor",     ElementType::Float4 }
+        };
+
+        graphics_device->createBufferLayout(quad_init_list, &quad_buffer_layout);
+        graphics_device->setVertexBufferLayout(&graphics_state.quad_vertex_buffer, &quad_buffer_layout);
+        graphics_device->addVertexBuffer(&graphics_state.quad_vertex_array, &graphics_state.quad_vertex_buffer);
+      
+        uint32* quad_ind = alloc_mem uint32[graphics_state.max_quad_indices];
+        uint32 offset = 0;
+        
+        for (uint32 i = 0; i < graphics_state.max_quad_indices; i += 6)
+        {
+            quad_ind[i + 0] = offset + 0;
+            quad_ind[i + 1] = offset + 1;
+            quad_ind[i + 2] = offset + 2;
+
+            quad_ind[i + 3] = offset + 2;
+            quad_ind[i + 4] = offset + 3;
+            quad_ind[i + 5] = offset + 0;
+
+            offset += 4;
+        }
+
+        xe_graphics::IndexBuffer *ib = alloc_mem xe_graphics::IndexBuffer();
+
+        graphics_device->createIndexBuffer(quad_ind, graphics_state.max_quad_indices, ib);
+        graphics_device->setIndexBuffer(&graphics_state.quad_vertex_array, ib);
+
+        free_mem[] quad_ind;
+
+        return true;       
+    }
+
     bool32 createCubemap(std::vector<const char*> paths, xe_graphics::Cubemap *cube)
     {        
         for (uint32 i = 0; i < paths.size(); ++i)
@@ -687,15 +737,15 @@ namespace xe_render
         return true;
     }
 
-    bool32 createQuad(xe_graphics::Quad *q)
-    {   
-        real32 vertices[] = 
+    bool32 createQuad()
+    {  
+        /*real32 vertices[] = 
         {
-                  0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-                  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-                 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
-                 -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
-        };
+            0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
+        };*/
 
         uint32 indices[] = 
         {
@@ -703,18 +753,17 @@ namespace xe_render
             1, 2, 3
         };
         
-        int vertex_size = sizeof(vertices) / sizeof(vertices[0]); 
+        int vertex_size = sizeof(graphics_state.quad_vertex_data) / sizeof(graphics_state.quad_vertex_data[0]); 
         int indices_size = sizeof(indices) / sizeof(indices[0]);
 
-        q->vertex_array = alloc_mem xe_graphics::VertexArray;
-        q->vertex_array->buffers.push_back(alloc_mem xe_graphics::VertexBuffer);
-        q->vertex_array->ib = alloc_mem xe_graphics::IndexBuffer;
+        graphics_state.quad_vertex_array.buffers.push_back(alloc_mem xe_graphics::VertexBuffer);
+        graphics_state.quad_vertex_array.ib = alloc_mem xe_graphics::IndexBuffer;
         
-        graphics_device->createVertexArray(q->vertex_array);
-        graphics_device->bindVertexArray(q->vertex_array);
+        graphics_device->createVertexArray(&graphics_state.quad_vertex_array);
+        graphics_device->bindVertexArray(&graphics_state.quad_vertex_array);
 
-        graphics_device->createVertexBuffer(vertices, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, q->vertex_array->buffers[0]);
-        graphics_device->createIndexBuffer(indices, indices_size, q->vertex_array->ib);
+        graphics_device->createVertexBuffer(graphics_state.quad_vertex_data, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, graphics_state.quad_vertex_array.buffers[0]);
+        graphics_device->createIndexBuffer(indices, indices_size, graphics_state.quad_vertex_array.ib);
         
         using namespace xe_graphics;
 
@@ -726,17 +775,12 @@ namespace xe_render
             { "aUV",     ElementType::Float2, }
         };
 
-        graphics_device->createBufferLayout(init_list, &buffer_layout);
-        graphics_device->setVertexBufferLayout(q->vertex_array->buffers[0], &buffer_layout);        
-        graphics_device->addVertexBuffer(q->vertex_array, q->vertex_array->buffers[0]);
-        graphics_device->setIndexBuffer(q->vertex_array, q->vertex_array->ib);
+        //graphics_device->createBufferLayout(init_list, &buffer_layout);
+        //graphics_device->setVertexBufferLayout(q->vertex_array->buffers[0], &buffer_layout);        
+        //graphics_device->addVertexBuffer(q->vertex_array, q->vertex_array->buffers[0]);
+        //graphics_device->setIndexBuffer(q->vertex_array, q->vertex_array->ib);
         
         return true;
-    }
-
-    bool32 createQuad()
-    {
-        return createQuad(&rect_vao);
     }
 
     bool32 createFullquad()
@@ -974,7 +1018,7 @@ namespace xe_render
         return true;
     }
 
-    bool32 createSphere(xe_graphics::Sphere *sphre)
+    bool32 createSphere(xe_graphics::SphereMesh *sphre)
     {        
         sphre->vertex_array = new xe_graphics::VertexArray();
         sphre->vertex_array->buffers.push_back(new xe_graphics::VertexBuffer());
@@ -1069,7 +1113,7 @@ namespace xe_render
         return true;
     }
 
-    bool32 createCube(xe_graphics::Cube *cube)
+    bool32 createCube(xe_graphics::CubeMesh *cube)
     {
         real32 data[] = 
         {
@@ -1149,31 +1193,56 @@ namespace xe_render
         graphics_device->unbindVertexArray();
     }
 
-    void drawQuad(xe_graphics::Quad *q)
+    void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const xe_graphics::Color4RGBA &color)
     {
-        Shader *color = getShader("simple_pos");
-        drawQuad(q, color, nullptr);
+        drawQuad( { pos.x, pos.y, 0.0f }, size, color);
     }
 
-    void drawQuad(xe_graphics::Quad *q, const glm::vec4 &color)
+    void drawQuad(const glm::vec3 & pos, const glm::vec2 & size, const xe_graphics::Color4RGBA& color)
     {
-        Shader *color_shader = getShader("simple_pos");
-        graphics_device->bindShader(color_shader);
-        graphics_device->setVec4("u_color", color, color_shader);
+        if (graphics_state.quad_index_count >= RenderState::max_quads_count)
+        {
+            //FlushAndResetLines();
+        }
 
-        drawQuad(q, color_shader, nullptr);
+        glm::mat4 transform = glm::translate(IDENTITY_MATRIX, pos) * 
+                              glm::scale(IDENTITY_MATRIX, { size.x, size.y, 1.0f });
+
+        graphics_state.quads_count++;
+
+        graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[0];
+        graphics_state.quad_vb_ptr->color = color;
+        graphics_state.quad_vb_ptr++;
+
+        graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[1];
+        graphics_state.quad_vb_ptr->color = color;
+        graphics_state.quad_vb_ptr++;
+
+        graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[2];
+        graphics_state.quad_vb_ptr->color = color;
+        graphics_state.quad_vb_ptr++;
+
+        graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[3];
+        graphics_state.quad_vb_ptr->color = color;
+        graphics_state.quad_vb_ptr++;
+
+        graphics_state.quad_index_count += 6;
     }
 
-    void drawQuad(xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture)
+    void drawQuad(real32 x, real32 y, real32 w, real32 h, const xe_graphics::Color4RGBA& color)
     {
-        if (texture != nullptr)
+        drawQuad({ x, y, 0.0f }, {w, h}, color);
+    }
+
+    void drawQuad(real32 x, real32 t, real32 w, real32 h, xe_graphics::Texture2D *texture)
+    {
+        /*if (texture != nullptr)
+        {
             graphics_device->bindTexture(TEXTURE_TYPE::COLOR, texture);
-        
-        //if (!q->vertex_array)
-        //{
-            q->vertex_array = rect_vao.vertex_array;
-        //}
+        }
 
+        q->vertex_array = rect_vao.vertex_array;
+        
         glm::mat4 model = IDENTITY_MATRIX;
         
         graphics_device->bindShader(shd);
@@ -1195,10 +1264,12 @@ namespace xe_render
         graphics_device->bindVertexArray(q->vertex_array);        
         graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, 6, GL_UNSIGNED_INT, 0);
         graphics_device->unbindVertexArray();
-        graphics_device->unbindShader();
+        graphics_device->unbindShader();*/
+
+    
     }
 
-    void drawQuad(xe_ecs::Entity *ent, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture)
+    /*void drawQuad(xe_graphics::Shader *shd, xe_graphics::Texture2D *texture)
     {
         using namespace xe_ecs;
         QuadComponent* mesh = ent->findComponent<QuadComponent>();
@@ -1230,11 +1301,11 @@ namespace xe_render
 
         graphics_device->unbindVertexArray();
         graphics_device->unbindShader();
-    }
+    }*/
 
-    void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture, glm::mat4 &mod)
+    void drawQuad(xe_graphics::Shader *shd, xe_graphics::Texture2D *texture, glm::mat4 &mod)
     {
-        if (texture != nullptr)
+        /*if (texture != nullptr)
             graphics_device->activateBindTexture(TEXTURE_TYPE::COLOR, texture);
 
         graphics_device->bindShader(shd);
@@ -1251,7 +1322,7 @@ namespace xe_render
         graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, 6, GL_UNSIGNED_INT, 0);
 
         graphics_device->unbindVertexArray();
-        graphics_device->unbindShader();
+        graphics_device->unbindShader();*/
     }
 
     void drawModel(xe_assets::Model *mod, xe_graphics::Shader *shd, const glm::mat4 &transform)
@@ -1559,6 +1630,9 @@ namespace xe_render
         graphics_state.line_index_count = 0;
         graphics_state.line_vb_ptr = graphics_state.line_vb_base;
 
+        graphics_state.quad_index_count = 0;
+        graphics_state.quad_vb_ptr = graphics_state.quad_vb_base;
+
         graphics_device->startExecution();
     }
 
@@ -1572,6 +1646,16 @@ namespace xe_render
             graphics_device->bindBuffer(&graphics_state.line_vertex_buffer);
             graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(LineVertexMesh) * lineSize, graphics_state.line_vb_base);
             drawLines();
+        }
+        
+        uint32 quadSize = (uint8*)graphics_state.quad_vb_ptr - (uint8*)graphics_state.quad_vb_base;
+
+        if (quadSize > 0)
+        {
+            uint32 offset = 0;
+            graphics_device->bindBuffer(&graphics_state.quad_vertex_buffer);
+            graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(QuadVertexMesh) * quadSize, graphics_state.quad_vb_base);
+            drawQuads();
         }
 
         graphics_device->checkError();
@@ -1726,6 +1810,20 @@ namespace xe_render
         graphics_device->bindVertexArray(&graphics_state.line_vertex_array);
         graphics_device->setLineWidth(graphics_state.default_line_width);
         graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::LINE, graphics_state.line_index_count, GL_UNSIGNED_INT, 0);
+
+        graphics_state.draw_calls++;
+    }
+
+    void drawQuads()
+    {
+        xe_ecs::Camera2DComponent& camera2d = getCamera2D();
+        Shader *shd = getShader("line");
+        graphics_device->bindShader(shd);
+        
+        graphics_device->setMat4("vp", camera2d.get_view_projection(), shd);
+
+        graphics_device->bindVertexArray(&graphics_state.quad_vertex_array);
+        graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, graphics_state.quad_index_count, GL_UNSIGNED_INT, 0);
 
         graphics_state.draw_calls++;
     }

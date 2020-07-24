@@ -186,12 +186,16 @@ namespace xe_assets
     }
 
     void parseFaces(Mesh *mesh, aiMesh *aimesh)
-    {
+    {        
         for (uint32 i = 0; i < aimesh->mNumFaces; i++)
         {
             aiFace face = aimesh->mFaces[i];
+
             for (uint32 j = 0; j < face.mNumIndices; j++)
+            {
                 mesh->addIndex(face.mIndices[j]);
+                
+            }
         }
     }
 
@@ -200,10 +204,14 @@ namespace xe_assets
         Model *mode = new Model();
 
         if (calculate_tspace)
+        {
             mode->vertex_type = new PositionNormalTBUV();
+        }
         else
+        {
             mode->vertex_type = new PositionNormalUV();
-        
+        }
+
         mode->parent_dir = path.substr(0, path.find_last_of('/'));
         mode->root = parseNode(mode, scene->mRootNode, scene);
 
@@ -484,13 +492,13 @@ namespace xe_assets
 
         std::initializer_list<xe_graphics::BufferElement> init_list =
         {
-            { "iPos",         ElementType::Float3, },
-            { "iNormal",      ElementType::Float3, },
-            { "iTangent",     ElementType::Float3, },
-            { "iBitangent",   ElementType::Float3, },
-            { "iUV",          ElementType::Float2, },          
-            { "iBoneIDs",     ElementType::Int4, },
-            { "iBoneWeights", ElementType::Float4, }
+            { "aPos",         ElementType::Float3, },
+            { "aNormal",      ElementType::Float3, },
+            { "aTangent",     ElementType::Float3, },
+            { "aBitangent",   ElementType::Float3, },
+            { "aUV",          ElementType::Float2, },          
+            { "aBoneIDs",     ElementType::Int4, },
+            { "aBoneWeights", ElementType::Float4, }
         };
 
         device->createBufferLayout(init_list, &buffer_layout);

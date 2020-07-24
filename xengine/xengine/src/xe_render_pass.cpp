@@ -28,8 +28,8 @@ void xe_graphics::RenderPass2D::init()
     transform->position = glm::vec3(200.0f, 200.0f, 0.0f);
     transform->scale = glm::vec3(100.0f, 100.0f, 100.0f);
 
-    mesh->quad_mesh = new Quad();
-    xe_render::createQuad(mesh->quad_mesh);
+    //mesh->quad_mesh = new Quad();
+    //xe_render::createQuad(mesh->quad_mesh);
 
     device->bindShader(simple_shader);
     device->setInt("tex_diff", 0, simple_shader);
@@ -46,7 +46,14 @@ void xe_graphics::RenderPass2D::render()
 
     //application::ApplicationState *app_state = application::getAppState();
 
-    drawQuad(&main_ent, simple_shader, color_texture);
+    //drawQuad(&main_ent, simple_shader, color_texture);
+    
+    drawQuad(100, 100, 50, 50, Color4RGBA(0.0f, 1.0f, 0.0f, 1.0f));
+    drawQuad(200, 200, 50, 50, Color4RGBA(1.0f, 0.0f, 0.0f, 1.0f));
+
+    drawQuad(300, 300, 50, 50, Color4RGBA(0.0f, 0.0f, 1.0f, 1.0f));
+    drawQuad(400, 400, 50, 50, Color4RGBA(1.0f, 1.0f, 0.0f, 1.0f));
+    
     //drawText("FPS: " + std::to_string(app_state->fps), 10, 10);
 }
 

@@ -58,29 +58,30 @@ namespace xe_render
 
     xe_ecs::Camera2DComponent& getCamera2D();
     xe_ecs::Camera3DComponent& getCamera3D();
-    
-    bool32 createQuad(xe_graphics::Quad *q);
+
     bool32 createQuad();
 
     bool32 createFullquad();
     bool32 createSkybox(xe_graphics::Skybox *sky);
     bool32 createCubemap(xe_graphics::Cubemap *cube);
     bool32 createShadowMaps(xe_graphics::ShadowMap *shadow);
-    bool32 createSphere(xe_graphics::Sphere *sphre);
-    bool32 createCube(xe_graphics::Cube *cube);
+    bool32 createSphere(xe_graphics::SphereMesh *sphre);
+    bool32 createCube(xe_graphics::CubeMesh *cube);
     bool32 createMesh(xe_assets::Mesh *meh, xe_graphics::Vertex *vertex_type, bool32 calculate_tspace);
     
-    bool32 createLineMesh(glm::vec3 &start, glm::vec3 &end,  xe_graphics::Line *line_com);
-    bool32 createLineMesh(xe_graphics::Line *line_com);
+    bool32 createLineMesh(glm::vec3 &start, glm::vec3 &end,  xe_graphics::LineMesh *line_com);
+    bool32 createLineMesh(xe_graphics::LineMesh *line_com);
 
     bool32 createLinesBuffer();
+    bool32 createQuadBuffer();
 
     void drawFullquad();
-    void drawQuad(xe_graphics::Quad *q);
-    void drawQuad(xe_graphics::Quad *q, const glm::vec4 &color);
-    void drawQuad(xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
-    void drawQuad(xe_ecs::Entity *ent, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture);
-    void drawQuad(const xe_graphics::Quad *q, xe_graphics::Shader *shd, xe_graphics::Texture2D *texture, glm::mat4& mod);
+    
+    void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const xe_graphics::Color4RGBA &color);
+    void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const xe_graphics::Color4RGBA &color);
+    void drawQuad(real32 x, real32 y, real32 w, real32 h, const xe_graphics::Color4RGBA &color);
+    void drawQuad(real32 x, real32 t, real32 w, real32 h, xe_graphics::Texture2D *texture);
+    
     void drawModel(xe_assets::Model *mod, xe_graphics::Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
     void drawModel(xe_assets::AnimModel *mod, xe_graphics::Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
 
@@ -107,6 +108,7 @@ namespace xe_render
     void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, xe_graphics::Color3RGB color);
 
     void drawLines();
+    void drawQuads();
 
     void drawEnt(xe_ecs::Entity *ent);
     void drawEntStatic(xe_ecs::Entity *ent);
@@ -123,7 +125,7 @@ namespace xe_render
     void drawShadowMaps();
 
     void drawAABB(const aabb &bb, const glm::mat4 &matrix);
-
+    
     void applyShadowMap(xe_graphics::ShadowMap *shadow);
 
     glm::mat4& applyTransform(xe_ecs::TransformComponent *transform, xe_graphics::Shader *shd);

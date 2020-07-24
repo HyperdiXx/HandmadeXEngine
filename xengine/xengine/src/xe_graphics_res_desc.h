@@ -32,6 +32,7 @@ namespace xe_graphics
     enum TEXTURE_TYPE
     {
         COLOR, 
+        COLOR_MSAA,
         HDR, 
         GREYSCALE,
         LUT, 

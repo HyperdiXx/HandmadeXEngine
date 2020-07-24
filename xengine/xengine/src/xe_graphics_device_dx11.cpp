@@ -530,32 +530,32 @@ namespace xe_graphics
         return true;
     }
 
-    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, Texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture2D(const char *path, Texture2D *texture)
     {
         return true;
     }
 
-    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, TEXTURE_TYPE tex_type, Texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture2D(const char *path, TEXTURE_TYPE tex_type, Texture2D *texture)
     {
         return true;
     }
 
-    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, TEXTURE_TYPE tex_type, bool32 gen_mip, Texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture2D(const char *path, TEXTURE_TYPE tex_type, uint32 samples, bool32 gen_mip, Texture2D *texture)
     {
         return true;
     }
 
-    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, const char * dir, Texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture2D(const char *path, const char *dir, Texture2D *texture)
     {
         return true;
     }
 
-    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, const char * dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture2D(const char *path, const char *dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D *texture)
     {
         return true;
     }
 
-    bool32 GraphicsDeviceDX11::createTexture2D(const char * path, const char * dir, TEXTURE_TYPE type, uint32 i, bool32 generate_mipmap, Texture2D * texture)
+    bool32 GraphicsDeviceDX11::createTexture2D(const char *path, const char *dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D *texture)
     {
         return bool32();
     }

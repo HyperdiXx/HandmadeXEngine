@@ -28,6 +28,9 @@ namespace application
         real32 start_time = 0;
         uint32 frames_elapsed = 0;
         uint32 fps = 0;
+
+        bool32 debug_render = false;
+        bool32 activate_gizmo = false;
     };
 
     ApplicationState *getAppState();

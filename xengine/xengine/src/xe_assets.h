@@ -15,6 +15,19 @@ namespace xe_assets
 {
     using namespace xe_graphics;
 
+    struct Index
+    {
+        uint32 v1, v2, v3;        
+    };
+
+    struct Triangle
+    {
+        PositionNormalTBUV f1, f2, f3;
+
+        Triangle(const PositionNormalTBUV& v0, const PositionNormalTBUV& v1, const PositionNormalTBUV& v2)
+            : f1(v0), f2(v1), f3(v2) {}
+    };
+
     struct Mesh
     {
         void addVertex(PositionNormalUV vertex);
@@ -31,6 +44,8 @@ namespace xe_assets
         std::vector<uint32> indices;
         std::vector<TextureWrapper> mesh_textures;
 
+        std::vector<Triangle> triangles;
+
         xe_graphics::VertexArray vao;
         aabb bounding_box;
     };
@@ -42,7 +57,7 @@ namespace xe_assets
 
         std::string name;
         std::vector<Mesh*> meshes;
-        std::vector<Node*> children;
+        std::vector<Node*> children;       
     };
 
     struct Model

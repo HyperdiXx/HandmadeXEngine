@@ -86,6 +86,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\app_state.cpp" />
+    <ClCompile Include="src\layers.cpp" />
+    <ClCompile Include="src\render_pass.cpp" />
     <ClCompile Include="src\win32_main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\app_state.h" />
+    <ClInclude Include="src\layers.h" />
+    <ClInclude Include="src\render_pass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -34,6 +34,8 @@ namespace xe_gui
 
     void initImguiImpl();
 
+    void ImGuidrawLine(real32 x, real32 y, real32 z, real32 x1, real32 y1, real32 z1);
+
     void startFrame();
     void endFrame();
 

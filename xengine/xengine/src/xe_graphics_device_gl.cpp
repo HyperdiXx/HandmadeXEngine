@@ -294,7 +294,7 @@ namespace xe_graphics
         {
             xe_utility::error("Cannot create OpenGL context!!!");
         }
-
+        
         // set swap interval
         if (wglSwapIntervalEXT && vsync)
         {
@@ -382,7 +382,7 @@ namespace xe_graphics
         glDrawElements(gl_primitive_type, count, type, ind);
     }
 
-    void GraphicsDeviceGL::pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, const void *data)
+    void GraphicsDeviceGL::pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, void *data)
     {
         uint32 buf_type = convert_buffer_type_gl(type);
         glBufferSubData(buf_type, offset, size, data);

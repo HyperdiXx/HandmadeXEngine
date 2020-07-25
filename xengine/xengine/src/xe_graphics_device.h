@@ -31,7 +31,7 @@ namespace xe_graphics
         virtual void drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) = 0;
         virtual void drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) = 0;
 
-        virtual void pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, const void *data) = 0;
+        virtual void pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, void *data) = 0;
 
         virtual void activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture) = 0;
         virtual void activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture) = 0;

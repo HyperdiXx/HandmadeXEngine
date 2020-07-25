@@ -8,6 +8,9 @@
 #include "xe_utility.h"
 #include "xe_gizmo.h"
 
+#include "render_pass.h"
+#include "layers.h"
+
 namespace application
 {
     ApplicationState app_state = {};
@@ -247,7 +250,6 @@ namespace application
         RenderPass *gamma_correction = new GammaCorrectionPass();
         gamma_correction->init();
 
-        ShadowMapPass shadow_pass = {};
         //shadow_pass.init();
         //shadow_pass.setScene(&current_app_state->active_scene);
 
@@ -265,7 +267,7 @@ namespace application
     {
         using namespace xe_graphics;
         
-        xe_render::beginFrame();
+        xe_render::beginFrame(true);
 
         RenderPass *main_pass = xe_scene::getPassByName(&app_state.active_scene, "layer3D");
         RenderPass *render_pass_2D = xe_scene::getPassByName(&app_state.active_scene, "layer2D");
@@ -289,14 +291,11 @@ namespace application
 
         
         render_pass_2D->render();
-
        
         xe_scene::drawSceneLayers(&app_state.active_scene);
 
-        //guiLayer.update(current_app_state->delta_time);
-        //guiLayer.render();
-
-
+        //app_state.guiLayer.update(dt);
+        //app_state.guiLayer.render();
 
         xe_render::endFrame();
     }
@@ -458,11 +457,9 @@ namespace application
         application::loadTestScene(&new_scene);
         application::loadSpheresScene(&pbr_scene);
         
-        Layer *two_dimensional = new Layer2D();
+        Layer *two_dimensional = new layer::Layer2D();
 
-        Layer *three_dimensional = new Layer3D();
-
-        GUILayer guiLayer = {};
+        Layer *three_dimensional = new layer::Layer3D();
 
         xe_scene::pushLayer(&new_scene, three_dimensional);
         xe_scene::pushLayer(&new_scene, two_dimensional);

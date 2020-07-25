@@ -259,6 +259,7 @@ namespace xe_graphics
         static const uint32_t max_quads_count = 20000;
         static const uint32_t max_quad_vert = max_quads_count * 4;
         static const uint32_t max_quad_indices = max_quads_count * 6;
+       
         static const uint32_t max_texture_slots = 32;
 
         static const uint32_t max_line_count = 10000;

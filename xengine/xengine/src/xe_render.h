@@ -28,7 +28,13 @@ namespace xe_assets
 namespace xe_render
 {
     static const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
-
+    
+    enum class CommandType
+    {
+        LINE,
+        QUAD
+    };
+    
     namespace ftgl 
     {
         struct texture_atlas_t;
@@ -133,7 +139,13 @@ namespace xe_render
     void applySpotLight(xe_graphics::Shader *shd, xe_ecs::SpotLight *directional_light, xe_ecs::TransformComponent *transform);
     void applyPointLight(xe_graphics::Shader *shd, xe_ecs::PointLight *directional_light, xe_ecs::TransformComponent *transform);
 
-    void beginFrame();
+    void beginFrame(bool32 shouldClearScreen);
+    
+    void setupCommand(CommandType type);
+
+    void executeCommands();
+    void executeCommand(CommandType type);
+
     void endFrame();
 
     glm::vec3 convertToVec3(xe_graphics::Color3RGB color);

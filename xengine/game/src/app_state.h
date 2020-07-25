@@ -4,6 +4,7 @@
 #define APP_STATE_H
 
 #include "xe_scene.h"
+#include "layers.h"
 
 namespace application
 {
@@ -19,7 +20,9 @@ namespace application
     struct ApplicationState
     {
         xe_scene::LoadedObjects cachedObjects;
-        
+
+        layer::GUILayer guiLayer = {};
+
         std::vector<xe_ecs::Entity> entities;
         xe_scene::Scene active_scene;
 

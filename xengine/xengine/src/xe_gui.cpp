@@ -106,19 +106,12 @@ namespace xe_gui
             {
             case UI_BUTTON:
             {   
-                Quad q = {};
-
-                q.x = element.x;
-                q.y = element.y;
-                q.w = element.width;
-                q.h = element.height;
-                
-                //drawQuad(&q);
+                drawQuad(element.x, element.y, element.width, element.height, Color4RGBA(1.0f, 0.0f, 1.0f, 1.0f));
 
                 if (element.text)
                 {
-                    glm::vec2 pos = glm::vec2(q.x, q.y);
-                    drawText(element.text, pos);
+                    //glm::vec2 pos = glm::vec2(q.x, q.y);
+                    //drawText(element.text, pos);
                 }
                
             } break;               
@@ -150,10 +143,10 @@ namespace xe_gui
         real32 height = vp.height;
         real32 windowHalfHieght = height * 0.5f;
 
-        xe_render::drawQuad(x - halfWidth, y + halfHeight, 4.0f, 4.0f, Color4RGBA(0.0f, 0.0f, 0.0f, 1.0f));
+        /*xe_render::drawQuad(x - halfWidth, y + halfHeight, 4.0f, 4.0f, Color4RGBA(0.0f, 0.0f, 0.0f, 1.0f));
         xe_render::drawQuad(x + halfWidth, y + halfHeight, 4.0f, 4.0f, Color4RGBA(0.0f, 0.0f, 1.0f, 1.0f));
         xe_render::drawQuad(x - halfWidth, y - halfHeight, 4.0f, 4.0f, Color4RGBA(0.0f, 1.0f, 1.0f, 1.0f));
-        xe_render::drawQuad(x + halfWidth, y - halfHeight, 4.0f, 4.0f, Color4RGBA(1.0f, 1.0f, 0.0f, 1.0f));
+        xe_render::drawQuad(x + halfWidth, y - halfHeight, 4.0f, 4.0f, Color4RGBA(1.0f, 1.0f, 0.0f, 1.0f));*/
 
         if (mouse->isLeftButtonPressed)
         {
@@ -177,8 +170,6 @@ namespace xe_gui
             elem->y = y;
 
             elem->text = text;
-
-
         }
         else
         {
@@ -234,6 +225,11 @@ namespace xe_gui
 
         ImGui_ImplDX11_Init(xe_graphics::graphics_device_dx11::get_api_device(), xe_graphics::graphics_device_dx11::get_api_device_context());
 #endif 
+    }
+
+    void ImGuidrawLine(real32 x, real32 y, real32 z, real32 x1, real32 y1, real32 z1)
+    {
+        //ImDrawList::AddLine({ x, y }, {x1, y1}, 0xff00ff00);
     }
 
     void startFrame()

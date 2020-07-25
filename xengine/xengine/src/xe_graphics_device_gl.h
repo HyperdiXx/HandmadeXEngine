@@ -27,7 +27,7 @@ namespace xe_graphics
         void drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) override;
         void drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) override;
      
-        void pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, const void *data) override;
+        void pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, void *data) override;
 
         void activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture) override;
         void activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture) override;

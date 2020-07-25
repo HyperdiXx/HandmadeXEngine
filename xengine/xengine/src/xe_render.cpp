@@ -1620,44 +1620,83 @@ namespace xe_render
 
     }
 
-    void applyPointLight(xe_graphics::Shader * shd, xe_ecs::PointLight * directional_light, xe_ecs::TransformComponent * transform)
+    void applyPointLight(xe_graphics::Shader *shd, xe_ecs::PointLight *directional_light, xe_ecs::TransformComponent *transform)
     {
 
     }
 
-    void beginFrame()
+    void beginFrame(bool32 shouldClearScreen)
     {
-        graphics_state.line_index_count = 0;
-        graphics_state.line_vb_ptr = graphics_state.line_vb_base;
+        if (shouldClearScreen)
+        {
+            graphics_device->startExecution();
+        }
+    }
 
-        graphics_state.quad_index_count = 0;
-        graphics_state.quad_vb_ptr = graphics_state.quad_vb_base;
+    void setupCommand(CommandType type)
+    {
+        switch (type)
+        {
+        case xe_render::CommandType::LINE:
+        {
+            graphics_state.line_index_count = 0;
+            graphics_state.line_vb_ptr = graphics_state.line_vb_base;
+        } break;
+        case xe_render::CommandType::QUAD:
+        {
+            graphics_state.quad_index_count = 0;
+            graphics_state.quad_vb_ptr = graphics_state.quad_vb_base;
+        } break;
+        default:
+            break;
+        }       
+    }
 
-        graphics_device->startExecution();
+    void executeCommands()
+    {
+        executeCommand(CommandType::LINE);
+        executeCommand(CommandType::QUAD);
+    }
+
+    void executeCommand(CommandType type)
+    {
+        uint32 dSize = 0;
+
+        switch (type)
+        {
+        case xe_render::CommandType::LINE:
+        {
+            dSize = (uint8_t*)graphics_state.line_vb_ptr - (uint8_t*)graphics_state.line_vb_base;
+
+            if (dSize)
+            {
+                uint32 offset = 0;
+                graphics_device->bindBuffer(&graphics_state.line_vertex_buffer);
+                graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, dSize, graphics_state.line_vb_base);
+                drawLines();
+            }
+
+        } break;
+        case xe_render::CommandType::QUAD:
+        {
+            dSize = (uint8*)graphics_state.quad_vb_ptr - (uint8*)graphics_state.quad_vb_base;
+
+            if (dSize)
+            {
+                uint32 offset = 0;
+                graphics_device->bindBuffer(&graphics_state.quad_vertex_buffer);
+                graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, dSize, graphics_state.quad_vb_base);
+                drawQuads();
+            }
+        } break;
+        default:
+            break;
+        }        
+        
     }
 
     void endFrame()
     {
-        uint32 lineSize = (uint8*)graphics_state.line_vb_ptr - (uint8*)graphics_state.line_vb_base;
-
-        if (lineSize > 0)
-        {
-            uint32 offset = 0;
-            graphics_device->bindBuffer(&graphics_state.line_vertex_buffer);
-            graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(LineVertexMesh) * lineSize, graphics_state.line_vb_base);
-            drawLines();
-        }
-        
-        uint32 quadSize = (uint8*)graphics_state.quad_vb_ptr - (uint8*)graphics_state.quad_vb_base;
-
-        if (quadSize > 0)
-        {
-            uint32 offset = 0;
-            graphics_device->bindBuffer(&graphics_state.quad_vertex_buffer);
-            graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, sizeof(QuadVertexMesh) * quadSize, graphics_state.quad_vb_base);
-            drawQuads();
-        }
-
         graphics_device->checkError();
         graphics_device->endExecution();
     }
@@ -1674,6 +1713,7 @@ namespace xe_render
 
     void convertToVec4(xe_graphics::Color3RGB color)
     {
+
     }
 
     void drawModel(xe_assets::Model *mod, const glm::mat4 &transform)

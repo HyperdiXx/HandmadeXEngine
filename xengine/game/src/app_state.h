@@ -33,7 +33,9 @@ namespace application
         uint32 fps = 0;
 
         bool32 debug_render = false;
+        
         bool32 activate_gizmo = false;
+        int gizmo_mode = -1;
     };
 
     ApplicationState *getAppState();
@@ -53,6 +55,7 @@ namespace application
 
     void pushEmptyEntity();
 
+    void createLayers(xe_scene::Scene *scene);
     void createPasses(xe_scene::Scene *scene);
 
     void gameSubmitRenderPasses(real32 dt);

@@ -3,14 +3,22 @@
 #ifndef XENGINE_GRAPHICS_RESOURCES_H
 #define XENGINE_GRAPHICS_RESOURCES_H
 
+#include "xenpch.h"
 #include "xe_graphics_res_desc.h"
 
-#include <vector>
+#include "xe_config.h"
+
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
 namespace xe_graphics
 {
+#ifdef GAPI_GL
+    typedef uint32 GPUHandler;
+#else
+    Another API Stuff
+#endif
+
     class GraphicsDevice;
 
     struct Color3RGB
@@ -30,27 +38,33 @@ namespace xe_graphics
 
     struct Texture2D
     {
-        uint32 id;
+        GPUHandler id;
         bool32 is_valid;
         TextureDesc desc;
     };
 
     struct Shader
     {
-        uint32 id;
+        GPUHandler id;
     };
    
+    struct Index
+    {
+        GPUHandler v1, v2, v3;
+    };
+
     struct IndexBuffer
     {
-        uint32 id;
-        uint32 count;
-        uint32 *data;
+        GPUHandler id;
+        GPUHandler count;
+        GPUHandler *index_data;
+        Index *data;
     };
 
     struct Framebuffer
     {
-        uint32 fbo_id;
-        uint32 rb_id;
+        GPUHandler fbo_id;
+        GPUHandler rb_id;
         std::vector<Texture2D*> color_textures;
         Texture2D *depth_texture;
         Texture2D *stencil_texture;
@@ -77,8 +91,8 @@ namespace xe_graphics
     {
         std::string name; // own string impl 
         ElementType type;
-        uint32 size;
-        uint32 offset = 0;
+        GPUHandler size;
+        GPUHandler offset = 0;
         
         BufferElement(const std::string& name , ElementType type)
         {
@@ -87,7 +101,7 @@ namespace xe_graphics
             this->size = typeSizeof(type);
         }
 
-        uint32 typeSizeof(ElementType type)
+        GPUHandler typeSizeof(ElementType type)
         {
             switch (type)
             {
@@ -120,7 +134,7 @@ namespace xe_graphics
             return 0;
         }
 
-        uint32 elementTypeCount()
+        GPUHandler elementTypeCount()
         {
             switch (type)
             {
@@ -154,13 +168,13 @@ namespace xe_graphics
     struct BufferLayout
     {
         std::vector<BufferElement> elements;
-        uint32 stride = 0;
+        GPUHandler stride = 0;
     };
 
     struct VertexBuffer
     {
-        uint32 id;
-        uint32 element_count;
+        GPUHandler id;
+        GPUHandler element_count;
         BufferLayout layout;
         void *data;
     };
@@ -174,22 +188,22 @@ namespace xe_graphics
 
     struct VertexArray
     {
-        uint32 id;
-        uint32 ibuffer_index = 0;
+        GPUHandler id;
+        GPUHandler ibuffer_index = 0;
         std::vector<VertexBuffer*> buffers;
         IndexBuffer *ib;
     };
 
     struct QuadMesh
     {
-        uint32 vertex_count;
+        GPUHandler vertex_count;
         glm::vec3 color;
         glm::vec2 uv;
     };
 
     struct LineMesh
     {
-        uint32 vertex_count;        
+        GPUHandler vertex_count;        
         xe_graphics::VertexArray *va;
         glm::vec3 color;
     };
@@ -219,7 +233,7 @@ namespace xe_graphics
 
     struct Cubemap
     {
-        uint32 id;
+        GPUHandler id;
         std::vector<Texture2D*> face_textures;
     };
 
@@ -232,8 +246,8 @@ namespace xe_graphics
 
     struct ShadowMap
     {
-        uint32 w;
-        uint32 h;
+        GPUHandler w;
+        GPUHandler h;
         glm::mat4 light_projection_matrix = glm::mat4(1.0f);
         Framebuffer depth_fbo;
     };
@@ -254,23 +268,101 @@ namespace xe_graphics
         QuadVertexMesh() {};
     };
 
+    enum class MaterialFlag
+    {
+        None = 0,
+        Depth = 1 << 1,
+        Stencil = 1 << 2, 
+        Blend = 1 << 3
+    };
+
+    class ShaderProperty
+    {
+    public:       
+        ShaderProperty() = default;
+        ShaderProperty(const std::string& name) : property_name(name) {};
+        ~ShaderProperty() {};
+    
+        inline const std::string &getName() const { return property_name; }
+    
+    private:
+        std::string property_name;
+    };
+
+    class ShaderProperties
+    {
+    public:
+
+        inline const std::vector<ShaderProperty> &getProperties() const { return properties; }
+
+    private:
+        std::vector<ShaderProperty> properties;
+    };
+
+    class MaterialInstance;
+    class Material
+    {
+    private:
+        friend class MaterialInstance;
+    public:
+        Material(Shader &shd) : shaderRef(shd) {};
+        virtual ~Material() {};
+
+        template<typename T>
+        void set(const std::string &property_name, const T &value)
+        {
+            auto &definitions = shaderProp.getProperties();
+
+
+
+        };
+
+        
+
+    private:
+        std::unordered_set<MaterialInstance*> instances;
+        Shader &shaderRef;
+        ShaderProperties shaderProp = {};
+        GPUHandler flags;
+    };
+
+    class MaterialInstance
+    {
+    private:
+        friend class Material;
+    public:
+        MaterialInstance(const Material &material_ref) {};
+        virtual ~MaterialInstance() {};
+    
+    private:
+
+    };
+
+    struct Triangle
+    {
+        PositionNormalTBUV f1, f2, f3;
+
+        Triangle(const PositionNormalTBUV& v0, const PositionNormalTBUV& v1, const PositionNormalTBUV& v2)
+            : f1(v0), f2(v1), f3(v2) {}
+    };
+
     struct RenderState
     {
-        static const uint32_t max_quads_count = 20000;
-        static const uint32_t max_quad_vert = max_quads_count * 4;
-        static const uint32_t max_quad_indices = max_quads_count * 6;
-       
-        static const uint32_t max_texture_slots = 32;
+        static const uint32 max_quads_count = 20000;
+        static const uint32 max_quad_vert = max_quads_count * 4;
+        static const uint32 max_quad_indices = max_quads_count * 6;
 
-        static const uint32_t max_line_count = 10000;
-        static const uint32_t max_line_vert = max_line_count * 2;
-        static const uint32_t max_line_ind = max_line_count * 6;
+        static const uint32 max_texture_slots = 32;
 
-        uint32 draw_calls;
-        uint32 quads_count;
-        uint32 geometry_count;
-        uint32 lines_count;
-        uint32 default_line_width = 2;
+        static const uint32 max_line_count = 10000;
+        static const uint32 max_line_vert = max_line_count * 2;
+        static const uint32 max_line_ind = max_line_count * 6;
+
+        GPUHandler draw_calls;
+        GPUHandler quads_count;
+        GPUHandler geometry_count;
+        GPUHandler lines_count;
+        GPUHandler default_line_width = 2;
 
         std::string inputShaderColorUniformName = "u_color";
 
@@ -279,12 +371,12 @@ namespace xe_graphics
 
         VertexArray quad_vertex_array;
         VertexBuffer quad_vertex_buffer;
-       
-        uint32 line_index_count = 0;
+
+        GPUHandler line_index_count = 0;
         LineVertexMesh* line_vb_base = nullptr;
         LineVertexMesh* line_vb_ptr = nullptr;
 
-        uint32 quad_index_count = 0;
+        GPUHandler quad_index_count = 0;
         QuadVertexMesh *quad_vb_base = nullptr;
         QuadVertexMesh *quad_vb_ptr = nullptr;
 

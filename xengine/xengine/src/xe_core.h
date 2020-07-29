@@ -3,7 +3,7 @@
 #ifndef XENGINE_CORE_H
 #define XENGINE_CORE_H
 
-#include "types.h"
+#include "xe_types.h"
 #include <string>
 
 namespace xe_core

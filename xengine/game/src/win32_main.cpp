@@ -118,8 +118,6 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             current_app_state->frames_elapsed = 0;
             current_app_state->start_time += 1.0f;
         }
-
-        printf("FPS: %d\n", current_app_state->fps);
     }
 
     xe_render::clear();

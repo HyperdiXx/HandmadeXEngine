@@ -4,7 +4,6 @@
 #include "app.h"
 
 #include "../core/utility/clock.h"
-#include <runtime/core/windowsystem/windowWin.h>
 
 /*#ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC

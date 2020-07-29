@@ -10,7 +10,7 @@
 #define WINDOWS_HEIGHT 720
 #define ENGINE_NAME "XENGINE"
 
-#include "types.h"
+#include "xe_types.h"
 
 namespace xe_config
 {

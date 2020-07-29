@@ -10,6 +10,10 @@
 
 #include "xe_utility.h"
 
+#include "app_state.h"
+
+#include "xe_gizmo.h"
+
 using namespace xe_ecs;
 
 void RenderPass2D::init()
@@ -46,27 +50,22 @@ void RenderPass2D::render()
 {
     using namespace xe_render;
 
-    //application::ApplicationState *app_state = application::getAppState();
+    application::ApplicationState *app_state = application::getAppState();
 
     setupCommand(CommandType::QUAD);
 
     drawQuad(100, 100, 50, 50, xe_graphics::Color4RGBA(0.0f, 1.0f, 0.0f, 1.0f));
-    drawQuad(200, 200, 50, 50, xe_graphics::Color4RGBA(1.0f, 0.0f, 0.0f, 1.0f));
+    drawQuad(100, 200, 50, 50, xe_graphics::Color4RGBA(1.0f, 0.0f, 0.0f, 1.0f));
 
-    drawQuad(300, 300, 50, 50, xe_graphics::Color4RGBA(0.0f, 0.0f, 1.0f, 1.0f));
-    drawQuad(400, 400, 50, 50, xe_graphics::Color4RGBA(1.0f, 1.0f, 1.0f, 1.0f));
+    drawQuad(100, 300, 50, 50, xe_graphics::Color4RGBA(0.0f, 0.0f, 1.0f, 1.0f));
+    drawQuad(100, 400, 50, 50, xe_graphics::Color4RGBA(1.0f, 1.0f, 1.0f, 1.0f));
 
-    drawQuad(500, 500, 50, 50, xe_graphics::Color4RGBA(1.0f, 1.0f, 0.0f, 1.0f));
-    drawQuad(600, 600, 50, 50, xe_graphics::Color4RGBA(1.0f, 0.0f, 1.0f, 1.0f));
-
-    for (uint32 i = 0; i < 1000; i++)
-    {
-        drawQuad(600 + (i - 100), 600 + (i - 200), 10, 10, xe_graphics::Color4RGBA(1.0f, 1.0f, 1.0f, 1.0f));
-    }
+    drawQuad(100, 500, 50, 50, xe_graphics::Color4RGBA(1.0f, 1.0f, 0.0f, 1.0f));
+    drawQuad(100, 600, 50, 50, xe_graphics::Color4RGBA(1.0f, 0.0f, 1.0f, 1.0f));
 
     executeCommand(CommandType::QUAD);
 
-    //drawText("FPS: " + std::to_string(app_state->fps), 10, 10);
+    drawText("FPS: " + std::to_string(app_state->fps), 0, 0, 0.5f);
 }
 
 void RenderPass2D::update(real32 dt)
@@ -121,6 +120,8 @@ void RenderPass3D::init()
 
     device->checkFramebuffer();
     device->unbindFramebuffer();
+
+    xe_render::setActiveFramebuffer(&fbo);
 }
 
 void RenderPass3D::clear()
@@ -146,6 +147,7 @@ void RenderPass3D::render()
     device->setCullMode(GL_BACK);
 
     xe_render::setupCommand(xe_render::CommandType::LINE);
+
     for (uint16 i = 0; i < current_scene->entities.size(); ++i)
     {
         Entity *current_ent = current_scene->entities[i];
@@ -171,10 +173,24 @@ void RenderPass3D::render()
     xe_render::drawModel(girl, glm::translate(xe_render::IDENTITY_MATRIX, { 5, -10, 0})
                                                     * glm::rotate(xe_render::IDENTITY_MATRIX, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f))
                                                     * glm::scale(xe_render::IDENTITY_MATRIX, glm::vec3(0.2f, 0.2f, 0.2f)));*/
+    
+    //xe_render::drawLine(0.0f, 0.0f, 0.0f, -20.0f, 200.0f, -50.0f, xe_graphics::Color3RGB(1.0f, 1.0f, 0.0f));
+    //xe_render::drawLine(0.0f, 0.0f, 0.0f, 50.0f, 50.0f, 50.0f, xe_graphics::Color3RGB(1.0f, 0.0f, 0.0f));
+    //xe_render::drawLine(0.0f, 0.0f, 0.0f, 30.0f, 0.0f, 0.0f, xe_graphics::Color3RGB(0.0f, 1.0f, 0.0f));
+    
+    application::ApplicationState *app_state = application::getAppState();
 
-    xe_render::drawLine(0.0f, 0.0f, 0.0f, -20.0f, 200.0f, -50.0f, xe_graphics::Color3RGB(1.0f, 1.0f, 0.0f));
-    xe_render::drawLine(0.0f, 0.0f, 0.0f, 50.0f, 50.0f, 50.0f, xe_graphics::Color3RGB(1.0f, 0.0f, 0.0f));
-    xe_render::drawLine(0.0f, 0.0f, 0.0f, 30.0f, 0.0f, 0.0f, xe_graphics::Color3RGB(0.0f, 1.0f, 0.0f));
+    if (app_state->activate_gizmo)
+    {
+        using namespace xe_gizmo;
+
+        Camera3DComponent &camera3D = xe_render::getCamera3D();
+        glm::vec3 default_pos = glm::vec3(0.0f, 0.0f, 0.0f);
+
+        xe_gizmo::manipulateGizmo(default_pos, camera3D.get_view_matrix(), camera3D.get_projection_matrix(),
+            (GizmoState::Mode)app_state->gizmo_mode, GizmoState::Axis::X, GizmoState::CoordSystem::GLOBAL);
+    }
+
     xe_render::executeCommand(xe_render::CommandType::LINE);
 
     xe_render::drawSkybox();

@@ -534,6 +534,11 @@ namespace xe_render
         active_framebuffer = fbo;
     }
 
+    xe_graphics::Framebuffer *getActiveFramebuffer()
+    {
+        return active_framebuffer;
+    }
+
     xe_graphics::GraphicsDevice* getDevice() { return graphics_device; }
 
     xe_graphics::Shader *getShader(const char *name)
@@ -582,8 +587,10 @@ namespace xe_render
         graphics_device->bindVertexArray(&meh->vao);
 
         graphics_device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
+        
+        // TODO: rework
         graphics_device->createIndexBuffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
-
+        
         graphics_device->createBufferLayout(init_list, &buffer_layout);
         graphics_device->setVertexBufferLayout(meh->vao.buffers[0], &buffer_layout);
         graphics_device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
@@ -1454,6 +1461,12 @@ namespace xe_render
         drawText(text, x, y, text_color, default_text_scale);
     }
 
+    void drawText(const std::string & text, real32 x, real32 y, real32 scale)
+    {
+        glm::vec3 text_color = convertToVec3(default_text_color);
+        drawText(text, x, y, text_color, scale);
+    }
+
     void drawWaterPlane(xe_ecs::Entity *ent)
     {
         Shader *water = xe_render::getShader("water");
@@ -1793,7 +1806,7 @@ namespace xe_render
     {
         if (graphics_state.line_index_count >= RenderState::max_line_ind)
         {
-            //FlushAndResetLines();
+            //flushLines();
         }
 
         graphics_state.lines_count++;
@@ -1818,7 +1831,7 @@ namespace xe_render
     {
         if (graphics_state.line_index_count >= RenderState::max_line_ind)
         {
-            //FlushAndResetLines();
+            //flushLines();
         }
 
         graphics_state.lines_count++;

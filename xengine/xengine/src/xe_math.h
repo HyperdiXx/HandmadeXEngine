@@ -4,7 +4,7 @@
 #define XE_MATH_H
 
 
-#include "types.h"
+#include "xe_types.h"
 
 // @for now...
 #include <glm/glm.hpp>
@@ -17,6 +17,13 @@
 
 #define THRESH_QUAT_NORMALIZED 0.01f
 #define TOLERANCE 0.00000001f
+
+namespace xe_math
+{
+    static glm::vec3 VEC3_RIGHT = glm::vec3(100.0f, 0.0f, 0.0f);
+    static glm::vec3 VEC3_UP = glm::vec3(0.0f, 100.0f, 0.0f);
+    static glm::vec3 VEC3_BACK = glm::vec3(0.0f, 0.0f, 100.0f);
+}
 
 inline static int32 truncate_int(real32 val)
 {
@@ -315,6 +322,18 @@ public:
         real32 radiusSumSqr = radiusSum * radiusSum;
         return distSqr <= radiusSumSqr;
     }
+
+    static real32 isIntersectsRayPlane(const glm::vec4 & rOrigin, const glm::vec4& rVector, const glm::vec4& plan)
+    {
+        real32 numer = glm::dot(plan, rOrigin) - plan.w;
+        real32 denom = glm::dot(plan, rVector);
+        
+        if (fabsf(denom) < FLT_EPSILON)  // normal is orthogonal to vector, cant intersect
+            return -1.0f;
+
+        return -(numer / denom);
+    }
+
 };
 
 struct Quad

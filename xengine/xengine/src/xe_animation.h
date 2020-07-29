@@ -4,7 +4,7 @@
 #define SKELETAL_ANIMATION_H
 
 #include "xenpch.h"
-#include "types.h"
+#include "xe_types.h"
 
 #include <assimp/include/assimp/Importer.hpp>
 #include <assimp/include/assimp/scene.h>

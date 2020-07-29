@@ -85,11 +85,17 @@ namespace xe_graphics
         bool32 createTexture2D(uint32 width, uint32 height, Texture2D* texture) override;
         bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D* texture) override;
         bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) override;
+        
         bool32 createShader(const char* vertex, const char* fragment, Shader *Shader) override;
-        bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) override;
+        
+        bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) override;        
         bool32 createRenderbuffer(const uint32 count, Framebuffer *fbo) override;
+
         bool32 createVertexBuffer(void *vertices, uint32 size, DRAW_TYPE draw_type, VertexBuffer *vb) override;        
+        
         bool32 createIndexBuffer(uint32* indices, uint32 size, IndexBuffer *ib) override;
+        bool32 createIndexBuffer(Index *indices, uint32 size, IndexBuffer *ib) override;
+        
         bool32 createVertexArray(VertexArray *va) override;
         bool32 createBufferLayout(std::initializer_list<BufferElement>& element, BufferLayout *buf_layout) override;
         bool32 setVertexBufferLayout(VertexBuffer *vb, BufferLayout *buf_layout) override;

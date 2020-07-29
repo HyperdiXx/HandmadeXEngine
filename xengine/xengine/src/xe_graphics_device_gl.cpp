@@ -993,6 +993,21 @@ namespace xe_graphics
 
     bool32 GraphicsDeviceGL::createIndexBuffer(uint32 *indices, uint32 size, IndexBuffer *ib)
     {
+        ib->index_data = indices;
+        ib->count = size;
+
+        glGenBuffers(1, &ib->id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLuint), ib->index_data, GL_STATIC_DRAW);
+
+        if (ib->index_data)
+            return true;
+
+        return false;
+    }
+
+    bool32 GraphicsDeviceGL::createIndexBuffer(Index *indices, uint32 size, IndexBuffer *ib)
+    {
         ib->data = indices;
         ib->count = size;
 

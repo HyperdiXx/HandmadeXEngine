@@ -3,7 +3,7 @@
 #ifndef XE_LAYER_H
 #define XE_LAYER_H
 
-#include "types.h"
+#include "xe_types.h"
 #include "xenpch.h"
 
 #include "xe_ecs.h"

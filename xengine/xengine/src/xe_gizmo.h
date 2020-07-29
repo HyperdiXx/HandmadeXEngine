@@ -3,13 +3,13 @@
 #ifndef XE_GIZMO_H
 #define XE_GIZMO_H
 
-#include "types.h"
+#include "xe_types.h"
 
 #include <glm/glm.hpp>
 
 namespace xe_gizmo
 {
-    struct Config
+    struct GizmoState
     {
         enum Mode 
         {
@@ -23,6 +23,13 @@ namespace xe_gizmo
             GLOBAL,
             LOCAL
         } coord_system = GLOBAL;
+
+        enum Axis
+        {
+            X,
+            Y,
+            Z
+        };
 
         bool32 autosnap = false;
         real32 steps[3] = {};
@@ -51,9 +58,7 @@ namespace xe_gizmo
         void setOffset(const glm::vec3& val) { offset = val; }
     };
 
-    void initGizmo(Config &cfg);    
-    void updateGizmo();
-    void manipulateGizmo();
+    void manipulateGizmo(const glm::vec3 &position, const glm::mat4 &view, const glm::mat4 &projection, GizmoState::Mode mode, GizmoState::Axis axe, GizmoState::CoordSystem cs);
 }
 #endif // !XE_GIZMO_H
 

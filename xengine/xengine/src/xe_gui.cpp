@@ -99,14 +99,17 @@ namespace xe_gui
 
         using namespace xe_render;
         using namespace xe_graphics;
+        
+        //setupCommand(CommandType::QUAD);
+
         for (uint32 i = 0; i < gui.uiStates.size(); ++i)
         {
             UIElement &element = gui.uiStates[i];
             switch (element.type)
             {
             case UI_BUTTON:
-            {   
-                drawQuad(element.x, element.y, element.width, element.height, Color4RGBA(1.0f, 0.0f, 1.0f, 1.0f));
+            {                 
+                //drawQuad(element.x, element.y, element.width, element.height, Color4RGBA(1.0f, 0.0f, 1.0f, 1.0f));
 
                 if (element.text)
                 {
@@ -124,6 +127,7 @@ namespace xe_gui
             }
 
         }
+        //executeCommand(CommandType::QUAD);
     }
 
     bool makeButton(uint64 id, real32 x, real32 y, real32 w, real32 h, const char *text)

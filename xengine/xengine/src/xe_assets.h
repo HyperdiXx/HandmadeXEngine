@@ -9,24 +9,11 @@
 
 #include "xe_math.h"
 #include "xenpch.h"
-#include "types.h"
+#include "xe_types.h"
 
 namespace xe_assets
 {
     using namespace xe_graphics;
-
-    struct Index
-    {
-        uint32 v1, v2, v3;        
-    };
-
-    struct Triangle
-    {
-        PositionNormalTBUV f1, f2, f3;
-
-        Triangle(const PositionNormalTBUV& v0, const PositionNormalTBUV& v1, const PositionNormalTBUV& v2)
-            : f1(v0), f2(v1), f3(v2) {}
-    };
 
     struct Mesh
     {

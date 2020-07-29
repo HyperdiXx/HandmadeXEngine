@@ -57,6 +57,7 @@ namespace xe_render
     void setRenderPass(xe_graphics::RenderPass *pass);
     void setActiveFramebuffer(xe_graphics::Framebuffer *fbo);
     
+    xe_graphics::Framebuffer *getActiveFramebuffer();    
     xe_graphics::GraphicsDevice* getDevice();
 
     xe_graphics::Shader *getShader(const char* name);
@@ -124,6 +125,7 @@ namespace xe_render
     void drawText(const std::string &text, glm::vec2& pos, glm::vec3& color);
     void drawText(const std::string &text, glm::vec2& pos);
     void drawText(const std::string &text, real32 x, real32 y);
+    void drawText(const std::string &text, real32 x, real32 y, real32 scale);
 
     void drawWaterPlane(xe_ecs::Entity *ent);
 

@@ -19,7 +19,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <windows.h>
-#include <types.h>
+#include <xe_types.h>
 #include <memory>
 
 #ifdef GAPI_DX11
@@ -75,7 +75,6 @@ namespace xe_platform
     }
 
     WNDCLASS create_platform_win32window();
-
 
     void open_console();
     void update_platform();

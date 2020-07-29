@@ -23,14 +23,6 @@
 #define WINDOWWIDTH 1280
 #define WINDOWHEIGHT 720
 
-#if defined _WIN64
-
-
-
-
-#endif
-
-
 #ifndef MATHGLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

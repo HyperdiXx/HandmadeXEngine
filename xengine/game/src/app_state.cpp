@@ -6,7 +6,6 @@
 #include "xe_layer.h"
 #include "xe_render_pass.h"
 #include "xe_utility.h"
-#include "xe_gizmo.h"
 
 #include "render_pass.h"
 #include "layers.h"
@@ -231,6 +230,20 @@ namespace application
         app_state.entities.push_back(xe_ecs::Entity());
     }
 
+    void createLayers(xe_scene::Scene *scene)
+    {
+        using namespace xe_graphics;
+
+        Layer *two_dimensional = new layer::Layer2D();
+
+        Layer *three_dimensional = new layer::Layer3D();
+        Layer *gui = new layer::GUILayer();
+
+        xe_scene::pushLayer(scene, three_dimensional);
+        xe_scene::pushLayer(scene, two_dimensional);
+        xe_scene::pushLayer(scene, gui);
+    }
+
     void createPasses(xe_scene::Scene *scene)
     {
         using namespace xe_scene;
@@ -305,7 +318,7 @@ namespace application
         xe_input::update();
 
         xe_ecs::Camera3DComponent& camera3D = xe_render::getCamera3D();
-
+        
         if (xe_input::pressed(xe_input::KEYBOARD_S))
         {
             camera3D.pos -= camera3D.speed * dt * camera3D.target;
@@ -389,7 +402,7 @@ namespace application
 
                 for (uint32 i = 0; i < entities.size(); ++i)
                 {
-                    if (app_state.activate_gizmo)
+                    if (is_ent_hitted)
                     {
                         break;
                     }
@@ -420,9 +433,22 @@ namespace application
                             {
                                 bool32 isIntersectsAABB = ray_cast.isIntersects(node_mesh->meshes[z]->bounding_box, t);
                                 if (isIntersectsAABB)
-                                {                                   
+                                {    
+                                    /*const auto& triangleCache = node_mesh->get(i);
+                                    for (const auto& triangle : triangleCache)
+                                    {
+                                        if (ray_cast.isIntersectsTriangle(triangle.V0.Position, triangle.V1.Position, triangle.V2.Position, t))
+                                        {
+                                            //m_SelectedSubmeshes.push_back({ &submesh, t });
+                                            break;
+                                        }
+                                    }*/
+
+
+
                                     xe_utility::info(ent->getName() + "\n");
                                     app_state.activate_gizmo = true;
+                                    is_ent_hitted = true;
                                     break;
                                 }
                             }
@@ -434,19 +460,12 @@ namespace application
                 printf("Mouse pos in NDC: \n");
             }
         }
-
-        if (app_state.activate_gizmo)
-        {
-            xe_gizmo::updateGizmo();
-        }
     }
 
     void gameInit()
     {
 
-#ifndef GAPI_GL        
-#define GAPI_GL
-
+#ifdef GAPI_GL        
         using namespace xe_graphics;
 
         application::loadState();
@@ -456,27 +475,18 @@ namespace application
 
         application::loadTestScene(&new_scene);
         application::loadSpheresScene(&pbr_scene);
-        
-        Layer *two_dimensional = new layer::Layer2D();
-
-        Layer *three_dimensional = new layer::Layer3D();
-
-        xe_scene::pushLayer(&new_scene, three_dimensional);
-        xe_scene::pushLayer(&new_scene, two_dimensional);
-        
+      
+        createLayers(&new_scene);
         createPasses(&new_scene);
 
         application::setActiveScene(&new_scene);
+#else
+
+
 #endif 
 
-#ifdef GAPI_DX11
-
-
-#endif
-
     //------------------------------------------------------------//
-        GraphicsDevice *device = xe_render::getDevice();
+        xe_graphics::GraphicsDevice *device = xe_render::getDevice();
         device->clearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
     }
 }

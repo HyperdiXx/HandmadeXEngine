@@ -3,7 +3,6 @@
 #include "xe_graphics_resource.h"
 
 #include <glm/glm.hpp>
-#include <types.h>
 
 #define MAX_COLOR_ATT 4
 
@@ -93,11 +92,17 @@ namespace xe_graphics
         virtual bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D* texture) = 0;
         virtual bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) = 0;
         virtual bool32 createTexture2D(uint32 width, uint32 height, Texture2D* texture) = 0;
+        
         virtual bool32 createShader(const char* vertex, const char* fragment, Shader* Shader) = 0;
+        
         virtual bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) = 0;
         virtual bool32 createRenderbuffer(const uint32 count, Framebuffer *fbo) = 0;
+        
         virtual bool32 createVertexBuffer(void *vertices, uint32 size, DRAW_TYPE draw_type, VertexBuffer *vb) = 0;
+        
         virtual bool32 createIndexBuffer(uint32* indices, uint32 size, IndexBuffer *ib) = 0;
+        virtual bool32 createIndexBuffer(Index *indices, uint32 size, IndexBuffer *ib) = 0;
+        
         virtual bool32 createVertexArray(VertexArray *va) = 0;
         virtual bool32 createBufferLayout(std::initializer_list<BufferElement>& element, BufferLayout *buf_layout) = 0;
         virtual bool32 setVertexBufferLayout(VertexBuffer *vb, BufferLayout *buf_layout) = 0;

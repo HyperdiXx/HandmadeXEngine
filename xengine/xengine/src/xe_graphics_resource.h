@@ -246,8 +246,7 @@ namespace xe_graphics
 
     struct ShadowMap
     {
-        GPUHandler w;
-        GPUHandler h;
+        uint32 width_map, height_map;
         glm::mat4 light_projection_matrix = glm::mat4(1.0f);
         Framebuffer depth_fbo;
     };
@@ -304,8 +303,10 @@ namespace xe_graphics
     {
     private:
         friend class MaterialInstance;
-    public:
-        Material(Shader &shd) : shaderRef(shd) {};
+    public:     
+        Material() = default;
+        Material(Shader *shd) : shaderRef(shd) {};
+        
         virtual ~Material() {};
 
         template<typename T>
@@ -313,7 +314,7 @@ namespace xe_graphics
         {
             auto &definitions = shaderProp.getProperties();
 
-
+            
 
         };
 
@@ -321,9 +322,11 @@ namespace xe_graphics
 
     private:
         std::unordered_set<MaterialInstance*> instances;
-        Shader &shaderRef;
+        Shader *shaderRef;
         ShaderProperties shaderProp = {};
-        GPUHandler flags;
+
+        std::vector<Texture2D*> textures;
+        uint32 flags;
     };
 
     class MaterialInstance
@@ -336,6 +339,20 @@ namespace xe_graphics
     
     private:
 
+    };
+
+    class PBRMaterial : public Material
+    {
+    public:
+        PBRMaterial(Shader &shd) {};
+        virtual ~PBRMaterial() {};
+
+    private:
+        xe_graphics::Texture2D env_cubemap;
+        xe_graphics::Texture2D irr_map;
+        xe_graphics::Texture2D prefilter_map;
+        xe_graphics::Texture2D brdf_lut;
+        xe_graphics::Texture2D color_texture;
     };
 
     struct Triangle

@@ -14,6 +14,7 @@
 #include <xenpch.h>
 
 #include "xe_math.h"
+#include "xe_render_pass.h"
 
 #include <thread>
 
@@ -734,6 +735,13 @@ namespace xe_render
         return true;       
     }
 
+    bool32 createRenderPass(const xe_graphics::RenderPassData & data, xe_graphics::RenderPass *rp)
+    {
+
+
+        return true;
+    }
+
     bool32 createCubemap(std::vector<const char*> paths, xe_graphics::Cubemap *cube)
     {        
         for (uint32 i = 0; i < paths.size(); ++i)
@@ -924,8 +932,8 @@ namespace xe_render
 
         shadow->depth_fbo = {};
 
-        shadow->w = SHADOW_WIDTH;
-        shadow->h = SHADOW_HEIGHT;
+        shadow->width_map = SHADOW_WIDTH;
+        shadow->height_map = SHADOW_HEIGHT;
 
         graphics_device->createFramebuffer(1, &shadow->depth_fbo);
         graphics_device->addDepthTexture2D(SHADOW_WIDTH, SHADOW_HEIGHT, &shadow->depth_fbo);
@@ -2077,6 +2085,50 @@ namespace xe_render
         graphics_device->bindVertexArray(sphere_vao.vertex_array);
         graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, sphere_vao.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
         graphics_device->unbindVertexArray();
+    }
+
+    RenderCommandQueue::RenderCommandQueue()
+    {
+        command_buffer_ptr_base = new uint8_t[10 * 1024 * 1024];
+        command_buffer_ptr = command_buffer_ptr_base;
+        memset(command_buffer_ptr_base, 0, 10 * 1024 * 1024);
+    }
+
+    RenderCommandQueue::~RenderCommandQueue()
+    {
+        delete[] command_buffer_ptr_base;
+    }
+
+    void *RenderCommandQueue::submit(RenderCommandFunPtr func_ptr, uint32 size)
+    {
+        *(RenderCommandFunPtr*)command_buffer_ptr = func_ptr;
+        command_buffer_ptr += sizeof(func_ptr);
+
+        *(uint32*)command_buffer_ptr = size;
+        command_buffer_ptr += sizeof(uint32);
+
+        void* memory = command_buffer_ptr;
+        command_buffer_ptr += size;
+
+        command_count++;
+        return memory;
+    }
+
+    void RenderCommandQueue::executeQueue()
+    {
+        for (uint32 i = 0; i < command_count; ++i)
+        {
+            RenderCommandFunPtr function = *(RenderCommandFunPtr*)command_buffer_ptr_base;
+            command_buffer_ptr_base += sizeof(RenderCommandFunPtr);
+
+            uint32_t size = *(uint32*)command_buffer_ptr_base;
+            command_buffer_ptr_base += sizeof(uint32);
+            function(command_buffer_ptr_base);
+            command_buffer_ptr_base += size;
+        }
+
+        command_buffer_ptr = command_buffer_ptr_base;
+        command_count = 0;
     }
 }
 

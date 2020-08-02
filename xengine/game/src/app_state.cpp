@@ -230,7 +230,7 @@ namespace application
         app_state.entities.push_back(xe_ecs::Entity());
     }
 
-    void createLayers(xe_scene::Scene *scene)
+    static void createLayers(xe_scene::Scene *scene)
     {
         using namespace xe_graphics;
 
@@ -244,7 +244,7 @@ namespace application
         xe_scene::pushLayer(scene, gui);
     }
 
-    void createPasses(xe_scene::Scene *scene)
+    static void createPasses(xe_scene::Scene *scene)
     {
         using namespace xe_scene;
         using namespace xe_graphics;
@@ -252,13 +252,19 @@ namespace application
         assert(scene);
 
         RenderPass *render_pass_2D = new RenderPass2D();
+
+        RenderPassData pass2DData = {};
+        RenderPass *usu = nullptr;
+        
+        xe_render::createRenderPass(pass2DData, usu);
+
         render_pass_2D->init();
 
         xe_render::setRenderPass(render_pass_2D);
 
         RenderPass *main_render_pass = new RenderPass3D();
         main_render_pass->init();
-        main_render_pass->setScene(&app_state.active_scene);
+        //main_render_pass->setScene(&app_state.active_scene);
 
         RenderPass *gamma_correction = new GammaCorrectionPass();
         gamma_correction->init();
@@ -286,24 +292,24 @@ namespace application
         RenderPass *render_pass_2D = xe_scene::getPassByName(&app_state.active_scene, "layer2D");
         RenderPass *gamma_correction = xe_scene::getPassByName(&app_state.active_scene, "gammaCorrectionLayer");
        
-        render_pass_2D->update(dt);
         xe_scene::updateSceneLayers(&app_state.active_scene, dt);
 
         RenderPass3D *pass3D = dynamic_cast<RenderPass3D*>(main_pass);
         
-        pass3D->update(dt);
-        pass3D->render();
+        //pass3D->update(dt);
+        //pass3D->render();
 
-        Texture2D* pass_texture = main_pass->getColorTexture();
+        pass3D->applyPass();
 
-        gamma_correction->setColorTexture(pass_texture);
-        gamma_correction->render();
+        //Texture2D* pass_texture = main_pass->getColorTexture();
+
+        //gamma_correction->setColorTexture(pass_texture);
+        gamma_correction->applyPass();
 
         //pbr_setup.update(current_app_state->delta_time);
         //pbr_setup.render();
 
-        
-        render_pass_2D->render();
+        render_pass_2D->applyPass();
        
         xe_scene::drawSceneLayers(&app_state.active_scene);
 

@@ -483,8 +483,8 @@ namespace xe_assets
         
         device->createVertexArray(&va);
         device->bindVertexArray(&va);
-        device->createVertexBuffer(anim_vertices.data(), anim_vertices.size() * sizeof(PositionNormalUVBW), DRAW_TYPE::STATIC, va.buffers[0]);
-        device->createIndexBuffer(anim_indices.data(), anim_indices.size(), va.ib);
+        device->createVertexBuffer(anim_vertices.data(), (uint32)anim_vertices.size() * sizeof(PositionNormalUVBW), DRAW_TYPE::STATIC, va.buffers[0]);
+        device->createIndexBuffer(anim_indices.data(), (uint32)anim_indices.size(), va.ib);
 
         using namespace xe_graphics;
 
@@ -755,21 +755,21 @@ namespace xe_assets
 
         if (bones_map.find(current_node_name) != bones_map.end())
         {
-            uint32_t BoneIndex = bones_map[current_node_name];
+            uint32 BoneIndex = bones_map[current_node_name];
             bones_info[BoneIndex].transform = global_inverse_transform * globalTransformMatrix * bones_info[BoneIndex].offset;
         }
 
-        for (uint32_t i = 0; i < pNode->mNumChildren; i++)
+        for (uint32 i = 0; i < pNode->mNumChildren; i++)
         {
             readNodeHierarchy(anim_time, pNode->mChildren[i], globalTransformMatrix);
         }
     }
 
-    void AnimModel::transformBones(float dt)
+    void AnimModel::transformBones(real32 dt)
     {
         readNodeHierarchy(dt, scene->mRootNode, glm::mat4(1.0f));
         bone_transformation.resize(bones_count);
-        for (uint32_t i = 0; i < bones_count; i++)
+        for (uint32 i = 0; i < bones_count; i++)
         {
             bone_transformation[i] = bones_info[i].transform;
         }
@@ -778,9 +778,9 @@ namespace xe_assets
     void AnimModel::updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform)
     {
         glm::mat4 transform = parent_transform * fromAiToGlm(node->mTransformation);
-        for (uint32_t i = 0; i < node->mNumMeshes; i++)
+        for (uint32 i = 0; i < node->mNumMeshes; i++)
         {
-            uint32_t mesh = node->mMeshes[i];
+            uint32 mesh = node->mMeshes[i];
             anim_meshes[mesh].transform = transform;
         }   
 

@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "xe_graphics_resource.h"
 #include "xe_assets.h"
 
 #include <vector>
@@ -401,6 +400,31 @@ namespace xe_ecs
 
 
 
+    };
+
+    class System
+    {
+    public:
+        virtual ~System() {};
+    private:
+
+    };
+
+    class Camera3DSystem : public System
+    {
+    public:
+        Camera3DSystem();
+        virtual ~Camera3DSystem() {};
+    private:
+
+    };
+
+    class Camera2DSystem : public System
+    {
+    public:
+        Camera2DSystem();
+        virtual ~Camera2DSystem() {};
+    private:
     };
 
     /*template<typename Component>

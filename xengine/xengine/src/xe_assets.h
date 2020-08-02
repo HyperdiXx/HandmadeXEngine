@@ -137,7 +137,7 @@ namespace xe_assets
         std::vector<glm::mat4> bone_transformation;
 
 
-        int32_t bones_count = 0;
+        uint32 bones_count = 0;
         float animation_speed = 0.75f;
         float animation_time = 0.0f;
 

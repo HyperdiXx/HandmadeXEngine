@@ -54,10 +54,7 @@ namespace application
     xe_ecs::Entity *getEntityByType(xe_ecs::ENTITY_TYPE type);
 
     void pushEmptyEntity();
-
-    void createLayers(xe_scene::Scene *scene);
-    void createPasses(xe_scene::Scene *scene);
-
+   
     void gameSubmitRenderPasses(real32 dt);
     void gameUpdate(real32 dt);
     void gameInit();

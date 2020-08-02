@@ -25,6 +25,12 @@ namespace xe_assets
     class AnimModel;
 }
 
+namespace xe_graphics
+{
+    class RenderPass;
+    class RenderPassData;
+}
+
 namespace xe_render
 {
     static const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
@@ -81,6 +87,8 @@ namespace xe_render
 
     bool32 createLinesBuffer();
     bool32 createQuadBuffer();
+
+    bool32 createRenderPass(const xe_graphics::RenderPassData &data, xe_graphics::RenderPass *rp);
 
     void drawFullquad();
     
@@ -152,5 +160,23 @@ namespace xe_render
 
     glm::vec3 convertToVec3(xe_graphics::Color3RGB color);
     glm::vec4 convertToVec4(xe_graphics::Color4RGBA color);
+
+
+    class RenderCommandQueue
+    {
+    public:
+        typedef void(*RenderCommandFunPtr)(void*);
+        RenderCommandQueue();
+        ~RenderCommandQueue();
+
+        void *submit(RenderCommandFunPtr func_ptr, uint32 size);
+        void executeQueue();
+
+    private:
+        uint8 *command_buffer_ptr_base;
+        uint8 *command_buffer_ptr;
+        uint32 command_count = 0;
+    };
+
 }
 #endif // !XENGINE_RENDERING_H

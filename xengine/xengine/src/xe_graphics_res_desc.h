@@ -104,7 +104,7 @@ namespace xe_graphics
 
     };
 
-    struct blendState
+    struct BlendState
     {
 
     };

@@ -21,7 +21,6 @@ namespace xe_graphics
         virtual void render() = 0;
 
         virtual void update(real32 dt) = 0;
-
     };
 }
 #endif // !XE_LAYER_H

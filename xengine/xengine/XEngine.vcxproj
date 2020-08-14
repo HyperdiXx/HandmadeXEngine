@@ -140,7 +140,6 @@
     <ClCompile Include="src\xe_gui.cpp" />
     <ClCompile Include="src\xe_image.cpp" />
     <ClCompile Include="src\xe_input.cpp" />
-    <ClCompile Include="src\xe_layer.cpp" />
     <ClCompile Include="src\xe_parser.cpp" />
     <ClCompile Include="src\xe_platform.cpp" />
     <ClCompile Include="src\xe_render.cpp" />
@@ -215,6 +214,8 @@
   <ItemGroup>
     <ClInclude Include="inc\external\wglext.h" />
     <ClInclude Include="inc\stb_image\stb_image.h" />
+    <ClInclude Include="src\linux_platform.h" />
+    <ClInclude Include="src\win32_platform.h" />
     <ClInclude Include="src\xengine.h" />
     <ClInclude Include="src\xe_animation.h" />
     <ClInclude Include="src\xe_asset_manager.h" />

@@ -1,5 +1,4 @@
 #include "xe_platform.h"
-
 #include "xe_render.h"
 
 #ifdef GAPI_GL
@@ -11,7 +10,6 @@
 #endif
 
 #include "xe_input.h"
-
 #include "xe_utility.h"
 
 #ifdef PLATFORM_WINDOWS
@@ -150,11 +148,15 @@ LARGE_INTEGER xe_platform::get_wall_clock()
     return (end);
 }
 
-bool32 xe_platform::load_library(const char *name)
+bool32 xe_platform::load_DLL(const char *name)
 {
     HMODULE library = LoadLibrary(name);
+    
     if (library)
+    {
         return false;
+    }
+
     return true;
 }
 
@@ -162,7 +164,6 @@ void xe_platform::shutdownApp()
 {
     exit(0);
 }
-
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

@@ -5,10 +5,8 @@
 
 #ifdef _WIN32
     #define APIENTRY __stdcall
-#endif
 
 #include <utility>
-#include <memory>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -19,6 +17,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <map>
+#endif 
 
 #define WINDOWWIDTH 1280
 #define WINDOWHEIGHT 720

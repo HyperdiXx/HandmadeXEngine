@@ -4,7 +4,12 @@
 
 namespace xe_reader_writer
 {
-    struct png_ihdr
+    enum FileType
+    {
+        
+    };
+
+    struct PngIHDR
     {
         uint32 width;
         uint32 height;
@@ -15,12 +20,12 @@ namespace xe_reader_writer
         uint8 interlace_method;
     };
 
-    struct png_head
+    struct PngHead
     {
         uint8 signature[8];
     };
 
-    struct png_chunk
+    struct PngChunk
     {
         uint32 size;
         union
@@ -31,7 +36,7 @@ namespace xe_reader_writer
 
     };
 
-    struct png_footer
+    struct PngFooter
     {
         uint32 CRC;
     };
@@ -76,13 +81,13 @@ namespace xe_reader_writer
 
         xe_core::XEFile *read = &f;
 
-        png_head *pngheader = CONSUME(read, png_head);
+        PngHead *pngheader = CONSUME(read, PngHead);
 
         if (pngheader)
         {
             while (read->size > 0)
             {
-                png_chunk *png_chunk_head = CONSUME(read, png_chunk);
+                PngChunk *png_chunk_head = CONSUME(read, PngChunk);
                 if (png_chunk_head)
                 {
                     swap_bytes(&png_chunk_head->size);
@@ -100,7 +105,7 @@ namespace xe_reader_writer
                     }
 
                     void *png_chynk_data = consume_size(read, png_chunk_head->size);
-                    png_footer *png_chunk_footer = CONSUME(read, png_footer);
+                    PngFooter *png_chunk_footer = CONSUME(read, PngFooter);
                     swap_bytes(&png_chunk_footer->CRC);
                 }
             }

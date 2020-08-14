@@ -96,9 +96,6 @@
     <ClCompile Include="src\xe_animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\xe_layer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\xe_gizmo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -534,6 +531,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xe_asset_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win32_platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\linux_platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

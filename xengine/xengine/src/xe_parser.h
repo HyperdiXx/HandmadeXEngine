@@ -13,8 +13,11 @@ namespace xe_parser
     public:
 
         Parser() = default;
-        Parser(const Parser& p);
+        ~Parser();
         
+        //Parser(const Parser& p);
+        //Parser& operator=(const Parser&);
+
         Parser(Parser &&);
         Parser& operator=(Parser&&);
 
@@ -33,9 +36,10 @@ namespace xe_parser
 
 
     private:
-        struct ParserObj;
 
-        std::unique_ptr<ParserObj> parser_obj_data;
+        struct Impl;
+
+        std::unique_ptr<struct Impl> parser_obj_data;
     };
 }
 #endif

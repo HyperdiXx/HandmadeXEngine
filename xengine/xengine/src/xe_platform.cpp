@@ -152,7 +152,7 @@ bool32 xe_platform::load_DLL(const char *name)
 {
     HMODULE library = LoadLibrary(name);
     
-    if (library)
+    if (!library)
     {
         return false;
     }

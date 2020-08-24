@@ -121,7 +121,6 @@
     <ClCompile Include="src\runtime\application\testapp.cpp" />
     <ClCompile Include="src\runtime\core\systems\clock.cpp" />
     <ClCompile Include="src\runtime\core\systems\filesystem.cpp" />
-    <ClCompile Include="src\runtime\objects\gbuffer.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_demo.cpp" />
     <ClCompile Include="src\thirdparty\imguit\imgui_draw.cpp" />
@@ -301,7 +300,6 @@
     <ClInclude Include="src\runtime\core\utility\assert.h" />
     <ClInclude Include="src\runtime\core\utility\clock.h" />
     <ClInclude Include="src\runtime\core\utility\string.h" />
-    <ClInclude Include="src\runtime\objects\gbuffer.h" />
     <ClInclude Include="src\runtime\platforms\win32\platformwin32.h" />
     <ClInclude Include="src\thirdparty\imguit\imconfig.h" />
     <ClInclude Include="src\thirdparty\imguit\imgui.h" />

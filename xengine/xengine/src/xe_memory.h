@@ -14,3 +14,9 @@ inline void operator delete(void* block)
 {
     free(block);
 }
+
+struct MemoryTable
+{
+    void *base;
+    uint32 size;
+};

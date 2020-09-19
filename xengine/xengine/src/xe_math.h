@@ -18,6 +18,9 @@
 #define THRESH_QUAT_NORMALIZED 0.01f
 #define TOLERANCE 0.00000001f
 
+#define DEG_TO_RADIANS(angleDegrees) ((angleDegrees) * PI / 180)
+#define RAD_TO_DEGREES(angleRadians) ((angleRadians) * 180 / PI)
+
 namespace xe_math
 {
     static glm::vec3 VEC3_RIGHT = glm::vec3(100.0f, 0.0f, 0.0f);

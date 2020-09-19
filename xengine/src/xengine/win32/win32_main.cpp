@@ -1,24 +1,22 @@
 
-#include <xengine/xe_platform.h>
-
-#define DEBUG_LOG(data) printf(data)
+#define WIN32_LEAN_AND_MEAN
 
 #define WINDOW_NAME "XEngine"
 #define DEFAULT_W_WIDTH 1280
 #define DEFAULT_H_WIDTH 720
 
-#define global static
-#define internal static
+#include <windows.h>
 
-global bool is_closed = false;
+#include "xengine\xe_common.h"
+#include "xengine\app_state.h"
 
-#include <xengine/xe_parser.h>
-
+#include "win32_platform.cpp"
+#include "win32_dll.cpp"
 #include "win32_utility.cpp"
 
-#include <xengine/application.cpp>
-#include <xengine/xe_string.cpp>
-#include <xengine/xe_parser.cpp>
+#define DEBUG_LOG(data) printf(data)
+
+global bool is_closed = false;
 
 LRESULT CALLBACK win32_win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -35,20 +33,39 @@ internal WNDCLASS create_platform_win32window(HINSTANCE &h_instance)
     return window_class;
 }
 
-int CALLBACK
-WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
+/*internal void printfLetter(char a)
 {
-    std::string str = "Hello, world!";
+    printf("%c, \n", a);
+}
 
+internal void 
+parseFile()
+{
     char *file_content = loadEntireFile("test.txt");
-   
-    /*while (*file_content != '\n')
+
+    while (*file_content != '\n')
     {
         token cur_token = get_parsed_token(file_content);
 
         ++file_content;
-    }*/
+    }
+}*/
 
+int CALLBACK
+WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
+{
+    std::string str = "Hello, world!";
+ 
+    // Load Game Code
+
+    win32_game_code game_code = {};
+    {
+        if (!LoadGameCode(&game_code, "application.dll"))
+        {
+            DEBUG_LOG("Failed to load game code!\n");
+        }
+    }
+    
     WNDCLASS window_class = create_platform_win32window(instance);
  
     if (!RegisterClass(&window_class))
@@ -65,9 +82,11 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     ShowWindow(window_handle, n_show_cmd);
 
+    game_code.LoadGameCode(p_state);
+
     while (!is_closed)
     {
-        MSG message;
+        MSG message = {};
         
         while (PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
         {
@@ -80,6 +99,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             TranslateMessage(&message);
             DispatchMessage(&message);
         }
+
+        game_code.GameUpdate();
 
     }        
 

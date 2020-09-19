@@ -36,7 +36,7 @@ internal token get_parsed_token(char *text_to_parse)
 
             size_t text_len = text_to_parse - token_text;
 
-            OutputDebugStringA((LPCSTR)token_text);
+            //OutputDebugStringA((LPCSTR)token_text);
 
 
         } break;

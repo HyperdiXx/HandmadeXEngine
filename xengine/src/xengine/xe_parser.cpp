@@ -1,51 +1,145 @@
+#include "xe_parser.h"
 
-internal void parseToken()
+namespace xe_parser
 {
-
-}
-
-internal token get_parsed_token(char *text_to_parse)
-{
-    token result = {};
-
-    result.text = text_to_parse;
-    result.length = 90;
-
-    while (isWhitespace(*text_to_parse))
+    // Pimpl Idiom
+    struct Parser::Impl
     {
-        ++text_to_parse;
+        enum class Type
+        {
+            Null,
+            Unknown,
+            Boolean,
+            Int,
+            Float,
+            String
+        };
+
+        Impl()
+        {
+
+        };
+
+        ~Impl()
+        {
+        };
+
+        Impl(const Impl &) = delete;
+        Impl& operator=(const Impl &other) = delete;
+
+        Impl(Impl&&) = delete;
+        Impl& operator=(Impl && pars) = delete;
+
+        Type objType = Type::Null;
+
+        union
+        {
+            bool32 bool_value;
+            uint32 uint_value;
+            std::string str_value;
+        };
+
+    };
+
+    Parser::~Parser() = default;
+
+    //Parser::Parser(const Parser & p) = default;
+   // Parser& Parser::operator=(const Parser& p) = default;
+
+    Parser::Parser(Parser && pars) = default;
+    Parser& Parser::operator=(Parser && pars) = default;
+    
+    Parser::Parser(bool32 val) : parser_obj_data(std::make_unique<Impl>())
+    {
+        parser_obj_data->bool_value = val;
+        parser_obj_data->objType = Impl::Type::Boolean;
     }
 
-    switch (*text_to_parse)
+    Parser::Parser(const std::string & val) : parser_obj_data(std::make_unique<Impl>())
     {
-        case '"':
+        parser_obj_data->str_value = val;
+        parser_obj_data->objType = Impl::Type::String;
+    }
+
+    Parser::Parser(const char *val) : parser_obj_data(std::make_unique<Impl>())
+    {
+        parser_obj_data->str_value = std::string(val);
+        parser_obj_data->objType = Impl::Type::String;
+    }
+
+    Parser::Parser(uint32 val) : parser_obj_data(std::make_unique<Impl>())
+    {
+        parser_obj_data->uint_value = val;
+        parser_obj_data->objType = Impl::Type::Int;
+    }
+    
+    std::string Parser::toString() const
+    {
+        switch (parser_obj_data->objType)
         {
-            char *token_text = text_to_parse;
-            printf("This is open quote!\n");
-            ++text_to_parse;
-
-            while (*text_to_parse != '"' && *text_to_parse)
-            {
-                if (*text_to_parse == '\\' && text_to_parse[1])
-                {
-                    ++text_to_parse;
-                }
-
-                ++text_to_parse;
-            }
-
-            size_t text_len = text_to_parse - token_text;
-
-            //OutputDebugStringA((LPCSTR)token_text);
-
-
+        case Impl::Type::Null:
+        {
+            return "null";
         } break;
-
+        case Impl::Type::Boolean:
+        {
+            return parser_obj_data->bool_value ? "true" : "false";
+        } break;
+        case Impl::Type::String:
+        {
+            return parser_obj_data->str_value;
+        } break;
+        case Impl::Type::Int:
+        {
+            //return std::string(parser_obj_data.uint_value);
+        } break;
         default:
-        {
-            ++text_to_parse;
-        } break;
+            break;
+        }
+
+        return "null";
     }
 
-    return result;
+    bool32 Parser::operator==(const Parser & other) const
+    {
+        if (parser_obj_data->objType != other.parser_obj_data->objType)
+        {
+            return false;
+        }
+        else switch (parser_obj_data->objType)
+        {
+            case Impl::Type::Null: 
+            {
+                return true;
+            }
+            case Impl::Type::Boolean:
+            {
+                return parser_obj_data->bool_value == other.parser_obj_data->bool_value;
+            }
+            default:
+            {
+                return true;
+            }            
+        }       
+    }
+
+    Parser Parser::fromString(const std::string & val)
+    {
+        if (val == "true")
+        {
+            return true;
+        }
+        else if (val == "false")
+        {
+            return false;
+        }
+        else if (val == "null")
+        {
+            return nullptr;
+        }
+        else
+        {
+            return Parser();
+        }
+    }
 }

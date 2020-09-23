@@ -2,25 +2,42 @@
 #define WIN32_LEAN_AND_MEAN
 
 #define WINDOW_NAME "XEngine"
-#define DEFAULT_W_WIDTH 1280
-#define DEFAULT_H_WIDTH 720
+#define DEFAULT_WINDOW_WIDTH 1280
+#define DEFAULT_WINDOW_HEIGHT 720
 
 #include <windows.h>
+#include <windowsx.h>
+#include <xinput.h>
+#include <objbase.h>
+#include <mmdeviceapi.h>
+#include <audioclient.h>
+#include <audiopolicy.h>
+#undef DeleteFile
 
-#include "xengine\xe_common.h"
-#include "xengine\app_state.h"
+#include <gl/gl.h>
+#include "xengine/external/wglext.h"
+#include "xengine/external/glext.h"
+
+#include "xengine/common.h"
+#include "game/app_state.h"
 
 #include "win32_platform.cpp"
 #include "win32_dll.cpp"
 #include "win32_utility.cpp"
+#include "win32_opengl.cpp"
+#include "win32_wasapi.cpp"
+#include "win32_daudio.cpp"
+#include "win32_xinput.cpp"
 
 #define DEBUG_LOG(data) printf(data)
 
 global bool is_closed = false;
+global PlatformState global_state = {};
+global HDC global_device_context = {};
 
 LRESULT CALLBACK win32_win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-internal WNDCLASS create_platform_win32window(HINSTANCE &h_instance)
+internal WNDCLASS create_win32window(HINSTANCE &h_instance)
 {
     WNDCLASS window_class = {};
     window_class.hInstance = h_instance;
@@ -53,9 +70,7 @@ parseFile()
 
 int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
-{
-    std::string str = "Hello, world!";
- 
+{    
     // Load Game Code
 
     win32_game_code game_code = {};
@@ -65,8 +80,14 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             DEBUG_LOG("Failed to load game code!\n");
         }
     }
-    
-    WNDCLASS window_class = create_platform_win32window(instance);
+
+    // Init function ptr
+
+    p_state = &global_state;
+
+    global_state.LoadOpenGLProcedure = Win32LoadOpenglProcedure;
+
+    WNDCLASS window_class = create_win32window(instance);
  
     if (!RegisterClass(&window_class))
     {
@@ -76,9 +97,16 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     HWND window_handle = CreateWindowEx(0, window_class.lpszClassName,
         "Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        1280,
-        720,
+        DEFAULT_WINDOW_WIDTH,
+        DEFAULT_WINDOW_HEIGHT,
         0, 0, instance, 0);
+
+    global_device_context = GetDC(window_handle);
+    
+    if (!Win32InitGraphicsDevice(&global_device_context, instance))
+    {
+        DEBUG_LOG("Failed to init OpenGL!");
+    }
 
     ShowWindow(window_handle, n_show_cmd);
 
@@ -101,7 +129,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         }
 
         game_code.GameUpdate();
-
+        SwapBuffers(global_device_context);
     }        
 
 	return (0);

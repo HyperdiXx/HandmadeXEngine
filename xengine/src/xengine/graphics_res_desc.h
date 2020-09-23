@@ -1,0 +1,189 @@
+#pragma once
+
+#include <xe_types.h>
+
+#include <math/vec3f.h>
+#include <math/vec2f.h>
+
+namespace xe_graphics
+{
+    enum DRAW_TYPE
+    {
+        NONE,
+        STATIC,
+        DYNAMIC
+    };
+
+    enum BUFFER_TYPE
+    {
+        VERTEX,
+        INDEX
+    };
+
+    enum SHADER_TYPE
+    {
+        VS,
+        FS,
+        GS,
+        HS,
+        CS
+    };
+
+    enum TEXTURE_TYPE
+    {
+        COLOR, 
+        COLOR_MSAA,
+        HDR, 
+        GREYSCALE,
+        LUT, 
+        CUBEMAP, 
+        CUBEMAP_POSITIVE, 
+        DEPTH
+    };
+
+    enum TEXTURE_WRAPPING
+    {       
+        TEXTURE_ADDRESS_REPEAT,
+        TEXTURE_ADDRESS_MIR_REPEAT,
+        TEXTURE_ADDRESS_CLAMP,
+        TEXTURE_ADDRESS_BORDER
+    };
+
+    enum TEXTURE_WRAPPING_AXIS
+    {
+        TEXTURE_AXIS_S,
+        TEXTURE_AXIS_T,
+        TEXTURE_AXIS_R
+    };
+
+    enum TEXTURE_SAMPLING
+    {
+        LINEAR,
+        NEAREST, 
+        NEAREST_MIPMAP_NEAREST,
+        LINEAR_MIPMAP_NEAREST,
+        NEAREST_MIPMAP_LINEAR,
+        LINEAR_MIPMAP_LINEAR
+    };
+
+    enum TEXTURE_FILTER_OPERATION
+    {
+        MIN,
+        MAG
+    };
+    
+    enum TEXTURE_DIMENSION
+    {
+        TEXTURE_2D,
+        TEXTURE_1D,
+        TEXTURE_3D
+    };
+
+    enum PRIMITIVE_TOPOLOGY
+    {
+        TRIANGLE,
+        TRIANGLE_STRIP,
+        LINE,
+        LINE_LOOP,
+        LINE_STRIP,
+        POINT
+    };
+
+    struct TextureDesc
+    {
+        TEXTURE_DIMENSION dimension;
+        TEXTURE_TYPE texture_type;
+
+        int32 width = 0;
+        int32 height = 0;
+        uint32 mip_level;
+    };
+
+    struct rasterizerState
+    {
+
+    };
+
+    struct BlendState
+    {
+
+    };
+
+    struct Viewport
+    {
+        uint32 width = 0;
+        uint32 height = 0;
+        uint32 x = 0;
+        uint32 y = 0;
+        uint32 min_depth;
+        uint32 max_depth;
+    };
+
+#define BONES_COUNT 10
+
+    struct Vertex
+    {
+
+    };
+
+    struct PositionVertex : Vertex
+    {
+        vec3f pos;
+    };
+
+    struct PositionUVVertex : Vertex
+    {
+        vec3f pos;
+        vec2f uv;
+    };
+
+    struct PositionNormalTBUV : Vertex
+    {
+        vec3f pos;
+        vec3f normal;
+        vec3f tangent;
+        vec3f bitangent;
+        vec2f uv;
+    };
+
+    struct PositionNormalUV : Vertex
+    {
+        vec3f pos;
+        vec3f normal;
+        vec2f uv;
+    };
+
+    struct PositionNormalUVBW : Vertex
+    {
+        vec3f pos;
+        vec3f normal;
+        vec3f tangent;
+        vec3f bitangent;
+        vec2f uv;
+
+        uint32 bone_ids[4] = { 0, 0, 0, 0 };
+        real32 weights[4]{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+        void addBone(uint32_t boneId, real32 weight)
+        {
+            for (uint32_t size = 0; size < 4; size++)
+            {
+                if (weights[size] == 0.0f)
+                {
+                    bone_ids[size] = boneId;
+                    weights[size] = weight;
+                    return;
+                }
+            }
+        }
+    };
+
+    struct BPMaterialSpec
+    {
+        vec3f diff;
+        vec3f spec;
+        vec3f ambient;
+
+        real32 shiness;
+    };
+}

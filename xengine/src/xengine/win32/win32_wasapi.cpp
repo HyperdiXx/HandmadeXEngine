@@ -63,7 +63,11 @@ internal bool32 Win32LoadWASAPIDLL()
     {
         CoCreateInstanceProc = (CoCreateInstance_ *)GetProcAddress(dll, "CoCreateInstance");
         CoInitializeExProc = (CoInitializeEx_ *)GetProcAddress(dll, "CoInitializeEx");
+
+        return true;
     }
+
+    return false;
 }
 
 internal bool32 Win32InitWASAPI(Win32SoundDevice *device_out)
@@ -78,14 +82,14 @@ internal bool32 Win32InitWASAPI(Win32SoundDevice *device_out)
     
     if (!FAILED(result))
     {
-
-        //device_out->device_enum->lpVtbl->GetDefaultAudioEndpoint(device_out->device_enum,
-        //                                                     eRender,
-        //                                                     eConsole,
-        //                                                     &device_out->device);
+        device_out->device_enum->GetDefaultAudioEndpoint(eRender,eConsole,
+                                                         &device_out->device);
     }
     else
     {
-
+        // @Log error
+        return false;
     }
+
+    return true;
 }

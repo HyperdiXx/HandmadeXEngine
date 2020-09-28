@@ -22,6 +22,7 @@
 #include "game/app_state.h"
 
 #include "win32_platform.cpp"
+#include "win32_file.cpp"
 #include "win32_dll.cpp"
 #include "win32_utility.cpp"
 #include "win32_opengl.cpp"
@@ -80,6 +81,15 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             DEBUG_LOG("Failed to load game code!\n");
         }
     }
+
+    Win32SoundDevice win32_sound_dev = {};
+
+    win32_sound_dev.channels = 2;
+    win32_sound_dev.samples_per_second = 48000;
+    win32_sound_dev.latency_frame_count = 48000;
+    
+    Win32LoadWASAPIDLL();
+    Win32InitWASAPI(&win32_sound_dev);
 
     // Init function ptr
 

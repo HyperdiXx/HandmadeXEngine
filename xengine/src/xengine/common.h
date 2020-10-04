@@ -4,16 +4,18 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
-#include <math.h>
 #include <time.h>
 #include <iostream>
+#include <assert.h>
+#include <fstream>
 
 // Remove 
 #include <vector>
-
-#define Pi32 3.14159265359f
+#include <unordered_set>
+#include <map>
+#include <unordered_map>
+#include <string>
 
 typedef uint8_t uint8;
 typedef uint16_t uint16;

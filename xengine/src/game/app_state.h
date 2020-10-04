@@ -40,10 +40,22 @@ struct PlatformState
     AppOptions options;
     InputState i_state;
 
-    void *(*LoadOpenGLProcedure)(char *name);
+    void* (*LoadOpenGLProcedure)(char *name);
+    void* (*AllocateMemory)(void *ptr, uint64 size);
+    void* (*ReallocateMemory)(void *ptr, uint64 size);
+    void  (*FreeMemory)(void *ptr);
+
+    enum RenderApi
+    {
+        OPENGL,
+        VULKAN,
+        DX11
+    };
+
+    RenderApi render_api;
 };
 
-global PlatformState *p_state = 0;
+global PlatformState *platform_state = 0;
 
 #ifdef _MSC_VER
 #define GAME_ENTRY_POINT extern "C" __declspec(dllexport)

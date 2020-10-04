@@ -3,7 +3,7 @@
 
 #if PLATFORM_WINDOWS
 #include <windows.h>
-#include <GL/GL.h>
+#include <gl/gl.h>
 #include "external/wglext.h"
 #else
 #error "OpenGL not supported on this platform!"
@@ -17,7 +17,7 @@
 internal void
 LoadAllOpenGLProcedures()
 {
-#define GLProc(name, type) gl##name = (PFNGL##type##PROC) p_state->LoadOpenGLProcedure("gl" #name);
+#define GLProc(name, type) gl##name = (PFNGL##type##PROC) platform_state->LoadOpenGLProcedure("gl" #name);
 #include "opengl_functions.inc"
 #undef GLProc
 }

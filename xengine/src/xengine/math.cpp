@@ -1,4 +1,10 @@
 
+#pragma once
+
+#ifndef MATH_CPP
+#define MATH_CPP
+
+
 #include <math.h>
 
 #define PI 					3.1415926535897932f	
@@ -23,6 +29,35 @@ struct Vec2
         real32 data[2];
     };
 };
+
+
+inline Vec2 operator*(Vec2 a, real32 b) { return { a.x * b, a.y * b }; };
+inline Vec2 operator*(real32 b, Vec2 a) { return { a.x * b, a.y * b }; };
+inline Vec2 operator*(Vec2 a, Vec2 b) { return { a.x * b.x, a.y * b.y }; };
+inline Vec2 & operator*=(Vec2& a, Vec2 b) { return a = a * b; };
+inline Vec2 & operator*=(Vec2& a, real32 b) { return a = a * b; };
+
+inline Vec2 operator+(Vec2 a, real32 b) { return { a.x + b, a.y + b }; };
+inline Vec2 operator+(Vec2 a, Vec2 b) { return { a.x + b.x, a.y + b.y }; };
+inline Vec2 & operator+=(Vec2& a, Vec2 b) { return a = a + b; };
+inline Vec2 & operator+=(Vec2& a, real32 b) { return a = a + b; };
+
+inline Vec2 operator-(Vec2 a) { return { -a.x, -a.y }; };
+inline Vec2 operator-(Vec2 a, real32 b) { return { a.x - b, a.y - b }; };
+inline Vec2 operator-(Vec2 a, Vec2 b) { return { a.x - b.x, a.y - b.y }; };
+inline Vec2 & operator-=(Vec2& a, Vec2 b) { return a = a - b; };
+inline Vec2 & operator-=(Vec2& a, real32 b) { return a = a - b; };
+
+inline Vec2 operator/(Vec2 a, real32 b) { return { a.x / b, a.y / b }; };
+inline Vec2 operator/(real32 b, Vec2 a) { return { b / a.x, b / a.y }; };
+inline Vec2 operator/(Vec2 a, Vec2 b) { return { a.x / b.x, a.y / b.y }; };
+inline Vec2 & operator/=(Vec2& a, Vec2 b) { return a = a / b; };
+inline Vec2 & operator/=(Vec2& a, real32 b) { return a = a / b; };
+
+inline bool operator==(Vec2 a, Vec2 b) { return (a.x == b.x) && (a.y == b.y); };
+inline bool operator!=(Vec2 a, Vec2 b) { return !(a == b); };
+inline bool operator<(Vec2 a, Vec2 b) { return (a.x < b.x) && (a.y < b.y); }
+inline bool operator>(Vec2 a, Vec2 b) { return (a.x > b.x) && (a.y > b.y); }
 
 inline real32 LengthSqr(Vec2 vec)
 {
@@ -91,10 +126,10 @@ inline real32 Lerp(real32 t, real32 x, real32 y)
 inline Vec2 Lerp(real32 t, Vec2 min, Vec2 max)
 {
     Vec2 result = {};
-    
+
     result.x = Lerp(t, min.x, max.x);
     result.y = Lerp(t, min.y, max.y);
-    
+
     return result;
 }
 
@@ -123,8 +158,31 @@ struct Vec3
             real32 x, y, z;
         };
         real32 data[3];
-    };  
+    };
 };
+
+inline Vec3 createVec3(real32 x, real32 y, real32 z)
+{
+    Vec3 res = {};
+
+    res.x = x;
+    res.y = y;
+    res.z = z;
+
+    return res;
+}
+
+
+inline Vec3 createVec3(const Vec3 &vec)
+{
+    Vec3 res = {};
+
+    res.x = vec.x;
+    res.y = vec.y;
+    res.z = vec.z;
+
+    return res;
+}
 
 inline real32 LengthSqr(Vec3 vec)
 {
@@ -134,6 +192,11 @@ inline real32 LengthSqr(Vec3 vec)
 inline real32 Length(Vec3 vec)
 {
     return sqrtf(LengthSqr(vec));
+}
+
+inline real32 DotProduct(const Vec3 &a, const Vec3& b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 struct Vec4
@@ -148,13 +211,26 @@ struct Vec4
     };
 };
 
+inline Vec4 createVec4(real32 x, real32 y, real32 z, real32 w)
+{
+    Vec4 res = {};
+
+    res.x = x;
+    res.y = y;
+    res.z = z;
+    res.w = w;
+
+    return res;
+}
+
+
 struct Rect
 {
     union
     {
         struct
         {
-            real32 x, y, width, height;            
+            real32 x, y, width, height;
         };
 
         struct
@@ -167,15 +243,25 @@ struct Rect
 
 };
 
-struct Pointi
+struct Vec2i
 {
-    union 
+    union
     {
-        Vec2 p;
+        int32 x, y;
     };
 
-    real32 data[2];
+    int32 data[2];
 };
+
+inline Vec2i createVec2i(int32 x, int32 y)
+{
+    Vec2i res = {};
+
+    res.x = x;
+    res.y = y;
+
+    return res;
+}
 
 struct Line
 {
@@ -186,38 +272,31 @@ struct Line
             Vec2 a, b;
         };
 
-        Vec2 data[2]; 
+        Vec2 data[2];
     };
 };
 
-inline bool insideRect(Rect &rect, Pointi &p)
+inline bool insideRect(Rect &rect, Vec2i &p)
 {
-    union
-    {
-        real32 x, y;
-    };
-
-    union
-    {
-        Vec2 p;
-    };
-
-    real32 data[2];
+    bool isInside = p.x >= rect.min.x &&
+        p.x <= rect.x + rect.max.x &&
+        p.y >= rect.min.y &&
+        p.y <= rect.min.y + rect.max.y;
 }
 
 
-inline bool rectIntersection(Rect &r1, Rect &r2) 
+inline bool rectIntersection(Rect &r1, Rect &r2)
 {
     bool isIntersects = !(r2.min.x > r1.max.x ||
-                          r2.max.x < r1.min.x ||
-                          r2.max.y < r1.min.y ||
-                          r2.min.y > r1.max.y);
+        r2.max.x < r1.min.x ||
+        r2.max.y < r1.min.y ||
+        r2.min.y > r1.max.y);
     return isIntersects;
 }
 
 struct Matrix4x4
 {
-    union 
+    union
     {
         struct
         {
@@ -228,6 +307,21 @@ struct Matrix4x4
         };
 
         real32 data[16];
+    };
+};
+
+struct Matrix3x3
+{
+    union
+    {
+        struct
+        {
+            Vec4 row1;
+            Vec4 row2;
+            Vec4 row3;
+        };
+
+        real32 data[9];
     };
 };
 
@@ -261,15 +355,16 @@ inline Matrix4x4 createMat4x4()
     return result;
 }
 
-inline Vec3 createVec3(real32 x, real32 y, real32 z)
+inline Matrix3x3 createMat3x3()
 {
-    Vec3 res = {};
+    Matrix3x3 result = {};
 
-    res.x = x;
-    res.y = y;
-    res.z = z;
+    memset(result.data, 0, 9 * sizeof(real32));
+    result.data[0 + 0 * 4] = 1.0f;
+    result.data[1 + 1 * 4] = 1.0f;
+    result.data[2 + 2 * 4] = 1.0f;
 
-    return res;
+    return result;
 }
 
 inline Rect createRect(real32 x, real32 y, real32 w, real32 h)
@@ -330,3 +425,48 @@ inline Quaternion operator*(Quaternion q1, Quaternion q2)
 
     return result;
 }
+
+inline Matrix4x4 operator*(Matrix4x4 &a, Matrix4x4 &b)
+{
+    Matrix4x4 res = createMat4x4();
+
+    for (uint32 row = 0; row < 4; row++)
+    {
+        for (uint32 col = 0; col < 4; col++)
+        {
+            real32 sum = 0.0f;
+            for (uint32 k = 0; k < 4; k++)
+            {
+                sum += a.data[col + k * 4] * b.data[k + row * 4];
+            }
+            res.data[col + row * 4] = sum;
+        }
+    }
+
+    return res;
+}
+
+inline void translateMat(Matrix4x4 &mat, const Vec3 &translation)
+{
+    mat.data[0 + 12] = translation.x;
+    mat.data[1 + 12] = translation.y;
+    mat.data[2 + 12] = translation.z;
+}
+
+inline void scaleMat(Matrix4x4 &mat, const Vec3 &scale)
+{
+    mat.data[0 + 0 * 4] = scale.x;
+    mat.data[1 + 1 * 4] = scale.y;
+    mat.data[2 + 2 * 4] = scale.z;
+}
+
+inline void rotateMat(Matrix4x4 &mat, const Vec3 &axis, const real32 angle)
+{
+
+}
+
+typedef Vec3 ColorRGB;
+typedef Vec4 ColorRGBA;
+
+#endif // !MATH_CPP
+

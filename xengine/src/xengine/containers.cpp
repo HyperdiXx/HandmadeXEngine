@@ -52,6 +52,7 @@ template <class T> struct DynArray
     T* begin() { return data; }
     T* end() { return data + count; }
 
+    const uint32 size() const { return count; }
 
     T* data;
     uint32 count;
@@ -83,7 +84,7 @@ template <class T> void DynArray<T>::init(void* (*allocFunc) (int) = 0, void (*f
 
     if (!data)
     {
-        data = (T*)AllocVirtual(8);
+        data = (T*)platform_state->AllocateMemory(0, 8);
     }
 }
 

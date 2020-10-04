@@ -1,4 +1,3 @@
-#include "xe_config.h"
 
 #include <string>
 

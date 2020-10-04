@@ -6,27 +6,32 @@
     #pragma once
 #endif  
 
-inline void* AllocStack(uint32 size)
+inline void* Win32AllocStack(uint64 size)
 {
     return alloca(size);
 }
 
-inline void* AllocHeap(uint32 size)
+inline void* Win32AllocHeap(uint64 size)
 {
     return HeapAlloc(GetProcessHeap(), 0, size);
 }
 
-inline void* AllocVirtual(uint32 size)
+inline void* Win32AllocVirtual(void *ptr, uint64 size)
 {
-    return VirtualAlloc(0, size, MEM_COMMIT, PAGE_READWRITE);;
+    return VirtualAlloc(ptr, size, MEM_COMMIT, PAGE_READWRITE);
 }
 
-inline void FreeHeap(void *ptr)
+inline void* Win32Realocate(void *ptr, uint64 size)
+{
+    return realloc(ptr, size);
+}
+
+inline void Win32FreeHeap(void *ptr)
 {
     HeapFree(GetProcessHeap(), 0, ptr);
 }
 
-inline void FreeVirtual(void *ptr)
+inline void Win32FreeVirtual(void *ptr)
 {
     VirtualFree(ptr, 0, MEM_RELEASE);
 }

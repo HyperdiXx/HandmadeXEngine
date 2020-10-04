@@ -1,220 +1,217 @@
 
-#include "graphics_device_gl.h"
-#include "xe_core.h"
+#pragma once
 
-#include "xe_utility.h"
+#ifndef GRAPHICS_DEVICE_GL_CPP
+#define GRAPHICS_DEVICE_GL_CPP
 
-//#include <GL/GL.h>
-//#include <external/wglext.h>
-
-namespace xe_graphics
+constexpr uint32 convert_draw_type_to_gl_type(DRAW_TYPE draw_type)
 {
-    constexpr uint32 convert_draw_type_to_gl_type(DRAW_TYPE draw_type)
+    uint32 res = 0;
+
+    switch (draw_type)
     {
-        uint32 res = 0;
-
-        switch (draw_type)
-        {
-        case STATIC:
-            res |= GL_STATIC_DRAW;
-            break;
-        case DYNAMIC:
-            res |= GL_DYNAMIC_DRAW;
-            break;
-        default:
-            break;
-        }
-
-        return res;
+    case STATIC:
+        res |= GL_STATIC_DRAW;
+        break;
+    case DYNAMIC:
+        res |= GL_DYNAMIC_DRAW;
+        break;
+    default:
+        break;
     }
 
-    constexpr uint32 convert_primitive_type(PRIMITIVE_TOPOLOGY type)
+    return res;
+}
+
+
+constexpr uint32 convert_primitive_type(PRIMITIVE_TOPOLOGY type)
+{
+    uint32 res = 0;
+
+    switch (type)
     {
-        uint32 res = 0;
-
-        switch (type)
-        {
-        case TRIANGLE:
-            res |= GL_TRIANGLES;
-            break;
-        case TRIANGLE_STRIP:
-            res |= GL_TRIANGLE_STRIP;
-            break;
-        case LINE:
-            res |= GL_LINES;
-            break;
-        case LINE_LOOP:
-            res |= GL_LINE_LOOP;
-            break;
-        case LINE_STRIP:
-            res |= GL_LINE_STRIP;
-            break;
-        case POINT:
-            res |= GL_POINT;
-            break;
-        default:
-            break;
-        }
-
-        return res;
+    case TRIANGLE:
+        res |= GL_TRIANGLES;
+        break;
+    case TRIANGLE_STRIP:
+        res |= GL_TRIANGLE_STRIP;
+        break;
+    case LINE:
+        res |= GL_LINES;
+        break;
+    case LINE_LOOP:
+        res |= GL_LINE_LOOP;
+        break;
+    case LINE_STRIP:
+        res |= GL_LINE_STRIP;
+        break;
+    case POINTLESS:
+        res |= GL_POINT;
+        break;
+    default:
+        break;
     }
 
-    constexpr uint32 convert_buffer_type_gl(BUFFER_TYPE buf_type)
+    return res;
+}
+
+
+constexpr uint32 convert_buffer_type_gl(BUFFER_TYPE buf_type)
+{
+    uint32 res = 0;
+
+    switch (buf_type)
     {
-        uint32 res = 0;
-
-        switch (buf_type)
-        {
-        case VERTEX:
-            res |= GL_ARRAY_BUFFER;
-            break;
-        case INDEX:
-            res |= GL_ELEMENT_ARRAY_BUFFER;
-            break;
-        default:
-            break;
-        }
-
-        return res;
+    case VERTEX:
+        res |= GL_ARRAY_BUFFER;
+        break;
+    case INDEX:
+        res |= GL_ELEMENT_ARRAY_BUFFER;
+        break;
+    default:
+        break;
     }
 
-    constexpr uint32 convert_texture_type_gl(TEXTURE_TYPE tex_type)
+    return res;
+}
+
+constexpr uint32 convert_texture_type_gl(TEXTURE_TYPE tex_type)
+{
+    uint32 res = 0;
+
+    switch (tex_type)
     {
-        uint32 res = 0;
-
-        switch (tex_type)
-        {
-        case COLOR:
-        case DEPTH:
-        case HDR:
-            res |= GL_TEXTURE_2D;
-            break;
-        case CUBEMAP:
-            res |= GL_TEXTURE_CUBE_MAP;
-            break;
-        case CUBEMAP_POSITIVE:
-            res |= GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-        default:
-            break;
-        }
-
-        return res;
+    case COLOR:
+    case DEPTH:
+    case HDR:
+        res |= GL_TEXTURE_2D;
+        break;
+    case CUBEMAP:
+        res |= GL_TEXTURE_CUBE_MAP;
+        break;
+    case CUBEMAP_POSITIVE:
+        res |= GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+    default:
+        break;
     }
 
-    constexpr uint32 convert_texture_wrapping_type_gl(TEXTURE_WRAPPING tex_type)
+    return res;
+}
+
+constexpr uint32 convert_texture_wrapping_type_gl(TEXTURE_WRAPPING tex_type)
+{
+    uint32 res = 0;
+
+    switch (tex_type)
     {
-        uint32 res = 0;
-
-        switch (tex_type)
-        {
-        case TEXTURE_ADDRESS_REPEAT:
-            res |= GL_REPEAT;
-            break;
-        case TEXTURE_ADDRESS_MIR_REPEAT:
-            res |= GL_MIRRORED_REPEAT;
-            break;
-        case TEXTURE_ADDRESS_CLAMP:
-            res |= GL_CLAMP_TO_EDGE;
-            break;
-        case TEXTURE_ADDRESS_BORDER:
-            res |= GL_CLAMP_TO_BORDER;
-            break;
-        default:
-            break;
-        }
-
-        return res;
+    case TEXTURE_ADDRESS_REPEAT:
+        res |= GL_REPEAT;
+        break;
+    case TEXTURE_ADDRESS_MIR_REPEAT:
+        res |= GL_MIRRORED_REPEAT;
+        break;
+    case TEXTURE_ADDRESS_CLAMP:
+        res |= GL_CLAMP_TO_EDGE;
+        break;
+    case TEXTURE_ADDRESS_BORDER:
+        res |= GL_CLAMP_TO_BORDER;
+        break;
+    default:
+        break;
     }
 
-    constexpr uint32 convert_texture_sampling_type_gl(TEXTURE_SAMPLING tex_type)
+    return res;
+}
+
+constexpr uint32 convert_texture_sampling_type_gl(TEXTURE_SAMPLING tex_type)
+{
+    uint32 res = 0;
+
+    switch (tex_type)
     {
-        uint32 res = 0;
-
-        switch (tex_type)
-        {
-        case LINEAR:
-            res |= GL_LINEAR;
-            break;
-        case NEAREST:
-            res |= GL_NEAREST;
-            break;
-        case LINEAR_MIPMAP_LINEAR:
-            res |= GL_LINEAR_MIPMAP_LINEAR;
-            break;
-        case LINEAR_MIPMAP_NEAREST:
-            res |= GL_LINEAR_MIPMAP_NEAREST;
-            break;
-        case NEAREST_MIPMAP_LINEAR:
-            res |= GL_NEAREST_MIPMAP_LINEAR;
-            break;
-        case NEAREST_MIPMAP_NEAREST:
-            res |= GL_NEAREST_MIPMAP_NEAREST;
-            break;
-        default:
-            break;
-        }
-
-        return res;
+    case LINEAR:
+        res |= GL_LINEAR;
+        break;
+    case NEAREST:
+        res |= GL_NEAREST;
+        break;
+    case LINEAR_MIPMAP_LINEAR:
+        res |= GL_LINEAR_MIPMAP_LINEAR;
+        break;
+    case LINEAR_MIPMAP_NEAREST:
+        res |= GL_LINEAR_MIPMAP_NEAREST;
+        break;
+    case NEAREST_MIPMAP_LINEAR:
+        res |= GL_NEAREST_MIPMAP_LINEAR;
+        break;
+    case NEAREST_MIPMAP_NEAREST:
+        res |= GL_NEAREST_MIPMAP_NEAREST;
+        break;
+    default:
+        break;
     }
 
-    constexpr uint32 convert_texture_wrapping_axis_type_gl(TEXTURE_WRAPPING_AXIS tex_wrapping_type)
+    return res;
+}
+
+constexpr uint32 convert_texture_wrapping_axis_type_gl(TEXTURE_WRAPPING_AXIS tex_wrapping_type)
+{
+    uint32 res = 0;
+
+    switch (tex_wrapping_type)
     {
-        uint32 res = 0;
-
-        switch (tex_wrapping_type)
-        {
-        case TEXTURE_AXIS_S:
-            res |= GL_TEXTURE_WRAP_S;
-            break;
-        case TEXTURE_AXIS_T:
-            res |= GL_TEXTURE_WRAP_T;
-            break;
-        case TEXTURE_AXIS_R:
-            res |= GL_TEXTURE_WRAP_R;
-            break;
-        default:
-            break;
-        }
-
-        return res;
+    case TEXTURE_AXIS_S:
+        res |= GL_TEXTURE_WRAP_S;
+        break;
+    case TEXTURE_AXIS_T:
+        res |= GL_TEXTURE_WRAP_T;
+        break;
+    case TEXTURE_AXIS_R:
+        res |= GL_TEXTURE_WRAP_R;
+        break;
+    default:
+        break;
     }
 
-    constexpr uint32 convert_texture_filter_operation_gl(TEXTURE_FILTER_OPERATION tex_filter_type)
+    return res;
+}
+
+constexpr uint32 convert_texture_filter_operation_gl(TEXTURE_FILTER_OPERATION tex_filter_type)
+{
+    uint32 res = 0;
+
+    switch (tex_filter_type)
     {
-        uint32 res = 0;
-
-        switch (tex_filter_type)
-        {
-        case MIN:
-            res |= GL_TEXTURE_MIN_FILTER;
-            break;
-        case MAG:
-            res |= GL_TEXTURE_MAG_FILTER;
-            break;
-        default:
-            break;
-        }
-
-        return res;
+    case MIN:
+        res |= GL_TEXTURE_MIN_FILTER;
+        break;
+    case MAG:
+        res |= GL_TEXTURE_MAG_FILTER;
+        break;
+    default:
+        break;
     }
 
-    static PIXELFORMATDESCRIPTOR get_pixel_format_desc()
-    {
-        PIXELFORMATDESCRIPTOR pixel_format_descriptor = {};
-        pixel_format_descriptor.nSize = sizeof(pixel_format_descriptor);
-        pixel_format_descriptor.nVersion = 1;
-        pixel_format_descriptor.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
-        pixel_format_descriptor.iPixelType = PFD_TYPE_RGBA;
-        pixel_format_descriptor.cColorBits = 32;
-        pixel_format_descriptor.cDepthBits = 24;
-        pixel_format_descriptor.cAlphaBits = 8;
-        pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
-        return pixel_format_descriptor;
-    }
+    return res;
+}
 
-    GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 fullscreen)
+/*static PIXELFORMATDESCRIPTOR get_pixel_format_desc()
+{
+    PIXELFORMATDESCRIPTOR pixel_format_descriptor = {};
+    pixel_format_descriptor.nSize = sizeof(pixel_format_descriptor);
+    pixel_format_descriptor.nVersion = 1;
+    pixel_format_descriptor.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
+    pixel_format_descriptor.iPixelType = PFD_TYPE_RGBA;
+    pixel_format_descriptor.cColorBits = 32;
+    pixel_format_descriptor.cDepthBits = 24;
+    pixel_format_descriptor.cAlphaBits = 8;
+    pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
+    return pixel_format_descriptor;
+}*/
+
+GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 fullscreen)
     {
-        this->fullscreen = fullscreen;
+        /*this->fullscreen = fullscreen;
         this->vsync = vsync;
         this->vp = {};
         
@@ -306,7 +303,7 @@ namespace xe_graphics
         }
 #endif 
        
-        ReleaseDC(window_handle, dc);
+        ReleaseDC(window_handle, dc);*/
     }
 
     GraphicsDeviceGL::~GraphicsDeviceGL()
@@ -315,8 +312,7 @@ namespace xe_graphics
     }
 
     void GraphicsDeviceGL::clear(int flags)
-    {
-        glClearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
+    {         
         glClear(flags);
     }
 
@@ -326,6 +322,7 @@ namespace xe_graphics
         clear_color_v[1] = g;
         clear_color_v[2] = b;
         clear_color_v[3] = a;
+        glClearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
     }
 
     void GraphicsDeviceGL::setViewport(int32 x, int32 y, int32 width, int32 height)
@@ -555,9 +552,12 @@ namespace xe_graphics
 
     Texture2D& GraphicsDeviceGL::getTexture(uint32 number, const Framebuffer *fbo)
     {
-        if (fbo && number >= 0 <= MAX_COLOR_ATT)
+        if (fbo && number >= 0 && number <= MAX_COLOR_ATT)
+        {
             return *fbo->color_textures[number];
-        // @Add return;
+        }
+        
+        //return Texture2D();
     }
 
     void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture)
@@ -594,27 +594,27 @@ namespace xe_graphics
 
         if (error != GL_FRAMEBUFFER_COMPLETE)
         {
-            xe_utility::error("Framebuffer setup");
+            print_error("Framebuffer setup");
 
             switch (error)
             {
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                xe_utility::error("GL_Framebuffer_INCOMPLETE_ATTACHMENT");
+                print_error("GL_Framebuffer_INCOMPLETE_ATTACHMENT");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                xe_utility::error("GL_Framebuffer_INCOMPLETE_MISSING_ATTACHMENT");
+                print_error("GL_Framebuffer_INCOMPLETE_MISSING_ATTACHMENT");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                xe_utility::error("GL_Framebuffer_INCOMPLETE_DRAW_BUFFER");
+                print_error("GL_Framebuffer_INCOMPLETE_DRAW_BUFFER");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-                xe_utility::error("GL_Framebuffer_INCOMPLETE_LAYER_TARGETS");
+                print_error("GL_Framebuffer_INCOMPLETE_LAYER_TARGETS");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                xe_utility::error("GL_Framebuffer_INCOMPLETE_READ_BUFFER");
+                print_error("GL_Framebuffer_INCOMPLETE_READ_BUFFER");
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-                xe_utility::error("GL_Framebuffer_INCOMPLETE_MULTISAMPLE");
+                print_error("GL_Framebuffer_INCOMPLETE_MULTISAMPLE");
                 break;
             }
         }
@@ -650,37 +650,39 @@ namespace xe_graphics
         glUniform1i(glGetUniformLocation(shd->id, name.c_str()), (int)value);
     }
 
-    void GraphicsDeviceGL::setInt(const std::string & name, int32 value, Shader* shd)
+    void GraphicsDeviceGL::setInt(const std::string &name, int32 value, Shader* shd)
     {
         glUniform1i(glGetUniformLocation(shd->id, name.c_str()), value);
     }
 
-    void GraphicsDeviceGL::setFloat(const std::string & name, real32 value, Shader *shd)
+    void GraphicsDeviceGL::setFloat(const std::string &name, real32 value, Shader *shd)
     {
         glUniform1f(glGetUniformLocation(shd->id, name.c_str()), value);
     }
 
-    void GraphicsDeviceGL::setVec2(const std::string & name, const glm::vec2& value, Shader *shd)
+    void GraphicsDeviceGL::setVec2(const std::string &name, const Vec2& value, Shader *shd)
     {
-        glUniform2fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+        int add = 0;
+        //glUniform2fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
     }
 
-    void GraphicsDeviceGL::setVec2(const std::string & name, real32 x, real32 y, Shader *shd)
+    void GraphicsDeviceGL::setVec2(const std::string &name, real32 x, real32 y, Shader *shd)
     {
         glUniform2f(glGetUniformLocation(shd->id, name.c_str()), x, y);
     }
 
-    void GraphicsDeviceGL::setVec3(const std::string & name, const glm::vec3& value, Shader *shd)
+    void GraphicsDeviceGL::setVec3(const std::string &name, const Vec3& value, Shader *shd)
     {
-        glUniform3fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+        int gi = 0;
+        //glUniform3fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
     }
 
-    void GraphicsDeviceGL::setVec3(const std::string & name, real32 x, real32 y, real32 z, Shader *shd)
+    void GraphicsDeviceGL::setVec3(const std::string &name, real32 x, real32 y, real32 z, Shader *shd)
     {
         glUniform3f(glGetUniformLocation(shd->id, name.c_str()), x, y, z);
     }
 
-    void GraphicsDeviceGL::setVec4(const std::string & name, const glm::vec4 & value, Shader *shd)
+    /*void GraphicsDeviceGL::setVec4(const std::string &name, const vec4& value, Shader *shd)
     {
         glUniform4fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
     }
@@ -690,7 +692,7 @@ namespace xe_graphics
         glUniform4f(glGetUniformLocation(shd->id, name.c_str()), x, y, z, w);
     }
 
-    void GraphicsDeviceGL::setMat2(const std::string &name, const glm::mat2 &mat, Shader *shd)
+    /*void GraphicsDeviceGL::setMat2(const std::string &name, const glm::mat2 &mat, Shader *shd)
     {
         glUniformMatrix2fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
@@ -698,11 +700,12 @@ namespace xe_graphics
     void GraphicsDeviceGL::setMat3(const std::string &name, const glm::mat3 &mat, Shader *shd)
     {
         glUniformMatrix3fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-    }
+    }*/
 
-    void GraphicsDeviceGL::setMat4(const std::string &name, const glm::mat4 &mat, Shader *shd)
+    void GraphicsDeviceGL::setMat4(const std::string &name, const Matrix4x4 &mat, Shader *shd)
     {
-        glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+        int add = 0;
+        //glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
     bool32 GraphicsDeviceGL::createTexture(Texture2D *texture)
@@ -761,14 +764,14 @@ namespace xe_graphics
 
         switch (type)
         {
-        case xe_graphics::COLOR:
-        case xe_graphics::GREYSCALE:
-        case xe_graphics::LUT:
-        case xe_graphics::CUBEMAP:
-        case xe_graphics::DEPTH:
+        case COLOR:
+        case GREYSCALE:
+        case LUT:
+        case CUBEMAP:
+        case DEPTH:
             image = xe_core::loadTextureFromDisc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
             break;
-        case xe_graphics::HDR:
+        case HDR:
             image = xe_core::loadTextureFloatFromDisc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
             break;
         default:
@@ -777,7 +780,7 @@ namespace xe_graphics
         
         if (!image)
         {
-            xe_utility::error("Failed to load texture: " + std::string(path));
+            //xe_utility::error("Failed to load texture: " + std::string(path));
             return false;
         }
 
@@ -813,8 +816,8 @@ namespace xe_graphics
 
             switch (type)
             {
-            case xe_graphics::COLOR:
-            case xe_graphics::LUT:
+            case COLOR:
+            case LUT:
                 glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
                 loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
 
@@ -825,7 +828,7 @@ namespace xe_graphics
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
 
                 break;
-            case xe_graphics::GREYSCALE:
+            case GREYSCALE:
                 glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
                 loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
@@ -835,7 +838,7 @@ namespace xe_graphics
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
                 break;
-            case xe_graphics::HDR:
+            case HDR:
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
 
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
@@ -845,10 +848,10 @@ namespace xe_graphics
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
                 break;
-            case xe_graphics::CUBEMAP:
+            case CUBEMAP:
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
                 break;
-            case xe_graphics::DEPTH:
+            case DEPTH:
                 break;
             default:
                 break;
@@ -861,7 +864,7 @@ namespace xe_graphics
 
         unbindTexture(type);
 
-        xe_core::deleteData(image);
+        //xe_core::deleteData(image);
 
         return true;
     }
@@ -920,8 +923,8 @@ namespace xe_graphics
             GLint buflength;
             glGetShaderInfoLog(vertex, length, &buflength, buffer);
 
-            xe_utility::error("Vertex Shader: " + std::string(vertex_code));
-            xe_utility::error(buffer);
+            print_error("Vertex Shader: " + std::string(vertex_code));
+            print_error(buffer);
 
             delete[] buffer;
 
@@ -940,8 +943,8 @@ namespace xe_graphics
             GLint buflength;
             glGetShaderInfoLog(fragment, length, &buflength, buffer);
 
-            xe_utility::error("Fragment Shader: " + std::string(fragment_code));
-            xe_utility::error(buffer);
+            print_error("Fragment Shader: " + std::string(fragment_code));
+            print_error(buffer);
 
             delete[] buffer;
 
@@ -1065,7 +1068,7 @@ namespace xe_graphics
         {
             auto cur_element = buffer_layout.elements.at(i);
             glEnableVertexAttribArray(va->ibuffer_index);
-            glVertexAttribPointer(va->ibuffer_index, cur_element.elementTypeCount(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (void*)cur_element.offset);
+            //glVertexAttribPointer(va->ibuffer_index, cur_element.elementTypeCount(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (const void*)cur_element.offset);
             va->ibuffer_index++;
         }
 
@@ -1174,23 +1177,25 @@ namespace xe_graphics
         GLenum err;
         while ((err = glGetError()) != GL_NO_ERROR)
         {
-            const char* erro_char = (const char*)err;
+            //const char* erro_char = (const char*)err;
             //xe_utility::error(std::string(erro_char));
         }
     }
 
     void GraphicsDeviceGL::loadBindings()
     {
-        if (!gladLoadGL())
-            printf("Failed to init OpenGL loader!\n");
-
+        //if (!gladLoadGL())
+        //{
+        //    print_error("Failed to init OpenGL loader!\n");
+        //}
+            
         const char *gl_vendor = (char*)glGetString(GL_VENDOR);
         const char *gl_renderer = (char*)glGetString(GL_RENDERER);
         const char *gl_version = (char*)glGetString(GL_VERSION);
 
-        xe_utility::info(gl_vendor);
-        xe_utility::info(gl_renderer);
-        xe_utility::info(gl_version);
+        print_info(gl_vendor);
+        print_info(gl_renderer);
+        print_info(gl_version);
     }
 
     void GraphicsDeviceGL::unbindBuffer(BUFFER_TYPE type)
@@ -1206,7 +1211,9 @@ namespace xe_graphics
     }
 
     void GraphicsDeviceGL::endExecution()
-    {      
-        SwapBuffers(xe_platform::get_dc());
+    {     
+        int add = 0;
+        //SwapBuffers(xe_platform::get_dc());
     }
-}
+
+#endif

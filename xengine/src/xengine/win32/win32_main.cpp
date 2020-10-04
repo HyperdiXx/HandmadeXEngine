@@ -15,11 +15,12 @@
 #undef DeleteFile
 
 #include <gl/gl.h>
-#include "xengine/external/wglext.h"
-#include "xengine/external/glext.h"
+#include "xengine\external\wglext.h"
+#include "xengine\external\glext.h"
 
-#include "xengine/common.h"
-#include "game/app_state.h"
+#include "xengine\common.h"
+#include "xengine\math.cpp"
+#include "game\app_state.h"
 
 #include "win32_platform.cpp"
 #include "win32_file.cpp"
@@ -93,9 +94,13 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     // Init function ptr
 
-    p_state = &global_state;
+    platform_state = &global_state;
 
     global_state.LoadOpenGLProcedure = Win32LoadOpenglProcedure;
+    global_state.AllocateMemory = Win32AllocVirtual;
+    global_state.FreeMemory = Win32FreeVirtual;
+    global_state.ReallocateMemory = Win32Realocate;
+    global_state.render_api = PlatformState::RenderApi::OPENGL;
 
     WNDCLASS window_class = create_win32window(instance);
  
@@ -120,7 +125,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
 
     ShowWindow(window_handle, n_show_cmd);
 
-    game_code.LoadGameCode(p_state);
+    game_code.LoadGameCode(platform_state);
 
     while (!is_closed)
     {

@@ -105,7 +105,7 @@ void main()
        
     //vec3 N = calculate_normals();
     
-    vec3 N = normalize(texture(normal_map, uv).rgb * 2.0 - 1.0);
+    vec3 N = normalize((texture(normal_map, uv).rgb) * 2.0 - 1.0);
 	N = normalize(tbn * N);
 
     vec3 V = normalize(cam_pos - world_pos);    

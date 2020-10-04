@@ -5,15 +5,31 @@
 
 //#include "render_pass.h"
 
-class Layer2D : public Layer
+enum LayerType
+{
+    LAYER_2D,
+    LAYER_3D,
+    GUI
+};
+
+struct LayerTest
+{
+    LayerType type;
+
+    void (*Init)(void);
+    void (*Render)(void);
+    void (*Update)(real32 dt);
+};
+
+class Layer2D
 {
 public:
     Layer2D() {};
     ~Layer2D() {};
 
-    void init() override;
-    void render() override;
-    void update(real32 dt) override;
+    void init();
+    void render();
+    void update(real32 dt);
 
     void addEntity(Entity ent);
 private:
@@ -21,15 +37,15 @@ private:
     Entity main_ent;
 };
 
-class Layer3D : public Layer
+class Layer3D
 {
 public:
     Layer3D() {};
     ~Layer3D() {};
 
-    void init() override;
-    void render() override;
-    void update(real32 dt) override;
+    void init();
+    void render();
+    void update(real32 dt);
 
     void addEntity(Entity ent);
 private:
@@ -38,7 +54,7 @@ private:
     //RenderPass *render_pass;
 };
 
-class GUILayer : public Layer
+class GUILayer
 {
 public:
 

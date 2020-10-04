@@ -1,20 +1,14 @@
-#include "xe_core.h"
-
-#include "xe_platform.h"
-
-#include <stdio.h>
-#include <fstream>
 
 #ifdef PLATFORM_WINDOWS
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image/stb_image.h>
+#include "external\stb_image.h"
     
 #endif 
 
 namespace xe_core
 {
-    XEFile readWholeFile(const char *file_name)
+    internal XEFile readWholeFile(const char *file_name)
     {
         XEFile res = {};
 
@@ -38,7 +32,7 @@ namespace xe_core
         return res;
     }
 
-    std::string readFileString(const char *file_path)
+    internal std::string readFileString(const char *file_path)
     {
         std::ifstream file(file_path);
         if (file.fail() || !file.is_open())
@@ -58,23 +52,25 @@ namespace xe_core
         return source;
     }
 
-    unsigned char *loadTextureFromDisc(const char *path, int &width, int &height, int &channels, int flag, bool32 flip)
+    internal unsigned char *loadTextureFromDisc(const char *path, int &width, int &height, int &channels, int flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         stbi_uc* image = stbi_load(path, &width, &height, &channels, flag);
         return image;
     }
 
-    float *loadTextureFloatFromDisc(const char * path, int & width, int & height, int & channels, int flag, bool32 flip)
+    internal float *loadTextureFloatFromDisc(const char * path, int & width, int &height, int & channels, int flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         real32 *image = stbi_loadf(path, &width, &height, &channels, flag);
         return image;
     }
 
-    void deleteData(void *data)
+    internal void deleteData(void *data)
     {
-        if(data != nullptr)
+        if (data != nullptr)
+        {
             stbi_image_free(data);
+        }
     }
 }

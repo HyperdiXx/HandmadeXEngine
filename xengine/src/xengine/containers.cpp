@@ -103,6 +103,9 @@ template <class T> void DynArray<T>::push_back(T new_element)
     data[count++] = new_element;
 }
 
+template <class T> T& DynArray<T>::operator[](int i) { return data[i]; }
+template <class T> T& DynArray<T>::at(int i) { return data[i]; }
+
 template <class T> struct LinkedList
 {
     void init(void *(allocF)(int) = 0);

@@ -157,7 +157,7 @@ internal bool32 loadFont(const char *path)
     graphics_device->unbindBuffer(BUFFER_TYPE::VERTEX);
     graphics_device->unbindVertexArray();
 
-    Matrix4x4 ortho = createMatrix4x4(1.0f);
+    Matrix4x4 ortho = createMat4x4();
 
     //ortho = glm::ortho(0.0f, float(WINDOWS_WIDTH), 0.0f, float(WINDOWS_HEIGHT), -1.0f, 1.0f);
 
@@ -263,11 +263,11 @@ internal bool32 loadShaders()
 
     if (!res)
     {
-        xe_utility::error("Loading shaders!!!");
+        print_error("Loading shaders!!!");
         return false;
     }
 
-    xe_utility::info("Shaders loaded!!!");
+    print_info("Shaders loaded!!!");
     return true;
 }
 

@@ -6,9 +6,8 @@
 #include "xengine\utility.h"
 #include "xengine\parser.h"
 #include "xengine\opengl_loader.h"
-#include "xengine\math.cpp"
-
 #include "xengine\config.h"
+#include "xengine\math.cpp"
 
 #include "xengine\core.h"
 #include "xengine\graphics_res_desc.h"
@@ -29,6 +28,7 @@
 
 #include "xengine\win32\win32_platform.cpp"
 #include "xengine\containers.cpp"
+#include "xengine\tree.cpp"
 
 #ifdef GAPI_GL
     #include "xengine\graphics_device_gl.h"
@@ -42,6 +42,8 @@
 global GraphicsDevice *graphicsDevice = 0;
 global MemoryArena arena;
 global DynArray<LayerTest> layersTest;
+global DynArray<Rect> rects_to_test;
+global Quadtree tree;
 
 internal void InitGameLayers()
 {
@@ -78,13 +80,31 @@ internal void InitGameLayers()
     Vec3 pos = createVec3(0.0f, 5.0f, 1.0f);
 }
 
+internal void InitQuadTree()
+{
+    tree = Quadtree(0, 0, 1280, 720, 0, 4);
+
+    rects_to_test = createDynArray<Rect>();
+
+    rects_to_test.push_back(createRect(25, 25, 100, 100));
+    rects_to_test.push_back(createRect(250, 250, 100, 100));
+    rects_to_test.push_back(createRect(500, 500, 100, 100));
+    rects_to_test.push_back(createRect(750, 750, 100, 100));
+
+    for (int i = 0; i < 4; ++i)
+    {
+        Rect cur = rects_to_test.at(i);
+        addObject(&tree, &cur);
+    }
+}
+
 APP_LOAD_DATA
 {   
     platform_state = ps;
    
     LoadAllOpenGLProcedures();
 
-    switch (platform_state->render_api)
+    /*switch (platform_state->render_api)
     {
     case PlatformState::RenderApi::OPENGL:
     {
@@ -97,13 +117,14 @@ APP_LOAD_DATA
     {
 
     } break;
-    }
-        
-   
+    }*/
+       
 
     arena = createMemoryArena(0, 1024 * 1024 * 4);
 
     InitGameLayers();
+
+    InitQuadTree();
 
 
     for (int i = 0; i < layersTest.size(); ++i)

@@ -467,6 +467,5 @@ inline void rotateMat(Matrix4x4 &mat, const Vec3 &axis, const real32 angle)
 
 typedef Vec3 ColorRGB;
 typedef Vec4 ColorRGBA;
-
 #endif // !MATH_CPP
 

@@ -38,6 +38,7 @@
 #include "layers.cpp"
 #include "xengine\render.cpp"
 #include "xengine\memory.cpp"
+#include "xengine\ecs.cpp"
 
 global MemoryArena arena;
 global DynArray<LayerTest> layersTest;
@@ -96,7 +97,19 @@ internal void InitQuadTree()
 
 internal void InitECS()
 {
+    System base_s(convertToSystemType("TransformSystem"));
+    System render_s(convertToSystemType("RenderSystem"));
+ 
+    ECSManager ecs = {};
 
+    Entity tetsEnt = ecs.createEntity();
+    
+    ecs.removeEntity();
+    
+    ecs.createSystem(base_s);
+    ecs.createSystem(render_s);
+
+    ecs.updateSystems();
 }
 
 APP_LOAD_DATA
@@ -112,7 +125,7 @@ APP_LOAD_DATA
     InitGameLayers();
 
     //InitQuadTree();
-    //InitECS();
+    InitECS();
 
     for (int i = 0; i < layersTest.size(); ++i)
     {

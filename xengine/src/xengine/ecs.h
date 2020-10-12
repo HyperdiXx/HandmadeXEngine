@@ -73,16 +73,44 @@ struct Component
 
 struct TransformSystem
 {
-    void update();
+    void update()
+    {
+        int a = 10;
+        int counter = 0;
+        counter += a;
+    }
+};
+
+struct RenderSystem
+{
+    void update()
+    {
+        int a = 1;
+
+        for (uint32 i = 0; i < 1000; ++i)
+        {
+            ++a;
+        }
+    }
 };
 
 struct System
-{    
-    CSType type;
+{
+    enum class SystemType
+    {
+        RenderSystem,
+        TransformSystem
+    };
+
+    System() {};
+    System(SystemType t) : type(t) {};
+
+    SystemType type;
 
     union
     {
         TransformSystem transform_system;
+        RenderSystem render_system;
     };
 };
 
@@ -90,22 +118,28 @@ class ECSManager
 {
 public:
 
-    ECSManager() = default;
+    ECSManager();
 
-    EntityID createEntity();
+    Entity createEntity();
     void removeEntity();
 
     void createComponent(EntityID id, uint32 component_id);
     void removeComponent(EntityID id, uint32 component_id);
 
-    void createSystem(System *system);
+    void createSystem(System system);
     void removeSystem(uint32 system_id);
 
+    void updateSystems();
+
 private:
+
+    uint32 active_ent = 0;
+
     ECSManager(const ECSManager&) = delete;
     ECSManager(ECSManager &&) = delete;
     
-    DynArray<Entity> entities;
+    std::queue<Entity> entities;
+    DynArray<System> systems;
 };
 
 #endif // !ECS_H

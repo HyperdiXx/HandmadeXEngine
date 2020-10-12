@@ -5,22 +5,6 @@
 
 //#include "render_pass.h"
 
-enum LayerType
-{
-    LAYER_2D,
-    LAYER_3D,
-    GUI
-};
-
-struct LayerTest
-{
-    LayerType type;
-
-    void (*Init)(void);
-    void (*Render)(void);
-    void (*Update)(real32 dt);
-};
-
 class Layer2D
 {
 public:
@@ -64,6 +48,29 @@ public:
 
 private:
 
+};
+
+struct LayerTest
+{
+    enum class LayerType
+    {
+        LAYER_2D,
+        LAYER_3D,
+        GUI
+    };
+
+    LayerTest() {};
+    LayerTest(LayerTest &&test) {};
+
+    ~LayerTest() {};
+    LayerType type;
+
+    union
+    {
+        Layer2D layer2D;
+        Layer3D layer3D;
+        GUILayer guiLayer;
+    };
 };
 
 #endif // !LAYERS_H

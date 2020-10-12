@@ -1,6 +1,3 @@
-
-#pragma once
-
 #ifndef GRAPHICS_DEVICE_GL_CPP
 #define GRAPHICS_DEVICE_GL_CPP
 
@@ -323,6 +320,11 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         clear_color_v[2] = b;
         clear_color_v[3] = a;
         glClearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
+    }
+
+    void GraphicsDeviceGL::clearColor(const Vec4& color)
+    {
+        glClearColor(color.x, color.y, color.z, color.w);
     }
 
     void GraphicsDeviceGL::setViewport(int32 x, int32 y, int32 width, int32 height)

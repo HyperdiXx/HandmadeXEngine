@@ -63,13 +63,13 @@ struct Quadtree
 inline bool inside(const Quadtree *tree, const Rect *rect)
 {
     return !(rect->x < tree->quad.x ||
-            rect->y < tree->quad.y ||
-            rect->x > tree->quad.x + tree->quad.width ||
-            rect->y > tree->quad.y + tree->quad.height ||
-            rect->x + rect->width < tree->quad.x ||
-            rect->y + rect->height < tree->quad.y ||
-            rect->x + rect->width > tree->quad.x + tree->quad.width ||
-            rect->y + rect->height > tree->quad.y + tree->quad.height);
+             rect->y < tree->quad.y ||
+             rect->x > tree->quad.x + tree->quad.width ||
+             rect->y > tree->quad.y + tree->quad.height ||
+             rect->x + rect->width < tree->quad.x ||
+             rect->y + rect->height < tree->quad.y ||
+             rect->x + rect->width > tree->quad.x + tree->quad.width ||
+             rect->y + rect->height > tree->quad.y + tree->quad.height);
 }
 
 inline void addObject(Quadtree *tree, Rect *rect)

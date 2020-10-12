@@ -14,6 +14,7 @@ public:
 
     virtual void clear(int flags) = 0;
     virtual void clearColor(real32 r, real32 g, real32 b, real32 a) = 0;
+    virtual void clearColor(const Vec4& color) = 0;
     virtual void setViewport(int32 x, int32 y, int32 width, int32 height) = 0;
     virtual void enable(int type) = 0;
     virtual void disable(int type) = 0;

@@ -8,40 +8,6 @@
 #include "xe_gizmo.h"
 */
 
-    
-internal void Layer2DInit()
-{
-    int gi = 0;
-    int res = gi + 1;
-}
-
-internal void Layer2DUpdate(real32 dt)
-{
-    int updating = 0;
-}
-
-internal void Layer3DInit()
-{
-    int gi = 0;
-    int res = gi + 1;
-}
-
-internal void Layer3DUpdate(real32 dt)
-{
-    int updating = 0;
-}
-
-internal void LayerGUIInit()
-{
-    int gi = 0;
-    int res = gi + 1;
-}
-
-internal void LayerGUIUpdate(real32 dt)
-{
-    int updating = 0;
-}
-
 void GUILayer::init()
 {
 

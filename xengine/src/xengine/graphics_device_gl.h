@@ -12,6 +12,7 @@ public:
 
     void clear(int flags) override;
     void clearColor(real32 r, real32 g, real32 b, real32 a) override;
+    void clearColor(const Vec4& color) override;
     void setViewport(int32 x, int32 y, int32 width, int32 height) override;
     void enable(int type) override;
     void disable(int type) override;

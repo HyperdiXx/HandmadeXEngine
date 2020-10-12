@@ -465,7 +465,21 @@ inline void rotateMat(Matrix4x4 &mat, const Vec3 &axis, const real32 angle)
 
 }
 
-typedef Vec3 ColorRGB;
-typedef Vec4 ColorRGBA;
+struct AABB
+{
+    Vec2 min, max;
+};
+
+inline 
+AABB createAABB(Vec2 min, Vec2 max)
+{
+    AABB res = {};
+
+    res.min = min;
+    res.max = max;
+
+    return res;
+}
+
 #endif // !MATH_CPP
 

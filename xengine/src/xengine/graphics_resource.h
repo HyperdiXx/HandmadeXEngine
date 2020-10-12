@@ -4,9 +4,9 @@
 #define XENGINE_GRAPHICS_RESOURCES_H
 
 #ifdef GAPI_GL
-typedef uint32 GPUHandler;
+    typedef uint32 GPUHandler;
 #else
-Another API Stuff
+    Another API Stuff
 #endif
 
 class GraphicsDevice;
@@ -31,11 +31,13 @@ struct Texture2D
     GPUHandler id;
     bool32 is_valid;
     TextureDesc desc;
+    const char* name;
 };
 
 struct Shader
 {
     GPUHandler id;
+    const char* name;
 };
 
 struct Index

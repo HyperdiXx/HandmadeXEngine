@@ -12,7 +12,6 @@
 #include <mmdeviceapi.h>
 #include <audioclient.h>
 #include <audiopolicy.h>
-#undef DeleteFile
 
 #include <gl/gl.h>
 #include "xengine\external\wglext.h"

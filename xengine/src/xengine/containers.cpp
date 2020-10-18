@@ -3,6 +3,8 @@
 #ifndef CONTAINERS_CPP
 #define CONTAINERS_CPP
 
+constexpr global uint32 MAX_ARRAY_SIZE = 1000;
+
 template <class T> 
 inline void swap(T *a, T *b)
 {
@@ -24,8 +26,55 @@ template <class T> struct BinarySearchTree
         Node *left;
         Node *right;
     };
-
 };
+
+template <class T> struct Array
+{
+    Array() {};
+    
+    void init(T *data_ptr, uint32 size = 8);
+    void clear();
+
+    T* begin() { return data; }
+
+    T& operator[] (int index);
+    T& at(int index);
+
+    const uint32 size() const { return count; }
+
+    uint32 count;
+    T data[MAX_ARRAY_SIZE];
+};
+
+template <class T> Array<T> createArray(T data[], uint32 size)
+{
+    Array<T> result = {};
+
+    result.init(data, size);
+
+    return result;
+};
+
+template <class T> Array<T> createArray(const Array<T> &data)
+{
+    Array<T> result = {};
+
+    result.init(data.begin());
+
+    return result;
+}
+
+template <class T> void Array<T>::init(T data_ptr[], uint32 size = 8)
+{
+    assert(data_ptr != nullptr);
+    assert(size != 0);
+
+    count = size < MAX_ARRAY_SIZE ? size : MAX_ARRAY_SIZE;
+    memcpy(data, data_ptr, count * sizeof(T));
+}
+
+template <class T> T& Array<T>::operator[](int i) { return data[i]; }
+template <class T> T& Array<T>::at(int i) { return data[i]; }
 
 template <class T> struct DynArray
 {

@@ -48,6 +48,8 @@ global DynArray<Rect> rects_to_test;
 global DynArray<Component> components;
 global DynArray<System> systems;
 
+global CubeMesh cube;
+
 internal void InitGameLayers()
 {
     LayerTest t1 = {};
@@ -116,8 +118,6 @@ APP_LOAD_DATA
 {   
     platform_state = ps;
    
-    LoadAllOpenGLProcedures();
-
     Render::init();
 
     arena = createMemoryArena(0, 1024 * 1024 * 4);
@@ -149,6 +149,10 @@ APP_UPDATE
 {
     Render::clearColor(0.7f, 0.7f, 0.9f, 1.0f);
     Render::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    Render::drawCube();
+
+    //Render::drawTriangle();
 
     // Update Layers
 

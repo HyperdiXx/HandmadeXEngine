@@ -186,28 +186,46 @@ struct VertexArray
     IndexBuffer *ib;
 };
 
-struct QuadMesh
+enum GeometryType
 {
-    GPUHandler vertex_count;
-    Vec3 color;
-    Vec2 uv;
+    QUAD_MESH = 0,
+    CUBE_MESH = 1,
+    MODEL_MESH = 2,
+    LINE_MESH = 3,
+    SPHERE_MESH = 4
 };
 
-struct LineMesh
-{
-    GPUHandler vertex_count;
-    VertexArray *va;
-    Vec3 color;
+struct GeometryMesh
+{ 
+    uint32 vertex_count;
+    uint32 index_count;    
 };
 
-struct SphereMesh
+struct QuadMesh : public GeometryMesh
+{
+    // no CPU vb 
+    GeometryType type = GeometryType::QUAD_MESH;
+};
+
+struct LineMesh : GeometryMesh
 {
     VertexArray *vertex_array;
+
+    GeometryType type = GeometryType::LINE_MESH;
 };
 
-struct CubeMesh
+struct SphereMesh : GeometryMesh
 {
     VertexArray *vertex_array;
+
+    GeometryType type = GeometryType::SPHERE_MESH;
+};
+
+struct CubeMesh : GeometryMesh
+{
+    VertexArray *vertex_array;
+
+    GeometryType type = GeometryType::CUBE_MESH;
 };
 
 struct Character
@@ -392,4 +410,10 @@ struct RenderState
     Vec4 quad_vertex_data[4];
 };
 
+struct GPUResourceHandler
+{
+    DynArray<VertexBuffer> vb_handler;
+    DynArray<IndexBuffer>  ib_handler;
+    DynArray<VertexArray>  va_handler;
+};
 #endif

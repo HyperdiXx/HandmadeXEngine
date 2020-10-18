@@ -4,7 +4,6 @@
 #ifndef MATH_CPP
 #define MATH_CPP
 
-
 #include <math.h>
 
 #define PI 					3.1415926535897932f	
@@ -161,6 +160,33 @@ struct Vec3
     };
 };
 
+inline Vec3 operator*(const Vec3 &a, real32 b) { return { a.x * b, a.y * b, a.z * b }; };
+inline Vec3 operator*(real32 b, const Vec3 &a) { return { a.x * b, a.y * b, a.z * b }; };
+inline Vec3 operator*(const Vec3 &a, const Vec3 &b) { return { a.x * b.x, a.y * b.y, a.z * b.z }; };
+inline Vec3 & operator*=(Vec3& a, const Vec3 &b) { return a = a * b; };
+inline Vec3 & operator*=(Vec3& a, real32 b) { return a = a * b; };
+
+inline Vec3 operator+(Vec3 a) { return a; };
+inline Vec3 operator+(const Vec3 &a, real32 b) { return { a.x + b, a.y + b, a.z + b }; };
+inline Vec3 operator+(const Vec3 &a, const Vec3 &b) { return { a.x + b.x, a.y + b.y, a.z + b.z }; };
+inline Vec3 & operator+=(Vec3& a, const Vec3 &b) { return a = a + b; };
+inline Vec3 & operator+=(Vec3& a, real32 b) { return a = a + b; };
+
+inline Vec3 operator-(Vec3 a) { return { -a.x, -a.y, -a.z }; };
+inline Vec3 operator-(const Vec3 &a, real32 b) { return { a.x - b, a.y - b, a.z - b }; };
+inline Vec3 operator-(const Vec3 &a, const Vec3 &b) { return { a.x - b.x, a.y - b.y, a.z - b.z }; };
+inline Vec3 & operator-=(Vec3& a, const Vec3 &b) { return a = a - b; };
+inline Vec3 & operator-=(Vec3& a, real32 b) { return a = a - b; };
+
+inline Vec3 operator/(const Vec3 &a, real32 b) { return { a.x / b, a.y / b, a.z / b }; };
+inline Vec3 operator/(real32 b, const Vec3 &a) { return { b / a.x, b / a.y, b / a.z }; };
+inline Vec3 operator/(const Vec3 &a, const Vec3 &b) { return { a.x / b.x, a.y / b.y, a.z / b.z }; };
+inline Vec3 & operator/=(Vec3& a, const Vec3 &b) { return a = a / b; };
+inline Vec3 & operator/=(Vec3& a, real32 b) { return a = a / b; };
+
+inline bool operator==(const Vec3 &a, const Vec3 &b) { return (a.x == b.x) && (a.y == b.y) && (a.z == b.z); };
+inline bool operator!=(const Vec3 &a, const Vec3 &b) { return !(a == b); };
+
 inline Vec3 createVec3(real32 x, real32 y, real32 z)
 {
     Vec3 res = {};
@@ -197,6 +223,34 @@ inline real32 Length(Vec3 vec)
 inline real32 DotProduct(const Vec3 &a, const Vec3& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+inline Vec3 CrossProduct(Vec3 a, Vec3 b)
+{
+    Vec3 res = {};
+
+    res.x = a.y * b.z - a.z * b.y;
+    res.y = a.z * b.x - a.x * b.z;
+    res.z = a.x * b.y - a.y * b.x;
+
+    return res;
+}
+
+inline Vec3 Normalize(Vec3 vec)
+{
+    Vec3 result = {};
+
+    real32 lengthSqr = LengthSqr(vec);
+    real32 invSqr = FastInverseSqrt(lengthSqr);
+    
+    if (invSqr > 0)
+    {
+        result.x *= invSqr;
+        result.y *= invSqr;
+        result.z *= invSqr;
+    }
+
+    return result;
 }
 
 struct Vec4
@@ -448,9 +502,9 @@ inline Matrix4x4 operator*(Matrix4x4 &a, Matrix4x4 &b)
 
 inline void translateMat(Matrix4x4 &mat, const Vec3 &translation)
 {
-    mat.data[0 + 12] = translation.x;
-    mat.data[1 + 12] = translation.y;
-    mat.data[2 + 12] = translation.z;
+    mat.data[3] = translation.x;
+    mat.data[3 + 1 * 4] = translation.y;
+    mat.data[3 + 2 * 4] = translation.z;
 }
 
 inline void scaleMat(Matrix4x4 &mat, const Vec3 &scale)
@@ -463,6 +517,58 @@ inline void scaleMat(Matrix4x4 &mat, const Vec3 &scale)
 inline void rotateMat(Matrix4x4 &mat, const Vec3 &axis, const real32 angle)
 {
 
+}
+
+inline
+Matrix4x4 perspectiveMat(real32 fov, real32 ar, real32 n, real32 f)
+{
+    Matrix4x4 res = createMat4x4();
+
+    real32 radians = DegreesToRadians(fov * 0.5f);
+
+    real32 q = 1.0f / tanf(radians);
+    real32 a = q / ar;
+    
+    real32 b = (n + f) / (n - f);
+    real32 c = (2.0f * n * f) / (n - f);
+
+    res.data[0 + 0 * 4] = a;
+    res.data[1 + 1 * 4] = q;
+    res.data[2 + 2 * 4] = b;
+    res.data[2 + 3 * 4] = -1.0f;
+    res.data[3 + 2 * 4] = c;
+    
+    return res;
+}
+
+inline Matrix4x4 lookAt(const Vec3 &pos, const Vec3 &forward, const Vec3 &up)
+{
+    Matrix4x4 res = createMat4x4();
+
+    Vec3 s = CrossProduct(forward, Normalize(up));
+    Vec3 r = CrossProduct(s, forward);
+
+    res.data[0 + 0 * 4] = s.x;
+    res.data[0 + 1 * 4] = s.y;
+    res.data[0 + 2 * 4] = s.z;
+
+    res.data[1 + 0 * 4] = r.x;
+    res.data[1 + 1 * 4] = r.y;
+    res.data[1 + 2 * 4] = r.z;
+
+    res.data[2 + 0 * 4] = -forward.x;
+    res.data[2 + 1 * 4] = -forward.y;
+    res.data[2 + 2 * 4] = -forward.z;
+
+    Vec3 translation = createVec3(-pos.x, -pos.y, -pos.z);
+
+    Matrix4x4 translationMatrix = createMat4x4();
+
+    translateMat(translationMatrix, translation);
+
+    res = res * translationMatrix;
+
+    return res;
 }
 
 struct AABB

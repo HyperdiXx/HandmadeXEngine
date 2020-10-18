@@ -452,12 +452,12 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         }
     }
 
-    void GraphicsDeviceGL::bindShader(const Shader *Shader)
+    void GraphicsDeviceGL::bindShader(const Shader *shd)
     {
-        if (last_bound_unit_shader != Shader->id)
+        if (last_bound_unit_shader != shd->id)
         {
-            glUseProgram(Shader->id);
-            last_bound_unit_shader = Shader->id;
+            glUseProgram(shd->id);
+            last_bound_unit_shader = shd->id;
         }
     }
 
@@ -675,8 +675,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setVec3(const std::string &name, const Vec3& value, Shader *shd)
     {
-        int gi = 0;
-        //glUniform3fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+        setVec3(name, value.x, value.y, value.z, shd);
     }
 
     void GraphicsDeviceGL::setVec3(const std::string &name, real32 x, real32 y, real32 z, Shader *shd)
@@ -706,8 +705,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setMat4(const std::string &name, const Matrix4x4 &mat, Shader *shd)
     {
-        int add = 0;
-        //glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, mat.data);
     }
 
     bool32 GraphicsDeviceGL::createTexture(Texture2D *texture)
@@ -990,10 +988,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
         glBufferData(GL_ARRAY_BUFFER, size, vb->data, draw_type_gl);
 
-        if (vb->data)
-            return true;
-
-        return false;
+        return vb->data ? true : false;
     }
 
     bool32 GraphicsDeviceGL::createIndexBuffer(uint32 *indices, uint32 size, IndexBuffer *ib)
@@ -1062,7 +1057,9 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
         bindVertexArray(va);
         if (vb != nullptr)
+        {
             bindBuffer(vb);
+        }
 
         const auto& buffer_layout = vb->layout;
 
@@ -1070,11 +1067,11 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         {
             auto cur_element = buffer_layout.elements.at(i);
             glEnableVertexAttribArray(va->ibuffer_index);
-            //glVertexAttribPointer(va->ibuffer_index, cur_element.elementTypeCount(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (const void*)cur_element.offset);
+            glVertexAttribPointer(va->ibuffer_index, cur_element.elementTypeCount(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (const void*)cur_element.offset);
             va->ibuffer_index++;
         }
 
-        va->buffers.push_back(vb);
+        //va->buffers.push_back(vb);
 
         return false;
     }

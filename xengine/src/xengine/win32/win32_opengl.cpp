@@ -12,8 +12,8 @@ internal void* Win32LoadOpenglProcedure(char *name)
     
     if (ptr == 0 || (ptr == (void*)0x1) || (ptr == (void*)0x2) || (ptr == (void*)0x3) || (ptr == (void*)-1))
     {
-        HMODULE module = LoadLibraryA("opengl32.dll");
-        ptr = (void *)GetProcAddress(module, name);
+        HMODULE moduleLib = LoadLibraryA("opengl32.dll");
+        ptr = (void *)GetProcAddress(moduleLib, name);
     }
 
     return ptr;

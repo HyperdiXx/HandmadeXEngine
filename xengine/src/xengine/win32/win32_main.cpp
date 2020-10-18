@@ -13,9 +13,8 @@
 #include <audioclient.h>
 #include <audiopolicy.h>
 
-#include <gl/gl.h>
+#include "xengine\external\glcorearb.h"
 #include "xengine\external\wglext.h"
-#include "xengine\external\glext.h"
 
 #include "xengine\common.h"
 #include "xengine\math.cpp"

@@ -20,7 +20,6 @@ struct RenderPass
     RenderPassData data;
 };
 
-
 struct GraphicsState
 {
     const Matrix4x4 IDENTITY_MATRIX = createMat4x4();
@@ -40,8 +39,11 @@ struct GraphicsState
     std::unordered_map<const char*, Texture2D> textures;
     std::map<GLchar, Character> characters_map;
 
+    unsigned int VBO, VAO;
+    bool is_inited_triangle = false;
+
     VertexArray quad_vao;
-    //Quad rect_vao;
+    QuadMesh rect_vao;
     SphereMesh sphere_vao;
     CubeMesh cube_vao;
     LineMesh line_vao;
@@ -64,7 +66,8 @@ struct RenderClearTarget
 
 struct RenderCommandMesh
 {
-
+    GeometryMesh *ptr;
+    MaterialInstance *mat_ptr;
 };
 
 struct RenderCommandLine
@@ -113,6 +116,25 @@ private:
     uint32 command_count = 0;
 };
 
+class MeshFactory
+{
+public:
+
+    MeshFactory() = default;
+    ~MeshFactory() {};
+    
+    Array<real32> *createArrayOfVertices(GeometryType type);
+private:
+    
+    void addCubePrimitive();
+
+private:
+    std::unordered_map<uint32, Array<real32>> primitive_vertices;
+    std::unordered_map<uint32, Array<uint32>> primitive_indices;
+    
+    mutable bool32 is_init;
+};
+
 class Render
 {
 public:
@@ -149,9 +171,6 @@ public:
      
     global Shader *getShader(const char* name);
     global Texture2D *getTexture2DResource(const char* name);
-
-    global Camera2DComponent& getCamera2D();
-    global Camera3DComponent& getCamera3D();
 
     global bool32 createQuad();
 
@@ -195,6 +214,8 @@ public:
 
     global void drawCube(Texture2D *texture_diff);
     global void drawCube();
+
+    global void drawTriangle();
 
     global void drawLine(Entity *ent);
 

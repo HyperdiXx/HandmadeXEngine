@@ -6,41 +6,13 @@
 
 global GraphicsState graphics_state = {};
 global RenderCommandQueue render_queue = {};
+global MeshFactory mesh_factory = {};
+global GPUResourceHandler gpu_data = {};
 
-internal
-Vec3 convertToVec3(Color3RGB color)
+internal GraphicsDevice *getGDevice()
 {
-    return createVec3(color.x, color.y, color.z);
+    return graphics_state.graphics_device;
 }
-
-internal
-Vec4 convertToVec4(Color4RGBA color)
-{
-    return createVec4(color.x, color.y, color.z, color.a);
-}
-
-internal
-Vec4 convertToVec4(Color3RGB color)
-{
-
-}
-
-/*internal Camera2DComponent& getCamera2D()
-{
-    static Camera2DComponent camera2D;
-
-    Viewport vp = graphics_state.graphics_device->getViewport();
-    camera2D.width = vp.width;
-    camera2D.height = vp.height;
-
-    return camera2D;
-}
-
-internal Camera3DComponent& getCamera3D()
-{
-    static xe_ecs::Camera3DComponent camera3D;
-    return camera3D;
-};*/
 
 void Render::setDevice(GraphicsDevice *device)
 {
@@ -72,20 +44,180 @@ Texture2D *Render::getTexture2DResource(const char *name)
     return &graphics_state.textures[name];
 }
 
+internal Camera2D& getCamera2D()
+{
+    global Camera2D camera_2d = {};
+
+    if (!camera_2d.is_inited)
+    {
+        Viewport vp = getGDevice()->getViewport();
+        camera_2d.width = vp.width;
+        camera_2d.height = vp.height;
+    }
+
+    return camera_2d;
+}
+
+internal Camera3D& getCamera3D()
+{
+    global Camera3D camera_3d = {};
+
+    if (!camera_3d.is_inited)
+    {
+        Viewport vp = getGDevice()->getViewport();
+        //camera_3d.aspect_ratio = vp.width / vp.height;
+        camera_3d.aspect_ratio = real32(1280.0f / 720.0f);
+    }
+
+    return camera_3d;
+}
+
+internal
+void initGPUResourceHandler()
+{
+    gpu_data.vb_handler = createDynArray<VertexBuffer>();
+    gpu_data.ib_handler = createDynArray<IndexBuffer>();
+    gpu_data.va_handler = createDynArray<VertexArray>();    
+}
+
+internal 
+void addVBHandler(const VertexBuffer vb)
+{
+    gpu_data.vb_handler.push_back(vb);
+}
+
+internal
+void addIBHandler(const IndexBuffer ib)
+{
+    gpu_data.ib_handler.push_back(ib);
+}
+
+internal
+void addVAHandler(const VertexArray va)
+{
+    gpu_data.va_handler.push_back(va);
+}
+
+internal
+Vec3 convertToVec3(Color3RGB color)
+{
+    return createVec3(color.x, color.y, color.z);
+}
+
+internal
+Vec4 convertToVec4(Color4RGBA color)
+{
+    return createVec4(color.x, color.y, color.z, color.a);
+}
+
+internal
+Vec4 convertToVec4(Color3RGB color)
+{
+    return createVec4(color.x, color.y, color.z, 1.0f);
+}
+
+void MeshFactory::addCubePrimitive()
+{
+    global real32 cube_primitive_vertices[] =
+    {
+        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+        -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f,
+
+        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+
+        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+        -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+
+         1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+         1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+         1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+         1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+
+        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f,
+         1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
+         1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f,
+        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
+
+        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
+         1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
+         1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
+        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f
+    };
+
+    uint32 count = ArrayCount(cube_primitive_vertices);
+    Array<real32> cube_data = createArray(cube_primitive_vertices, count);
+
+    primitive_vertices[1] = cube_data;
+}
+
+Array<real32> *MeshFactory::createArrayOfVertices(GeometryType type)
+{
+    if (!is_init)
+    {        
+        addCubePrimitive();
+
+        is_init = true;
+    }
+
+    Array<real32> *data = nullptr;
+
+    data = &primitive_vertices[type];
+
+    return data;
+}
+
+internal 
+void setupCameras()
+{
+    Camera2D &camera2D = getCamera2D();
+    Camera3D &camera3D = getCamera3D();
+
+    
+        
+}
+
 void Render::init(ApiType type)
 {
+    GraphicsDevice *device = getGDevice();
+
     switch (type)
     {
     case ApiType::OPENGL:
     {
-        graphics_state.graphics_device = new GraphicsDeviceGL();
+        LoadAllOpenGLProcedures();
+        device = new GraphicsDeviceGL();
+        setDevice(device);
     } break;
     default:
         break;
     }
+        
+    const char *gl_vendor = (char*)glGetString(GL_VENDOR);
+    const char *gl_renderer = (char*)glGetString(GL_RENDERER);
+    const char *gl_version = (char*)glGetString(GL_VERSION);
 
     loadShaders();
     loadFreeTextures();
+    setupCameras();
 };
 
 /*bool32 Render::loadFont(const char *path)
@@ -210,6 +342,8 @@ bool32 Render::loadShaders()
     Shader simple_color = {};
     Shader anim_model = {};
 
+    Shader triangle = {};
+
     Shader lines = {};
 
     std::string shader_names[8] = {};
@@ -238,7 +372,7 @@ bool32 Render::loadShaders()
     res |= graphics_state.graphics_device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
     res |= graphics_state.graphics_device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
     res |= graphics_state.graphics_device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/water.fs", &water);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/Quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
+    res |= graphics_state.graphics_device->createShader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
     res |= graphics_state.graphics_device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
     res |= graphics_state.graphics_device->createShader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
     res |= graphics_state.graphics_device->createShader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
@@ -251,7 +385,7 @@ bool32 Render::loadShaders()
     res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
     res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
     res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
-
+    res |= graphics_state.graphics_device->createShader("shaders/glsl/triangle.vs", "shaders/glsl/triangle.fs", &triangle);
 #endif
 
 #ifdef GAPI_DX11
@@ -280,6 +414,7 @@ bool32 Render::loadShaders()
     addShader("irradiance", irradiance_shader);
     addShader("water", water);
     addShader("skeletal_animation", anim_model);
+    addShader("triangle", triangle);
 
     if (!res)
     {
@@ -1150,75 +1285,73 @@ bool32 Render::createSphere(SphereMesh *sphre)
 
 bool32 Render::createCube(CubeMesh *cube)
 {
-    real32 data[] =
+    Render::pushCommand([=]()
     {
-        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
-         1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f,
-         1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f,
+        Array<real32> *data = mesh_factory.createArrayOfVertices(GeometryType::CUBE_MESH);
 
-        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+        cube->vertex_array = alloc_mem VertexArray();
+        cube->vertex_array->buffers.push_back(alloc_mem VertexBuffer());
 
-        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
-        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+        GraphicsDevice *device = getGDevice();
 
-         1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
-         1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+        device->createVertexArray(cube->vertex_array);
+        device->bindVertexArray(cube->vertex_array);
 
-        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f,
-         1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f,
-        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
+        device->createVertexBuffer(data->begin(), data->size() * sizeof(real32), DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
 
-        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
-         1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
-         1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f
-    };
+        BufferLayout buffer_layout = {};
 
-    cube->vertex_array = new VertexArray();
-    cube->vertex_array->buffers.push_back(new VertexBuffer());
+        std::initializer_list<BufferElement> init_list =
+        {
+            { "aPos",       ElementType::Float3, },
+            { "aNormal",    ElementType::Float3, },
+            { "aUV",        ElementType::Float2, }
+        };
 
-    /*graphics_state.graphics_state.graphics_device->createVertexArray(cube->vertex_array);
-    graphics_state.graphics_state.graphics_device->bindVertexArray(cube->vertex_array);
-
-    uint32 size = sizeof(data) / sizeof(data[0]);
-
-    graphics_state.graphics_state.graphics_device->createVertexBuffer(&data[0], size * sizeof(real32), DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
-
-    BufferLayout buffer_layout = {};
-
-    std::initializer_list<BufferElement> init_list =
-    {
-        { "aPos",       ElementType::Float3, },
-        { "aNormal",    ElementType::Float3, },
-        { "aUV",        ElementType::Float2, }
-    };
-
-    graphics_state.graphics_state.graphics_device->createBufferLayout(init_list, &buffer_layout);
-    graphics_state.graphics_state.graphics_device->setVertexBufferLayout(cube->vertex_array->buffers[0], &buffer_layout);
-    graphics_state.graphics_state.graphics_device->addVertexBuffer(cube->vertex_array, cube->vertex_array->buffers[0]);*/
-
+        device->createBufferLayout(init_list, &buffer_layout);
+        device->setVertexBufferLayout(cube->vertex_array->buffers[0], &buffer_layout);
+        device->addVertexBuffer(cube->vertex_array, cube->vertex_array->buffers[0]);
+    });
+    
     return true;
+}
+
+void Render::drawTriangle()
+{    
+    if (!graphics_state.is_inited_triangle)
+    {
+        Render::pushCommand([=]()
+        {
+            float vertices[] = {
+             -0.5f, -0.5f, 0.0f, // left  
+             0.5f, -0.5f, 0.0f,  // right 
+             0.0f,  0.5f, 0.0f   // top   
+            };
+
+            glGenVertexArrays(1, &graphics_state.VAO);
+            glGenBuffers(1, &graphics_state.VBO);
+
+            glBindVertexArray(graphics_state.VAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, graphics_state.VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
+        });
+
+        graphics_state.is_inited_triangle = true;
+    }
+
+    Render::pushCommand([=]()
+    {
+        glUseProgram(63);
+        glBindVertexArray(graphics_state.VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    });
 }
 
 void Render::drawFullquad()
@@ -1761,15 +1894,43 @@ void Render::drawCube(Texture2D *texture_diff)
 }
 
 void Render::drawCube()
-{
+{ 
     if (!graphics_state.cube_vao.vertex_array)
     {
         createCube(&graphics_state.cube_vao);
     }
+    
+    Render::pushCommand([=]()
+    {
+        GraphicsDevice *device = getGDevice();
+        Shader *shd = getShader("color");
+        shd->id = 27;
+        Camera3D &camera = getCamera3D();
 
-    graphics_state.graphics_device->bindVertexArray(graphics_state.cube_vao.vertex_array);
-    graphics_state.graphics_device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
-    graphics_state.graphics_device->unbindVertexArray();
+        Matrix4x4 model_matrix = graphics_state.IDENTITY_MATRIX;
+
+        Vec3 positionTest = createVec3(0.0f, 0.0f, -150.0f);
+        Vec3 scaleTest = createVec3(10.0f, 10.0f, 10.0f);
+
+        translateMat(model_matrix, positionTest);
+        scaleMat(model_matrix, scaleTest);
+
+        // view matrix is broken
+        Matrix4x4 view_matrix = createMat4x4();
+        Matrix4x4 proj_matrix = camera.getProjectionMatrix();
+        
+        Matrix4x4 mvp = proj_matrix * view_matrix * model_matrix;
+
+        device->bindShader(shd);
+        device->setVec3("color", createVec3(1.0f, 0.0f, 0.0f), shd);
+
+        device->setMat4("mvp", mvp, shd);
+        device->setMat4("model", model_matrix, shd);
+
+        device->bindVertexArray(graphics_state.cube_vao.vertex_array);
+        device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
+        device->unbindVertexArray();
+    });    
 }
 
 void Render::drawLine(Entity *ent)

@@ -2,13 +2,11 @@
 #define GL_LOADER_H
 
 #if PLATFORM_WINDOWS
-#include <windows.h>
-#include <gl/gl.h>
-#include "external/wglext.h"
+#include "external\glcorearb.h"
+#include "external\wglext.h"
 #else
 #error "OpenGL not supported on this platform!"
 #endif
-#include "external/glext.h"
 
 #define GLProc(name, type) PFNGL##type##PROC gl##name = 0;
 #include "opengl_functions.inc"

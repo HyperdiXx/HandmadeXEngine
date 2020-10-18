@@ -36,4 +36,11 @@ typedef double real64;
 #define global static
 #define internal static
 
+#define ArrayCount(a) (sizeof(a) / sizeof((a)[0]))
+#define Bytes(n)      (n)
+#define Kilobytes(n)  (n << 10)
+#define Megabytes(n)  (n << 20)
+#define Gigabytes(n)  (((u64)n) << 30)
+#define Terabytes(n)  (((u64)n) << 40)
+
 #endif // !COMMON_H

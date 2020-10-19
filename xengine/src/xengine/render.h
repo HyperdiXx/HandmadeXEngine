@@ -24,6 +24,8 @@ struct GraphicsState
 {
     const Matrix4x4 IDENTITY_MATRIX = createMat4x4();
     
+    Viewport vp = {};
+
     Vec3  default_text_color = createVec3(1.0f, 1.0f, 1.0f);
     Vec3  default_cube_color = createVec3(0.0f, 1.0f, 0.0f);
     Vec4  default_line_color = createVec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -35,8 +37,8 @@ struct GraphicsState
 
     bool32 enable_shadows = false;
 
-    std::unordered_map<const char*, Shader> shaders;
-    std::unordered_map<const char*, Texture2D> textures;
+    std::unordered_map<std::string, Shader> shaders;
+    std::unordered_map<std::string, Texture2D> textures;
     std::map<GLchar, Character> characters_map;
 
     unsigned int VBO, VAO;
@@ -157,6 +159,7 @@ public:
     global bool32 loadShaders();
     global bool32 loadFreeTextures();
 
+    global void viewport(int32 w, int32 h);
     global void clear(uint32 flags);
     global void clearColor(real32 x, real32 y, real32 z, real32 a);
 
@@ -265,8 +268,8 @@ public:
 
     global void endFrame();
 
-    global void addShader(const char *ac_name, Shader shr);
-    global void addTexture(const char *ac_name, Texture2D tex);
+    global void addShader(const std::string &ac_name, Shader shr);
+    global void addTexture(const std::string &ac_name, Texture2D tex);
 
     template<typename T>
     global void pushCommand(T&& func)

@@ -31,7 +31,7 @@ internal void GameUpdateWin32(win32_game_code *app_code)
 {
     //FILETIME last_write_time = W32_GetLastWriteTime(global_app_dll_path);
     //if (CompareFileTime(&last_write_time, &app_code->last_dll_write_time))
-   // {
+    //{
         //app_code->HotUnload();
         //W32_AppCodeUnload(app_code);
         //W32_AppCodeLoad(app_code);

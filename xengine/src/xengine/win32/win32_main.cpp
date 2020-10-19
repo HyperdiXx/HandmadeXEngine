@@ -34,6 +34,7 @@
 global bool is_closed = false;
 global PlatformState global_state = {};
 global HDC global_device_context = {};
+global HWND window_handle = {};
 
 LRESULT CALLBACK win32_win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -67,6 +68,26 @@ parseFile()
         ++file_content;
     }
 }*/
+
+internal void
+Win32UpdateWindowRect()
+{
+    RECT client_rect = {};
+    GetClientRect(window_handle, &client_rect);
+    
+    uint32 width = client_rect.right - client_rect.left;
+    uint32 height = client_rect.bottom - client_rect.top;
+
+    WindowOptions &options = global_state.options.window_options;
+
+    if (options.window_width != width || options.window_height != height)
+    {
+        options.window_width = width;
+        options.window_height = height;
+
+        options.resized = true;
+    }
+}
 
 int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
@@ -107,7 +128,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         DEBUG_LOG("Failed to register window!!!\n");
     }
 
-    HWND window_handle = CreateWindowEx(0, window_class.lpszClassName,
+    window_handle = CreateWindowEx(0, window_class.lpszClassName,
         "Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         DEFAULT_WINDOW_WIDTH,
@@ -253,17 +274,7 @@ win32_win_proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
     } break;
     case WM_SIZE:
     {
-        /*WINDOW_WIDTH_SIZE = LOWORD(l_param);
-        WINDOW_HEIGHT_SIZE = HIWORD(l_param);
-
-        xe_graphics::graphics_device *device = xe_render::get_device();
-        if (device)
-        {
-            device->set_viewport(0, 0, WINDOW_WIDTH_SIZE, WINDOW_HEIGHT_SIZE);
-            xe_graphics::viewport &vp_state = device->get_viewport();
-            vp_state.width = WINDOW_WIDTH_SIZE;
-            vp_state.height = WINDOW_HEIGHT_SIZE;
-        }*/
+        Win32UpdateWindowRect();
 
         OutputDebugStringA("Resizing window\n");
     } break;

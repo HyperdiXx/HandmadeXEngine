@@ -204,7 +204,7 @@ void Render::init(ApiType type)
     case ApiType::OPENGL:
     {
         LoadAllOpenGLProcedures();
-        device = new GraphicsDeviceGL();
+        device = alloc_mem GraphicsDeviceGL();
         setDevice(device);
     } break;
     default:
@@ -308,13 +308,13 @@ void Render::init(ApiType type)
     return true;
 }*/
 
-void Render::addShader(const char *ac_name, Shader shr)
+void Render::addShader(const std::string &ac_name, Shader shr)
 {
     shr.name = ac_name;
     graphics_state.shaders[ac_name] = shr;
 }
 
-void Render::addTexture(const char *ac_name, Texture2D tex)
+void Render::addTexture(const std::string &ac_name, Texture2D tex)
 {
     tex.name = ac_name;
     graphics_state.textures[ac_name] = tex;
@@ -675,6 +675,18 @@ bool32 Render::initCommonGpuResources()
     return true;
 }
 
+void Render::viewport(int32 w, int32 h)
+{
+    Viewport &vp = graphics_state.vp;
+    vp.width = w;
+    vp.height = h;
+     
+    Render::pushCommand([=]()
+    {
+        graphics_state.graphics_device->setViewport(0, 0, w, h);
+    });
+}
+
 void Render::clear(uint32 flags)
 {
     Render::pushCommand([=]() 
@@ -696,7 +708,7 @@ void Render::shutdown()
 {
     // @Clear destroy free textures
 
-    std::unordered_map<const char*, Texture2D>::iterator it = graphics_state.textures.begin();
+    std::unordered_map<std::string, Texture2D>::iterator it = graphics_state.textures.begin();
     for (uint32 i = 0; i < graphics_state.textures.size(); ++i)
     {
         graphics_state.graphics_device->destroyTexture2D(&it->second);
@@ -1904,12 +1916,11 @@ void Render::drawCube()
     {
         GraphicsDevice *device = getGDevice();
         Shader *shd = getShader("color");
-        shd->id = 27;
         Camera3D &camera = getCamera3D();
 
         Matrix4x4 model_matrix = graphics_state.IDENTITY_MATRIX;
 
-        Vec3 positionTest = createVec3(0.0f, 0.0f, -150.0f);
+        Vec3 positionTest = createVec3(0.0f, 0.0f, -350.0f);
         Vec3 scaleTest = createVec3(10.0f, 10.0f, 10.0f);
 
         translateMat(model_matrix, positionTest);

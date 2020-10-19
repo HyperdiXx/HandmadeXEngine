@@ -9,6 +9,7 @@
 #include <iostream>
 #include <assert.h>
 #include <fstream>
+#include <math.h>
 
 // Remove 
 #include <vector>
@@ -42,5 +43,7 @@ typedef double real64;
 #define Megabytes(n)  (n << 20)
 #define Gigabytes(n)  (((u64)n) << 30)
 #define Terabytes(n)  (((u64)n) << 40)
+
+#define Max(a, b) (a > b ? a : b)
 
 #endif // !COMMON_H

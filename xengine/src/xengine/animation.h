@@ -3,9 +3,6 @@
 #ifndef SKELETAL_ANIMATION_H
 #define SKELETAL_ANIMATION_H
 
-#include "xenpch.h"
-#include "xe_types.h"
-
 #include <assimp/include/assimp/Importer.hpp>
 #include <assimp/include/assimp/scene.h>
 #include <assimp/include/assimp/postprocess.h>
@@ -88,6 +85,17 @@ namespace xe_animation
         std::vector<glm::mat4> bone_transformation;
     };
 
+    struct AnimationInfo
+    {
+        std::string name;
+        float duration = 0.0f;
+        float animation_speed = 0.75f;
+        float animation_time = 0.0f;
+        float ticks_per_second = 0.0f;
+
+        bool is_playing = true;
+    };
+
     class Animation
     {
     public:
@@ -99,13 +107,7 @@ namespace xe_animation
     public:
         std::vector<AnimNode*> anim_tracks;
     private:
-        std::string name;
-        float duration = 0.0f;
-        float animation_speed = 0.75f;
-        float animation_time = 0.0f;
-        float ticks_per_second = 0.0f;
-
-        bool is_playing = true;
+        AnimationInfo info;        
     };
 
     class AnimModel
@@ -150,6 +152,15 @@ namespace xe_animation
         Animation* active_animation;
         std::vector<Animation*> animation_list;        
         Skeleton skelet;
+    };
+
+    class AnimationPlayer
+    {
+    public:
+
+    private:
+        Animation *active_animation;
+        AnimModel *anim_model;
     };
 }
 

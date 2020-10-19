@@ -2,14 +2,17 @@
 #define APP_CPP
 
 #include "xengine\common.h"
+#include "xengine\config.h"
+
+#include "xengine\math.cpp"
+#include "xengine\containers.cpp"
+
 #include "app_state.h"
+#include "game_state.h"
+
 #include "xengine\utility.h"
 #include "xengine\parser.h"
 #include "xengine\opengl_loader.h"
-#include "xengine\config.h"
-#include "xengine\containers.cpp"
-#include "xengine\math.cpp"
-
 #include "xengine\core.h"
 #include "xengine\graphics_res_desc.h"
 #include "xengine\graphics_resource.h"
@@ -17,8 +20,6 @@
 #include "xengine\layer.h"
 #include "xengine\ecs.h"
 #include "xengine\render.h"
-
-#include "layers.h"
 #include "xengine\memory.h"
 
 #include "xengine\core.cpp"
@@ -35,10 +36,15 @@
     #include "xengine\graphics_device_gl.cpp"
 #endif
 
-#include "layers.cpp"
 #include "xengine\render.cpp"
 #include "xengine\memory.cpp"
 #include "xengine\ecs.cpp"
+
+#include "layers.h"
+#include "layers.cpp"
+
+#include "game_state.cpp"
+
 
 global MemoryArena arena;
 global DynArray<LayerTest> layersTest;
@@ -147,12 +153,21 @@ APP_LOAD_DATA
 
 APP_UPDATE
 {
+    WindowOptions &win_options = platform_state->options.window_options;
+
+    if (win_options.resized)
+    {
+        Render::viewport(win_options.window_width, win_options.window_height);
+
+        win_options.resized = false;
+    }
+
     Render::clearColor(0.7f, 0.7f, 0.9f, 1.0f);
     Render::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Render::drawCube();
+    //Render::drawCube();
 
-    //Render::drawTriangle();
+    Render::drawTriangle();
 
     // Update Layers
 
@@ -163,8 +178,6 @@ APP_UPDATE
     //}
 
     Render::executeCommands();
-
-    //os->RefreshScreen();
 }
 
 #endif

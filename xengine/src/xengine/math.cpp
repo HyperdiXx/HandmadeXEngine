@@ -4,8 +4,6 @@
 #ifndef MATH_CPP
 #define MATH_CPP
 
-#include <math.h>
-
 #define PI 					3.1415926535897932f	
 #define SMALL_NUMBER		1.e-8f
 #define DELTA			    0.00001f

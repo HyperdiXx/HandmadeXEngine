@@ -2,13 +2,21 @@
 #ifndef APP_STATE_H
 #define APP_STATE_H
 
-struct AppOptions
+struct WindowOptions
 {
-    volatile bool32 quit;
+    uint32 window_width;
+    uint32 window_height;
+
+    bool32 resized;
     bool32 vsync;
     bool32 fullscreen;
-    uint32 window_size_x;
-    uint32 window_size_y;
+};
+
+struct AppOptions
+{
+    WindowOptions window_options;
+
+    volatile bool32 quit;
     real32 current_time;
     real32 target_frames_per_second;
     bool32 wait_for_events_to_update;
@@ -70,53 +78,4 @@ internal void GameLoadStub(PlatformState *_) {}
 #define APP_UPDATE GAME_ENTRY_POINT void GameUpdate() 
 typedef void GameUpdateCallback(void);
 internal void GameUpdateStub(void) {}
-
-struct ClockState
-{
-    real32 delta_time;
-    real32 last_frame = 0.0f;
-    real32 start_time = 0;
-    uint32 frames_elapsed = 0;
-    uint32 fps = 0;
-};
-
-struct ApplicationState
-{
-    //xe_scene::LoadedObjects cachedObjects;
-
-    //layer::GUILayer guiLayer = {};
-
-    //std::vector<xe_ecs::Entity> entities;
-    //xe_scene::Scene active_scene;
-
-    real32 delta_time;
-    real32 last_frame = 0.0f;
-    real32 start_time = 0;
-    uint32 frames_elapsed = 0;
-    uint32 fps = 0;
-
-    bool32 debug_render = false;
-
-    bool32 activate_gizmo = false;
-    int gizmo_mode = -1;
-};
-
-inline ApplicationState *getAppState();
-
-//internal void setActiveScene(xe_scene::Scene *sc);
-
-    // @Rework init by parsing 
-//internal void loadTestScene(xe_scene::Scene *sc);
-//internal void loadSpheresScene(xe_scene::Scene *sc);
-
-internal void loadState();
-
-//inline std::vector<xe_ecs::Entity*> &getEntities();
-
-//inline xe_ecs::Entity *getEntity();
-//inline xe_ecs::Entity *getEntityByType(xe_ecs::ENTITY_TYPE type);
-
-internal void pushEmptyEntity();
-internal void gameSubmitRenderPasses(real32 dt);
-
 #endif

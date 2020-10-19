@@ -29,15 +29,15 @@ struct Color4RGBA
 struct Texture2D
 {
     GPUHandler id;
+    TextureDesc desc;    
+    std::string name;
     bool32 is_valid;
-    TextureDesc desc;
-    const char* name;
 };
 
 struct Shader
 {
     GPUHandler id;
-    const char* name;
+    std::string name;
 };
 
 struct Index

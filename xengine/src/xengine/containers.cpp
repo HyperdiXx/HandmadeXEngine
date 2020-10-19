@@ -139,7 +139,7 @@ template <class T> void DynArray<T>::init(void* (*allocFunc) (int) = 0, void (*f
 
 template <class T> void DynArray<T>::reserve(uint32 size)
 {
-    capacity = max(size, capacity);
+    capacity = Max(size, capacity);
 }
 
 template <class T> void DynArray<T>::push_back(T new_element)

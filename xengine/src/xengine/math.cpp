@@ -196,7 +196,6 @@ inline Vec3 createVec3(real32 x, real32 y, real32 z)
     return res;
 }
 
-
 inline Vec3 createVec3(const Vec3 &vec)
 {
     Vec3 res = {};
@@ -352,10 +351,7 @@ struct Matrix4x4
     {
         struct
         {
-            Vec4 row1;
-            Vec4 row2;
-            Vec4 row3;
-            Vec4 row4;
+            Vec4 rows[4];           
         };
 
         real32 data[16];
@@ -374,6 +370,20 @@ struct Matrix3x3
         };
 
         real32 data[9];
+    };
+};
+
+struct Matrix2x2
+{
+    union
+    {
+        struct
+        {
+            Vec4 row1;
+            Vec4 row2;
+        };
+
+        real32 data[4];
     };
 };
 
@@ -498,23 +508,198 @@ inline Matrix4x4 operator*(Matrix4x4 &a, Matrix4x4 &b)
     return res;
 }
 
-inline void translateMat(Matrix4x4 &mat, const Vec3 &translation)
+inline Vec3 operator*(Matrix4x4 &a, Vec3 &b)
+{
+    Vec3 res = {};
+
+    res.x = a.rows[0].x * b.x + a.rows[0].y * b.y + a.rows[0].z * b.z;
+    res.y = a.rows[1].x * b.x + a.rows[1].y * b.y + a.rows[1].z * b.z;
+    res.z = a.rows[2].x * b.x + a.rows[2].y * b.y + a.rows[2].z * b.z;
+    
+    return res;
+}
+
+
+inline Vec4 operator*(Matrix4x4 &a, Vec4 &b)
+{
+    Vec4 res = {};
+
+    res.x = a.rows[0].x * b.x + a.rows[0].y * b.y + a.rows[0].z * b.z + a.rows[0].w * b.w;
+    res.y = a.rows[1].x * b.x + a.rows[1].y * b.y + a.rows[1].z * b.z + a.rows[1].w * b.w;
+    res.z = a.rows[2].x * b.x + a.rows[2].y * b.y + a.rows[2].z * b.z + a.rows[2].w * b.w;
+    res.z = a.rows[3].x * b.x + a.rows[3].y * b.y + a.rows[3].z * b.z + a.rows[3].w * b.w;
+    
+    return res;
+}
+
+inline 
+void translateMat(Matrix4x4 &mat, const Vec3 &translation)
 {
     mat.data[3] = translation.x;
     mat.data[3 + 1 * 4] = translation.y;
     mat.data[3 + 2 * 4] = translation.z;
 }
 
-inline void scaleMat(Matrix4x4 &mat, const Vec3 &scale)
+inline 
+void scaleMat(Matrix4x4 &mat, const Vec3 &scale)
 {
     mat.data[0 + 0 * 4] = scale.x;
     mat.data[1 + 1 * 4] = scale.y;
     mat.data[2 + 2 * 4] = scale.z;
 }
 
-inline void rotateMat(Matrix4x4 &mat, const Vec3 &axis, const real32 angle)
+inline 
+void rotateMat(Matrix4x4 &mat, const Vec3 &axis, const real32 angle)
 {
 
+}
+
+inline Matrix4x4 inverseMat(Matrix4x4 &mat)
+{
+    Matrix4x4 res = createMat4x4();
+
+    res.data[0] = mat.data[5] * mat.data[10] * mat.data[15] -
+                  mat.data[5] * mat.data[11] * mat.data[14] -
+                  mat.data[9] * mat.data[6] * mat.data[15] +
+                  mat.data[9] * mat.data[7] * mat.data[14] +
+                  mat.data[13] * mat.data[6] * mat.data[11] -
+                  mat.data[13] * mat.data[7] * mat.data[10];
+
+    res.data[4] = -mat.data[4] * mat.data[10] * mat.data[15] +
+                   mat.data[4] * mat.data[11] * mat.data[14] +
+                   mat.data[8] * mat.data[6] * mat.data[15] -
+                   mat.data[8] * mat.data[7] * mat.data[14] -
+                   mat.data[12] * mat.data[6] * mat.data[11] +
+                   mat.data[12] * mat.data[7] * mat.data[10];
+
+    res.data[8] = mat.data[4] * mat.data[9] * mat.data[15] -
+                  mat.data[4] * mat.data[11] * mat.data[13] -
+                  mat.data[8] * mat.data[5] * mat.data[15] +
+                  mat.data[8] * mat.data[7] * mat.data[13] +
+                  mat.data[12] * mat.data[5] * mat.data[11] -
+                  mat.data[12] * mat.data[7] * mat.data[9];
+
+    res.data[12] = -mat.data[4] * mat.data[9] * mat.data[14] +
+                    mat.data[4] * mat.data[10] * mat.data[13] +
+                    mat.data[8] * mat.data[5] * mat.data[14] -
+                    mat.data[8] * mat.data[6] * mat.data[13] -
+                    mat.data[12] * mat.data[5] * mat.data[10] +
+                    mat.data[12] * mat.data[6] * mat.data[9];
+
+    res.data[1] = -mat.data[1] * mat.data[10] * mat.data[15] +
+                  mat.data[1] * mat.data[11] * mat.data[14] +
+                  mat.data[9] * mat.data[2] * mat.data[15] -
+                  mat.data[9] * mat.data[3] * mat.data[14] -
+                  mat.data[13] * mat.data[2] * mat.data[11] +
+                  mat.data[13] * mat.data[3] * mat.data[10];
+
+    res.data[5] = mat.data[0] * mat.data[10] * mat.data[15] -
+                  mat.data[0] * mat.data[11] * mat.data[14] -
+                  mat.data[8] * mat.data[2] * mat.data[15] +
+                  mat.data[8] * mat.data[3] * mat.data[14] +
+                  mat.data[12] * mat.data[2] * mat.data[11] -
+                  mat.data[12] * mat.data[3] * mat.data[10];
+
+    res.data[9] = -mat.data[0] * mat.data[9] * mat.data[15] +
+                   mat.data[0] * mat.data[11] * mat.data[13] +
+                   mat.data[8] * mat.data[1] * mat.data[15] -
+                   mat.data[8] * mat.data[3] * mat.data[13] -
+                   mat.data[12] * mat.data[1] * mat.data[11] +
+                   mat.data[12] * mat.data[3] * mat.data[9];
+
+    res.data[13] = mat.data[0] * mat.data[9] * mat.data[14] -
+                   mat.data[0] * mat.data[10] * mat.data[13] -
+                   mat.data[8] * mat.data[1] * mat.data[14] +
+                   mat.data[8] * mat.data[2] * mat.data[13] +
+                   mat.data[12] * mat.data[1] * mat.data[10] -
+                   mat.data[12] * mat.data[2] * mat.data[9];
+
+    res.data[2] = mat.data[1] * mat.data[6] * mat.data[15] -
+                  mat.data[1] * mat.data[7] * mat.data[14] -
+                  mat.data[5] * mat.data[2] * mat.data[15] +
+                  mat.data[5] * mat.data[3] * mat.data[14] +
+                  mat.data[13] * mat.data[2] * mat.data[7] -
+                  mat.data[13] * mat.data[3] * mat.data[6];
+
+    res.data[6] = -mat.data[0] * mat.data[6] * mat.data[15] +
+                  mat.data[0] * mat.data[7] * mat.data[14] +
+                  mat.data[4] * mat.data[2] * mat.data[15] -
+                  mat.data[4] * mat.data[3] * mat.data[14] -
+                  mat.data[12] * mat.data[2] * mat.data[7] +
+                  mat.data[12] * mat.data[3] * mat.data[6];
+
+    res.data[10] = mat.data[0] * mat.data[5] * mat.data[15] -
+                   mat.data[0] * mat.data[7] * mat.data[13] -
+                   mat.data[4] * mat.data[1] * mat.data[15] +
+                   mat.data[4] * mat.data[3] * mat.data[13] +
+                   mat.data[12] * mat.data[1] * mat.data[7] -
+                   mat.data[12] * mat.data[3] * mat.data[5];
+
+    res.data[14] = -mat.data[0] * mat.data[5] * mat.data[14] +
+                    mat.data[0] * mat.data[6] * mat.data[13] +
+                    mat.data[4] * mat.data[1] * mat.data[14] -
+                    mat.data[4] * mat.data[2] * mat.data[13] -
+                    mat.data[12] * mat.data[1] * mat.data[6] +
+                    mat.data[12] * mat.data[2] * mat.data[5];
+
+    res.data[3] = -mat.data[1] * mat.data[6] * mat.data[11] +
+                    mat.data[1] * mat.data[7] * mat.data[10] +
+                    mat.data[5] * mat.data[2] * mat.data[11] -
+                    mat.data[5] * mat.data[3] * mat.data[10] -
+                    mat.data[9] * mat.data[2] * mat.data[7] +
+                    mat.data[9] * mat.data[3] * mat.data[6];
+
+    res.data[7] = mat.data[0] * mat.data[6] * mat.data[11] -
+                    mat.data[0] * mat.data[7] * mat.data[10] -
+                    mat.data[4] * mat.data[2] * mat.data[11] +
+                    mat.data[4] * mat.data[3] * mat.data[10] +
+                    mat.data[8] * mat.data[2] * mat.data[7] -
+                    mat.data[8] * mat.data[3] * mat.data[6];
+
+    res.data[11] = -mat.data[0] * mat.data[5] * mat.data[11] +
+                    mat.data[0] * mat.data[7] * mat.data[9] +
+                    mat.data[4] * mat.data[1] * mat.data[11] -
+                    mat.data[4] * mat.data[3] * mat.data[9] -
+                    mat.data[8] * mat.data[1] * mat.data[7] +
+                    mat.data[8] * mat.data[3] * mat.data[5];
+
+    res.data[15] = mat.data[0] * mat.data[5] * mat.data[10] -
+                    mat.data[0] * mat.data[6] * mat.data[9] -
+                    mat.data[4] * mat.data[1] * mat.data[10] +
+                    mat.data[4] * mat.data[2] * mat.data[9] +
+                    mat.data[8] * mat.data[1] * mat.data[6] -
+                    mat.data[8] * mat.data[2] * mat.data[5];
+
+    real32 determinant = mat.data[0] * res.data[0] + mat.data[1] * res.data[4] + mat.data[2] * res.data[8] + mat.data[3] * res.data[12];
+    determinant = 1.0f / determinant;
+
+    for (uint32 i = 0; i < 16; i++)
+    {
+        mat.data[i] = res.data[i] * determinant;
+    }
+
+    return res;
+}
+
+inline void invertMat(Matrix4x4 &mat)
+{
+   
+}
+
+inline 
+Matrix4x4 orthoMat(real32 left, real32 right, real32 top, real32 bottom, real32 near, real32 far)
+{
+    Matrix4x4 res = createMat4x4();
+
+    res.data[0 + 0 * 4] = 2.0f / (right - left);
+    res.data[1 + 1 * 4] = 2.0f / (top - bottom);
+    res.data[2 + 2 * 4] = 2.0f / (near - far);
+
+    res.data[0 + 3 * 4] = (left + right) / (left - right);
+    res.data[1 + 3 * 4] = (bottom + top) / (bottom - top);
+    res.data[2 + 3 * 4] = (far + near) / (far - near);
+
+    return res;
 }
 
 inline

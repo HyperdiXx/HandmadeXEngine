@@ -42,25 +42,25 @@ struct Shader
 
 struct Index
 {
-    GPUHandler v1, v2, v3;
+    uint32 v1, v2, v3;
 };
 
 struct IndexBuffer
 {
     GPUHandler id;
-    GPUHandler count;
-    GPUHandler *index_data;
+    uint32 count;
+    uint32 *index_data;
     Index *data;
 };
 
 struct Framebuffer
 {
+    std::vector<Texture2D*> color_textures;
+    std::vector<GLenum> buffers;
     GPUHandler fbo_id;
     GPUHandler rb_id;
-    std::vector<Texture2D*> color_textures;
     Texture2D *depth_texture;
     Texture2D *stencil_texture;
-    std::vector<GLenum> buffers;
 };
 
 enum ElementType
@@ -81,10 +81,10 @@ enum ElementType
 
 struct BufferElement
 {
-    std::string name; // own string impl 
     ElementType type;
     uint32 size;
     uint32 offset = 0;
+    std::string name; // own string impl 
 
     BufferElement(const std::string& name, ElementType type)
     {
@@ -160,13 +160,13 @@ struct BufferElement
 struct BufferLayout
 {
     std::vector<BufferElement> elements;
-    GPUHandler stride = 0;
+    uint32 stride = 0;
 };
 
 struct VertexBuffer
 {
     GPUHandler id;
-    GPUHandler element_count;
+    uint32 element_count;
     BufferLayout layout;
     void *data;
 };
@@ -180,9 +180,9 @@ struct TextureWrapper
 
 struct VertexArray
 {
-    GPUHandler id;
-    GPUHandler ibuffer_index = 0;
     std::vector<VertexBuffer*> buffers;
+    GPUHandler id;
+    GPUHandler ibuffer_index = 0;    
     IndexBuffer *ib;
 };
 
@@ -230,10 +230,10 @@ struct CubeMesh : GeometryMesh
 
 struct Character
 {
-    GLuint  texture_id;
+    GLuint  texture_id;   
+    GLuint  advance;
     Vec2i   size;
     Vec2i   bearing;
-    GLuint  advance;
 };
 
 struct Text
@@ -256,8 +256,8 @@ struct Skybox
 
 struct ShadowMap
 {
-    uint32 width, height;
     Matrix4x4 light_projection_matrix = createMat4x4();
+    uint32 width, height;    
     Framebuffer depth_fbo;
 };
 
@@ -324,19 +324,18 @@ public:
     {
         auto &definitions = shaderProp.getProperties();
 
+        for (uin32 i = 0; i < definitions.size(); ++i)
+        {
 
-
+        }
     };
 
-
-
 private:
+    std::vector<Texture2D*> textures;
     std::unordered_set<MaterialInstance*> instances;
+    uint32 flags;    
     Shader *shaderRef;
     ShaderProperties shaderProp = {};
-
-    std::vector<Texture2D*> textures;
-    uint32 flags;
 };
 
 class MaterialInstance
@@ -375,23 +374,24 @@ struct Triangle
 
 struct RenderState
 {
-    static const uint32 max_quads_count = 20000;
-    static const uint32 max_quad_vert = max_quads_count * 4;
-    static const uint32 max_quad_indices = max_quads_count * 6;
+    static constexpr uint32 max_quads_count = 20000;
+    static constexpr uint32 max_quad_vert = max_quads_count * 4;
+    static constexpr uint32 max_quad_indices = max_quads_count * 6;
 
-    static const uint32 max_texture_slots = 32;
+    static constexpr uint32 max_texture_slots = 32;
 
-    static const uint32 max_line_count = 10000;
-    static const uint32 max_line_vert = max_line_count * 2;
-    static const uint32 max_line_ind = max_line_count * 6;
+    static constexpr uint32 max_line_count = 10000;
+    static constexpr uint32 max_line_vert = max_line_count * 2;
+    static constexpr uint32 max_line_ind = max_line_count * 6;
 
-    GPUHandler draw_calls;
-    GPUHandler quads_count;
-    GPUHandler geometry_count;
-    GPUHandler lines_count;
-    GPUHandler default_line_width = 2;
+    uint32 draw_calls;
+    uint32 quads_count;
+    uint32 geometry_count;
+    uint32 lines_count;
+    uint32 default_line_width = 2;
 
-    std::string inputShaderColorUniformName = "u_color";
+    uint32 line_index_count = 0;
+    uint32 quad_index_count = 0;
 
     VertexArray line_vertex_array;
     VertexBuffer line_vertex_buffer;
@@ -399,15 +399,15 @@ struct RenderState
     VertexArray quad_vertex_array;
     VertexBuffer quad_vertex_buffer;
 
-    GPUHandler line_index_count = 0;
     LineVertexMesh* line_vb_base = nullptr;
     LineVertexMesh* line_vb_ptr = nullptr;
 
-    GPUHandler quad_index_count = 0;
     QuadVertexMesh *quad_vb_base = nullptr;
     QuadVertexMesh *quad_vb_ptr = nullptr;
 
     Vec4 quad_vertex_data[4];
+
+    std::string inputShaderColorUniformName = "u_color";
 };
 
 struct GPUResourceHandler
@@ -416,4 +416,12 @@ struct GPUResourceHandler
     DynArray<IndexBuffer>  ib_handler;
     DynArray<VertexArray>  va_handler;
 };
+
+struct GPUResourceManager
+{
+    std::unordered_map<std::string, Shader> shaders;
+    std::unordered_map<std::string, Texture2D> textures;
+    std::map<GLchar, Character> characters_map;
+};
+
 #endif

@@ -45,44 +45,34 @@
 
 #include "game_state.cpp"
 
-
 global MemoryArena arena;
 global DynArray<LayerTest> layersTest;
 global DynArray<Rect> rects_to_test;
 //global Quadtree tree;
 
-global DynArray<Component> components;
-global DynArray<System> systems;
-
 global CubeMesh cube;
 
 internal void InitGameLayers()
 {
-    LayerTest t1 = {};
+    layersTest = createDynArray<LayerTest>();
 
+    LayerTest t1 = {};
     t1.type = LayerTest::LayerType::LAYER_2D;
     
     LayerTest t2 = {};
-
     t2.type = LayerTest::LayerType::LAYER_3D;
     
     LayerTest guiT= {};
-
     guiT.type = LayerTest::LayerType::GUI;
     
     Layer2D *layr2D = (Layer2D*)allocateMemory(&arena, sizeof(Layer2D));    
     //Layer *lar3D = (Layer3D*)allocateMemory(&arena, sizeof(Layer3D));
 
     //Layer *layr3D = new Layer3D();
-
-    //layersTest = createDynArray<LayerTest>();
-
+    
     //layersTest.push_back(std::move(t1));
     //layersTest.push_back(std::move(t2));
     //layersTest.push_back(std::move(guiT));
-
-    Matrix4x4 world = createMat4x4();
-    Vec3 pos = createVec3(0.0f, 5.0f, 1.0f);
 }
 
 internal void InitQuadTree()
@@ -118,6 +108,43 @@ internal void InitECS()
     ecs.createSystem(render_s);
 
     ecs.updateSystems();
+}
+
+internal 
+void UpdateLayers()
+{
+    // Update Layers
+
+    for (int i = 0; i < layersTest.size(); ++i)
+    {
+    //   LayerTest *lay = layersTest.begin() + i;
+    //   lay->Update(0.016f);
+    }
+}
+
+internal 
+void Render()
+{
+    Render::beginFrame();
+
+    Render::setupRenderCommand(CommandType::QUAD_COMMAND);
+    Render::setupRenderCommand(CommandType::LINE_COMMAND);
+
+    //Render::drawCube(); 
+    //Render::drawTriangle();
+
+    for (uint32 y = 15.0f; y < 700.0f; y += 25.0f)
+    {
+        for (uint32 x = 15.0f; x < 1250.0f; x += 25.0f)
+        {
+            Render::drawQuad(x, y, 20, 20, Color4RGBA((x + 10) * 0.5f, y + 10, (y * 10) / 20.0f, 1.0f));
+        }
+    }
+
+    Render::executeRenderCommand(CommandType::QUAD_COMMAND);
+    Render::executeRenderCommand(CommandType::LINE_COMMAND);
+
+    //Render::endFrame();
 }
 
 APP_LOAD_DATA
@@ -159,25 +186,11 @@ APP_UPDATE
     {
         Render::viewport(win_options.window_width, win_options.window_height);
 
-        win_options.resized = false;
+        win_options.resized = false;       
     }
 
-    Render::clearColor(0.7f, 0.7f, 0.9f, 1.0f);
-    Render::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //Render::drawCube();
-
-    Render::drawTriangle();
-
-    // Update Layers
-
-    //for (int i = 0; i < layersTest.size(); ++i)
-    //{
-    //    LayerTest *lay = layersTest.begin() + i;
-    //   lay->Update(0.016f);
-    //}
-
-    Render::executeCommands();
+    UpdateLayers();
+    Render();
 }
 
 #endif

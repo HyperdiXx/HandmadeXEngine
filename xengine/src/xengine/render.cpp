@@ -36,12 +36,12 @@ Framebuffer *Render::getActiveFramebuffer()
 
 Shader *Render::getShader(const char *name)
 {
-    return &graphics_state.shaders[name];
+    return &graphics_state.gpu_resources.shaders[name];
 }
 
 Texture2D *Render::getTexture2DResource(const char *name)
 {
-    return &graphics_state.textures[name];
+    return &graphics_state.gpu_resources.textures[name];
 }
 
 internal Camera2D& getCamera2D()
@@ -51,8 +51,9 @@ internal Camera2D& getCamera2D()
     if (!camera_2d.is_inited)
     {
         Viewport vp = getGDevice()->getViewport();
-        camera_2d.width = vp.width;
-        camera_2d.height = vp.height;
+        camera_2d.width = 1280;
+        camera_2d.height = 720;
+        camera_2d.updateCamera();
     }
 
     return camera_2d;
@@ -70,6 +71,14 @@ internal Camera3D& getCamera3D()
     }
 
     return camera_3d;
+}
+
+internal
+void fillVersions()
+{
+    graphics_state.gpu_version.vendor   = (char*)glGetString(GL_VENDOR);
+    graphics_state.gpu_version.renderer = (char*)glGetString(GL_RENDERER);
+    graphics_state.gpu_version.version  = (char*)glGetString(GL_VERSION);
 }
 
 internal
@@ -195,6 +204,22 @@ void setupCameras()
         
 }
 
+internal 
+void setupBuffers()
+{
+    Render::createQuadBuffer();
+    Render::createLinesBuffer();
+}
+
+internal 
+void setupRenderPasses()
+{
+    RenderPassData default_pass = {};
+
+    default_pass.name = "default";
+
+}
+
 void Render::init(ApiType type)
 {
     GraphicsDevice *device = getGDevice();
@@ -210,14 +235,15 @@ void Render::init(ApiType type)
     default:
         break;
     }
-        
-    const char *gl_vendor = (char*)glGetString(GL_VENDOR);
-    const char *gl_renderer = (char*)glGetString(GL_RENDERER);
-    const char *gl_version = (char*)glGetString(GL_VERSION);
 
+    viewport(1280.0f, 720.0f);
+
+    fillVersions();
     loadShaders();
-    loadFreeTextures();
+    //loadFreeTextures();
     setupCameras();
+    setupBuffers();
+    setupRenderPasses();
 };
 
 /*bool32 Render::loadFont(const char *path)
@@ -311,13 +337,13 @@ void Render::init(ApiType type)
 void Render::addShader(const std::string &ac_name, Shader shr)
 {
     shr.name = ac_name;
-    graphics_state.shaders[ac_name] = shr;
+    graphics_state.gpu_resources.shaders[ac_name] = shr;
 }
 
 void Render::addTexture(const std::string &ac_name, Texture2D tex)
 {
     tex.name = ac_name;
-    graphics_state.textures[ac_name] = tex;
+    graphics_state.gpu_resources.textures[ac_name] = tex;
 }
 
 bool32 Render::loadShaders()
@@ -343,7 +369,8 @@ bool32 Render::loadShaders()
     Shader anim_model = {};
 
     Shader triangle = {};
-
+    
+    Shader d2shader = {};
     Shader lines = {};
 
     std::string shader_names[8] = {};
@@ -352,48 +379,42 @@ bool32 Render::loadShaders()
 
     uint32 N = 9;
 
-    bool32 res = false;
+    bool32 res = 0;
 
-#ifdef GAPI_GL
+    GraphicsDevice *device = getGDevice();
 
-    /*bool32 shader_res;
+    std::string resolved_path = "shaders/glsl/";
 
-    for (uint16 i = 0; i < N; i++)
+    res |= device->createShader("shaders/glsl/lines.vs", "shaders/glsl/lines.fs", &lines);
+    res |= device->createShader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
+    res |= device->createShader("shaders/glsl/anim_model3d.vs", "shaders/glsl/base3d.fs", &anim_model);
+    res |= device->createShader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
+    res |= device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
+    res |= device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
+    res |= device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/water.fs", &water);
+    res |= device->createShader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
+    res |= device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
+    res |= device->createShader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
+    res |= device->createShader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
+    res |= device->createShader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
+    res |= device->createShader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
+    res |= device->createShader("shaders/glsl/Quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
+    res |= device->createShader("shaders/glsl/pbr/pbr.vs", "shaders/glsl/pbr/pbr.fs", &pbr);
+    res |= device->createShader("shaders/glsl/pbr/background.vs", "shaders/glsl/pbr/background.fs", &background_shader);
+    res |= device->createShader("shaders/glsl/pbr/brdf.vs", "shaders/glsl/pbr/brdf.fs", &brdf_shader);
+    res |= device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
+    res |= device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
+    res |= device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
+    res |= device->createShader("shaders/glsl/triangle.vs", "shaders/glsl/triangle.fs", &triangle);
+    res |= device->createShader("shaders/glsl/2dshader.vs", "shaders/glsl/2dshader.fs", &d2shader);
+
+    if (!res)
     {
-        shader_res |= device->create_shader(shaders_dir + std::string("simple2d.vs"), std::string(shaders_dir + "simple2d.vs").c_str(), &simple_shader);
-    }*/
+        print_error("Loading shaders!!!");
+        return false;
+    }
 
-    res = graphics_state.graphics_device->createShader("shaders/glsl/lines.vs", "shaders/glsl/lines.fs", &lines);
-
-    res = graphics_state.graphics_device->createShader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
-
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/anim_model3d.vs", "shaders/glsl/base3d.fs", &anim_model);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/water.fs", &water);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/Quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/pbr.vs", "shaders/glsl/pbr/pbr.fs", &pbr);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/background.vs", "shaders/glsl/pbr/background.fs", &background_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/brdf.vs", "shaders/glsl/pbr/brdf.fs", &brdf_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
-    res |= graphics_state.graphics_device->createShader("shaders/glsl/triangle.vs", "shaders/glsl/triangle.fs", &triangle);
-#endif
-
-#ifdef GAPI_DX11
-
-
-
-#endif
-
+    addShader("render2d", d2shader);
     addShader("line", lines);
     addShader("simple_pos", simple_color);
     addShader("simple2d", simple_shader);
@@ -415,12 +436,6 @@ bool32 Render::loadShaders()
     addShader("water", water);
     addShader("skeletal_animation", anim_model);
     addShader("triangle", triangle);
-
-    if (!res)
-    {
-        print_error("Loading shaders!!!");
-        return false;
-    }
 
     print_info("Shaders loaded!!!");
     return true;
@@ -475,49 +490,51 @@ bool32 Render::loadFreeTextures()
     Texture2D gun_diff = {};
     Texture2D character_diff = {};
 
-    graphics_state.graphics_device->createTexture2D("assets/cerberus/albedo.tga", &cerberus_d);
-    graphics_state.graphics_device->createTexture2D("assets/cerberus/normal.tga", &cerberus_n);
-    graphics_state.graphics_device->createTexture2D("assets/cerberus/roughness.tga", &cerberus_r);
-    graphics_state.graphics_device->createTexture2D("assets/cerberus/metallic.tga", &cerberus_m);
-    graphics_state.graphics_device->createTexture2D("assets/cerberus/ao.tga", &cerberus_ao);
+    GraphicsDevice *device = getGDevice();
 
-    graphics_state.graphics_device->createTexture2D("assets/pbr/rusted_iron/albedo.png", &albedo_iron);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/rusted_iron/normal.png", &normal_iron);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/rusted_iron/metallic.png", &metallic_iron);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/rusted_iron/roughness.png", &roughness_iron);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/rusted_iron/ao.png", &ao_iron);
+    device->createTexture2D("assets/cerberus/albedo.tga", &cerberus_d);
+    device->createTexture2D("assets/cerberus/normal.tga", &cerberus_n);
+    device->createTexture2D("assets/cerberus/roughness.tga", &cerberus_r);
+    device->createTexture2D("assets/cerberus/metallic.tga", &cerberus_m);
+    device->createTexture2D("assets/cerberus/ao.tga", &cerberus_ao);
 
-    graphics_state.graphics_device->createTexture2D("assets/pbr/grass/albedo.png", &albedo_grass);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/grass/normal.png", &normal_grass);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/grass/metallic.png", &metallic_grass);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/grass/roughness.png", &roughness_grass);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/grass/ao.png", &ao_grass);
+    device->createTexture2D("assets/pbr/rusted_iron/albedo.png", &albedo_iron);
+    device->createTexture2D("assets/pbr/rusted_iron/normal.png", &normal_iron);
+    device->createTexture2D("assets/pbr/rusted_iron/metallic.png", &metallic_iron);
+    device->createTexture2D("assets/pbr/rusted_iron/roughness.png", &roughness_iron);
+    device->createTexture2D("assets/pbr/rusted_iron/ao.png", &ao_iron);
 
-    graphics_state.graphics_device->createTexture2D("assets/pbr/wall/albedo.png", &albedo_wall);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/wall/normal.png", &normal_wall);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/wall/metallic.png", &metallic_wall);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/wall/roughness.png", &roughness_wall);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/wall/ao.png", &ao_wall);
+    device->createTexture2D("assets/pbr/grass/albedo.png", &albedo_grass);
+    device->createTexture2D("assets/pbr/grass/normal.png", &normal_grass);
+    device->createTexture2D("assets/pbr/grass/metallic.png", &metallic_grass);
+    device->createTexture2D("assets/pbr/grass/roughness.png", &roughness_grass);
+    device->createTexture2D("assets/pbr/grass/ao.png", &ao_grass);
 
-    graphics_state.graphics_device->createTexture2D("assets/pbr/plastic/albedo.png", &albedo_plastic);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/plastic/normal.png", &normal_plastic);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/plastic/metallic.png", &metallic_plastic);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/plastic/roughness.png", &roughness_plastic);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/plastic/ao.png", &ao_plastic);
+    device->createTexture2D("assets/pbr/wall/albedo.png", &albedo_wall);
+    device->createTexture2D("assets/pbr/wall/normal.png", &normal_wall);
+    device->createTexture2D("assets/pbr/wall/metallic.png", &metallic_wall);
+    device->createTexture2D("assets/pbr/wall/roughness.png", &roughness_wall);
+    device->createTexture2D("assets/pbr/wall/ao.png", &ao_wall);
 
-    graphics_state.graphics_device->createTexture2D("assets/pbr/gold/albedo.png", &albedo_gold);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/gold/normal.png", &normal_gold);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/gold/metallic.png", &metallic_gold);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/gold/roughness.png", &roughness_gold);
-    graphics_state.graphics_device->createTexture2D("assets/pbr/gold/ao.png", &ao_gold);
+    device->createTexture2D("assets/pbr/plastic/albedo.png", &albedo_plastic);
+    device->createTexture2D("assets/pbr/plastic/normal.png", &normal_plastic);
+    device->createTexture2D("assets/pbr/plastic/metallic.png", &metallic_plastic);
+    device->createTexture2D("assets/pbr/plastic/roughness.png", &roughness_plastic);
+    device->createTexture2D("assets/pbr/plastic/ao.png", &ao_plastic);
 
-    graphics_state.graphics_device->createTexture2D("assets/m1911/m1911_color.png", &gun_diff);
-    graphics_state.graphics_device->createTexture2D("assets/animated/character_diff.jpg", &character_diff);
+    device->createTexture2D("assets/pbr/gold/albedo.png", &albedo_gold);
+    device->createTexture2D("assets/pbr/gold/normal.png", &normal_gold);
+    device->createTexture2D("assets/pbr/gold/metallic.png", &metallic_gold);
+    device->createTexture2D("assets/pbr/gold/roughness.png", &roughness_gold);
+    device->createTexture2D("assets/pbr/gold/ao.png", &ao_gold);
 
-    //graphics_state.graphics_device->createTexture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);
+    device->createTexture2D("assets/m1911/m1911_color.png", &gun_diff);
+    device->createTexture2D("assets/animated/character_diff.jpg", &character_diff);
 
-    bool32 loaded = graphics_state.graphics_device->createTexture2D("assets/get.png", &wood_texture);
-    graphics_state.graphics_device->createTexture2D("assets/water-texture.jpg", &water_texture);
+    //device->createTexture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);
+
+    bool32 loaded = device->createTexture2D("assets/get.png", &wood_texture);
+    device->createTexture2D("assets/water-texture.jpg", &water_texture);
 
     if (!loaded)
     {
@@ -677,23 +694,25 @@ bool32 Render::initCommonGpuResources()
 
 void Render::viewport(int32 w, int32 h)
 {
-    Viewport &vp = graphics_state.vp;
+    GraphicsDevice *device = getGDevice();
+    Viewport &vp = device->getViewport();
+    
     vp.width = w;
     vp.height = h;
      
-    Render::pushCommand([=]()
-    {
+    //Render::pushCommand([=]()
+    //{
         graphics_state.graphics_device->setViewport(0, 0, w, h);
-    });
+    //});
 }
 
 void Render::clear(uint32 flags)
 {
-    Render::pushCommand([=]() 
-    {
+    //Render::pushCommand([=]() 
+    //{
         graphics_state.graphics_device->clearColor(graphics_state.target_clear_color);
         graphics_state.graphics_device->clear(flags);
-    });
+    //});
 }
 
 void Render::clearColor(real32 x, real32 y, real32 z, real32 a)
@@ -708,10 +727,13 @@ void Render::shutdown()
 {
     // @Clear destroy free textures
 
-    std::unordered_map<std::string, Texture2D>::iterator it = graphics_state.textures.begin();
-    for (uint32 i = 0; i < graphics_state.textures.size(); ++i)
+    GraphicsDevice *device = getGDevice();
+    auto textures = graphics_state.gpu_resources.textures;
+
+    std::unordered_map<std::string, Texture2D>::iterator it = textures.begin();
+    for (uint32 i = 0; i < textures.size(); ++i)
     {
-        graphics_state.graphics_device->destroyTexture2D(&it->second);
+        device->destroyTexture2D(&it->second);
     }
 
     //clearContextGui();
@@ -815,11 +837,13 @@ bool32 Render::createLineMesh(LineMesh *line_com)
 
 bool32 Render::createLinesBuffer()
 {
-    /*graphics_state.line_vb_base = alloc_mem LineVertexMesh[graphics_state.max_line_vert];
+    RenderState &rs = graphics_state.render_state_batch;
+    GraphicsDevice *device = getGDevice();
 
-    graphics_state.graphics_state.graphics_device->createVertexArray(&graphics_state.line_vertex_array);
+    rs.line_vb_base = alloc_mem LineVertexMesh[rs.max_line_vert];
 
-    graphics_state.graphics_state.graphics_device->createVertexBuffer(nullptr, graphics_state.max_line_vert * sizeof(LineVertexMesh), DRAW_TYPE::DYNAMIC, &graphics_state.line_vertex_buffer);
+    device->createVertexArray(&rs.line_vertex_array);
+    device->createVertexBuffer(nullptr, rs.max_line_vert * sizeof(LineVertexMesh), DRAW_TYPE::DYNAMIC, &rs.line_vertex_buffer);
 
     BufferLayout buffer_layout3 = {};
 
@@ -829,38 +853,40 @@ bool32 Render::createLinesBuffer()
         { "aColor",     ElementType::Float4 }
     };
 
-    graphics_state.graphics_state.graphics_device->createBufferLayout(init_list3, &buffer_layout3);
-    graphics_state.graphics_state.graphics_device->setVertexBufferLayout(&graphics_state.line_vertex_buffer, &buffer_layout3);
-    graphics_state.graphics_state.graphics_device->addVertexBuffer(&graphics_state.line_vertex_array, &graphics_state.line_vertex_buffer);
+    device->createBufferLayout(init_list3, &buffer_layout3);
+    device->setVertexBufferLayout(&rs.line_vertex_buffer, &buffer_layout3);
+    device->addVertexBuffer(&rs.line_vertex_array, &rs.line_vertex_buffer);
 
-    uint32* line_ind = alloc_mem uint32[graphics_state.max_line_ind];
-    for (uint32_t i = 0; i < graphics_state.max_line_ind; i++)
+    uint32* line_ind = alloc_mem uint32[rs.max_line_ind];
+    for (uint32_t i = 0; i < rs.max_line_ind; i++)
     {
         line_ind[i] = i;
     }
 
     IndexBuffer *ib = alloc_mem IndexBuffer();
 
-    graphics_state.graphics_state.graphics_device->createIndexBuffer(line_ind, graphics_state.max_line_ind, ib);
-    graphics_state.graphics_state.graphics_device->setIndexBuffer(&graphics_state.line_vertex_array, ib);
+    device->createIndexBuffer(line_ind, rs.max_line_ind, ib);
+    device->setIndexBuffer(&rs.line_vertex_array, ib);
 
-    free_mem[] line_ind;*/
+    free_mem[] line_ind;
 
     return true;
 }
 
 bool32 Render::createQuadBuffer()
 {
-    /*graphics_state.quad_vertex_data[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-    graphics_state.quad_vertex_data[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
-    graphics_state.quad_vertex_data[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
-    graphics_state.quad_vertex_data[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+    RenderState &rs = graphics_state.render_state_batch;
+    GraphicsDevice *device = getGDevice();
 
-    graphics_state.quad_vb_base = alloc_mem QuadVertexMesh[graphics_state.max_quad_vert];
+    rs.quad_vertex_data[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+    rs.quad_vertex_data[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+    rs.quad_vertex_data[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+    rs.quad_vertex_data[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
-    graphics_state.graphics_state.graphics_device->createVertexArray(&graphics_state.quad_vertex_array);
+    rs.quad_vb_base = alloc_mem QuadVertexMesh[rs.max_quad_vert];
 
-    graphics_state.graphics_state.graphics_device->createVertexBuffer(nullptr, graphics_state.max_quad_vert * sizeof(QuadVertexMesh), DRAW_TYPE::DYNAMIC, &graphics_state.quad_vertex_buffer);
+    device->createVertexArray(&rs.quad_vertex_array);
+    device->createVertexBuffer(nullptr, rs.max_quad_vert * sizeof(QuadVertexMesh), DRAW_TYPE::DYNAMIC, &rs.quad_vertex_buffer);
 
     BufferLayout quad_buffer_layout = {};
 
@@ -870,14 +896,14 @@ bool32 Render::createQuadBuffer()
         { "aColor",     ElementType::Float4 }
     };
 
-    graphics_state.graphics_state.graphics_device->createBufferLayout(quad_init_list, &quad_buffer_layout);
-    graphics_state.graphics_state.graphics_device->setVertexBufferLayout(&graphics_state.quad_vertex_buffer, &quad_buffer_layout);
-    graphics_state.graphics_state.graphics_device->addVertexBuffer(&graphics_state.quad_vertex_array, &graphics_state.quad_vertex_buffer);
+    device->createBufferLayout(quad_init_list, &quad_buffer_layout);
+    device->setVertexBufferLayout(&rs.quad_vertex_buffer, &quad_buffer_layout);
+    device->addVertexBuffer(&rs.quad_vertex_array, &rs.quad_vertex_buffer);
 
-    uint32* quad_ind = alloc_mem uint32[graphics_state.max_quad_indices];
+    uint32* quad_ind = alloc_mem uint32[rs.max_quad_indices];
     uint32 offset = 0;
 
-    for (uint32 i = 0; i < graphics_state.max_quad_indices; i += 6)
+    for (uint32 i = 0; i < rs.max_quad_indices; i += 6)
     {
         quad_ind[i + 0] = offset + 0;
         quad_ind[i + 1] = offset + 1;
@@ -892,17 +918,19 @@ bool32 Render::createQuadBuffer()
 
     IndexBuffer *ib = alloc_mem IndexBuffer();
 
-    graphics_state.graphics_state.graphics_device->createIndexBuffer(quad_ind, graphics_state.max_quad_indices, ib);
-    graphics_state.graphics_state.graphics_device->setIndexBuffer(&graphics_state.quad_vertex_array, ib);
+    device->createIndexBuffer(quad_ind, rs.max_quad_indices, ib);
+    device->setIndexBuffer(&rs.quad_vertex_array, ib);
 
-    free_mem[] quad_ind;*/
+    free_mem[] quad_ind;
 
     return true;
 }
 
-bool32 Render::createRenderPass(const RenderPassData & data, RenderPass *rp)
+bool32 Render::createRenderPass(const RenderPassData data, RenderPass *rp)
 {
+    assert(rp);
 
+    rp->data = data;
 
     return true;
 }
@@ -1334,10 +1362,10 @@ void Render::drawTriangle()
     {
         Render::pushCommand([=]()
         {
-            float vertices[] = {
-             -0.5f, -0.5f, 0.0f, // left  
-             0.5f, -0.5f, 0.0f,  // right 
-             0.0f,  0.5f, 0.0f   // top   
+            real32 vertices[] = {
+                -0.5f, -0.5f, 0.0f,   
+                 0.5f, -0.5f, 0.0f,   
+                 0.0f,  0.5f, 0.0f   
             };
 
             glGenVertexArrays(1, &graphics_state.VAO);
@@ -1360,9 +1388,13 @@ void Render::drawTriangle()
 
     Render::pushCommand([=]()
     {
-        glUseProgram(63);
+        Shader *shd = getShader("triangle");
+        GraphicsDevice *device = getGDevice();
+        
+        device->bindShader(shd);
+        
         glBindVertexArray(graphics_state.VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 3);
     });
 }
 
@@ -1380,33 +1412,46 @@ void Render::drawQuad(const Vec2 &pos, const Vec2 &size, const Color4RGBA &color
 
 void Render::drawQuad(const Vec3 &pos, const Vec2 &size, const Color4RGBA& color)
 {
-    /*if (graphics_state.quad_index_count >= RenderState::max_quads_count)
+    RenderState &rs = graphics_state.render_state_batch;
+
+    if (rs.quad_index_count >= RenderState::max_quads_count)
     {
         //FlushAndResetLines();
     }
 
-    Matrix4x4 transform = translate(IDENTITY_MATRIX, pos) *
-        scale(IDENTITY_MATRIX, { size.x, size.y, 1.0f });
+    Matrix4x4 translationMatrix = graphics_state.IDENTITY_MATRIX;
+    translateMat(translationMatrix, pos);
 
-    graphics_state.quads_count++;
+    Matrix4x4 scaleMatrix = graphics_state.IDENTITY_MATRIX;
 
-    graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[0];
-    graphics_state.quad_vb_ptr->color = color;
-    graphics_state.quad_vb_ptr++;
+    scaleMat(scaleMatrix, { size.x, size.y, 1.0f });
 
-    graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[1];
-    graphics_state.quad_vb_ptr->color = color;
-    graphics_state.quad_vb_ptr++;
+    Matrix4x4 model = scaleMatrix * translationMatrix;
 
-    graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[2];
-    graphics_state.quad_vb_ptr->color = color;
-    graphics_state.quad_vb_ptr++;
+    rs.quads_count++;
 
-    graphics_state.quad_vb_ptr->pos = transform * graphics_state.quad_vertex_data[3];
-    graphics_state.quad_vb_ptr->color = color;
-    graphics_state.quad_vb_ptr++;
+    Vec4 qVert1 = model * rs.quad_vertex_data[0];
+    Vec4 qVert2 = model * rs.quad_vertex_data[1];
+    Vec4 qVert3 = model * rs.quad_vertex_data[2];
+    Vec4 qVert4 = model * rs.quad_vertex_data[3];
 
-    graphics_state.quad_index_count += 6;*/
+    rs.quad_vb_ptr->pos = createVec3(qVert1.x, qVert1.y, qVert1.z);
+    rs.quad_vb_ptr->color = color;
+    rs.quad_vb_ptr++;
+
+    rs.quad_vb_ptr->pos = createVec3(qVert2.x, qVert2.y, qVert2.z);
+    rs.quad_vb_ptr->color = color;
+    rs.quad_vb_ptr++;
+
+    rs.quad_vb_ptr->pos = createVec3(qVert3.x, qVert3.y, qVert3.z);
+    rs.quad_vb_ptr->color = color;
+    rs.quad_vb_ptr++;
+
+    rs.quad_vb_ptr->pos = createVec3(qVert4.x, qVert4.y, qVert4.z);
+    rs.quad_vb_ptr->color = color;
+    rs.quad_vb_ptr++;
+
+    rs.quad_index_count += 6;
 }
 
 void Render::drawQuad(real32 x, real32 y, real32 w, real32 h, const Color4RGBA& color)
@@ -1483,28 +1528,6 @@ void Render::drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture
     graphics_state.graphics_state.graphics_device->unbindShader();
 }*/
 
-void Render::drawQuad(Shader *shd, Texture2D *texture, const Matrix4x4 &mod)
-{
-    /*if (texture != nullptr)
-        graphics_state.graphics_state.graphics_device->activateBindTexture(TEXTURE_TYPE::COLOR, texture);
-
-    graphics_state.graphics_state.graphics_device->bindShader(shd);
-
-    xe_ecs::Camera2DComponent camera2d = getCamera2D();
-
-    glm::mat4 view_projection = camera2d.get_view_projection();
-    glm::mat4 mvp = view_projection * mod;
-
-    graphics_state.graphics_state.graphics_device->setMat4("mvp", mvp, shd);
-
-    graphics_state.graphics_state.graphics_device->bindVertexArray(q->vertex_array);
-
-    graphics_state.graphics_state.graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, 6, GL_UNSIGNED_INT, 0);
-
-    graphics_state.graphics_state.graphics_device->unbindVertexArray();
-    graphics_state.graphics_state.graphics_device->unbindShader();*/
-}
-
 /*void Render::drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform)
 {
     GraphicsDevice *device = xe_render::getDevice();
@@ -1562,25 +1585,28 @@ void Render::drawQuad(Shader *shd, Texture2D *texture, const Matrix4x4 &mod)
 
 void Render::drawText(const std::string &text, real32 x, real32 y, Vec3 &color, real32 scale)
 {
-    graphics_state.graphics_device->enable(GL_BLEND);
-    graphics_state.graphics_device->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    GraphicsDevice *device = getGDevice();
+
+    device->enable(GL_BLEND);
+    device->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Shader *text_shader = getShader("text");
 
-    graphics_state.graphics_device->bindShader(text_shader);
-    graphics_state.graphics_device->setVec3("color", color, text_shader);
+    device->bindShader(text_shader);
+    device->setVec3("color", color, text_shader);
 
-    graphics_state.graphics_device->activateTexture(0);
+    device->activateTexture(0);
 
     VertexArray va = {};
     va.id = 1;
 
-    graphics_state.graphics_device->bindVertexArray(&va);
+    device->bindVertexArray(&va);
 
     std::string::const_iterator c;
+    
     for (c = text.begin(); c != text.end(); c++)
     {
-        Character ch = graphics_state.characters_map.at(*c);
+        Character ch = graphics_state.gpu_resources.characters_map.at(*c);
 
         GLfloat xpos = x + ch.bearing.x * scale;
         GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
@@ -1598,7 +1624,7 @@ void Render::drawText(const std::string &text, real32 x, real32 y, Vec3 &color, 
             { xpos + w, ypos + h,   1.0, 0.0 }
         };
 
-        graphics_state.graphics_device->bindTexture(TEXTURE_TYPE::COLOR, ch.texture_id);
+        device->bindTexture(TEXTURE_TYPE::COLOR, ch.texture_id);
 
         //glBindTexture(GL_TEXTURE_2D, ch.texture_id);
 
@@ -1606,15 +1632,15 @@ void Render::drawText(const std::string &text, real32 x, real32 y, Vec3 &color, 
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         graphics_state.graphics_device->unbindBuffer(BUFFER_TYPE::VERTEX);
 
-        graphics_state.graphics_device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
+        device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
 
         x += (ch.advance >> 6) * scale;
     }
 
-    graphics_state.graphics_device->unbindVertexArray();
-    graphics_state.graphics_device->unbindTexture(TEXTURE_TYPE::COLOR);
+    device->unbindVertexArray();
+    device->unbindTexture(TEXTURE_TYPE::COLOR);
 
-    graphics_state.graphics_device->disable(GL_BLEND);
+    device->disable(GL_BLEND);
 }
 
 void Render::drawText(const std::string &text, Vec2 &pos, Vec3 &color)
@@ -1809,78 +1835,111 @@ void Render::beginFrame(bool32 shouldClearScreen)
 {
     if (shouldClearScreen)
     {
-        //graphics_state.graphics_device->startExecution();
+        clearColor(0.7f, 0.7f, 0.9f, 1.0f);
+        clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
+
+    RenderState &rs = graphics_state.render_state_batch;
+    rs.draw_calls = 0;
+}
+
+void Render::beginRenderPass(const RenderPass *pass)
+{
+    RenderPass *active_pass = graphics_state.active_render_pass;
+    GraphicsDevice *device = getGDevice();
+    
+    device->bindFramebuffer(pass->active_framebuffer);
+
+    uint32 clearFlags = 0;
+   
+    pass->data.clearColor > 0 ? clearFlags |= GL_COLOR_BUFFER_BIT : clearFlags &= ~GL_COLOR_BUFFER_BIT;
+    pass->data.clearDepth > 0 ? clearFlags |= GL_DEPTH_BUFFER_BIT : clearFlags &= ~GL_DEPTH_BUFFER_BIT;
+
+    Render::clear(clearFlags);
+    
+    active_pass = const_cast<RenderPass*>(pass);
 }
 
 void Render::setupRenderCommand(CommandType type)
 {
-    /*switch (type)
-    {
-    case CommandType::LINE_COMMAND:
-    {
-        graphics_state.line_index_count = 0;
-        graphics_state.line_vb_ptr = graphics_state.line_vb_base;
-    } break;
-    case CommandType::QUAD_COMMAND:
-    {
-        graphics_state.quad_index_count = 0;
-        graphics_state.quad_vb_ptr = graphics_state.quad_vb_base;
-    } break;
-    default:
-        break;
-    }*/
-}
- 
-void Render::executeCommands()
-{
-    //executeCommand(CommandType::LINE_COMMAND);
-    //executeCommand(CommandType::QUAD_COMMAND);
-
-    render_queue.executeQueue();
-}
-
-void Render::executeCommand(CommandType type)
-{
-    /*uint32 dSize = 0;
+    RenderState &rs = graphics_state.render_state_batch;
 
     switch (type)
     {
-    case xe_render::CommandType::LINE_COMMAND:
+    case CommandType::LINE_COMMAND:
     {
-        dSize = (uint8_t*)graphics_state.line_vb_ptr - (uint8_t*)graphics_state.line_vb_base;
-
-        if (dSize)
-        {
-            uint32 offset = 0;
-            graphics_state.graphics_device->bindBuffer(&graphics_state.line_vertex_buffer);
-            graphics_state.graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, dSize, graphics_state.line_vb_base);
-            drawLines();
-        }
-
+        rs.line_index_count = 0;
+        rs.line_vb_ptr = rs.line_vb_base;
     } break;
-    case xe_render::CommandType::QUAD_COMMAND:
+    case CommandType::QUAD_COMMAND:
     {
-        dSize = (uint8*)graphics_state.quad_vb_ptr - (uint8*)graphics_state.quad_vb_base;
+        rs.quad_index_count = 0;
+        rs.quad_vb_ptr = rs.quad_vb_base;
+    } break;
+    default:
+        //printf_info("Set render command!");
+        break;
+    }
+}
+ 
+void Render::executeRenderCommand(CommandType type)
+{
+    uint32 dSize = 0;
+
+    RenderState &rs = graphics_state.render_state_batch;
+    GraphicsDevice *device = getGDevice();
+
+    switch (type)
+    {
+    case CommandType::QUAD_COMMAND:
+    {
+        dSize = (uint8*)rs.quad_vb_ptr - (uint8*)rs.quad_vb_base;
 
         if (dSize)
         {
             uint32 offset = 0;
-            graphics_state.graphics_device->bindBuffer(&graphics_state.quad_vertex_buffer);
-            graphics_state.graphics_device->pushDataToBuffer(BUFFER_TYPE::VERTEX, offset, dSize, graphics_state.quad_vb_base);
-            drawQuads();
+            device->bindBuffer(&rs.quad_vertex_buffer);
+            device->pushDataToBuffer(rs.quad_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.quad_vb_base);
+            drawQuads();           
+        }
+    } break;
+    case CommandType::LINE_COMMAND:
+    {
+        dSize = (uint8_t*)rs.line_vb_ptr - (uint8_t*)rs.line_vb_base;
+
+        if (dSize)
+        {
+            uint32 offset = 0;
+            device->bindBuffer(&rs.line_vertex_buffer);
+            device->pushDataToBuffer(rs.line_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.line_vb_base);
+            drawLines();
         }
     } break;
     default:
         break;
-    }*/
+    }
+}
 
+void Render::executeCommands()
+{    
+    render_queue.executeQueue();
 }
 
 void Render::endFrame()
 {
-    //graphics_state.graphics_device->checkError();
-    //graphics_state.graphics_device->endExecution();
+    GraphicsDevice *device = getGDevice();
+    
+    device->checkError();
+    executeCommands();
+}
+
+void Render::endRenderPass()
+{
+    RenderPass *active_pass = graphics_state.active_render_pass;
+    GraphicsDevice *device = getGDevice();
+    
+    device->unbindFramebuffer();
+    active_pass = nullptr;
 }
 
 /*void Render::drawModel(xe_assets::Model *mod, const glm::mat4 &transform)
@@ -1942,36 +2001,6 @@ void Render::drawCube()
         device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
         device->unbindVertexArray();
     });    
-}
-
-void Render::drawLine(Entity *ent)
-{
-    /*if (!line_vao.va)
-    {
-        createLineMesh(&line_vao);
-    }
-
-    using namespace xe_ecs;
-
-    LineMeshComponent *line = ent->findComponent<LineMeshComponent>();
-
-    if (line)
-    {
-        Shader *simple_color = getShader("simple_pos");
-        glm::mat4 model = IDENTITY_MATRIX;
-        Camera3DComponent& cam = getCamera3D();
-
-        glm::mat4 mvp = cam.get_projection_matrix() * cam.get_view_matrix() * model;
-
-        graphics_state.graphics_device->bindShader(simple_color);
-        graphics_state.graphics_device->setMat4("mvp", mvp, simple_color);
-        graphics_state.graphics_device->setVec4("u_color", convertToVec4(default_line_color), simple_color);
-
-        graphics_state.graphics_device->bindVertexArray(line->line_co->va);
-        graphics_state.graphics_device->setLineWidth(default_line_width);
-        graphics_state.graphics_device->drawArray(PRIMITIVE_TOPOLOGY::LINE, 0, line->line_co->vertex_count);
-        graphics_state.graphics_device->unbindVertexArray();
-    }*/
 }
 
 void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end)
@@ -2038,31 +2067,36 @@ void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end, Color3RGB 
 
 void Render::drawLines()
 {
-    /*Camera3DComponent& camera = getCamera3D();
+    Camera3D& camera = getCamera3D();
     Shader *line = getShader("line");
-    graphics_state.graphics_device->bindShader(line);
+    GraphicsDevice *device = getGDevice();
+    RenderState &rs = graphics_state.render_state_batch;
 
-    graphics_state.graphics_device->setMat4("vp", camera.get_view_projection(), line);
+    device->bindShader(line);
 
-    graphics_state.graphics_device->bindVertexArray(&graphics_state.line_vertex_array);
-    graphics_state.graphics_device->setLineWidth(graphics_state.default_line_width);
-    graphics_state.graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::LINE, graphics_state.line_index_count, GL_UNSIGNED_INT, 0);
+    device->setMat4("vp", camera.getViewProjection(), line);
 
-    graphics_state.draw_calls++;*/
+    device->bindVertexArray(&rs.line_vertex_array);
+    device->setLineWidth(rs.default_line_width);
+    device->drawIndexed(PRIMITIVE_TOPOLOGY::LINE, rs.line_index_count, GL_UNSIGNED_INT, 0);
+
+    ++rs.draw_calls;
 }
 
 void Render::drawQuads()
 {
-    /*Camera2DComponent& camera2d = getCamera2D();
-    Shader *shd = getShader("line");
-    graphics_state.graphics_device->bindShader(shd);
+    Camera2D& camera2d = getCamera2D();
+    Shader *shd = getShader("render2d");
+    GraphicsDevice *device = getGDevice();
+    RenderState &rs = graphics_state.render_state_batch;
 
-    graphics_state.graphics_device->setMat4("vp", camera2d.get_view_projection(), shd);
+    device->bindShader(shd);
+    device->setMat4("vp", camera2d.getViewProjection(), shd);
 
-    graphics_state.graphics_device->bindVertexArray(&graphics_state.quad_vertex_array);
-    graphics_state.graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, graphics_state.quad_index_count, GL_UNSIGNED_INT, 0);
+    device->bindVertexArray(&rs.quad_vertex_array);
+    device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, rs.quad_index_count, GL_UNSIGNED_INT, 0);
 
-    graphics_state.draw_calls++;*/
+    ++rs.draw_calls;
 }
 
 void Render::drawEnt(Entity *ent)

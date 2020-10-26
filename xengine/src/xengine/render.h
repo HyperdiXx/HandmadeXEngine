@@ -11,20 +11,31 @@ namespace ftgl
 
 struct RenderPassData
 {
-
+    std::string name;
+    bool32 clearColor = true;
+    bool32 clearDepth = false;
 };
 
 struct RenderPass
 {
-    Framebuffer *active_framebuffer;
-    RenderPassData data;
+    Framebuffer *active_framebuffer;   
+    RenderPassData data = {};
+};
+
+struct GraphicsVer
+{
+    const char *vendor;
+    const char *renderer;
+    const char *version;
 };
 
 struct GraphicsState
 {
     const Matrix4x4 IDENTITY_MATRIX = createMat4x4();
     
-    Viewport vp = {};
+    GPUResourceManager gpu_resources = {};
+    RenderState render_state_batch = {};
+    GraphicsVer gpu_version = {};
 
     Vec3  default_text_color = createVec3(1.0f, 1.0f, 1.0f);
     Vec3  default_cube_color = createVec3(0.0f, 1.0f, 0.0f);
@@ -35,14 +46,8 @@ struct GraphicsState
     uint32 default_line_width = 5;
     real32 default_text_scale = 1.0f;
 
-    bool32 enable_shadows = false;
-
-    std::unordered_map<std::string, Shader> shaders;
-    std::unordered_map<std::string, Texture2D> textures;
-    std::map<GLchar, Character> characters_map;
-
+    // Test triangle
     unsigned int VBO, VAO;
-    bool is_inited_triangle = false;
 
     VertexArray quad_vao;
     QuadMesh rect_vao;
@@ -56,6 +61,9 @@ struct GraphicsState
 
     RenderPass *active_render_pass = nullptr;
     Framebuffer *active_framebuffer = nullptr;
+
+    bool32 enable_shadows = false;
+    bool32 is_inited_triangle = false;
 };
 
 struct RenderClearTarget
@@ -192,7 +200,7 @@ public:
     global bool32 createLinesBuffer();
     global bool32 createQuadBuffer();
 
-    global bool32 createRenderPass(const RenderPassData &data, RenderPass *rp);
+    global bool32 createRenderPass(const RenderPassData data, RenderPass *rp);
 
     global void drawFullquad();
 
@@ -201,8 +209,6 @@ public:
    
     global void drawQuad(real32 x, real32 y, real32 w, real32 h, const Color4RGBA &color);
     global void drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture);
-
-    global void drawQuad(Shader *shd, Texture2D *texture, const Matrix4x4 &mod);
 
     //void drawModel(Model *mod, Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
     //void drawModel(AnimModel *mod, Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
@@ -219,8 +225,6 @@ public:
     global void drawCube();
 
     global void drawTriangle();
-
-    global void drawLine(Entity *ent);
 
     global void drawLine(real32 x, real32 y, real32 x_end, real32 y_end);
     global void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end);
@@ -259,14 +263,16 @@ public:
     global void applySpotLight(Shader *shd, SpotLightComponent *directional_light, TransformComponent *transform);
     global void applyPointLight(Shader *shd, PointLightComponent *directional_light, TransformComponent *transform);
 
-    global void beginFrame(bool32 shouldClearScreen);
+    global void beginFrame(bool32 shouldClearScreen = true);
+    global void beginRenderPass(const RenderPass *pass);
 
     global void setupRenderCommand(CommandType type);
+    global void executeRenderCommand(CommandType type);
 
     global void executeCommands();
-    global void executeCommand(CommandType type);
 
     global void endFrame();
+    global void endRenderPass();
 
     global void addShader(const std::string &ac_name, Shader shr);
     global void addTexture(const std::string &ac_name, Texture2D tex);

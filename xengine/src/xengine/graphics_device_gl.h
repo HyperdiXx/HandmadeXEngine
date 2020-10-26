@@ -25,7 +25,7 @@ public:
     void drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) override;
     void drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) override;
 
-    void pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, void *data) override;
+    void pushDataToBuffer(uint32 index, BUFFER_TYPE type, uint32 offset, uint64 size, void *data) override;
 
     void activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture) override;
     void activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture) override;
@@ -68,10 +68,10 @@ public:
     void setVec2(const std::string &name, real32 x, real32 y, Shader *shd) override;
     void setVec3(const std::string &name, const Vec3 &value, Shader *shd) override;
     void setVec3(const std::string &name, real32 x, real32 y, real32 z, Shader *shd) override;
-    //void setVec4(const std::string &name, const Vec4 &value, Shader *shd) override;
-    //void setVec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, Shader *shd) override;
-    //void setMat2(const std::string &name, const glm::mat2 &mat, Shader *shd) override;
-    //void setMat3(const std::string &name, const glm::mat3 &mat, Shader *shd) override;
+    void setVec4(const std::string &name, const Vec4 &value, Shader *shd) override;
+    void setVec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, Shader *shd) override;
+    void setMat2(const std::string &name, const Matrix2x2 &mat, Shader *shd) override;
+    void setMat3(const std::string &name, const Matrix3x3 &mat, Shader *shd) override;
     void setMat4(const std::string &name, const Matrix4x4 &mat, Shader *shd) override;
 
     bool32 createTexture(Texture2D *texture) override;

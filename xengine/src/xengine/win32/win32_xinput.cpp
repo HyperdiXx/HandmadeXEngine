@@ -47,10 +47,18 @@ enum State
     HOLD
 };
 
+struct Vec2i
+{
+    Vec2i() : x(0), y(0) {}
+    Vec2i(uint32 x_v, uint32 y_v) : x(x_v), y(y_v) {}
+
+    uint32 x, y;
+};
+
 struct MouseState
 {
-    Vec2i position = createVec2i(0, 0);
-    Vec2i dtPosition = createVec2i(0, 0);
+    Vec2i position = Vec2i(0, 0);
+    Vec2i dtPosition = Vec2i(0, 0);
     real32 wheel = 0;
     bool32 isLeftButtonPressed = false;
     bool32 isRightButtonPressed = false;

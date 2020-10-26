@@ -89,7 +89,7 @@ internal bool Win32InitGraphicsDevice(HDC *device_context, HINSTANCE h_inst)
         {
             const int context_attribs[] =
             {
-                WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+                WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
                 WGL_CONTEXT_MINOR_VERSION_ARB, 3,
                 0
             };
@@ -103,7 +103,7 @@ internal bool Win32InitGraphicsDevice(HDC *device_context, HINSTANCE h_inst)
                 wglMakeCurrent(*device_context, 0);
                 wglDeleteContext(gl_dummy_render_context);
                 wglMakeCurrent(*device_context, graphics_context);
-                wglSwapIntervalEXT(0);
+                wglSwapIntervalEXT(1);
                 result = true;
             }
         }

@@ -366,25 +366,38 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setLineWidth(uint32 line_width)
     {
-        glLineWidth(line_width);
+        //Render::pushCommand([=]()
+        //{
+            glLineWidth(line_width);
+        //});
     }
 
     void GraphicsDeviceGL::drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
     {
-        uint32 gl_primitive_type = convert_primitive_type(mode);
-        glDrawArrays(gl_primitive_type, first, count);
+        //Render::pushCommand([=]()
+        //{
+            uint32 gl_primitive_type = convert_primitive_type(mode);
+            glDrawArrays(gl_primitive_type, first, count);
+        //});
     }
 
     void GraphicsDeviceGL::drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind)
     {
-        uint32 gl_primitive_type = convert_primitive_type(mode);
-        glDrawElements(gl_primitive_type, count, type, ind);
+        //Render::pushCommand([mode, count, type, ind]()
+        //{
+            uint32 gl_primitive_type = convert_primitive_type(mode);
+            glDrawElements(gl_primitive_type, count, type, ind);
+        //});
     }
 
-    void GraphicsDeviceGL::pushDataToBuffer(BUFFER_TYPE type, uint32 offset, uint64 size, void *data)
+    void GraphicsDeviceGL::pushDataToBuffer(uint32 index, BUFFER_TYPE type, uint32 offset, uint64 size, void *data)
     {
-        uint32 buf_type = convert_buffer_type_gl(type);
-        glBufferSubData(buf_type, offset, size, data);
+        //Render::pushCommand([=]()
+        //{
+            uint32 buf_type = convert_buffer_type_gl(type);
+            glBufferSubData(buf_type, offset, size, data);
+            //glNamedBufferSubData(index, offset, size, data);
+        //});
     }
 
     void GraphicsDeviceGL::activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture)
@@ -436,62 +449,87 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::bindBuffer(const VertexBuffer *vb)
     {
-        if (last_bound_unit_vbuffer != vb->id)
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, vb->id);
-            last_bound_unit_vbuffer = vb->id;
-        }
+        //Render::pushCommand([this, vb]()
+        //{
+            if (last_bound_unit_vbuffer != vb->id)
+            {
+                glBindBuffer(GL_ARRAY_BUFFER, vb->id);
+                last_bound_unit_vbuffer = vb->id;
+            }
+        //});
     }
 
     void GraphicsDeviceGL::bindBuffer(const IndexBuffer *ib)
-    {
-        if (last_bound_unit_ibuffer != ib->id)
-        {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-            last_bound_unit_ibuffer = ib->id;
-        }
+    {       
+        //Render::pushCommand([this, ib]()
+        //{
+            if (last_bound_unit_ibuffer != ib->id)
+            {
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
+                last_bound_unit_ibuffer = ib->id;
+            }
+        //});
     }
 
     void GraphicsDeviceGL::bindShader(const Shader *shd)
     {
-        if (last_bound_unit_shader != shd->id)
-        {
-            glUseProgram(shd->id);
-            last_bound_unit_shader = shd->id;
-        }
+        //Render::pushCommand([this, shd]()
+        //{
+            if (last_bound_unit_shader != shd->id)
+            {
+                glUseProgram(shd->id);
+                last_bound_unit_shader = shd->id;
+            }
+        //});
     }
 
     void GraphicsDeviceGL::bindVertexArray(const VertexArray *va)
     {
-        if (last_bound_unit_vao != va->id)
-        {
-            glBindVertexArray(va->id);
-            last_bound_unit_vao = va->id;
-        }
+        //Render::pushCommand([this, va]()
+        //{
+            if (last_bound_unit_vao != va->id)
+            {
+
+                glBindVertexArray(va->id);
+                last_bound_unit_vao = va->id;
+            }
+        //});          
     }
 
     void GraphicsDeviceGL::bindFramebuffer(const Framebuffer *fbo)
     {
-        if (last_bound_unit_fbo != fbo->fbo_id)
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo_id);
-            last_bound_unit_fbo = fbo->fbo_id;
-        }
+        //Render::pushCommand([=]()
+        //{
+            if (last_bound_unit_fbo != fbo->fbo_id)
+            {
+                glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo_id);
+                last_bound_unit_fbo = fbo->fbo_id;
+            }
+        //});        
     }
 
     void GraphicsDeviceGL::bindRenderbuffer(const Framebuffer *fbo)
     {
-        glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb_id);
+        Render::pushCommand([fbo]()
+        {
+            glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb_id);
+        });
     }
 
     void GraphicsDeviceGL::bindForRead(const Framebuffer *fbo)
     {
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->fbo_id);
+        Render::pushCommand([fbo]()
+        {
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->fbo_id);
+        });
     }
 
     void GraphicsDeviceGL::bindForWrite(const Framebuffer *fbo)
     {
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->fbo_id);
+        Render::pushCommand([fbo]()
+        {
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->fbo_id);
+        });
     }
 
     void GraphicsDeviceGL::addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo)
@@ -631,46 +669,68 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::unbindVertexArray()
     {
-        glBindVertexArray(0);
+        Render::pushCommand([&]()
+        {
+            glBindVertexArray(0);
+        });
         last_bound_unit_vao = 0;
     }
 
     void GraphicsDeviceGL::unbindShader()
     {
-        glUseProgram(0);
+        Render::pushCommand([&]()
+        {
+            glUseProgram(0);
+        });
         last_bound_unit_shader = 0;
     }
 
     void GraphicsDeviceGL::unbindFramebuffer()
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //Render::pushCommand([&]()
+        //{
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //});
+
         last_bound_unit_fbo = 0;
     }
 
     void GraphicsDeviceGL::setBool(const std::string & name, bool value, Shader *shd)
     {
-        glUniform1i(glGetUniformLocation(shd->id, name.c_str()), (int)value);
+        Render::pushCommand([name, value, shd]()
+        {
+            glUniform1i(glGetUniformLocation(shd->id, name.c_str()), (int)value);
+        });
     }
 
     void GraphicsDeviceGL::setInt(const std::string &name, int32 value, Shader* shd)
     {
-        glUniform1i(glGetUniformLocation(shd->id, name.c_str()), value);
+        Render::pushCommand([name, value, shd]()
+        {
+            glUniform1i(glGetUniformLocation(shd->id, name.c_str()), value);
+        });
     }
 
     void GraphicsDeviceGL::setFloat(const std::string &name, real32 value, Shader *shd)
     {
-        glUniform1f(glGetUniformLocation(shd->id, name.c_str()), value);
+        Render::pushCommand([name, value, shd]()
+        {
+            glUniform1f(glGetUniformLocation(shd->id, name.c_str()), value);
+        });
     }
 
     void GraphicsDeviceGL::setVec2(const std::string &name, const Vec2& value, Shader *shd)
     {
-        int add = 0;
-        //glUniform2fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniform2fv(location, 1, value.data);
     }
 
     void GraphicsDeviceGL::setVec2(const std::string &name, real32 x, real32 y, Shader *shd)
     {
-        glUniform2f(glGetUniformLocation(shd->id, name.c_str()), x, y);
+        Render::pushCommand([name, x, y, shd]()
+        {
+            glUniform2f(glGetUniformLocation(shd->id, name.c_str()), x, y);
+        });
     }
 
     void GraphicsDeviceGL::setVec3(const std::string &name, const Vec3& value, Shader *shd)
@@ -680,32 +740,43 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setVec3(const std::string &name, real32 x, real32 y, real32 z, Shader *shd)
     {
-        glUniform3f(glGetUniformLocation(shd->id, name.c_str()), x, y, z);
+        //Render::pushCommand([name, x, y, z, shd]()
+        //{
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniform3f(location, x, y, z);
+        //});
     }
 
-    /*void GraphicsDeviceGL::setVec4(const std::string &name, const vec4& value, Shader *shd)
+    void GraphicsDeviceGL::setVec4(const std::string &name, const Vec4& value, Shader *shd)
     {
-        glUniform4fv(glGetUniformLocation(shd->id, name.c_str()), 1, &value[0]);
+        setVec4(name, value.x, value.y, value.z, value.w, shd);
     }
 
     void GraphicsDeviceGL::setVec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, Shader *shd)
     {
-        glUniform4f(glGetUniformLocation(shd->id, name.c_str()), x, y, z, w);
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniform4f(location, x, y, z, w);
     }
 
-    /*void GraphicsDeviceGL::setMat2(const std::string &name, const glm::mat2 &mat, Shader *shd)
+    void GraphicsDeviceGL::setMat2(const std::string &name, const Matrix2x2 &mat, Shader *shd)
     {
-        glUniformMatrix2fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniformMatrix2fv(location, 1, GL_FALSE, mat.data);
     }
 
-    void GraphicsDeviceGL::setMat3(const std::string &name, const glm::mat3 &mat, Shader *shd)
+    void GraphicsDeviceGL::setMat3(const std::string &name, const Matrix3x3 &mat, Shader *shd)
     {
-        glUniformMatrix3fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-    }*/
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniformMatrix3fv(location, 1, GL_FALSE, mat.data);
+    }
 
     void GraphicsDeviceGL::setMat4(const std::string &name, const Matrix4x4 &mat, Shader *shd)
     {
-        glUniformMatrix4fv(glGetUniformLocation(shd->id, name.c_str()), 1, GL_FALSE, mat.data);
+        //Render::pushCommand([name, mat, shd]()
+        //{
+            int location = glGetUniformLocation(shd->id, name.c_str());
+            glUniformMatrix4fv(location, 1, GL_FALSE, mat.data);        
+        //});
     }
 
     bool32 GraphicsDeviceGL::createTexture(Texture2D *texture)
@@ -965,28 +1036,38 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     bool32 GraphicsDeviceGL::createFramebuffer(uint32 count, Framebuffer *fbo)
     {
-        glGenFramebuffers(count, &fbo->fbo_id);
+        //Render::pushCommand([&]()
+        //{
+            glGenFramebuffers(count, &fbo->fbo_id);
+        //});
         
         return true;
     }
 
     bool32 GraphicsDeviceGL::createRenderbuffer(uint32 count, Framebuffer *fbo)
     {
-        glGenRenderbuffers(count, &fbo->rb_id);
-
+        //Render::pushCommand([&]()
+        //{
+            glGenRenderbuffers(count, &fbo->rb_id);
+        //});
+        
         return true;
     }
 
     bool32 GraphicsDeviceGL::createVertexBuffer(void *vertices, uint32 size, DRAW_TYPE draw_type, VertexBuffer *vb)
     {
         vb->data = vertices;
-
-        glGenBuffers(1, &vb->id);
+        
+        //Render::pushCommand([vb, size, draw_type]() mutable
+        //{
+            //glCreateBuffers(1, &vb->id);
+        glCreateBuffers(1, &vb->id);
         glBindBuffer(GL_ARRAY_BUFFER, vb->id);
 
-        uint32 draw_type_gl = convert_draw_type_to_gl_type(draw_type);
-
-        glBufferData(GL_ARRAY_BUFFER, size, vb->data, draw_type_gl);
+            uint32 draw_type_gl = convert_draw_type_to_gl_type(draw_type);
+            //glNamedBufferData(vb->id, size, vb->data, draw_type_gl);
+            glBufferData(GL_ARRAY_BUFFER, size, vb->data, draw_type_gl);
+        //});
 
         return vb->data ? true : false;
     }
@@ -996,14 +1077,15 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         ib->index_data = indices;
         ib->count = size;
 
-        glGenBuffers(1, &ib->id);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLuint), ib->index_data, GL_STATIC_DRAW);
+        //Render::pushCommand([ib]() mutable
+        //{
+            glCreateBuffers(1, &ib->id);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib->count * sizeof(GLuint), ib->index_data, GL_STATIC_DRAW);
+            //glNamedBufferData(ib->id, ib->count * sizeof(GLuint), ib->index_data, GL_STATIC_DRAW);
+        //});
 
-        if (ib->index_data)
-            return true;
-
-        return false;
+        return ib->index_data ? true : false;
     }
 
     bool32 GraphicsDeviceGL::createIndexBuffer(Index *indices, uint32 size, IndexBuffer *ib)
@@ -1011,20 +1093,24 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         ib->data = indices;
         ib->count = size;
 
-        glGenBuffers(1, &ib->id);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
+        //Render::pushCommand([ib]() mutable
+        //{
+            glCreateBuffers(1, &ib->id);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib->count * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
+            //glNamedBufferData(ib->id, ib->count * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
+        //});
 
-        if (ib->data)
-            return true;
-
-        return false;
+        return ib->data ? true : false;
     }
 
     bool32 GraphicsDeviceGL::createVertexArray(VertexArray *va)
     {
-        glGenVertexArrays(1, &va->id);
-
+        //Render::pushCommand([va]() mutable
+        //{
+            glCreateVertexArrays(1, &va->id);
+        //});
+        
         return true;
     }
 
@@ -1055,61 +1141,70 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     bool32 GraphicsDeviceGL::addVertexBuffer(VertexArray *va, VertexBuffer *vb)
     {
-        bindVertexArray(va);
-        if (vb != nullptr)
-        {
-            bindBuffer(vb);
-        }
+        //Render::pushCommand([va, vb]() mutable
+        //{
+            glBindVertexArray(va->id);
+            
+            const auto& buffer_layout = vb->layout;
 
-        const auto& buffer_layout = vb->layout;
+            for (uint16 i = 0; i < buffer_layout.elements.size(); i++)
+            {
+                auto cur_element = buffer_layout.elements.at(i);
 
-        for (uint16 i = 0; i < buffer_layout.elements.size(); i++)
-        {
-            auto cur_element = buffer_layout.elements.at(i);
-            glEnableVertexAttribArray(va->ibuffer_index);
-            glVertexAttribPointer(va->ibuffer_index, cur_element.elementTypeCount(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (const void*)cur_element.offset);
-            va->ibuffer_index++;
-        }
+                glEnableVertexAttribArray(va->ibuffer_index);
+                glVertexAttribPointer(va->ibuffer_index, cur_element.elementTypeCount(), GL_FLOAT, GL_FALSE, buffer_layout.stride, (const void*)cur_element.offset);
 
-        //va->buffers.push_back(vb);
+                va->ibuffer_index++;
+            }            
+        //});
 
         return false;
     }
 
     bool32 GraphicsDeviceGL::setIndexBuffer(VertexArray *va, IndexBuffer *ib)
     {
-        // assert 
-        if (ib != nullptr)
-        {
-            bindVertexArray(va);
-            bindBuffer(ib);
+        // assert      
+        
+        //Render::pushCommand([va, ib]() mutable
+        //{
+            glBindVertexArray(va->id);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
             va->ib = ib;
-            return true;
-        }
+        //});
 
-        return false;
+        return true;
     }
 
     void GraphicsDeviceGL::setTextureWrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler)
     {
-        uint32 gl_texture_type = convert_texture_type_gl(type);
-        uint32 gl_wrapping_axis = convert_texture_wrapping_axis_type_gl(wrapping_axis);
-        uint32 gl_wrapping = convert_texture_wrapping_type_gl(sampler);
-        glTexParameteri(gl_texture_type, gl_wrapping_axis, gl_wrapping);
+        Render::pushCommand([type, wrapping_axis, sampler]() mutable
+        {
+            uint32 gl_texture_type = convert_texture_type_gl(type);
+            uint32 gl_wrapping_axis = convert_texture_wrapping_axis_type_gl(wrapping_axis);
+            uint32 gl_wrapping = convert_texture_wrapping_type_gl(sampler);
+            glTexParameteri(gl_texture_type, gl_wrapping_axis, gl_wrapping);
+
+        });
     }
 
     void GraphicsDeviceGL::setTextureSampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler)
     {
-        uint32 gl_texture_type = convert_texture_type_gl(type);
-        uint32 gl_texture_filter = convert_texture_filter_operation_gl(filter_operation);
-        uint32 gl_texture_sampling = convert_texture_sampling_type_gl(sampler);
-        glTexParameteri(gl_texture_type, gl_texture_filter, gl_texture_sampling);
+        Render::pushCommand([type, filter_operation, sampler]() mutable
+        {
+            uint32 gl_texture_type = convert_texture_type_gl(type);
+            uint32 gl_texture_filter = convert_texture_filter_operation_gl(filter_operation);
+            uint32 gl_texture_sampling = convert_texture_sampling_type_gl(sampler);
+            glTexParameteri(gl_texture_type, gl_texture_filter, gl_texture_sampling);
+        });        
     }
 
     void GraphicsDeviceGL::loadTextureGpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void *image)
     {
-        uint32 gl_texture_type = convert_texture_type_gl(texture_t);
-        glTexImage2D(gl_texture_type, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
+        Render::pushCommand([texture_t, width, height, internal_format, data_format, image]() mutable
+        {
+            uint32 gl_texture_type = convert_texture_type_gl(texture_t);
+            glTexImage2D(gl_texture_type, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
+        });
     }
 
     // @Special cubemap
@@ -1125,50 +1220,78 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::generateTextureMipmap(TEXTURE_TYPE texture_t)
     {
-        uint32 gl_t = convert_texture_type_gl(texture_t);
-        glGenerateMipmap(gl_t);
+        Render::pushCommand([texture_t]() mutable
+        {
+            uint32 gl_t = convert_texture_type_gl(texture_t);
+            glGenerateMipmap(gl_t);
+        });
     }
 
     void GraphicsDeviceGL::destroyTexture2D(Texture2D *tex)
     {
-        if (!tex->is_valid)
-            return;
-        glDeleteTextures(1, &tex->id);
+        Render::pushCommand([tex]() mutable
+        {
+            if (tex->is_valid)
+            {
+                glDeleteTextures(1, &tex->id);
+            }
+        });
     }
 
     void GraphicsDeviceGL::destroyFramebuffer(Framebuffer *fbo)
     {
-        glDeleteFramebuffers(1, &fbo->fbo_id);
+        Render::pushCommand([fbo]() mutable
+        {
+            glDeleteFramebuffers(1, &fbo->fbo_id);
+        });
     }
 
     void GraphicsDeviceGL::destroyShader(uint32 id)
     {
-        glDeleteShader(id);
+        //Render::pushCommand([id]() mutable
+        //{
+            glDeleteShader(id);
+        //});
     }
 
     void GraphicsDeviceGL::destroyBuffer(VertexBuffer *vb)
     {
-        glDeleteBuffers(1, &vb->id);
+        Render::pushCommand([vb]() mutable
+        {
+            glDeleteBuffers(1, &vb->id);
+        });
     }
 
-    void GraphicsDeviceGL::destroyBuffer(IndexBuffer * ib)
+    void GraphicsDeviceGL::destroyBuffer(IndexBuffer *ib)
     {
-        glDeleteBuffers(1, &ib->id);
+        Render::pushCommand([ib]() mutable
+        {
+            glDeleteBuffers(1, &ib->id);
+        });
     }
 
     void GraphicsDeviceGL::setDrawBuffer(uint32 type)
     {
-        glDrawBuffer(type);
+        Render::pushCommand([type]() mutable
+        {
+            glDrawBuffer(type);
+        });
     }
 
     void GraphicsDeviceGL::setDrawBuffers(uint32 count, void *pointer)
     {
-        glDrawBuffers(count, (uint32*)pointer);
+        Render::pushCommand([count, pointer]() mutable
+        {
+            glDrawBuffers(count, (uint32*)pointer);
+        });
     }
 
     void GraphicsDeviceGL::setReadBuffer(uint32 type)
     {
-        glReadBuffer(type);
+        Render::pushCommand([type]() mutable
+        {
+            glReadBuffer(type);
+        });
     }
 
     void GraphicsDeviceGL::checkError()
@@ -1176,8 +1299,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         GLenum err;
         while ((err = glGetError()) != GL_NO_ERROR)
         {
-            //const char* erro_char = (const char*)err;
-            //xe_utility::error(std::string(erro_char));
+            const char* erro_char = (const char*)err;
+            //printf("%s", erro_char);
         }
     }
 

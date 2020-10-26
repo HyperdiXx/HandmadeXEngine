@@ -55,7 +55,7 @@ struct Camera2D
 
     void setupProjection(real32 left, real32 right, real32 bottom, real32 top)
     {
-        //projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+        projection = orthoMat(left, right, bottom, top, -1.0f, 1.0f);
         view_projection = projection * view;
     }
 
@@ -64,7 +64,7 @@ struct Camera2D
         Matrix4x4 transform = createMat4x4();
         translateMat(transform, position);
 
-        //view = glm::inverse(transform);
+        view = inverseMat(transform);
         view_projection = projection * view;
     }
 
@@ -76,7 +76,7 @@ struct Camera2D
     {
         if (!is_inited)
         {
-            setupProjection(0, width, 0, height);
+            setupProjection(0, width, height, 0);
             is_inited = true;
         }
 
@@ -294,6 +294,7 @@ private:
     
     std::queue<Entity> entities;
     DynArray<System> systems;
+    DynArray<Component> components;
 };
 
 #endif // !ECS_H

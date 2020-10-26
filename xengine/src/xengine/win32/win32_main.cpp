@@ -17,7 +17,6 @@
 #include "xengine\external\wglext.h"
 
 #include "xengine\common.h"
-#include "xengine\math.cpp"
 #include "game\app_state.h"
 
 #include "win32_platform.cpp"

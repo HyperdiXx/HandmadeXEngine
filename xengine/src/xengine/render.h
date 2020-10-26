@@ -184,7 +184,8 @@ public:
     global bool32 createShadowMaps(ShadowMap *shadow);
     global bool32 createSphere(SphereMesh *sphre);
     global bool32 createCube(CubeMesh *cube);
-    //bool32 createMesh(xe_assets::Mesh *meh, xe_graphics::Vertex *vertex_type, bool32 calculate_tspace);
+    
+    global bool32 createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace);
 
     global bool32 createLineMesh(const Vec3 &start, const Vec3 &end, LineMesh *line_com);
     global bool32 createLineMesh(LineMesh *line_com);
@@ -202,13 +203,13 @@ public:
     global void drawQuad(real32 x, real32 y, real32 w, real32 h, const Color4RGBA &color);
     global void drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture);
 
-    //void drawModel(Model *mod, Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
+    global void drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform);
     //void drawModel(AnimModel *mod, Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
 
     //void drawModel(Model *mod, const Matrix4x4 &transform = createMat4x4(1.0f));
     //void drawModel(AnimModel *mod, const Matrix4x4 &transform = createMat4x44(1.0f));
 
-    //void drawMesh(Mesh *mshs, Shader *shd);
+    global void drawMesh(Mesh *mshs, Shader *shd);
 
     global void drawSphere(Texture2D *texture_diff);
     global void drawSphere();

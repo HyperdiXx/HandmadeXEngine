@@ -737,8 +737,10 @@ void Render::shutdown()
     //clearContextGui();
 }
 
-/*internal bool32 createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace)
+bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace)
 {
+    GraphicsDevice *device = getGDevice();
+
     Vertex *vert = vertex_type;
 
     meh->vao.buffers.push_back(new VertexBuffer());
@@ -769,25 +771,25 @@ void Render::shutdown()
         };
     }
 
-    graphics_state.graphics_state.graphics_device->createVertexArray(&meh->vao);
-    graphics_state.graphics_state.graphics_device->bindVertexArray(&meh->vao);
+    device->createVertexArray(&meh->vao);
+    device->bindVertexArray(&meh->vao);
 
-    graphics_state.graphics_state.graphics_device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
+    device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
 
     // TODO: rework
-    graphics_state.graphics_state.graphics_device->createIndexBuffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
+    device->createIndexBuffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
 
-    graphics_state.graphics_state.graphics_device->createBufferLayout(init_list, &buffer_layout);
-    graphics_state.graphics_state.graphics_device->setVertexBufferLayout(meh->vao.buffers[0], &buffer_layout);
-    graphics_state.graphics_state.graphics_device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
-    graphics_state.graphics_state.graphics_device->setIndexBuffer(&meh->vao, meh->vao.ib);
+    device->createBufferLayout(init_list, &buffer_layout);
+    device->setVertexBufferLayout(meh->vao.buffers[0], &buffer_layout);
+    device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
+    device->setIndexBuffer(&meh->vao, meh->vao.ib);
 
-    graphics_state.graphics_state.graphics_device->unbindVertexArray();
-    graphics_state.graphics_state.graphics_device->destroyBuffer(meh->vao.buffers[0]);
-    graphics_state.graphics_state.graphics_device->destroyBuffer(meh->vao.ib);
+    device->unbindVertexArray();
+    device->destroyBuffer(meh->vao.buffers[0]);
+    device->destroyBuffer(meh->vao.ib);
 
     return true;
-}*/
+}
 
 bool32 Render::createLineMesh(const Vec3 &start, const Vec3 &end, LineMesh *line_com)
 {
@@ -1526,24 +1528,33 @@ void Render::drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture
     graphics_state.graphics_state.graphics_device->unbindShader();
 }*/
 
-/*void Render::drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform)
+void Render::drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform)
 {
-    GraphicsDevice *device = xe_render::getDevice();
-    xe_assets::Node *root = mod->root;
+    GraphicsDevice *device = getGDevice();
+    ModelNode *root = mod->root;
+
+    device->bindShader(shd);
+
+    Camera3D &camera3d = getCamera3D();
+
+    Matrix4x4 vp = camera3d.getViewProjection();
+
+    device->setMat4("mvp", vp * transform, shd);
+    device->setMat4("model", transform, shd);
 
     for (uint32 i = 0; i < root->children.size(); i++)
     {
-        xe_assets::Node* curr_node = root->children[i];
+        ModelNode* curr_node = root->children[i];
 
         for (uint32 j = 0; j < curr_node->meshes.size(); j++)
         {
-            xe_assets::Mesh *cur_mesh = curr_node->meshes.at(j);
+            Mesh *cur_mesh = curr_node->meshes.at(j);
             drawMesh(cur_mesh, shd);
         }
     }
 
     device->unbindShader();
-}*/
+}
 
 /*void drawModel(xe_assets::AnimModel *mod, Shader *shd, const Matrix4x4 &transform)
 {
@@ -2231,15 +2242,15 @@ void drawEntPrimitive(Entity *ent)
     }*/
 }
 
-/*void Render::drawMesh(xe_assets::Mesh *msh, Shader *shd)
+void Render::drawMesh(Mesh *msh, Shader *shd)
 {
-    GraphicsDevice *device = xe_render::getDevice();
+    GraphicsDevice *device = getGDevice();
 
     uint32 diff_texture_num = 1;
     uint32 normal_texture_num = 1;
     uint32 specular_texture_num = 1;
 
-    for (uint32 i = 0; i < msh->mesh_textures.size(); i++)
+    /*for (uint32 i = 0; i < msh->mesh_textures.size(); i++)
     {
         // @Refactor!!!
         Texture2D *mesh_texture = msh->mesh_textures[i].texture;
@@ -2257,11 +2268,11 @@ void drawEntPrimitive(Entity *ent)
 
         device->setInt((name + num).c_str(), i, shd);
         device->bindTexture(TEXTURE_TYPE::COLOR, mesh_texture);
-    }
+    }*/
 
     device->bindVertexArray(&msh->vao);
     device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
-}*/
+}
 
 void Render::drawSphere(Texture2D *texture_diff)
 {

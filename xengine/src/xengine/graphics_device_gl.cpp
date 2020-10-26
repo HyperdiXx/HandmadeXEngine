@@ -1271,18 +1271,18 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::destroyBuffer(VertexBuffer *vb)
     {
-        Render::pushCommand([vb]() mutable
-        {
+        //Render::pushCommand([vb]() mutable
+        //{
             glDeleteBuffers(1, &vb->id);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::destroyBuffer(IndexBuffer *ib)
     {
-        Render::pushCommand([ib]() mutable
-        {
+        //Render::pushCommand([ib]() mutable
+       // {
             glDeleteBuffers(1, &ib->id);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::setDrawBuffer(uint32 type)

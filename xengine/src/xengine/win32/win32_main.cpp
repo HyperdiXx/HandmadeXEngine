@@ -92,6 +92,22 @@ int CALLBACK
 WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_show_cmd)
 {    
     // Load Game Code
+#ifdef DEBUG
+    
+    AllocConsole();
+    freopen("conin$", "r", stdin);
+    freopen("conout$", "w", stdout);
+    freopen("conout$", "w", stderr);
+
+#endif
+
+    std::string directory = getCurrentDirectory();
+    bool32 isDLLExists = Win32IsFileExist("application.dll");
+
+    if (!isDLLExists)
+    {
+        DEBUG_LOG("Failed to find dll!\n");
+    }
 
     win32_game_code game_code = {};
     {

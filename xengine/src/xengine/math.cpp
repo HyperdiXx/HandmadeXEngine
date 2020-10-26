@@ -262,6 +262,18 @@ struct Vec4
     };
 };
 
+struct Vec4i
+{
+    union
+    {
+        struct
+        {
+            int32 x, y, z, w;
+        };
+        int32 data[4];
+    };
+};
+
 inline Vec4 createVec4(real32 x, real32 y, real32 z, real32 w)
 {
     Vec4 res = {};
@@ -274,6 +286,17 @@ inline Vec4 createVec4(real32 x, real32 y, real32 z, real32 w)
     return res;
 }
 
+inline Vec4i createVec4i(int32 x, int32 y, int32 z, int32 w)
+{
+    Vec4i res = {};
+
+    res.x = x;
+    res.y = y;
+    res.z = z;
+    res.w = w;
+
+    return res;
+}
 
 struct Rect
 {
@@ -417,6 +440,52 @@ inline Matrix4x4 createMat4x4()
     return result;
 }
 
+inline Matrix4x4 createMat4x4(Vec4 r1, Vec4 r2, Vec4 r3, Vec4 r4)
+{
+    Matrix4x4 result = {};
+
+    memset(result.data, 0, 16 * sizeof(real32));
+    
+    result.rows[0] = r1;
+    result.rows[1] = r2;
+    result.rows[2] = r3;
+    result.rows[3] = r4;
+    
+    return result;
+}
+
+inline Matrix4x4 createMat4x4(real32 a00, real32 a01, real32 a02, real32 a03,
+                              real32 a10, real32 a11, real32 a12, real32 a13,
+                              real32 a20, real32 a21, real32 a22, real32 a23,
+                              real32 a30, real32 a31, real32 a32, real32 a33)
+{
+    Matrix4x4 result = {};
+
+    memset(result.data, 0, 16 * sizeof(real32));
+
+    result.data[0] = a00;
+    result.data[1] = a01;
+    result.data[2] = a02;
+    result.data[3] = a03;
+
+    result.data[4] = a10;
+    result.data[5] = a11;
+    result.data[6] = a12;
+    result.data[7] = a13;
+
+    result.data[8]  = a20;
+    result.data[9]  = a21;
+    result.data[10] = a22;
+    result.data[11] = a23;
+
+    result.data[12] = a30;
+    result.data[13] = a31;
+    result.data[14] = a32;
+    result.data[15] = a33;
+
+    return result;
+}
+
 inline Matrix3x3 createMat3x3()
 {
     Matrix3x3 result = {};
@@ -457,6 +526,12 @@ inline Quaternion createQuat()
     return result;
 }
 
+inline Quaternion createQuat(real32 x, real32 y, real32 z, real32 w)
+{
+    Quaternion result = { x, y, z, w };
+    return result;
+}
+
 inline Quaternion fromAxisAngle(Vec3 axis, Radian radians)
 {
     Quaternion result = {};
@@ -476,7 +551,7 @@ inline Quaternion fromAxisDegreeAngle(Vec3 axis, Degree degrees)
     return fromAxisAngle(axis, DegreesToRadians(degrees));
 }
 
-inline Quaternion operator*(Quaternion q1, Quaternion q2)
+inline Quaternion operator*(const Quaternion &q1, const Quaternion &q2)
 {
     Quaternion result = {};
 
@@ -488,7 +563,25 @@ inline Quaternion operator*(Quaternion q1, Quaternion q2)
     return result;
 }
 
-inline Matrix4x4 operator*(Matrix4x4 &a, Matrix4x4 &b)
+inline Vec3 operator*(const Quaternion &quat, const Vec3 &vec)
+{
+    Vec3 res = createVec3(0.0f, 0.0f, 0.0f);
+
+    real32 tmpX, tmpY, tmpZ, tmpW;
+    
+    tmpX = (((quat.w * vec.x) + (quat.y * vec.z)) - (quat.z * vec.y));
+    tmpY = (((quat.w * vec.y) + (quat.z * vec.x)) - (quat.x * vec.z));
+    tmpZ = (((quat.w * vec.z) + (quat.x * vec.y)) - (quat.y * vec.x));
+    tmpW = (((quat.x * vec.x) + (quat.y * vec.y)) + (quat.z * vec.z));
+
+    res.x = ((((tmpW * quat.x) + (tmpX * quat.w)) - (tmpY * quat.z)) + (tmpZ * quat.y));
+    res.y = ((((tmpW * quat.y) + (tmpY * quat.w)) - (tmpZ * quat.x)) + (tmpX * quat.z));
+    res.z = ((((tmpW * quat.z) + (tmpZ * quat.w)) - (tmpX * quat.y)) + (tmpY * quat.x));
+    
+    return res;
+}
+
+inline Matrix4x4 operator*(const Matrix4x4 &a, const Matrix4x4 &b)
 {
     Matrix4x4 res = createMat4x4();
 
@@ -754,13 +847,35 @@ inline Matrix4x4 lookAt(const Vec3 &pos, const Vec3 &forward, const Vec3 &up)
     return res;
 }
 
+inline 
+Matrix4x4 transposeMat(Matrix4x4 &mat)
+{    
+    return createMat4x4(createVec4(mat.rows[0].x, mat.rows[1].x, mat.rows[2].x, mat.rows[3].x),
+        createVec4(mat.rows[0].y, mat.rows[1].y, mat.rows[2].y, mat.rows[3].y),
+        createVec4(mat.rows[0].z, mat.rows[1].z, mat.rows[2].z, mat.rows[3].z),
+        createVec4(mat.rows[0].w, mat.rows[1].w, mat.rows[2].w, mat.rows[3].w));
+}
+
+inline Matrix4x4 toMat4(const Quaternion &quat)
+{
+    Vec3 r = quat * createVec3(1, 0, 0);
+    Vec3 u = quat * createVec3(0, 1, 0);
+    Vec3 f = quat * createVec3(0, 0, 1);
+
+    return createMat4x4(r.x, r.y, r.z, 0,
+        u.x, u.y, u.z, 0,
+        f.x, f.y, f.z, 0,
+        0, 0, 0, 1
+    );
+}
+
 struct AABB
 {
-    Vec2 min, max;
+    Vec3 min, max;
 };
 
 inline 
-AABB createAABB(Vec2 min, Vec2 max)
+AABB createAABB(Vec3 min, Vec3 max)
 {
     AABB res = {};
 

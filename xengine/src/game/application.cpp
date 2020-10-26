@@ -19,6 +19,7 @@
 #include "xengine\graphics_device.h"
 #include "xengine\layer.h"
 #include "xengine\ecs.h"
+#include "xengine\assets.h"
 #include "xengine\render.h"
 #include "xengine\memory.h"
 
@@ -40,6 +41,7 @@
 #include "xengine\render.cpp"
 #include "xengine\memory.cpp"
 #include "xengine\ecs.cpp"
+#include "xengine\assets.cpp"
 
 #include "layers.h"
 #include "layers.cpp"
@@ -52,8 +54,10 @@ global DynArray<Rect> rects_to_test;
 //global Quadtree tree;
 
 global CubeMesh cube;
+global Model *nano_character = nullptr;
 
-internal void InitGameLayers()
+internal 
+void InitGameLayers()
 {
     layersTest = createDynArray<LayerTest>();
 
@@ -76,7 +80,8 @@ internal void InitGameLayers()
     //layersTest.push_back(std::move(guiT));
 }
 
-internal void InitQuadTree()
+internal
+void InitQuadTree()
 {
     /*tree = Quadtree(0, 0, 1280, 720, 0, 4);
 
@@ -94,7 +99,8 @@ internal void InitQuadTree()
     }*/
 }
 
-internal void InitECS()
+internal 
+void InitECS()
 {
     System base_s(convertToSystemType("TransformSystem"));
     System render_s(convertToSystemType("RenderSystem"));
@@ -144,6 +150,13 @@ void Render()
 
     Render::executeRenderCommand(CommandType::QUAD_COMMAND);
     Render::executeRenderCommand(CommandType::LINE_COMMAND);
+    
+    Matrix4x4 base = createMat4x4();
+    Vec3 translation = createVec3(0.0f, 0.0f, -50.0f);
+    translateMat(base, translation);
+
+    Shader *d3shader = Render::getShader("base3d");
+    Render::drawModel(nano_character, d3shader, base);
 
     //Render::endFrame();
 }
@@ -160,6 +173,8 @@ APP_LOAD_DATA
 
     //InitQuadTree();
     InitECS();
+
+    nano_character = loadModelFromFile("assets/nano/nanosuit.obj");
 
     for (int i = 0; i < layersTest.size(); ++i)
     {

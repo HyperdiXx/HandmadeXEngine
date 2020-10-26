@@ -142,5 +142,5 @@ void main()
 
     vec3 final_color = (ambient_coef + diffuse + specular);
     
-	frag_color = vec4(final_color, 1.0);    
+	frag_color = vec4(0.0, 1.0, 0.0, 1.0);    
 }

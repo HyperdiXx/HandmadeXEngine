@@ -17,7 +17,7 @@ out VS_OUT {
 
 uniform mat4 mvp;
 uniform mat4 model;
-uniform mat4 light_space_matrix;
+//uniform mat4 light_space_matrix;
 
 void main()
 {
@@ -26,6 +26,6 @@ void main()
     vs_out.tangent = iTangent;
     vs_out.bitangent = iBitangent;
     vs_out.world_pos = (model * vec4(iPos, 1.0)).xyz;
-    vs_out.world_pos_light_space = light_space_matrix * vec4(vs_out.world_pos, 1.0);
+    //vs_out.world_pos_light_space = light_space_matrix * vec4(vs_out.world_pos, 1.0);
     gl_Position = mvp * vec4(iPos, 1.0);
 }

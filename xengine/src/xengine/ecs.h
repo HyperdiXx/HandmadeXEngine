@@ -151,7 +151,7 @@ struct Camera3D
 
     Matrix4x4 getViewProjection()
     {
-        return projection * getViewMatrix();
+        return getProjectionMatrix() * getViewMatrix();
     }
 
     /*void mouse_move(real32 xoffset, real32 yoffset, real32 constrainPitch = true)

@@ -148,15 +148,7 @@ private:
 class Render
 {
 public:
-
-    enum class ApiType
-    {
-        OPENGL,
-        VULKAN,
-        DX11
-    };
-
-    global void init(ApiType type = ApiType::OPENGL);
+    global void init(API_TYPE type = API_TYPE::OPENGL);
     global bool32 initRenderGL();
     global bool32 initRenderDX11();
 

@@ -19,7 +19,7 @@ enum BUFFER_TYPE
 enum SHADER_TYPE
 {
     VS,
-    FS,
+    PS,
     GS,
     HS,
     CS
@@ -83,6 +83,13 @@ enum PRIMITIVE_TOPOLOGY
     LINE_LOOP,
     LINE_STRIP,
     POINTLESS
+};
+
+enum API_TYPE
+{
+    OPENGL,
+    VULKAN,
+    DX11
 };
 
 struct TextureDesc

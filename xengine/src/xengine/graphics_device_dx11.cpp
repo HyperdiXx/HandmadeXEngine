@@ -256,6 +256,11 @@ namespace xe_graphics
 
     }
 
+    void GraphicsDeviceDX11::setAPI()
+    {
+        api = API_TYPE::DX11;
+    }
+
     void GraphicsDeviceDX11::clear(int flags)
     {
         device_context->ClearRenderTargetView(render_target_view, clear_color_v);

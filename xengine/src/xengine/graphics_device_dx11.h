@@ -16,6 +16,7 @@ namespace xe_graphics
         GraphicsDeviceDX11(HWND window, bool32 vsync = true, bool32 fullscreen = false);
         virtual ~GraphicsDeviceDX11();
 
+        void setAPI() override;
         void clear(int flags) override;
         void clearColor(real32 r, real32 g, real32 b, real32 a) override;
         void setViewport(int32 x, int32 y, int32 width, int32 height) override;

@@ -36,6 +36,7 @@
     #include "xengine\graphics_device_gl.cpp"
 #endif
 
+#include "xengine\graphics_resource.cpp"
 #include "xengine\render.cpp"
 #include "xengine\memory.cpp"
 #include "xengine\ecs.cpp"

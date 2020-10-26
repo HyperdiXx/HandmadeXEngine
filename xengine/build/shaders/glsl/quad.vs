@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 int indices[6] = int[](0, 1, 2, 2, 1, 3);
 

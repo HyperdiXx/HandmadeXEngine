@@ -220,16 +220,17 @@ void setupRenderPasses()
 
 }
 
-void Render::init(ApiType type)
+void Render::init(API_TYPE type)
 {
     GraphicsDevice *device = getGDevice();
 
     switch (type)
     {
-    case ApiType::OPENGL:
+    case API_TYPE::OPENGL:
     {
         LoadAllOpenGLProcedures();
         device = alloc_mem GraphicsDeviceGL();
+        device->setAPI();
         setDevice(device);
     } break;
     default:
@@ -371,7 +372,6 @@ bool32 Render::loadShaders()
     Shader triangle = {};
     
     Shader d2shader = {};
-    Shader lines = {};
 
     std::string shader_names[8] = {};
 
@@ -385,7 +385,6 @@ bool32 Render::loadShaders()
 
     std::string resolved_path = "shaders/glsl/";
 
-    res |= device->createShader("shaders/glsl/lines.vs", "shaders/glsl/lines.fs", &lines);
     res |= device->createShader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
     res |= device->createShader("shaders/glsl/anim_model3d.vs", "shaders/glsl/base3d.fs", &anim_model);
     res |= device->createShader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
@@ -415,7 +414,6 @@ bool32 Render::loadShaders()
     }
 
     addShader("render2d", d2shader);
-    addShader("line", lines);
     addShader("simple_pos", simple_color);
     addShader("simple2d", simple_shader);
     addShader("simple_tex", simple_texture);

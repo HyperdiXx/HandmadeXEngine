@@ -322,6 +322,11 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         glClearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
     }
 
+    void GraphicsDeviceGL::setAPI()
+    {
+        api = API_TYPE::OPENGL;
+    }
+
     void GraphicsDeviceGL::clearColor(const Vec4& color)
     {
         glClearColor(color.x, color.y, color.z, color.w);
@@ -966,72 +971,82 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     bool32 GraphicsDeviceGL::createShader(const char *vertex_code, const char *fragment_code, Shader *shd)
     {
-        std::string file_vs = xe_core::readFileString(vertex_code);
-        std::string file_fs = xe_core::readFileString(fragment_code);
+        std::string vs_source = xe_core::readFileString(vertex_code);
+        std::string fs_source = xe_core::readFileString(fragment_code);
 
-        const GLchar *vs_file_code = (GLchar*)file_vs.c_str();
-        const GLchar *fs_file_code = (GLchar*)file_fs.c_str();
+        uint32 vertex_id = compileShader(SHADER_TYPE::VS, vs_source);
+        uint32 pixel_id = compileShader(SHADER_TYPE::PS, fs_source);
 
-        unsigned int vertex, fragment;
-
-        vertex = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertex, 1, &vs_file_code, NULL);
-        glCompileShader(vertex);
-
-        fragment = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragment, 1, &fs_file_code, NULL);
-        glCompileShader(fragment);
-
-        GLint status_vertex;
-        glGetShaderiv(vertex, GL_COMPILE_STATUS, &status_vertex);
-
-        if (status_vertex != GL_TRUE)
+        if (vertex_id == -1 || pixel_id == -1)
         {
-            GLint length;
-            glGetShaderiv(vertex, GL_INFO_LOG_LENGTH, &length);
-
-            GLchar* buffer = new GLchar[length];
-            GLint buflength;
-            glGetShaderInfoLog(vertex, length, &buflength, buffer);
-
-            print_error("Vertex Shader: " + std::string(vertex_code));
-            print_error(buffer);
-
-            delete[] buffer;
-
             return false;
         }
 
-        GLint status_fragment;
-        glGetShaderiv(fragment, GL_COMPILE_STATUS, &status_fragment);
-
-        if (status_fragment != GL_TRUE)
-        {
-            GLint length;
-            glGetShaderiv(fragment, GL_INFO_LOG_LENGTH, &length);
-
-            GLchar* buffer = new GLchar[length];
-            GLint buflength;
-            glGetShaderInfoLog(fragment, length, &buflength, buffer);
-
-            print_error("Fragment Shader: " + std::string(fragment_code));
-            print_error(buffer);
-
-            delete[] buffer;
-
-            return false;
-        }
-
-        shd->id = glCreateProgram();
-        glAttachShader(shd->id, vertex);
-        glAttachShader(shd->id, fragment);
-        glLinkProgram(shd->id);
-        glValidateProgram(shd->id);
-
-        destroyShader(vertex);
-        destroyShader(fragment);
-
+        shd->id = createShaderProgram(vertex_id, pixel_id);
+        
         return true;
+    }
+
+    uint32 GraphicsDeviceGL::compileShader(SHADER_TYPE type, std::string &shader_source)
+    {
+        const GLchar *shader_code = (GLchar*)shader_source.c_str();
+
+        uint32 shader_type = 0;
+
+        switch (type)
+        {
+        case SHADER_TYPE::VS:
+        {
+            shader_type |= GL_VERTEX_SHADER;
+        } break;
+        case SHADER_TYPE::PS:
+        {
+            shader_type |= GL_FRAGMENT_SHADER;
+        } break;
+        default:
+            break;
+        }
+
+        uint32 id = glCreateShader(shader_type);
+        glShaderSource(id, 1, &shader_code, NULL);
+        glCompileShader(id);
+        
+        GLint status;
+        glGetShaderiv(id, GL_COMPILE_STATUS, &status);
+
+        if (status != GL_TRUE)
+        {
+            GLint length;
+            glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+
+            GLchar* buffer = alloc_mem GLchar[length];
+            GLint buflength;
+            glGetShaderInfoLog(id, length, &buflength, buffer);
+
+            print_error("Shader: " + std::string(shader_code));
+            print_error(buffer);
+
+            delete[] buffer;
+
+            return -1;
+        }
+        
+        return id;
+    }
+    
+    uint32 GraphicsDeviceGL::createShaderProgram(uint32 id_vs, uint32 id_pixel)
+    {
+        uint32 id = glCreateProgram();
+
+        glAttachShader(id, id_vs);
+        glAttachShader(id, id_pixel);
+        glLinkProgram(id);
+        glValidateProgram(id);
+
+        destroyShader(id_vs);
+        destroyShader(id_pixel);
+
+        return id;
     }
 
     bool32 GraphicsDeviceGL::createFramebuffer(uint32 count, Framebuffer *fbo)

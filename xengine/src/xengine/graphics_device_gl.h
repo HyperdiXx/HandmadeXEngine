@@ -10,6 +10,8 @@ public:
     GraphicsDeviceGL(HWND window, bool32 vsync = true, bool32 fullscreen = false);
     virtual ~GraphicsDeviceGL();
 
+    void setAPI() override;
+
     void clear(int flags) override;
     void clearColor(real32 r, real32 g, real32 b, real32 a) override;
     void clearColor(const Vec4& color) override;
@@ -85,6 +87,9 @@ public:
     bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) override;
 
     bool32 createShader(const char* vertex, const char* fragment, Shader *Shader) override;
+
+    uint32 compileShader(SHADER_TYPE type, std::string &shader_source) override;
+    uint32 createShaderProgram(uint32 id_vs, uint32 id_pixel) override;
 
     bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) override;
     bool32 createRenderbuffer(const uint32 count, Framebuffer *fbo) override;

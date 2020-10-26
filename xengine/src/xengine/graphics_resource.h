@@ -38,6 +38,11 @@ struct Shader
 {
     GPUHandler id;
     std::string name;
+
+    const char *vertex_path;
+    const char *fragment_path;
+private:
+    
 };
 
 struct Index

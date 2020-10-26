@@ -10,7 +10,10 @@ class RenderPass;
 class GraphicsDevice
 {
 public:
+    
     virtual ~GraphicsDevice() {};
+
+    virtual void setAPI() = 0;
 
     virtual void clear(int flags) = 0;
     virtual void clearColor(real32 r, real32 g, real32 b, real32 a) = 0;
@@ -92,6 +95,9 @@ public:
 
     virtual bool32 createShader(const char* vertex, const char* fragment, Shader* Shader) = 0;
 
+    virtual uint32 compileShader(SHADER_TYPE type, std::string &shader_source) = 0;
+    virtual uint32 createShaderProgram(uint32 id_vs, uint32 id_pixel) = 0;
+ 
     virtual bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) = 0;
     virtual bool32 createRenderbuffer(const uint32 count, Framebuffer *fbo) = 0;
 
@@ -133,11 +139,13 @@ public:
     inline Viewport& getViewport() { return vp; }
 
 protected:
-    bool32 fullscreen = false;
-    bool32 vsync = true;
     real32 clear_color_v[4];
 
     Viewport vp = {};
+    API_TYPE api;
+
+    bool32 fullscreen = false;
+    bool32 vsync = true;
 };
 #endif // !GRAPHICS_DEVICE_H
 

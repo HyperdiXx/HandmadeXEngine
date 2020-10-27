@@ -39,10 +39,8 @@ struct Shader
     GPUHandler id;
     std::string name;
 
-    const char *vertex_path;
-    const char *fragment_path;
-private:
-    
+    static Shader create(const char *vertex_path, const char *pixel_path);    
+    static Shader create(const char *shader_path);    
 };
 
 struct Index

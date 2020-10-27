@@ -162,12 +162,12 @@ namespace layer
     {
         using namespace xe_ecs;
 
-        xe_graphics::GraphicsDevice *device = xe_render::getDevice();
+        GraphicsDevice *device = getGDevice();
 
-        xe_graphics::Shader *color_shader = xe_render::getShader("color");
-        xe_graphics::Shader *model_shader = xe_render::getShader("base3d");
+        Shader *color_shader = getShader("color");
+        Shader *model_shader = getShader("base3d");
 
-        xe_graphics::Viewport vp = device->getViewport();
+        Viewport& vp = device->getViewport();
 
         /*device->bindFramebuffer(&fbo);
         device->setViewport(0, 0, vp.width, vp.height);

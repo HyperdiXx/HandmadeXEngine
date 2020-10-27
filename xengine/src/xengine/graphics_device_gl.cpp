@@ -674,19 +674,19 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::unbindVertexArray()
     {
-        Render::pushCommand([&]()
-        {
+        //Render::pushCommand([&]()
+        //{
             glBindVertexArray(0);
-        });
-        last_bound_unit_vao = 0;
+        //});
+        //last_bound_unit_vao = 0;
     }
 
     void GraphicsDeviceGL::unbindShader()
     {
-        Render::pushCommand([&]()
-        {
+        //Render::pushCommand([&]()
+        //{
             glUseProgram(0);
-        });
+        //});
         last_bound_unit_shader = 0;
     }
 
@@ -710,18 +710,21 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setInt(const std::string &name, int32 value, Shader* shd)
     {
-        Render::pushCommand([name, value, shd]()
-        {
-            glUniform1i(glGetUniformLocation(shd->id, name.c_str()), value);
-        });
+        //Render::pushCommand([name, value, shd]()
+        //{
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniform1i(location, value);
+        //});
     }
 
     void GraphicsDeviceGL::setFloat(const std::string &name, real32 value, Shader *shd)
     {
-        Render::pushCommand([name, value, shd]()
-        {
-            glUniform1f(glGetUniformLocation(shd->id, name.c_str()), value);
-        });
+        //Render::pushCommand([name, value, shd]()
+        //{
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniform1f(location, value);
+
+        //});
     }
 
     void GraphicsDeviceGL::setVec2(const std::string &name, const Vec2& value, Shader *shd)
@@ -732,10 +735,11 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setVec2(const std::string &name, real32 x, real32 y, Shader *shd)
     {
-        Render::pushCommand([name, x, y, shd]()
-        {
-            glUniform2f(glGetUniformLocation(shd->id, name.c_str()), x, y);
-        });
+        //Render::pushCommand([name, x, y, shd]()
+        //{
+        int location = glGetUniformLocation(shd->id, name.c_str());
+        glUniform2f(location, x, y);
+        //});
     }
 
     void GraphicsDeviceGL::setVec3(const std::string &name, const Vec3& value, Shader *shd)
@@ -987,6 +991,63 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         return true;
     }
 
+    internal 
+    GLenum GetShaderTypeFromString(const std::string& type)
+    {        
+        if (type == "vertex")
+            return GL_VERTEX_SHADER;
+        if (type == "fragment" || type == "pixel")
+            return GL_FRAGMENT_SHADER;
+        if (type == "compute")
+            return GL_COMPUTE_SHADER;
+
+        return GL_NONE;
+    }
+
+    internal 
+    std::unordered_map<GLenum, std::string> SplitShader(const std::string &file_source)
+    {
+        std::unordered_map<GLenum, std::string> result = {};
+
+        const char* token_type = "#shader";
+        size_t token_length = strlen(token_type);
+        size_t token_pos = file_source.find(token_type, 0);
+        
+        while (token_pos != std::string::npos)
+        {
+            size_t eol = file_source.find_first_of("\r\n", token_pos);
+            
+            size_t begin = token_pos + token_length + 1;
+            std::string type = file_source.substr(begin, eol - begin);
+            
+            size_t next_line_pos = file_source.find_first_not_of("\r\n", eol);
+            token_pos = file_source.find(token_type, next_line_pos);
+            auto shaderType = GetShaderTypeFromString(type);
+            result[shaderType] = file_source.substr(next_line_pos, token_pos - (next_line_pos == std::string::npos ? file_source.size() - 1 : next_line_pos));
+        }
+
+        return result;
+    }
+
+    bool32 GraphicsDeviceGL::createShader(const char *shader_path, Shader *shd)
+    {
+        std::string source = xe_core::readFileString(shader_path);
+
+        std::unordered_map<GLenum, std::string> split_shaders = SplitShader(source);
+        
+        uint32 vertex_id = compileShader(SHADER_TYPE::VS, split_shaders[GL_VERTEX_SHADER]);
+        uint32 pixel_id = compileShader(SHADER_TYPE::PS, split_shaders[GL_FRAGMENT_SHADER]);
+
+        if (vertex_id == INVALID_ID || pixel_id == INVALID_ID)
+        {
+            return false;
+        }
+
+        shd->id = createShaderProgram(vertex_id, pixel_id);
+
+        return true;
+    }
+
     uint32 GraphicsDeviceGL::compileShader(SHADER_TYPE type, std::string &shader_source)
     {
         const GLchar *shader_code = (GLchar*)shader_source.c_str();
@@ -1028,7 +1089,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
             delete[] buffer;
 
-            return -1;
+            return INVALID_ID;
         }
         
         return id;

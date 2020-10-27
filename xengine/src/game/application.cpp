@@ -3,6 +3,7 @@
 
 #include "xengine\common.h"
 #include "xengine\config.h"
+#include "xengine\macro.h"
 
 #include "xengine\math.cpp"
 #include "xengine\containers.cpp"
@@ -37,8 +38,8 @@
     #include "xengine\graphics_device_gl.cpp"
 #endif
 
-#include "xengine\graphics_resource.cpp"
 #include "xengine\render.cpp"
+#include "xengine\graphics_resource.cpp"
 #include "xengine\memory.cpp"
 #include "xengine\ecs.cpp"
 #include "xengine\assets.cpp"
@@ -156,7 +157,7 @@ void Render()
     translateMat(base, translation);
 
     Shader *d3shader = Render::getShader("base3d");
-    Render::drawModel(nano_character, d3shader, base);
+    //Render::drawModel(nano_character, d3shader, base);
 
     //Render::endFrame();
 }

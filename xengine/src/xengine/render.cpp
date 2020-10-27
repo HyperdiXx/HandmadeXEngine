@@ -366,55 +366,45 @@ bool32 Render::loadShaders()
     Shader equirectangular_cubemap = {};
     Shader irradiance_shader = {};
     Shader water = {};
-    Shader simple_color = {};
+    Shader simple_3dcolor = {};
     Shader anim_model = {};
 
     Shader triangle = {};
-    
+    Shader terrain = {};
+    Shader clut_shader = {};
+
     Shader d2shader = {};
 
-    std::string shader_names[8] = {};
-
-    const char *shaders_dir = "shaders/glsl/";
-
-    uint32 N = 9;
-
-    bool32 res = 0;
-
-    GraphicsDevice *device = getGDevice();
-
+    // ???
     std::string resolved_path = "shaders/glsl/";
 
-    res |= device->createShader("shaders/glsl/simple_pos.vs", "shaders/glsl/filledsimple2d.fs", &simple_color);
-    res |= device->createShader("shaders/glsl/anim_model3d.vs", "shaders/glsl/base3d.fs", &anim_model);
-    res |= device->createShader("shaders/glsl/simple2d.vs", "shaders/glsl/simple2d.fs", &simple_shader);
-    res |= device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/simple2d.fs", &simple_texture);
-    res |= device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/base3d.fs", &model_shader);
-    res |= device->createShader("shaders/glsl/model3d.vs", "shaders/glsl/water.fs", &water);
-    res |= device->createShader("shaders/glsl/quad.vs", "shaders/glsl/gamma_correction.fs", &gamma_correction_shader);
-    res |= device->createShader("shaders/glsl/simple_model.vs", "shaders/glsl/color.fs", &color_shader);
-    res |= device->createShader("shaders/glsl/text.vs", "shaders/glsl/text.fs", &text_shader);
-    res |= device->createShader("shaders/glsl/cube_map.vs", "shaders/glsl/cube_map.fs", &cubemap_shader);
-    res |= device->createShader("shaders/glsl/shadow_map.vs", "shaders/glsl/shadow_map.fs", &shadow_map_shader);
-    res |= device->createShader("shaders/glsl/shadow_map_extract.vs", "shaders/glsl/shadow_map_extract.fs", &shadow_map_depth_shader);
-    res |= device->createShader("shaders/glsl/Quad.vs", "shaders/glsl/post_proc.fs", &post_proc_shader);
-    res |= device->createShader("shaders/glsl/pbr/pbr.vs", "shaders/glsl/pbr/pbr.fs", &pbr);
-    res |= device->createShader("shaders/glsl/pbr/background.vs", "shaders/glsl/pbr/background.fs", &background_shader);
-    res |= device->createShader("shaders/glsl/pbr/brdf.vs", "shaders/glsl/pbr/brdf.fs", &brdf_shader);
-    res |= device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/pref.fs", &prefilter_shader);
-    res |= device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/equ_to_cubemap.fs", &equirectangular_cubemap);
-    res |= device->createShader("shaders/glsl/pbr/cubemap.vs", "shaders/glsl/pbr/irradiance.fs", &irradiance_shader);
-    res |= device->createShader("shaders/glsl/triangle.vs", "shaders/glsl/triangle.fs", &triangle);
-    res |= device->createShader("shaders/glsl/2dshader.vs", "shaders/glsl/2dshader.fs", &d2shader);
+    simple_3dcolor = Shader::create("shaders/glsl/3dcolor.glsl");
+    anim_model = Shader::create("shaders/glsl/anim_model3d.glsl");
+    model_shader = Shader::create("shaders/glsl/model3d.glsl");
+    d2shader = Shader::create("shaders/glsl/2dshader.glsl");
+    simple_shader = Shader::create("shaders/glsl/simple2d.glsl"); 
+    simple_texture = Shader::create("shaders/glsl/simple_model.glsl");    
+    water = Shader::create("shaders/glsl/water.glsl");
+    gamma_correction_shader = Shader::create("shaders/glsl/gamma_correction.glsl");
+    text_shader = Shader::create("shaders/glsl/text.glsl");
+    cubemap_shader = Shader::create("shaders/glsl/cube_map.glsl");
+    shadow_map_shader = Shader::create("shaders/glsl/shadow_map.glsl");
+    shadow_map_depth_shader = Shader::create("shaders/glsl/shadow_map_extract.glsl");
+    post_proc_shader = Shader::create("shaders/glsl/post_proc.glsl");
 
-    if (!res)
-    {
-        print_error("Loading shaders!!!");
-        return false;
-    }
+    pbr = Shader::create("shaders/glsl/pbr/pbr.glsl");
+    background_shader = Shader::create("shaders/glsl/pbr/background.glsl");
+    brdf_shader = Shader::create("shaders/glsl/pbr/brdf.glsl");
+    prefilter_shader = Shader::create("shaders/glsl/pbr/pref.glsl");
+    equirectangular_cubemap = Shader::create("shaders/glsl/pbr/equ_to_cubemap.glsl");
+    irradiance_shader = Shader::create("shaders/glsl/pbr/irradiance.glsl");
+    triangle = Shader::create("shaders/glsl/triangle.glsl");
+    terrain = Shader::create("shaders/glsl/terrain.glsl");
 
+    color_shader = Shader::create("shaders/glsl/color.glsl");
+    
     addShader("render2d", d2shader);
-    addShader("simple_pos", simple_color);
+    addShader("3dcolor", simple_3dcolor);
     addShader("simple2d", simple_shader);
     addShader("simple_tex", simple_texture);
     addShader("base3d", model_shader);
@@ -785,8 +775,8 @@ bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspac
     device->setIndexBuffer(&meh->vao, meh->vao.ib);
 
     device->unbindVertexArray();
-    device->destroyBuffer(meh->vao.buffers[0]);
-    device->destroyBuffer(meh->vao.ib);
+    //device->destroyBuffer(meh->vao.buffers[0]);
+    //device->destroyBuffer(meh->vao.ib);
 
     return true;
 }

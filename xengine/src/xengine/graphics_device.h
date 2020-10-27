@@ -94,7 +94,8 @@ public:
     virtual bool32 createTexture2D(uint32 width, uint32 height, Texture2D* texture) = 0;
 
     virtual bool32 createShader(const char* vertex, const char* fragment, Shader* Shader) = 0;
-
+    virtual bool32 createShader(const char* shader_path, Shader *Shader) = 0;
+    
     virtual uint32 compileShader(SHADER_TYPE type, std::string &shader_source) = 0;
     virtual uint32 createShaderProgram(uint32 id_vs, uint32 id_pixel) = 0;
  

@@ -253,7 +253,7 @@ Model* loadModelFromFile(const std::string &path, bool32 calculate_tb)
     const aiScene* scene = importer.ReadFile(path, flags);
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
-        //xe_utility::error(importer.GetErrorString());
+        print_error(importer.GetErrorString());
         return nullptr;
     }
 
@@ -263,11 +263,11 @@ Model* loadModelFromFile(const std::string &path, bool32 calculate_tb)
 
     if (result)
     {
-        //xe_utility::info("Model " + result->root->name + " was loaded!");
+        print_info("Model " + result->root->name + " was loaded!");
     }
     else
     {
-        //xe_utility::error("Loading of model " + result->root->name + " was failed!");
+        print_error("Loading of model " + result->root->name + " was failed!");
     }
 
     return result;

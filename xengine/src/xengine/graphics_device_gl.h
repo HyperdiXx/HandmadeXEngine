@@ -87,6 +87,7 @@ public:
     bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) override;
 
     bool32 createShader(const char* vertex, const char* fragment, Shader *Shader) override;
+    bool32 createShader(const char* shader_path, Shader *Shader) override;
 
     uint32 compileShader(SHADER_TYPE type, std::string &shader_source) override;
     uint32 createShaderProgram(uint32 id_vs, uint32 id_pixel) override;

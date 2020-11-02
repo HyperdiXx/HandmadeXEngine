@@ -337,7 +337,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         glViewport(x, y, width, height);
     }
 
-    // @ Store all stuff in context state  like dx
+    // @ Store all stuff in context state like dx
 
     void GraphicsDeviceGL::enable(int type)
     {
@@ -515,26 +515,26 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::bindRenderbuffer(const Framebuffer *fbo)
     {
-        Render::pushCommand([fbo]()
-        {
+        //Render::pushCommand([fbo]()
+        //{
             glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb_id);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::bindForRead(const Framebuffer *fbo)
     {
-        Render::pushCommand([fbo]()
-        {
+        //Render::pushCommand([fbo]()
+        //{
             glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->fbo_id);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::bindForWrite(const Framebuffer *fbo)
     {
-        Render::pushCommand([fbo]()
-        {
+        //Render::pushCommand([fbo]()
+        //{
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->fbo_id);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo)
@@ -702,10 +702,10 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setBool(const std::string & name, bool value, Shader *shd)
     {
-        Render::pushCommand([name, value, shd]()
-        {
+        //Render::pushCommand([name, value, shd]()
+        //{
             glUniform1i(glGetUniformLocation(shd->id, name.c_str()), (int)value);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::setInt(const std::string &name, int32 value, Shader* shd)
@@ -776,7 +776,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     void GraphicsDeviceGL::setMat3(const std::string &name, const Matrix3x3 &mat, Shader *shd)
     {
         int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniformMatrix3fv(location, 1, GL_FALSE, mat.data);
+        glUniformMatrix3fv(location, 1, GL_FALSE, (const real32*)mat.data);
     }
 
     void GraphicsDeviceGL::setMat4(const std::string &name, const Matrix4x4 &mat, Shader *shd)
@@ -784,7 +784,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         //Render::pushCommand([name, mat, shd]()
         //{
             int location = glGetUniformLocation(shd->id, name.c_str());
-            glUniformMatrix4fv(location, 1, GL_FALSE, mat.data);        
+            glUniformMatrix4fv(location, 1, GL_FALSE, (const real32*)mat.data);
         //});
     }
 
@@ -905,7 +905,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
 
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
-                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
                 break;
             case GREYSCALE:
@@ -916,7 +916,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
 
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
-                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::NEAREST);
+                setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
                 break;
             case HDR:
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
@@ -937,14 +937,15 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
                 break;
             }
         }
-
         
         if (generate_mipmap)
+        {
             generateTextureMipmap(type);
+        }
 
         unbindTexture(type);
 
-        //xe_core::deleteData(image);
+        xe_core::deleteData(image);
 
         return true;
     }
@@ -1253,34 +1254,34 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setTextureWrapping(TEXTURE_TYPE type, TEXTURE_WRAPPING_AXIS wrapping_axis, TEXTURE_WRAPPING sampler)
     {
-        Render::pushCommand([type, wrapping_axis, sampler]() mutable
-        {
+        //Render::pushCommand([type, wrapping_axis, sampler]() mutable
+        //{
             uint32 gl_texture_type = convert_texture_type_gl(type);
             uint32 gl_wrapping_axis = convert_texture_wrapping_axis_type_gl(wrapping_axis);
             uint32 gl_wrapping = convert_texture_wrapping_type_gl(sampler);
             glTexParameteri(gl_texture_type, gl_wrapping_axis, gl_wrapping);
 
-        });
+        //});
     }
 
     void GraphicsDeviceGL::setTextureSampling(TEXTURE_TYPE type, TEXTURE_FILTER_OPERATION filter_operation, TEXTURE_SAMPLING sampler)
     {
-        Render::pushCommand([type, filter_operation, sampler]() mutable
-        {
+        //Render::pushCommand([type, filter_operation, sampler]() mutable
+        //{
             uint32 gl_texture_type = convert_texture_type_gl(type);
             uint32 gl_texture_filter = convert_texture_filter_operation_gl(filter_operation);
             uint32 gl_texture_sampling = convert_texture_sampling_type_gl(sampler);
             glTexParameteri(gl_texture_type, gl_texture_filter, gl_texture_sampling);
-        });        
+        //});        
     }
 
     void GraphicsDeviceGL::loadTextureGpu(TEXTURE_TYPE texture_t, int width, int height, int internal_format, int data_format, const void *image)
     {
-        Render::pushCommand([texture_t, width, height, internal_format, data_format, image]() mutable
-        {
+        //Render::pushCommand([texture_t, width, height, internal_format, data_format, image]() mutable
+        //{
             uint32 gl_texture_type = convert_texture_type_gl(texture_t);
             glTexImage2D(gl_texture_type, 0, internal_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, image);
-        });
+        //});
     }
 
     // @Special cubemap
@@ -1296,30 +1297,30 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::generateTextureMipmap(TEXTURE_TYPE texture_t)
     {
-        Render::pushCommand([texture_t]() mutable
-        {
+        //Render::pushCommand([texture_t]() mutable
+        //{
             uint32 gl_t = convert_texture_type_gl(texture_t);
             glGenerateMipmap(gl_t);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::destroyTexture2D(Texture2D *tex)
     {
-        Render::pushCommand([tex]() mutable
-        {
+        //Render::pushCommand([tex]() mutable
+        //{
             if (tex->is_valid)
             {
                 glDeleteTextures(1, &tex->id);
             }
-        });
+        // });
     }
 
     void GraphicsDeviceGL::destroyFramebuffer(Framebuffer *fbo)
     {
-        Render::pushCommand([fbo]() mutable
-        {
+        //Render::pushCommand([fbo]() mutable
+        //{
             glDeleteFramebuffers(1, &fbo->fbo_id);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::destroyShader(uint32 id)
@@ -1348,18 +1349,18 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setDrawBuffer(uint32 type)
     {
-        Render::pushCommand([type]() mutable
-        {
+        //Render::pushCommand([type]() mutable
+        //{
             glDrawBuffer(type);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::setDrawBuffers(uint32 count, void *pointer)
     {
-        Render::pushCommand([count, pointer]() mutable
-        {
+        //Render::pushCommand([count, pointer]() mutable
+        //{
             glDrawBuffers(count, (uint32*)pointer);
-        });
+        //});
     }
 
     void GraphicsDeviceGL::setReadBuffer(uint32 type)

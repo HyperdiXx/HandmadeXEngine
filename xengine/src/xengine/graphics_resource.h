@@ -66,7 +66,7 @@ struct Framebuffer
     Texture2D *stencil_texture;
 };
 
-enum ElementType
+enum class ElementType
 {
     None,
     Bool,
@@ -96,7 +96,7 @@ struct BufferElement
         this->size = typeSizeof(type);
     }
 
-    GPUHandler typeSizeof(ElementType type)
+    uint32 typeSizeof(ElementType type)
     {
         switch (type)
         {
@@ -129,7 +129,7 @@ struct BufferElement
         return 0;
     }
 
-    GPUHandler elementTypeCount()
+    uint32 elementTypeCount()
     {
         switch (type)
         {
@@ -288,27 +288,41 @@ enum class MaterialFlag
     Blend = 1 << 3
 };
 
-class ShaderProperty
+enum class ShaderUniformType
+{
+    None,
+    Int,
+    Boolean,
+    Float,
+    Vec2Uniform,
+    Vec3Uniform,
+    Vec4Uniform,
+    Mat4x4,
+    Mat3x4,
+    Sampler2D,
+    Sampler3D
+};
+
+class ShaderUniformProperty
 {
 public:
-    ShaderProperty() = default;
-    ShaderProperty(const std::string& name) : property_name(name) {};
-    ~ShaderProperty() {};
+    ShaderUniformProperty() = default;
+    ShaderUniformProperty(const std::string& pr_shader) : name(pr_shader) {};
+    ~ShaderUniformProperty() {};
 
-    inline const std::string &getName() const { return property_name; }
+    inline const std::string &getName() const { return name; }
 
-private:
-    std::string property_name;
+    ShaderUniformType type = ShaderUniformType::None;
+    std::string name;
+    const void *value;
 };
 
 class ShaderProperties
 {
 public:
-
-    inline const std::vector<ShaderProperty> &getProperties() const { return properties; }
-
+    inline std::vector<ShaderUniformProperty> &getProperties() { return properties; }
 private:
-    std::vector<ShaderProperty> properties;
+    std::vector<ShaderUniformProperty> properties;
 };
 
 class MaterialInstance;
@@ -322,23 +336,66 @@ public:
 
     virtual ~Material() {};
 
-    template<typename T>
-    void set(const std::string &property_name, const T &value)
+    void set(const std::string &property_name, ShaderUniformType type, const void* data)
     {
         auto &definitions = shaderProp.getProperties();
 
-        for (uin32 i = 0; i < definitions.size(); ++i)
-        {
+        ShaderUniformProperty prop = {};        
+        prop.name = property_name;
+        prop.type = type;
+        prop.value = data;
 
+        definitions.emplace_back(prop);
+    };
+
+    template<typename T>
+    T& get(const std::string &property_name)
+    {
+        auto &definitions = shaderProp.getProperties();
+
+        for (uint32 i = 0; i < definitions.size(); ++i)
+        {
+            auto &property_of_shd = definitions[i];
+
+            if (property_of_shd.name == property_name)
+            {
+                return property_of_shd.value;
+            }
         }
     };
+
+    void bind();
+
+    inline void addMaterialFlag(MaterialFlag flag)
+    {
+        flags |= (uint32)flag;
+    }
+
+    inline void removeMaterialFlag(MaterialFlag flag)
+    {
+        flags &= ~(uint32)flag;
+    }
+
+    void addTexture2D(Texture2D *tex)
+    {
+        textures.emplace_back(tex);
+    }
+
+    Texture2D *getTexture(uint32 index) const { return textures[index]; }
+    Shader *getShader() { return shaderRef; }
+private:
+
+    void addMaterialInstance(MaterialInstance *mat_inst)
+    {
+        instances.insert(mat_inst);
+    }
 
 private:
     std::vector<Texture2D*> textures;
     std::unordered_set<MaterialInstance*> instances;
-    uint32 flags;    
-    Shader *shaderRef;
     ShaderProperties shaderProp = {};
+    Shader *shaderRef;
+    uint32 flags;
 };
 
 class MaterialInstance
@@ -346,11 +403,11 @@ class MaterialInstance
 private:
     friend class Material;
 public:
-    MaterialInstance(const Material &material_ref) {};
+    MaterialInstance(Material *material_ref);
     virtual ~MaterialInstance() {};
 
 private:
-
+    Material *mat_ptr;
 };
 
 class PBRMaterial : public Material

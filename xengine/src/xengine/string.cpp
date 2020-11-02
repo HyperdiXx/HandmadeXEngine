@@ -42,18 +42,23 @@ inline bool strEquals(const char *a, const char* b)
     return result;
 }
 
-inline bool isAlpha(char character)
+inline bool32 isEndOfLine(char character)
+{
+    return (character == '\n' || character == '\r');
+}
+
+inline bool32 isAlpha(char character)
 {
     return (character >= 'a' && character <= 'z') ||
         (character >= 'A' && character <= 'Z');
 }
 
-inline bool isNumeric(char number)
+inline bool32 isNumeric(char number)
 {
     return (number >= '0' && number <= '9');
 }
 
-inline bool isWhitespace(char character)
+inline bool32 isWhitespace(char character)
 {
     return ((character == ' ') ||
         (character == '\t') ||

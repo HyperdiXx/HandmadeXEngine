@@ -1,51 +1,164 @@
 
-internal void parseToken()
+internal 
+void parseChar()
 {
 
 }
 
-internal token get_parsed_token(char *text_to_parse)
+internal 
+void parseNumber()
 {
-    token result = {};
 
-    result.text = text_to_parse;
-    result.length = 90;
+}
 
-    while (isWhitespace(*text_to_parse))
+internal Token getToken(Tokenizer *tokenizer)
+{
+    Token result = {};
+
+    result.text = tokenizer->pos;
+    result.length = 1;
+
+    char current = tokenizer->pos[0];
+    ++tokenizer->pos;
+
+    while (true)
     {
-        ++text_to_parse;
-    }
-
-    switch (*text_to_parse)
-    {
-        case '"':
+        if (isWhitespace(tokenizer->pos[0]))
         {
-            char *token_text = text_to_parse;
-            printf("This is open quote!\n");
-            ++text_to_parse;
+            ++tokenizer->pos;
+        }
+        else if (tokenizer->pos[0] == '/' && tokenizer->pos[1] == '/')
+        {
+            tokenizer->pos += 2;
 
-            while (*text_to_parse != '"' && *text_to_parse)
+            while (tokenizer->pos[0] && !isEndOfLine(tokenizer->pos[0]))
             {
-                if (*text_to_parse == '\\' && text_to_parse[1])
-                {
-                    ++text_to_parse;
-                }
-
-                ++text_to_parse;
+                ++tokenizer->pos;
+            }           
+        }
+        else if (tokenizer->pos[0] == '/' && tokenizer->pos[1] == '*')
+        {
+            tokenizer->pos += 2;
+            
+            while (tokenizer->pos[0] && !((tokenizer->pos[0] == '*') && (tokenizer->pos[1] == '/')))
+            {
+                ++tokenizer->pos;
             }
 
-            size_t text_len = text_to_parse - token_text;
+            if (tokenizer->pos[0] == '*')
+            {
+                tokenizer->pos += 2;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
 
-            //OutputDebugStringA((LPCSTR)token_text);
+    switch (current)
+    {
+        case '\0':
+        {
+            result.type = XE_TOKEN_TYPE::Token_End;
+        } break;
+        case ';':
+        {
+            result.type = XE_TOKEN_TYPE::Token_Semicolon;
+        } break;
+        case ':':
+        {
+            result.type = XE_TOKEN_TYPE::Token_Colon;
+        } break;
+        case '*':
+        {
+            result.type = XE_TOKEN_TYPE::Token_Ptr;
+        } break;
+        case '(':
+        {
+            result.type = XE_TOKEN_TYPE::Token_Openbracket;
+        } break;
+        case ')':
+        {
+            result.type = XE_TOKEN_TYPE::Token_Closebracket;
+        } break;
+        case '{':
+        {
+            result.type = XE_TOKEN_TYPE::Token_Openbraces;
+        } break;
+        case '}':
+        {
+            result.type = XE_TOKEN_TYPE::Token_Closebraces;
+        } break;
+        case '"':
+        {
+            // Skip first "
+            ++tokenizer->pos;
+            result.type = XE_TOKEN_TYPE::Token_String;            
+            result.text = tokenizer->pos;
+            
+            while (tokenizer->pos[0] && tokenizer->pos[0] != '"')
+            {
+                if ((tokenizer->pos[0] == '\\') && tokenizer->pos[1])
+                {
+                    ++tokenizer->pos;
+                }
 
+                ++tokenizer->pos;
+            }
+
+            result.length = tokenizer->pos - result.text;
+
+            if (tokenizer->pos[0] == '"')
+            {
+                ++tokenizer->pos;
+            }
 
         } break;
-
         default:
         {
-            ++text_to_parse;
+            if (isAlpha(current))
+            {
+                result.type = XE_TOKEN_TYPE::Token_ID;
+                while (isAlpha(tokenizer->pos[0]) ||
+                       isNumeric(tokenizer->pos[0]) ||
+                       tokenizer->pos[0] == '_')
+                {
+                    ++tokenizer->pos;
+                }
+                      
+                result.length = tokenizer->pos - result.text;
+            }
+/*          else if (isNumeric(current))
+            {
+
+            }*/
+            else
+            {
+                result.type = XE_TOKEN_TYPE::Token_Unknown;
+            }
+
         } break;
     }
 
     return result;
+}
+
+internal 
+bool32 isTokenMatch(Token tok, char *pattern)
+{
+    char *pos = pattern;
+
+    for (int i = 0;
+        i < tok.length;
+        ++i, ++pos)
+    {
+        if ((*pos == 0) ||
+            (tok.text[i] != *pos))
+        {
+            return false;
+        }
+    }
+   
+    return (*pos == 0);
 }

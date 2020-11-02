@@ -37,6 +37,8 @@ struct GraphicsState
     RenderState render_state_batch = {};
     GraphicsVer gpu_version = {};
 
+    std::unordered_map<std::string, Material> materials;
+
     Vec3  default_text_color = createVec3(1.0f, 1.0f, 1.0f);
     Vec3  default_cube_color = createVec3(0.0f, 1.0f, 0.0f);
     Vec4  default_line_color = createVec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -174,6 +176,7 @@ public:
      
     global Shader *getShader(const char* name);
     global Texture2D *getTexture2DResource(const char* name);
+    global Material *getMaterial(const char* name);
 
     global bool32 createQuad();
 
@@ -203,13 +206,15 @@ public:
     global void drawQuad(real32 x, real32 y, real32 w, real32 h, const Color4RGBA &color);
     global void drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture);
 
-    global void drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform);
+    //global void drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform);
+    global void drawModel(Model *mod, Shader *shd, Matrix4x4 &transform);
+    global void drawModel(Model *mod, Material *mat, Matrix4x4 &transform);
     //void drawModel(AnimModel *mod, Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
 
     //void drawModel(Model *mod, const Matrix4x4 &transform = createMat4x4(1.0f));
     //void drawModel(AnimModel *mod, const Matrix4x4 &transform = createMat4x44(1.0f));
 
-    global void drawMesh(Mesh *mshs, Shader *shd);
+    global void drawMesh(Mesh *mshs, Material *mat);
 
     global void drawSphere(Texture2D *texture_diff);
     global void drawSphere();
@@ -269,6 +274,8 @@ public:
 
     global void addShader(const std::string &ac_name, Shader shr);
     global void addTexture(const std::string &ac_name, Texture2D tex);
+
+    global void addMaterial(const std::string &mat_name, Material mat);
 
     template<typename T>
     global void pushCommand(T&& func)

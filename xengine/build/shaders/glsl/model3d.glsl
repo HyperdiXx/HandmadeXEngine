@@ -153,8 +153,9 @@ float calculate_shadows(vec4 light_space_pos)
 
 void main()
 {    
-    /*vec3 test_f = texture(tex_diff1, fs_in.uv).rgb;
-    vec3 diffuse_tex = gamma_correction(texture(tex_diff1, fs_in.uv).rgb);
+    vec3 test_f = texture(tex_diff1, fs_in.uv).rgb;
+    
+    /*vec3 diffuse_tex = gamma_correction(texture(tex_diff1, fs_in.uv).rgb);
     
     vec3 ambient_coef = 0.5 * test_f;
 
@@ -177,5 +178,5 @@ void main()
 
     vec3 final_color = (ambient_coef + diffuse + specular);*/
     
-	frag_color = vec4(0.0, 1.0, 0.0, 1.0);    
+	frag_color = vec4(test_f, 1.0);    
 }

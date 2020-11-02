@@ -4,15 +4,9 @@
 
 typedef uint32 EntityID;
 global uint32 idEntity = 1;
+typedef uint32 ComponentID;
 
-struct Entity
-{
-    Entity() : id(idEntity++) {};    
-
-    EntityID id;
-};
-
-enum CSType
+enum class CSType
 {
     TRANSFORM,
     CAMERA2D,
@@ -22,6 +16,37 @@ enum CSType
     IMAGE
 };
 
+class BaseComponent
+{
+public:
+    BaseComponent(EntityID id) : handle(id) {}
+    virtual ~BaseComponent() = default;
+
+    void setEntityID(EntityID id) { handle = id; }
+
+    EntityID getEntityID() const { return handle; }
+
+private:
+
+    EntityID handle;
+};
+
+class TransformComponentT : public BaseComponent
+{
+public:
+    static constexpr ComponentID ID = (uint32)CSType::TRANSFORM;
+
+};
+
+struct Entity
+{
+    Entity() : id(idEntity++) {};    
+
+    EntityID id;
+
+    //std::unordered_map<ComponentID, BaseComponent*> components;
+};
+
 struct TransformComponent
 {
     Vec3 position;
@@ -29,7 +54,7 @@ struct TransformComponent
     Vec3 scale;
 };
 
-struct Camera2DComponent
+REFLECT(camera2d_comp) struct Camera2DComponent
 {
     uint32 width, height;
 };
@@ -115,21 +140,23 @@ struct Camera3D
     bool32 is_inited = false;
 
     Vec3 pos;
-    Vec3 target = createVec3(0.0f, 0.0f, -1.0f);
-    Vec3 up = createVec3(0.0f, 1.0f, 0.0f);
+    Vec3 target;
+    Vec3 up;
     Vec3 right;
     Vec3 world_up;
 
     Matrix4x4 projection = createMat4x4();
 
-    Camera3D(Vec3 position = createVec3(0.0f, 0.0f, 3.0f))
+    Camera3D(Vec3 position = createVec3(0.0f, 0.0f, 10.0f), Vec3 tar = createVec3(0.0f, 0.0f, 1.0f), Vec3 u = createVec3(0.0f, 1.0f, 0.0f))
     {
         pos = position;
+        target = tar;
+        up = u;
         cam_yaw = c_yaw;
         cam_pitch = c_pitch;
         cam_zoom = c_zoom;
         speed = c_speed;
-        world_up = up;
+        world_up = u;
         updateCamera();
     }
 
@@ -137,7 +164,7 @@ struct Camera3D
     {
         if (!is_inited)
         {
-            projection = perspectiveMat(fov, aspect_ratio, near_plane, far_plane);
+            projection = perspectiveRH(fov, aspect_ratio, near_plane, far_plane);
             is_inited = true;
         }
 
@@ -146,12 +173,18 @@ struct Camera3D
 
     Matrix4x4 getViewMatrix()
     {
-        return lookAt(pos, pos + target, up);
+        Vec3 target_vec = createVec3(0.0f, 0.0f, 1.0f);
+        Vec3 up_vec = createVec3(0.0f, 1.0f, 0.0f);
+        return lookAtRH(pos, Normalize(pos + target_vec), up_vec);
     }
 
-    Matrix4x4 getViewProjection()
+    Matrix4x4 getViewProjectionMatrix()
     {
-        return getProjectionMatrix() * getViewMatrix();
+        Matrix4x4 &proj = getProjectionMatrix();
+        Matrix4x4 view = getViewMatrix();
+        Matrix4x4 res = proj * view;
+        
+        return res;
     }
 
     /*void mouse_move(real32 xoffset, real32 yoffset, real32 constrainPitch = true)
@@ -182,9 +215,9 @@ struct Camera3D
         front.y = sin(DegreesToRadians(cam_pitch));
         front.z = sin(DegreesToRadians(cam_yaw)) * cos(DegreesToRadians(cam_pitch));
         
-        //target = Normalize(front);
-        //right  = Normalize(CrossProduct(target, world_up));
-        //up     = Normalize(CrossProduct(right, target));       
+        target = Normalize(front);
+        right  = Normalize(CrossProduct(target, world_up));
+        up     = Normalize(CrossProduct(right, target));       
     }
 };
 

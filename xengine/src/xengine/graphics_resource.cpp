@@ -9,7 +9,7 @@ Shader Shader::create(const char *vertex_path, const char *pixel_path)
 
     if (!res)
     {
-        print_error("Failed!");
+        print_error("Failed to create shader!");
     }
 
     return result;
@@ -25,8 +25,21 @@ Shader Shader::create(const char *shader_path)
 
     if (!res)
     {
-        print_error("Failed!");
+        print_error("Failed to create shader!");
     }
 
     return result;
+}
+
+void Material::bind()
+{
+    auto &definitions = shaderProp.getProperties();
+}
+
+MaterialInstance::MaterialInstance(Material *material_ref)
+{
+    assert(material_ref);
+    mat_ptr = material_ref;
+
+    mat_ptr->addMaterialInstance(this);
 }

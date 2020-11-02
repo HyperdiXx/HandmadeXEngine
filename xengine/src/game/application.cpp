@@ -56,6 +56,7 @@ global DynArray<Rect> rects_to_test;
 
 global CubeMesh cube;
 global Model *nano_character = nullptr;
+global Model *cube_model = nullptr;
 
 internal 
 void InitGameLayers()
@@ -138,26 +139,33 @@ void Render()
     Render::setupRenderCommand(CommandType::QUAD_COMMAND);
     Render::setupRenderCommand(CommandType::LINE_COMMAND);
 
-    //Render::drawCube(); 
     //Render::drawTriangle();
 
     for (uint32 y = 15.0f; y < 700.0f; y += 25.0f)
     {
         for (uint32 x = 15.0f; x < 1250.0f; x += 25.0f)
         {
-            Render::drawQuad(x, y, 20, 20, Color4RGBA((x + 10) * 0.5f, y + 10, (y * 10) / 20.0f, 1.0f));
+            Render::drawQuad(x, y, 20.0f, 20.0f, Color4RGBA((x + 10) * 0.5f, y + 10, (y * 10) / 20.0f, 1.0f));
         }
     }
 
     Render::executeRenderCommand(CommandType::QUAD_COMMAND);
     Render::executeRenderCommand(CommandType::LINE_COMMAND);
     
-    Matrix4x4 base = createMat4x4();
-    Vec3 translation = createVec3(0.0f, 0.0f, -50.0f);
-    translateMat(base, translation);
+    Vec3 translationCharacter = createVec3(0.0f, -10.0f, -100.0f);
+    Vec3 scaleCharacter = createVec3(2.0f, 2.0f, 2.0f);    
+    Vec3 translationCube = createVec3(-25.0f, -10.0f, -100.0f);
+    Vec3 scaleCube = createVec3(0.3f, 0.3f, 0.3f);
 
-    Shader *d3shader = Render::getShader("base3d");
-    //Render::drawModel(nano_character, d3shader, base);
+    Matrix4x4 modelMat = translateMat(translationCharacter) * scaleMat(scaleCharacter);
+
+    //Render::drawCube(); 
+
+    Material *model_material = Render::getMaterial("base");
+    Render::drawModel(nano_character, model_material, modelMat);
+
+    modelMat = translateMat(translationCube) * scaleMat(scaleCube);
+    Render::drawModel(cube_model, model_material, modelMat);
 
     //Render::endFrame();
 }
@@ -176,8 +184,9 @@ APP_LOAD_DATA
     InitECS();
 
     nano_character = loadModelFromFile("assets/nano/nanosuit.obj");
-
-    for (int i = 0; i < layersTest.size(); ++i)
+    cube_model = loadModelFromFile("assets/cube.obj");
+    
+    for (uint32 i = 0; i < layersTest.size(); ++i)
     {
         LayerTest *layer = layersTest.begin() + i;
         
@@ -205,6 +214,11 @@ APP_UPDATE
 
         win_options.resized = false;       
     }
+
+    Camera3D &cam = getCamera3D();
+
+    cam.pos.z += 0.0001f;
+    cam.updateCamera();
 
     UpdateLayers();
     Render();

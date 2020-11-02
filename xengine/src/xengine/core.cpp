@@ -32,7 +32,31 @@ namespace xe_core
         return res;
     }
 
-    internal std::string readFileString(const char *file_path)
+    internal char* readFileToChar(const char *file_name)
+    {
+        char *result = 0;
+        FILE *op = fopen(file_name, "rb");
+
+        if (op)
+        {
+            fseek(op, 0, SEEK_END);
+            size_t size = ftell(op);
+            fseek(op, 0, SEEK_SET);
+
+            result = (char*)malloc(size + 1);
+            fread(result, size, 1, op);
+            fclose(op);
+        }
+        else
+        {
+            printf("ERROR: Cant open file %s!\n", file_name);
+        }
+
+        return result;
+    }
+
+    internal 
+    std::string readFileString(const char *file_path)
     {
         std::ifstream file(file_path);
         if (file.fail() || !file.is_open())
@@ -52,14 +76,16 @@ namespace xe_core
         return source;
     }
 
-    internal unsigned char *loadTextureFromDisc(const char *path, int &width, int &height, int &channels, int flag, bool32 flip)
+    internal 
+    unsigned char *loadTextureFromDisc(const char *path, int &width, int &height, int &channels, int flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         stbi_uc* image = stbi_load(path, &width, &height, &channels, flag);
         return image;
     }
 
-    internal float *loadTextureFloatFromDisc(const char * path, int & width, int &height, int & channels, int flag, bool32 flip)
+    internal 
+    real32 *loadTextureFloatFromDisc(const char * path, int & width, int &height, int & channels, int flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         real32 *image = stbi_loadf(path, &width, &height, &channels, flag);

@@ -5,25 +5,25 @@ Matrix4x4 fromAiToGlm(const aiMatrix4x4 &ai_mat)
 {
     Matrix4x4 res = createMat4x4();
 
-    res.data[0] = ai_mat.a1;
-    res.data[1] = ai_mat.b1;
-    res.data[2] = ai_mat.c1;
-    res.data[3] = ai_mat.d1;
+    res.data[0][0] = ai_mat.a1;
+    res.data[1][0] = ai_mat.b1;
+    res.data[2][0] = ai_mat.c1;
+    res.data[3][0] = ai_mat.d1;
 
-    res.data[0 + 1 * 4] = ai_mat.a2;
-    res.data[1 + 1 * 4] = ai_mat.b2;
-    res.data[2 + 1 * 4] = ai_mat.c2;
-    res.data[3 + 1 * 4] = ai_mat.d2;
+    res.data[0][1] = ai_mat.a2;
+    res.data[1][1] = ai_mat.b2;
+    res.data[2][1] = ai_mat.c2;
+    res.data[3][1] = ai_mat.d2;
 
-    res.data[0 + 2 * 4] = ai_mat.a3;
-    res.data[1 + 2 * 4] = ai_mat.b3;
-    res.data[2 + 2 * 4] = ai_mat.c3;
-    res.data[2 + 2 * 4] = ai_mat.d3;
+    res.data[0][2] = ai_mat.a3;
+    res.data[1][2] = ai_mat.b3;
+    res.data[2][2] = ai_mat.c3;
+    res.data[3][2] = ai_mat.d3;
 
-    res.data[0 + 3 * 4] = ai_mat.a4;
-    res.data[1 + 3 * 4] = ai_mat.b4;
-    res.data[2 + 3 * 4] = ai_mat.c4;
-    res.data[3 + 3 * 4] = ai_mat.d4;
+    res.data[0][3] = ai_mat.a4;
+    res.data[1][3] = ai_mat.b4;
+    res.data[2][3] = ai_mat.c4;
+    res.data[3][3] = ai_mat.d4;
 
     return res;
 }

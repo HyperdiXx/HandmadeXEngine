@@ -29,6 +29,8 @@ struct GraphicsVer
     const char *version;
 };
 
+#include "graphics_context.h"
+
 struct GraphicsState
 {
     const Matrix4x4 IDENTITY_MATRIX = createMat4x4();
@@ -60,73 +62,18 @@ struct GraphicsState
     Skybox *skybox_obj = nullptr;
 
     GraphicsDevice *graphics_device = nullptr;
+    GraphicsContext *graphics_context = nullptr;
 
     RenderPass *active_render_pass = nullptr;
     Framebuffer *active_framebuffer = nullptr;
+
+    Framebuffer deffered_buffer;
 
     bool32 enable_shadows = false;
     bool32 is_inited_triangle = false;
 };
 
-struct RenderClearTarget
-{
-    real32 x, y, z, a;
-
-    RenderClearTarget() {};
-    RenderClearTarget(real32 x_x, real32 y_y, real32 z_z, real32 a_a) : x(x_x), y(y_y), z(z_z), a(a_a) {};
-};
-
-struct RenderCommandMesh
-{
-    GeometryMesh *ptr;
-    MaterialInstance *mat_ptr;
-};
-
-struct RenderCommandLine
-{
-
-};
-
-struct RenderCommandQuad
-{
-
-};
-
-enum CommandType
-{
-    LINE_COMMAND,
-    QUAD_COMMAND,
-    MESH_COMMAND
-};
-
-struct RenderCommand
-{
-    CommandType type;
-
-    union
-    {
-        RenderClearTarget clear_command;
-        RenderCommandMesh mesh_command;
-        RenderCommandQuad quad_command;
-        RenderCommandLine line_command;
-    };
-};
-
-class RenderCommandQueue
-{
-public:
-    typedef void(*RenderCommand)(void*);
-    RenderCommandQueue();
-    ~RenderCommandQueue();
-
-    void* submit(RenderCommand func_ptr, uint32 size);
-    void  executeQueue();
-
-private:
-    uint8 *command_buffer_ptr_base;
-    uint8 *command_buffer_ptr;
-    uint32 command_count = 0;
-};
+#include "render_commands.h"
 
 class MeshFactory
 {
@@ -168,11 +115,14 @@ public:
     global void shutdown();
 
     global void setDevice(GraphicsDevice *device);
+    global void setContext(GraphicsContext *context);
+
     global void setRenderPass(RenderPass *pass);
     global void setActiveFramebuffer(Framebuffer *fbo);
 
     global Framebuffer *getActiveFramebuffer();
     global GraphicsDevice* getDevice();
+    global GraphicsContext* getContext();
      
     global Shader *getShader(const char* name);
     global Texture2D *getTexture2DResource(const char* name);
@@ -207,7 +157,6 @@ public:
     global void drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture);
 
     //global void drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform);
-    global void drawModel(Model *mod, Shader *shd, Matrix4x4 &transform);
     global void drawModel(Model *mod, Material *mat, Matrix4x4 &transform);
     //void drawModel(AnimModel *mod, Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
 

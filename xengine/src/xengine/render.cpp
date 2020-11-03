@@ -8,15 +8,25 @@ global GraphicsState graphics_state = {};
 global RenderCommandQueue render_queue = {};
 global MeshFactory mesh_factory = {};
 global GPUResourceHandler gpu_data = {};
-
-internal GraphicsDevice *getGDevice()
+ 
+GraphicsDevice* Render::getDevice()
 {
     return graphics_state.graphics_device;
+}
+
+GraphicsContext* Render::getContext()
+{
+    return graphics_state.graphics_context;
 }
 
 void Render::setDevice(GraphicsDevice *device)
 {
     graphics_state.graphics_device = device;
+}
+
+void Render::setContext(GraphicsContext *context)
+{
+    graphics_state.graphics_context = context;
 }
 
 void Render::setRenderPass(RenderPass *pass)
@@ -55,7 +65,7 @@ internal Camera2D& getCamera2D()
 
     if (!camera_2d.is_inited)
     {
-        Viewport vp = getGDevice()->getViewport();
+        Viewport vp = Render::getContext()->getViewport();
         camera_2d.width = 1280;
         camera_2d.height = 720;
         camera_2d.updateCamera();
@@ -70,7 +80,7 @@ internal Camera3D& getCamera3D()
 
     if (!camera_3d.is_inited)
     {
-        Viewport vp = getGDevice()->getViewport();
+        Viewport vp = Render::getContext()->getViewport();
         //camera_3d.aspect_ratio = vp.width / vp.height;
         camera_3d.aspect_ratio = real32(1280.0f / 720.0f);
     }
@@ -214,14 +224,26 @@ void setupMaterials()
 {
     Shader *model3d = Render::getShader("base3d");
     Texture2D *wood_diffuse = Render::getTexture2DResource("wood");
+    Texture2D *water = Render::getTexture2DResource("water");
 
-    Material base(model3d);
+    Material baseWater(model3d);
+    Material baseCube(model3d);
 
-    base.set("color", ShaderUniformType::Vec4Uniform, &graphics_state.default_line_color);
-    base.set("tex_diff1", ShaderUniformType::Sampler2D, wood_diffuse);
-    base.addTexture2D(wood_diffuse);
+    //base.set("color", ShaderUniformType::Vec4Uniform, &graphics_state.default_line_color);
+    baseWater.set("tex_diff1", ShaderUniformType::Sampler2D, 0);
+    baseWater.addMaterialFlag(MaterialFlag::Depth);
+    baseWater.addTexture2D(wood_diffuse);
+    
+    baseCube.set("tex_diff1", ShaderUniformType::Sampler2D, 0);
+    baseCube.addMaterialFlag(MaterialFlag::Depth);
+    baseCube.addTexture2D(water);
+    
+    Shader *rend2d = Render::getShader("render2d");
+    Material r2d(rend2d);
 
-    Render::addMaterial("base", base);
+    Render::addMaterial("base", baseWater);
+    Render::addMaterial("baseCube", baseCube);
+    Render::addMaterial("render2d", r2d);
 }
 
 internal 
@@ -242,16 +264,23 @@ void setupRenderPasses()
 
 void Render::init(API_TYPE type)
 {
-    GraphicsDevice *device = getGDevice();
+    GraphicsDevice *device = getDevice();
+    GraphicsContext *context = getContext();
 
     switch (type)
     {
     case API_TYPE::OPENGL:
     {
         LoadAllOpenGLProcedures();
+        
         device = alloc_mem GraphicsDeviceGL();
         device->setAPI();
+        
+        context = alloc_mem GraphicsContextGL();
+
         setDevice(device);
+        setContext(context);
+
     } break;
     default:
         break;
@@ -457,9 +486,6 @@ bool32 Render::loadShaders()
 
 bool32 Render::loadFreeTextures()
 {
-    Texture2D wood_texture = {};
-    Texture2D water_texture = {};
-
     // pbr
 
     Texture2D albedo_iron = {};
@@ -504,8 +530,6 @@ bool32 Render::loadFreeTextures()
     Texture2D gun_diff = {};
     Texture2D character_diff = {};
 
-    GraphicsDevice *device = getGDevice();
-
     /*device->createTexture2D("assets/cerberus/albedo.tga", &cerberus_d);
     device->createTexture2D("assets/cerberus/normal.tga", &cerberus_n);
     device->createTexture2D("assets/cerberus/roughness.tga", &cerberus_r);
@@ -547,14 +571,8 @@ bool32 Render::loadFreeTextures()
 
     //device->createTexture2D("assets/hdr/barce_3k.hdr", TEXTURE_TYPE::HDR, false, &hdr);*/
 
-    bool32 loaded = device->createTexture2D("assets/get.png", &wood_texture);
-    device->createTexture2D("assets/water-texture.jpg", &water_texture);
-
-    if (!loaded)
-    {
-        print_error("Failed to load free texture");
-        return false;
-    }
+    Texture2D wood_texture = Texture2D::create("assets/get.png");
+    Texture2D water_texture = Texture2D::create("assets/water-texture.jpg");
 
     addTexture("wood", wood_texture);
     addTexture("water", water_texture);
@@ -708,25 +726,23 @@ bool32 Render::initCommonGpuResources()
 
 void Render::viewport(int32 w, int32 h)
 {
-    GraphicsDevice *device = getGDevice();
-    Viewport &vp = device->getViewport();
+    GraphicsContext *context = getContext();
+    Viewport &vp = context->getViewport();
     
     vp.width = w;
     vp.height = h;
      
     //Render::pushCommand([=]()
     //{
-        graphics_state.graphics_device->setViewport(0, 0, w, h);
+        context->setViewport(0, 0, w, h);
     //});
 }
 
 void Render::clear(uint32 flags)
 {
-    //Render::pushCommand([=]() 
-    //{
-        graphics_state.graphics_device->clearColor(graphics_state.target_clear_color);
-        graphics_state.graphics_device->clear(flags);
-    //});
+    GraphicsContext *context = getContext();
+    context->clearColor(graphics_state.target_clear_color);
+    context->clear(flags);
 }
 
 void Render::clearColor(real32 x, real32 y, real32 z, real32 a)
@@ -741,7 +757,7 @@ void Render::shutdown()
 {
     // @Clear destroy free textures
 
-    GraphicsDevice *device = getGDevice();
+    GraphicsDevice *device = getDevice();
     auto textures = graphics_state.gpu_resources.textures;
 
     std::unordered_map<std::string, Texture2D>::iterator it = textures.begin();
@@ -755,9 +771,12 @@ void Render::shutdown()
 
 bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace)
 {
-    GraphicsDevice *device = getGDevice();
-
+    GraphicsDevice *device = getDevice();
+    GraphicsContext *context = getContext();
+    
     Vertex *vert = vertex_type;
+
+    meh->vao = VertexArray::create();
 
     meh->vao.buffers.push_back(new VertexBuffer());
     meh->vao.ib = new IndexBuffer();
@@ -786,9 +805,8 @@ bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspac
             { "aUV",        ElementType::Float2, }
         };
     }
-
-    device->createVertexArray(&meh->vao);
-    device->bindVertexArray(&meh->vao);
+    
+    context->bindVertexArray(&meh->vao);
 
     device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
 
@@ -800,7 +818,7 @@ bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspac
     device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
     device->setIndexBuffer(&meh->vao, meh->vao.ib);
 
-    device->unbindVertexArray();
+    context->unbindVertexArray();
     //device->destroyBuffer(meh->vao.buffers[0]);
     //device->destroyBuffer(meh->vao.ib);
 
@@ -854,7 +872,7 @@ bool32 Render::createLineMesh(LineMesh *line_com)
 bool32 Render::createLinesBuffer()
 {
     RenderState &rs = graphics_state.render_state_batch;
-    GraphicsDevice *device = getGDevice();
+    GraphicsDevice *device = getDevice();
 
     rs.line_vb_base = alloc_mem LineVertexMesh[rs.max_line_vert];
 
@@ -892,7 +910,7 @@ bool32 Render::createLinesBuffer()
 bool32 Render::createQuadBuffer()
 {
     RenderState &rs = graphics_state.render_state_batch;
-    GraphicsDevice *device = getGDevice();
+    GraphicsDevice *device = getDevice();
 
     rs.quad_vertex_data[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
     rs.quad_vertex_data[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
@@ -1348,10 +1366,11 @@ bool32 Render::createCube(CubeMesh *cube)
         cube->vertex_array = alloc_mem VertexArray();
         cube->vertex_array->buffers.push_back(alloc_mem VertexBuffer());
 
-        GraphicsDevice *device = getGDevice();
+        GraphicsDevice *device = getDevice();
+        GraphicsContext *context = getContext();
 
         device->createVertexArray(cube->vertex_array);
-        device->bindVertexArray(cube->vertex_array);
+        context->bindVertexArray(cube->vertex_array);
 
         device->createVertexBuffer(data->begin(), data->size() * sizeof(real32), DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
 
@@ -1376,8 +1395,8 @@ void Render::drawTriangle()
 {    
     if (!graphics_state.is_inited_triangle)
     {
-        Render::pushCommand([=]()
-        {
+        //Render::pushCommand([=]()
+        //{
             real32 vertices[] = {
                 -0.5f, -0.5f, 0.0f,   
                  0.5f, -0.5f, 0.0f,   
@@ -1397,28 +1416,30 @@ void Render::drawTriangle()
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
-        });
+        //});
 
         graphics_state.is_inited_triangle = true;
     }
 
-    Render::pushCommand([=]()
-    {
+    //Render::pushCommand([=]()
+    //{
         Shader *shd = getShader("triangle");
-        GraphicsDevice *device = getGDevice();
+        GraphicsContext *context = getContext();
         
-        device->bindShader(shd);
+        context->bindShader(shd);
         
         glBindVertexArray(graphics_state.VAO);
-        device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 3);
-    });
+        context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 3);
+    //});
 }
 
 void Render::drawFullquad()
 {
-    graphics_state.graphics_device->bindVertexArray(&graphics_state.quad_vao);
-    graphics_state.graphics_device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
-    graphics_state.graphics_device->unbindVertexArray();
+    GraphicsContext *context = getContext();
+
+    context->bindVertexArray(&graphics_state.quad_vao);
+    context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
+    context->unbindVertexArray();
 }
 
 void Render::drawQuad(const Vec2 &pos, const Vec2 &size, const Color4RGBA &color)
@@ -1545,24 +1566,23 @@ void Render::drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture
 
 void Render::drawModel(Model *mod, Material *mat, Matrix4x4 &transform)
 {
-    GraphicsDevice *device = getGDevice();
+    GraphicsContext *context = getContext();
     ModelNode *root = mod->root;
 
-    Shader *shd = mat->getShader();
-
-    device->bindShader(shd);
-
+    mat->bind();    
+    
     Camera3D &camera3d = getCamera3D();
 
     Matrix4x4 vp = camera3d.getViewProjectionMatrix();
+    Matrix4x4 mvp = vp * transform;
 
-    //device->activateBindTexture(TEXTURE_TYPE::COLOR, texture_diff);
-    //device->setInt("tex_diff1", 0, shd);
+    mat->set("mvp", ShaderUniformType::Mat4x4, &mvp);
+    //mat->set("model", ShaderUniformType::Mat4x4, &transform);
 
-    device->setMat4("mvp", vp * transform, shd);
-    device->setMat4("model", transform, shd);
-
-    device->enable(GL_DEPTH_TEST);
+    if (mat->isDepth())
+    {
+        context->enable(GL_DEPTH_TEST);
+    }
 
     for (uint32 i = 0; i < root->children.size(); i++)
     {
@@ -1575,41 +1595,12 @@ void Render::drawModel(Model *mod, Material *mat, Matrix4x4 &transform)
         }
     }
 
-    device->unbindShader();
-
-    device->disable(GL_DEPTH_TEST);
-}
-
-void Render::drawModel(Model *mod, Shader *shd, Matrix4x4 &transform)
-{
-    GraphicsDevice *device = getGDevice();
-    ModelNode *root = mod->root;
-
-    device->bindShader(shd);
-
-    Camera3D &camera3d = getCamera3D();
-
-    Matrix4x4 vp = camera3d.getViewProjectionMatrix();
+    mat->unbind();
     
-    device->setMat4("mvp", vp * transform, shd);
-    device->setMat4("model", transform, shd);
-
-    device->enable(GL_DEPTH_TEST);
-
-    for (uint32 i = 0; i < root->children.size(); i++)
+    if (mat->isDepth())
     {
-        ModelNode* curr_node = root->children[i];
-
-        for (uint32 j = 0; j < curr_node->meshes.size(); j++)
-        {
-            Mesh *cur_mesh = curr_node->meshes.at(j);
-            //drawMesh(cur_mesh, shd);
-        }
+        context->disable(GL_DEPTH_TEST);
     }
-
-    device->unbindShader();
-
-    device->disable(GL_DEPTH_TEST);
 }
 
 /*void drawModel(xe_assets::AnimModel *mod, Shader *shd, const Matrix4x4 &transform)
@@ -1650,22 +1641,23 @@ void Render::drawModel(Model *mod, Shader *shd, Matrix4x4 &transform)
 
 void Render::drawText(const std::string &text, real32 x, real32 y, Vec3 &color, real32 scale)
 {
-    GraphicsDevice *device = getGDevice();
+    GraphicsDevice *device = getDevice();
+    GraphicsContext *context = getContext();
 
-    device->enable(GL_BLEND);
-    device->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    context->enable(GL_BLEND);
+    context->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Shader *text_shader = getShader("text");
 
-    device->bindShader(text_shader);
-    device->setVec3("color", color, text_shader);
+    context->bindShader(text_shader);
+    //device->setVec3("color", color);
 
-    device->activateTexture(0);
+    context->activateTexture(0);
 
     VertexArray va = {};
     va.id = 1;
 
-    device->bindVertexArray(&va);
+    context->bindVertexArray(&va);
 
     std::string::const_iterator c;
     
@@ -1689,23 +1681,23 @@ void Render::drawText(const std::string &text, real32 x, real32 y, Vec3 &color, 
             { xpos + w, ypos + h,   1.0, 0.0 }
         };
 
-        device->bindTexture(TEXTURE_TYPE::COLOR, ch.texture_id);
+        context->bindTexture(TEXTURE_TYPE::COLOR, ch.texture_id);
 
         //glBindTexture(GL_TEXTURE_2D, ch.texture_id);
 
         glBindBuffer(GL_ARRAY_BUFFER, 1);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        graphics_state.graphics_device->unbindBuffer(BUFFER_TYPE::VERTEX);
+        context->unbindBuffer(BUFFER_TYPE::VERTEX);
 
-        device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
+        context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
 
         x += (ch.advance >> 6) * scale;
     }
 
-    device->unbindVertexArray();
-    device->unbindTexture(TEXTURE_TYPE::COLOR);
+    context->unbindVertexArray();
+    context->unbindTexture(TEXTURE_TYPE::COLOR);
 
-    device->disable(GL_BLEND);
+    context->disable(GL_BLEND);
 }
 
 void Render::drawText(const std::string &text, Vec2 &pos, Vec3 &color)
@@ -1760,43 +1752,45 @@ void Render::drawWaterPlane(Entity *ent)
 
 void Render::drawSkybox()
 {
-    /*graphics_state.graphics_device->setDepthFunc(GL_LEQUAL);
+    /*GraphicsContext *context = getContext();
+    
+    context->setDepthFunc(GL_LEQUAL);
     Shader *cubemap_shader = xe_render::getShader("cubemap");
 
     graphics_state.graphics_device->bindShader(cubemap_shader);
 
-    Camera3DComponent camera = getCamera3D();
+    Camera3D &camera = getCamera3D();
 
-    Matrix4x4 view = createMat4(createMatrix3x3(camera.get_view_matrix()));
+    Matrix4x4 view = createMat4(createMatrix3x3(camera.getViewMatrix()));
 
-    graphics_state.graphics_device->setMat4("view", view, cubemap_shader);
-    graphics_state.graphics_device->setMat4("projection", camera.get_projection_matrix(), cubemap_shader);
+    //graphics_state.graphics_device->setMat4("view", view, cubemap_shader);
+    //graphics_state.graphics_device->setMat4("projection", camera.get_projection_matrix(), cubemap_shader);
 
-    graphics_state.graphics_device->bindVertexArray(skybox_obj->va);
+    context->bindVertexArray(skybox_obj->va);
 
-    graphics_state.graphics_device->activateBindTexture(TEXTURE_TYPE::CUBEMAP, skybox_obj->cubemap);
+    context->activateBindTexture(TEXTURE_TYPE::CUBEMAP, skybox_obj->cubemap);
 
-    graphics_state.graphics_device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
+    context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
 
-    graphics_state.graphics_device->setDepthFunc(GL_LESS);*/
+    context->setDepthFunc(GL_LESS);*/
 }
 
 void Render::drawAABB(const AABB &bb, const Matrix4x4 &matrix)
 {
-    /*glm::vec4 min = { bb.min.x, bb.min.y, bb.min.z, 1.0f };
-    glm::vec4 max = { bb.max.x, bb.max.y, bb.max.z, 1.0f };
+    /*Vec4 min = createVec4(bb.min.x, bb.min.y, bb.min.z, 1.0f);
+    Vec4 max = createVec4(bb.max.x, bb.max.y, bb.max.z, 1.0f);
 
-    glm::vec4 corners[8] =
+    Vec4 corners[8] =
     {
-        matrix * glm::vec4 { min.x, min.y, max.z, 1.0f},
-        matrix * glm::vec4 { min.x, max.y, max.z, 1.0f},
-        matrix * glm::vec4 { max.x, max.y, max.z, 1.0f},
-        matrix * glm::vec4 { max.x, min.y, max.z, 1.0f},
+        matrix * createVec4( min.x, min.y, max.z, 1.0f),
+        matrix * createVec4( min.x, max.y, max.z, 1.0f),
+        matrix * createVec4( max.x, max.y, max.z, 1.0f),
+        matrix * createVec4( max.x, min.y, max.z, 1.0f),
 
-        matrix * glm::vec4 { min.x, min.y, min.z, 1.0f},
-        matrix * glm::vec4 { min.x, max.y, min.z, 1.0f},
-        matrix * glm::vec4 { max.x, max.y, min.z, 1.0f},
-        matrix * glm::vec4 { max.x, min.y, min.z, 1.0f}
+        matrix * createVec4( min.x, min.y, min.z, 1.0f),
+        matrix * createVec4( min.x, max.y, min.z, 1.0f),
+        matrix * createVec4( max.x, max.y, min.z, 1.0f),
+        matrix * createVec4( max.x, min.y, min.z, 1.0f)
     };
 
     for (uint32_t i = 0; i < 4; i++)
@@ -1881,8 +1875,8 @@ void Render::applyDirLight(Shader *shd, DirLightComponent *directional_light, Tr
     }
 
     //graphics_state.graphics_device->bindShader(shd);
-    //graphics_state.graphics_device->setVec3("dir_light_color", light_color, shd);
-    //graphics_state.graphics_device->setVec3("light_pos", transform->position, shd);
+    //graphics_state.graphics_device->setVec3("dir_light_color", light_color);
+    //graphics_state.graphics_device->setVec3("light_pos", transform->position);
 }
 
 void Render::applySpotLight(Shader *shd, SpotLightComponent *spot_light, TransformComponent *transform)
@@ -1911,9 +1905,9 @@ void Render::beginFrame(bool32 shouldClearScreen)
 void Render::beginRenderPass(const RenderPass *pass)
 {
     RenderPass *active_pass = graphics_state.active_render_pass;
-    GraphicsDevice *device = getGDevice();
+    GraphicsContext *context = getContext();
     
-    device->bindFramebuffer(pass->active_framebuffer);
+    context->bindFramebuffer(pass->active_framebuffer);
 
     uint32 clearFlags = 0;
    
@@ -1952,7 +1946,7 @@ void Render::executeRenderCommand(CommandType type)
     uint32 dSize = 0;
 
     RenderState &rs = graphics_state.render_state_batch;
-    GraphicsDevice *device = getGDevice();
+    GraphicsContext *context = getContext();
 
     switch (type)
     {
@@ -1963,8 +1957,8 @@ void Render::executeRenderCommand(CommandType type)
         if (dSize)
         {
             uint32 offset = 0;
-            device->bindBuffer(&rs.quad_vertex_buffer);
-            device->pushDataToBuffer(rs.quad_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.quad_vb_base);
+            context->bindBuffer(&rs.quad_vertex_buffer);
+            context->pushDataToBuffer(rs.quad_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.quad_vb_base);
             drawQuads();           
         }
     } break;
@@ -1975,8 +1969,8 @@ void Render::executeRenderCommand(CommandType type)
         if (dSize)
         {
             uint32 offset = 0;
-            device->bindBuffer(&rs.line_vertex_buffer);
-            device->pushDataToBuffer(rs.line_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.line_vb_base);
+            context->bindBuffer(&rs.line_vertex_buffer);
+            context->pushDataToBuffer(rs.line_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.line_vb_base);
             drawLines();
         }
     } break;
@@ -1992,7 +1986,7 @@ void Render::executeCommands()
 
 void Render::endFrame()
 {
-    GraphicsDevice *device = getGDevice();
+    GraphicsDevice *device = getDevice();
     
     device->checkError();
     executeCommands();
@@ -2001,9 +1995,9 @@ void Render::endFrame()
 void Render::endRenderPass()
 {
     RenderPass *active_pass = graphics_state.active_render_pass;
-    GraphicsDevice *device = getGDevice();
+    GraphicsContext *context = getContext();
     
-    device->unbindFramebuffer();
+    context->unbindFramebuffer();
     active_pass = nullptr;
 }
 
@@ -2023,7 +2017,8 @@ void Render::drawCube(Texture2D *texture_diff)
 {
     if (texture_diff)
     {
-        graphics_state.graphics_device->activateBindTexture(TEXTURE_TYPE::COLOR, texture_diff);
+        GraphicsContext *context = getContext();
+        context->activateBindTexture(TEXTURE_TYPE::COLOR, texture_diff);
     }
 
     drawCube();
@@ -2038,7 +2033,7 @@ void Render::drawCube()
     
     //Render::pushCommand([=]()
     //{
-        GraphicsDevice *device = getGDevice();
+        GraphicsContext *context = getContext();
         Shader *shd = getShader("color");
         Camera3D &camera = getCamera3D();
 
@@ -2056,19 +2051,19 @@ void Render::drawCube()
         
         Matrix4x4 mvp = proj_matrix * view_matrix * model_matrix;
 
-        device->bindShader(shd);
-        //device->setVec3("color", createVec3(1.0f, 0.0f, 0.0f), shd);
+        context->bindShader(shd);
+        //device->setVec3("color", createVec3(1.0f, 0.0f, 0.0f));
 
-        device->setMat4("mvp", mvp, shd);
-        device->setMat4("model", model_matrix, shd);
+        //device->setMat4("mvp", mvp);
+        //device->setMat4("model", model_matrix);
 
-        device->enable(GL_DEPTH_TEST);
+        context->enable(GL_DEPTH_TEST);
 
-        device->bindVertexArray(graphics_state.cube_vao.vertex_array);
-        device->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
-        device->unbindVertexArray();
+        context->bindVertexArray(graphics_state.cube_vao.vertex_array);
+        context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 36);
+        context->unbindVertexArray();
 
-        device->disable(GL_DEPTH_TEST);
+        context->disable(GL_DEPTH_TEST);
     //});    
 }
 
@@ -2138,32 +2133,38 @@ void Render::drawLines()
 {
     Camera3D& camera = getCamera3D();
     Shader *line = getShader("line");
-    GraphicsDevice *device = getGDevice();
+    GraphicsContext *context = getContext();
     RenderState &rs = graphics_state.render_state_batch;
 
-    device->bindShader(line);
+    context->bindShader(line);
 
-    device->setMat4("vp", camera.getViewProjectionMatrix(), line);
+    //device->setMat4("vp", camera.getViewProjectionMatrix());
 
-    device->bindVertexArray(&rs.line_vertex_array);
-    device->setLineWidth(rs.default_line_width);
-    device->drawIndexed(PRIMITIVE_TOPOLOGY::LINE, rs.line_index_count, GL_UNSIGNED_INT, 0);
+    context->bindVertexArray(&rs.line_vertex_array);
+    context->setLineWidth(rs.default_line_width);
+    context->drawIndexed(PRIMITIVE_TOPOLOGY::LINE, rs.line_index_count, GL_UNSIGNED_INT, 0);
 
     ++rs.draw_calls;
 }
 
 void Render::drawQuads()
 {
+    Material *mat = getMaterial("render2d");
+
     Camera2D& camera2d = getCamera2D();
-    Shader *shd = getShader("render2d");
-    GraphicsDevice *device = getGDevice();
+    GraphicsContext *context = getContext();
     RenderState &rs = graphics_state.render_state_batch;
 
-    device->bindShader(shd);
-    device->setMat4("vp", camera2d.getViewProjection(), shd);
+    mat->bind();
+    mat->set("vp", ShaderUniformType::Mat4x4, &camera2d.getViewProjection());
 
-    device->bindVertexArray(&rs.quad_vertex_array);
-    device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, rs.quad_index_count, GL_UNSIGNED_INT, 0);
+    //device->bindShader(shd);
+    //device->setMat4("vp", camera2d.getViewProjection());
+
+    mat->activate();
+
+    context->bindVertexArray(&rs.quad_vertex_array);
+    context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, rs.quad_index_count, GL_UNSIGNED_INT, 0);
 
     ++rs.draw_calls;
 }
@@ -2215,7 +2216,7 @@ void Render::drawEntStatic(Entity *ent)
 
         if (model->draw_with_color)
         {
-            device->setVec3("color", convertToVec3(default_cube_color), shader_to_draw);
+            device->setVec3("color", convertToVec3(default_cube_color));
         }
 
         glm::mat4 transformMatrix = applyTransform(transform, shader_to_draw);
@@ -2304,18 +2305,25 @@ void drawEntPrimitive(Entity *ent)
 
 void Render::drawMesh(Mesh *msh, Material *mat)
 {
-    GraphicsDevice *device = getGDevice();
-    Shader *shd = mat->getShader();
+    GraphicsContext *context = getContext();
+    
+    const std::vector<Texture2D*> *mat_textures = mat->getTextures2D();
 
-    uint32 diff_texture_num = 1;
-    uint32 normal_texture_num = 1;
-    uint32 specular_texture_num = 1;
+    for (uint32 i = 0; i < mat_textures->size(); ++i)
+    {        
+        mat->set("tex_diff1", ShaderUniformType::Sampler2D, (const void*)i);     
+    }
 
     //for (uint32 i = 0; i < msh->mesh_textures.size(); i++)
-   // {
+    //{
+
+        //uint32 diff_texture_num = 1;
+        //uint32 normal_texture_num = 1;
+        //uint32 specular_texture_num = 1;
+
         // @Refactor!!!
-        Texture2D *mesh_texture = mat->getTexture(0);
-        device->activateTexture(0);
+        //Texture2D *mesh_texture = mat->getTexture(0);
+        //device->activateTexture(0);
 
         //std::string name = msh->mesh_textures[i].type;
         //std::string num;
@@ -2329,19 +2337,26 @@ void Render::drawMesh(Mesh *msh, Material *mat)
         //else if (name == "tex_spec")
         //    num = std::to_string(specular_texture_num++);
 
-        //device->setInt((name + num).c_str(), 0, shd);
-        device->setInt("tex_diff1", 0, shd);
-        device->bindTexture(TEXTURE_TYPE::COLOR, mesh_texture);
+        //device->setInt((name + num).c_str(), 0, shd);        
+        //mat->set("tex_diff1", ShaderUniformType::Sampler2D, 0);
+
+        //device->bindTexture(TEXTURE_TYPE::COLOR, mesh_texture);
     //}
      
-    device->bindVertexArray(&msh->vao);
-    device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
+    mat->activate();
+
+    context->bindVertexArray(&msh->vao);
+    context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Render::drawSphere(Texture2D *texture_diff)
 {
     if (texture_diff)
-        graphics_state.graphics_device->activateBindTexture(TEXTURE_TYPE::COLOR, texture_diff);
+    {
+        GraphicsContext *context = getContext();
+        context->activateBindTexture(TEXTURE_TYPE::COLOR, texture_diff);
+    }
+    
     drawSphere();
 }
 
@@ -2352,9 +2367,11 @@ void Render::drawSphere()
         createSphere(&graphics_state.sphere_vao);
     }
 
-    graphics_state.graphics_device->bindVertexArray(graphics_state.sphere_vao.vertex_array);
-    graphics_state.graphics_device->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, graphics_state.sphere_vao.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
-    graphics_state.graphics_device->unbindVertexArray();
+    GraphicsContext *context = getContext();
+
+    context->bindVertexArray(graphics_state.sphere_vao.vertex_array);
+    context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, graphics_state.sphere_vao.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
+    context->unbindVertexArray();
 }
 
 RenderCommandQueue::RenderCommandQueue()

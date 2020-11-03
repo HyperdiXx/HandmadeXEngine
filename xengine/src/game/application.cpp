@@ -34,6 +34,8 @@
 //#include "xengine\tree.cpp"
 
 #ifdef GAPI_GL
+    #include "xengine\graphics_context_gl.h"
+    #include "xengine\graphics_context_gl.cpp"
     #include "xengine\graphics_device_gl.h"
     #include "xengine\graphics_device_gl.cpp"
 #endif
@@ -138,9 +140,7 @@ void Render()
 
     Render::setupRenderCommand(CommandType::QUAD_COMMAND);
     Render::setupRenderCommand(CommandType::LINE_COMMAND);
-
-    //Render::drawTriangle();
-
+  
     for (uint32 y = 15.0f; y < 700.0f; y += 25.0f)
     {
         for (uint32 x = 15.0f; x < 1250.0f; x += 25.0f)
@@ -162,10 +162,12 @@ void Render()
     //Render::drawCube(); 
 
     Material *model_material = Render::getMaterial("base");
+    Material *cube_material = Render::getMaterial("baseCube");
+    
     Render::drawModel(nano_character, model_material, modelMat);
 
     modelMat = translateMat(translationCube) * scaleMat(scaleCube);
-    Render::drawModel(cube_model, model_material, modelMat);
+    Render::drawModel(cube_model, cube_material, modelMat);
 
     //Render::endFrame();
 }

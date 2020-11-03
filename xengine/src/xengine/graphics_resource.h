@@ -32,6 +32,8 @@ struct Texture2D
     TextureDesc desc;    
     std::string name;
     bool32 is_valid;
+
+    static Texture2D create(const char *path);
 };
 
 struct Shader
@@ -54,6 +56,21 @@ struct IndexBuffer
     uint32 count;
     uint32 *index_data;
     Index *data;
+
+    static IndexBuffer create(uint32 *indices, uint32 size);
+};
+
+enum class FrameBufferFlags
+{
+    DEPTH,
+    STENCIL
+};
+
+struct FramebufferSpecs
+{
+    uint32 framebuffer_count = 1;
+    uint32 width, height;
+    FrameBufferFlags flags;    
 };
 
 struct Framebuffer
@@ -64,6 +81,11 @@ struct Framebuffer
     GPUHandler rb_id;
     Texture2D *depth_texture;
     Texture2D *stencil_texture;
+
+    static Framebuffer create();
+    static Framebuffer create(FramebufferSpecs specs);
+    static Framebuffer create(Texture2D *color, Texture2D *depth);
+    static Framebuffer create(Texture2D *color, FramebufferSpecs specs);
 };
 
 enum class ElementType
@@ -172,6 +194,8 @@ struct VertexBuffer
     uint32 element_count;
     BufferLayout layout;
     void *data;
+
+    static VertexBuffer create(DRAW_TYPE draw_type, void *vertices, uint32 size);
 };
 
 struct TextureWrapper
@@ -184,9 +208,12 @@ struct TextureWrapper
 struct VertexArray
 {
     std::vector<VertexBuffer*> buffers;
-    GPUHandler id;
-    GPUHandler ibuffer_index = 0;    
     IndexBuffer *ib;
+    
+    GPUHandler id;
+    uint32 ibuffer_index = 0;    
+    
+    static VertexArray create();
 };
 
 enum GeometryType
@@ -298,7 +325,7 @@ enum class ShaderUniformType
     Vec3Uniform,
     Vec4Uniform,
     Mat4x4,
-    Mat3x4,
+    Mat3x3,
     Sampler2D,
     Sampler3D
 };
@@ -310,11 +337,18 @@ public:
     ShaderUniformProperty(const std::string& pr_shader) : name(pr_shader) {};
     ~ShaderUniformProperty() {};
 
+    //ShaderUniformProperty(ShaderUniformProperty && prop);
+    //ShaderUniformProperty& operator=(ShaderUniformProperty && prop);
+    
     inline const std::string &getName() const { return name; }
 
     ShaderUniformType type = ShaderUniformType::None;
+    uint32 location;
     std::string name;
     const void *value;
+private:
+
+  
 };
 
 class ShaderProperties
@@ -332,40 +366,19 @@ private:
     friend class MaterialInstance;
 public:
     Material() = default;
-    Material(Shader *shd) : shaderRef(shd) {};
+    Material(Shader *shd) : shaderRef(shd) { bind(); };
 
     virtual ~Material() {};
 
-    void set(const std::string &property_name, ShaderUniformType type, const void* data)
-    {
-        auto &definitions = shaderProp.getProperties();
+    void set(const std::string &property_name, ShaderUniformType type, const void* data);
 
-        ShaderUniformProperty prop = {};        
-        prop.name = property_name;
-        prop.type = type;
-        prop.value = data;
-
-        definitions.emplace_back(prop);
-    };
-
-    template<typename T>
-    T& get(const std::string &property_name)
-    {
-        auto &definitions = shaderProp.getProperties();
-
-        for (uint32 i = 0; i < definitions.size(); ++i)
-        {
-            auto &property_of_shd = definitions[i];
-
-            if (property_of_shd.name == property_name)
-            {
-                return property_of_shd.value;
-            }
-        }
-    };
+    ShaderUniformProperty *getProperty(const std::string &name);
 
     void bind();
+    void unbind();
 
+    void activate();
+    
     inline void addMaterialFlag(MaterialFlag flag)
     {
         flags |= (uint32)flag;
@@ -376,10 +389,15 @@ public:
         flags &= ~(uint32)flag;
     }
 
-    void addTexture2D(Texture2D *tex)
+    inline void addTexture2D(Texture2D *tex)
     {
         textures.emplace_back(tex);
     }
+
+    inline bool32 isDepth() const { return getFlags() & (uint32)MaterialFlag::Depth; }
+    inline uint32 getFlags() const { return flags; }
+
+    inline const std::vector<Texture2D*> *getTextures2D() { return &textures; }
 
     Texture2D *getTexture(uint32 index) const { return textures[index]; }
     Shader *getShader() { return shaderRef; }

@@ -12,70 +12,6 @@ public:
 
     void setAPI() override;
 
-    void clear(int flags) override;
-    void clearColor(real32 r, real32 g, real32 b, real32 a) override;
-    void clearColor(const Vec4& color) override;
-    void setViewport(int32 x, int32 y, int32 width, int32 height) override;
-    void enable(int type) override;
-    void disable(int type) override;
-    void setBlendFunc(int src, int dst) override;
-    void setDepthFunc(int type) override;
-    void setCullMode(int type) override;
-    void setDepth(bool32 type) override;
-    void setLineWidth(uint32 line_width) override;
-
-    void drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count) override;
-    void drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind) override;
-
-    void pushDataToBuffer(uint32 index, BUFFER_TYPE type, uint32 offset, uint64 size, void *data) override;
-
-    void activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture) override;
-    void activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture) override;
-    void activateTexture(uint32 index) override;
-    void bindTexture(TEXTURE_TYPE type, const Texture2D *tetxture) override;
-    void bindTexture(TEXTURE_TYPE type, uint32 index);
-    void bindShader(const Shader *Shader) override;
-    void bindBuffer(const VertexBuffer *vb) override;
-    void bindBuffer(const IndexBuffer *ib) override;
-    void bindVertexArray(const VertexArray *va) override;
-    void bindFramebuffer(const Framebuffer *fbo) override;
-    void bindRenderbuffer(const Framebuffer *fbo) override;
-    void bindForRead(const Framebuffer *fbo) override;
-    void bindForWrite(const Framebuffer *fbo) override;
-
-    void addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo) override;
-    void addDepthTexture2D(Texture2D *depth, Framebuffer *fbo) override;
-    void addDepthTexture2D(uint32 w, uint32 h, Framebuffer *fbo) override;
-    void setDepthBufferAttachment(const Framebuffer *fbo) override;
-    void setDepthBufferAttachment(uint32 w, uint32 h, const Framebuffer *fbo) override;
-    Texture2D& getTexture(uint32 number, const Framebuffer *fbo) override;
-    void setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture) override;
-    void setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D *texture) override;
-    void setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D *texture, uint32 mip) override;
-    void setRenderbuffer(int depth_component, uint32 width, uint32 height) override;
-    void setFramebufferRenderbufferAttachment(const Framebuffer *fbo) override;
-
-    void checkFramebuffer() override;
-
-    void unbindTexture(TEXTURE_TYPE texture) override;
-    void unbindVertexArray() override;
-    void unbindShader() override;
-    void unbindFramebuffer() override;
-    void unbindBuffer(BUFFER_TYPE type) override;
-
-    void setBool(const std::string &name, bool value, Shader *shd) override;
-    void setInt(const std::string &namee, int32 value, Shader *shd) override;
-    void setFloat(const std::string& name, real32 value, Shader *shd) override;
-    void setVec2(const std::string &name, const Vec2 &value, Shader *shd) override;
-    void setVec2(const std::string &name, real32 x, real32 y, Shader *shd) override;
-    void setVec3(const std::string &name, const Vec3 &value, Shader *shd) override;
-    void setVec3(const std::string &name, real32 x, real32 y, real32 z, Shader *shd) override;
-    void setVec4(const std::string &name, const Vec4 &value, Shader *shd) override;
-    void setVec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, Shader *shd) override;
-    void setMat2(const std::string &name, const Matrix2x2 &mat, Shader *shd) override;
-    void setMat3(const std::string &name, const Matrix3x3 &mat, Shader *shd) override;
-    void setMat4(const std::string &name, const Matrix4x4 &mat, Shader *shd) override;
-
     bool32 createTexture(Texture2D *texture) override;
     bool32 createTexture(uint32 count, Texture2D *texture) override;
     bool32 createTexture2D(const char *path, Texture2D *texture) override;
@@ -114,30 +50,35 @@ public:
     void loadTextureGpu(int texture_t, int width, int height, int internal_format, int data_format, int data_type, const void* image) override;
     void generateTextureMipmap(TEXTURE_TYPE texture_t) override;
 
+    void addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo) override;
+    void addDepthTexture2D(Texture2D *depth, Framebuffer *fbo) override;
+    void addDepthTexture2D(uint32 w, uint32 h, Framebuffer *fbo) override;
+    void setDepthBufferAttachment(const Framebuffer *fbo) override;
+    void setDepthBufferAttachment(uint32 w, uint32 h, const Framebuffer *fbo) override;
+    void setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture) override;
+    void setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D *texture) override;
+    void setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D *texture, uint32 mip) override;
+    void setRenderbuffer(int depth_compoentn, uint32 width, uint32 height) override;
+    void setFramebufferRenderbufferAttachment(const Framebuffer *fbo) override;
+
+    void setDrawBuffer(uint32 type) override;
+    void setDrawBuffers(uint32 count, void *pointer) override;
+    void setReadBuffer(uint32 type) override;
+    void checkError() override;
+
+    Texture2D& getTexture(uint32 number, const Framebuffer *fbo) override;
+    void checkFramebuffer() override;
+
     void destroyTexture2D(Texture2D *tex) override;
     void destroyFramebuffer(Framebuffer *fbo) override;
     void destroyShader(uint32 id) override;
     void destroyBuffer(VertexBuffer *vb) override;
     void destroyBuffer(IndexBuffer *ib) override;
 
-    void setDrawBuffer(uint32 type) override;
-    void setDrawBuffers(uint32 count, void *pointer) override;
-    void setReadBuffer(uint32 type) override;
-
-    void checkError() override;
-
     void loadBindings() override;
 
-    void startExecution() override;
-    void endExecution() override;
 private:
-    uint32 last_bound_unit_texture;
-    uint32 last_activated_texture;
-    uint32 last_bound_unit_vao;
-    uint32 last_bound_unit_vbuffer;
-    uint32 last_bound_unit_ibuffer;
-    uint32 last_bound_unit_fbo;
-    uint32 last_bound_unit_shader;
+
 };
 #endif // !GRAPHICS_DEVICE_GL_H
 

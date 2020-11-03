@@ -1,211 +1,6 @@
 #ifndef GRAPHICS_DEVICE_GL_CPP
 #define GRAPHICS_DEVICE_GL_CPP
 
-constexpr uint32 convert_draw_type_to_gl_type(DRAW_TYPE draw_type)
-{
-    uint32 res = 0;
-
-    switch (draw_type)
-    {
-    case STATIC:
-        res |= GL_STATIC_DRAW;
-        break;
-    case DYNAMIC:
-        res |= GL_DYNAMIC_DRAW;
-        break;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-
-constexpr uint32 convert_primitive_type(PRIMITIVE_TOPOLOGY type)
-{
-    uint32 res = 0;
-
-    switch (type)
-    {
-    case TRIANGLE:
-        res |= GL_TRIANGLES;
-        break;
-    case TRIANGLE_STRIP:
-        res |= GL_TRIANGLE_STRIP;
-        break;
-    case LINE:
-        res |= GL_LINES;
-        break;
-    case LINE_LOOP:
-        res |= GL_LINE_LOOP;
-        break;
-    case LINE_STRIP:
-        res |= GL_LINE_STRIP;
-        break;
-    case POINTLESS:
-        res |= GL_POINT;
-        break;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-
-constexpr uint32 convert_buffer_type_gl(BUFFER_TYPE buf_type)
-{
-    uint32 res = 0;
-
-    switch (buf_type)
-    {
-    case VERTEX:
-        res |= GL_ARRAY_BUFFER;
-        break;
-    case INDEX:
-        res |= GL_ELEMENT_ARRAY_BUFFER;
-        break;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-constexpr uint32 convert_texture_type_gl(TEXTURE_TYPE tex_type)
-{
-    uint32 res = 0;
-
-    switch (tex_type)
-    {
-    case COLOR:
-    case DEPTH:
-    case HDR:
-        res |= GL_TEXTURE_2D;
-        break;
-    case CUBEMAP:
-        res |= GL_TEXTURE_CUBE_MAP;
-        break;
-    case CUBEMAP_POSITIVE:
-        res |= GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-constexpr uint32 convert_texture_wrapping_type_gl(TEXTURE_WRAPPING tex_type)
-{
-    uint32 res = 0;
-
-    switch (tex_type)
-    {
-    case TEXTURE_ADDRESS_REPEAT:
-        res |= GL_REPEAT;
-        break;
-    case TEXTURE_ADDRESS_MIR_REPEAT:
-        res |= GL_MIRRORED_REPEAT;
-        break;
-    case TEXTURE_ADDRESS_CLAMP:
-        res |= GL_CLAMP_TO_EDGE;
-        break;
-    case TEXTURE_ADDRESS_BORDER:
-        res |= GL_CLAMP_TO_BORDER;
-        break;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-constexpr uint32 convert_texture_sampling_type_gl(TEXTURE_SAMPLING tex_type)
-{
-    uint32 res = 0;
-
-    switch (tex_type)
-    {
-    case LINEAR:
-        res |= GL_LINEAR;
-        break;
-    case NEAREST:
-        res |= GL_NEAREST;
-        break;
-    case LINEAR_MIPMAP_LINEAR:
-        res |= GL_LINEAR_MIPMAP_LINEAR;
-        break;
-    case LINEAR_MIPMAP_NEAREST:
-        res |= GL_LINEAR_MIPMAP_NEAREST;
-        break;
-    case NEAREST_MIPMAP_LINEAR:
-        res |= GL_NEAREST_MIPMAP_LINEAR;
-        break;
-    case NEAREST_MIPMAP_NEAREST:
-        res |= GL_NEAREST_MIPMAP_NEAREST;
-        break;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-constexpr uint32 convert_texture_wrapping_axis_type_gl(TEXTURE_WRAPPING_AXIS tex_wrapping_type)
-{
-    uint32 res = 0;
-
-    switch (tex_wrapping_type)
-    {
-    case TEXTURE_AXIS_S:
-        res |= GL_TEXTURE_WRAP_S;
-        break;
-    case TEXTURE_AXIS_T:
-        res |= GL_TEXTURE_WRAP_T;
-        break;
-    case TEXTURE_AXIS_R:
-        res |= GL_TEXTURE_WRAP_R;
-        break;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-constexpr uint32 convert_texture_filter_operation_gl(TEXTURE_FILTER_OPERATION tex_filter_type)
-{
-    uint32 res = 0;
-
-    switch (tex_filter_type)
-    {
-    case MIN:
-        res |= GL_TEXTURE_MIN_FILTER;
-        break;
-    case MAG:
-        res |= GL_TEXTURE_MAG_FILTER;
-        break;
-    default:
-        break;
-    }
-
-    return res;
-}
-
-/*static PIXELFORMATDESCRIPTOR get_pixel_format_desc()
-{
-    PIXELFORMATDESCRIPTOR pixel_format_descriptor = {};
-    pixel_format_descriptor.nSize = sizeof(pixel_format_descriptor);
-    pixel_format_descriptor.nVersion = 1;
-    pixel_format_descriptor.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
-    pixel_format_descriptor.iPixelType = PFD_TYPE_RGBA;
-    pixel_format_descriptor.cColorBits = 32;
-    pixel_format_descriptor.cDepthBits = 24;
-    pixel_format_descriptor.cAlphaBits = 8;
-    pixel_format_descriptor.iLayerType = PFD_MAIN_PLANE;
-    return pixel_format_descriptor;
-}*/
-
 GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 fullscreen)
     {
         /*this->fullscreen = fullscreen;
@@ -307,485 +102,10 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
 
     }
-
-    void GraphicsDeviceGL::clear(int flags)
-    {         
-        glClear(flags);
-    }
-
-    void GraphicsDeviceGL::clearColor(real32 r, real32 g, real32 b, real32 a)
-    {
-        clear_color_v[0] = r;
-        clear_color_v[1] = g;
-        clear_color_v[2] = b;
-        clear_color_v[3] = a;
-        glClearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
-    }
-
+  
     void GraphicsDeviceGL::setAPI()
     {
         api = API_TYPE::OPENGL;
-    }
-
-    void GraphicsDeviceGL::clearColor(const Vec4& color)
-    {
-        glClearColor(color.x, color.y, color.z, color.w);
-    }
-
-    void GraphicsDeviceGL::setViewport(int32 x, int32 y, int32 width, int32 height)
-    {
-        glViewport(x, y, width, height);
-    }
-
-    // @ Store all stuff in context state like dx
-
-    void GraphicsDeviceGL::enable(int type)
-    {
-        glEnable(type);
-    }
-
-    void GraphicsDeviceGL::disable(int type)
-    {
-        glDisable(type);
-    }
-    
-    void GraphicsDeviceGL::setBlendFunc(int src, int dst)
-    {
-        glBlendFunc(src, dst);
-    }
-
-    void GraphicsDeviceGL::setDepthFunc(int type)
-    {
-        glDepthFunc(type);
-    }
-
-    void GraphicsDeviceGL::setCullMode(int type)
-    {
-        glCullFace(type);
-    }
-
-    void GraphicsDeviceGL::setDepth(bool32 type)
-    {
-        glDepthMask(type);
-    }
-
-    void GraphicsDeviceGL::setLineWidth(uint32 line_width)
-    {
-        //Render::pushCommand([=]()
-        //{
-            glLineWidth(line_width);
-        //});
-    }
-
-    void GraphicsDeviceGL::drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 count)
-    {
-        //Render::pushCommand([=]()
-        //{
-            uint32 gl_primitive_type = convert_primitive_type(mode);
-            glDrawArrays(gl_primitive_type, first, count);
-        //});
-    }
-
-    void GraphicsDeviceGL::drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind)
-    {
-        //Render::pushCommand([mode, count, type, ind]()
-        //{
-            uint32 gl_primitive_type = convert_primitive_type(mode);
-            glDrawElements(gl_primitive_type, count, type, ind);
-        //});
-    }
-
-    void GraphicsDeviceGL::pushDataToBuffer(uint32 index, BUFFER_TYPE type, uint32 offset, uint64 size, void *data)
-    {
-        //Render::pushCommand([=]()
-        //{
-            uint32 buf_type = convert_buffer_type_gl(type);
-            glBufferSubData(buf_type, offset, size, data);
-            //glNamedBufferSubData(index, offset, size, data);
-        //});
-    }
-
-    void GraphicsDeviceGL::activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture)
-    {
-        if (last_bound_unit_texture != texture->id)
-        {
-            uint32 gl_texture_type = convert_texture_type_gl(type);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(gl_texture_type, texture->id);
-            last_bound_unit_texture = texture->id;
-        }
-    }
-
-    void GraphicsDeviceGL::activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture)
-    {
-        if (last_bound_unit_texture != texture->id)
-        {
-            uint32 gl_texture_type = convert_texture_type_gl(type);
-            glActiveTexture(GL_TEXTURE0 + 0);
-            glBindTexture(gl_texture_type, texture->id);
-            last_bound_unit_texture = texture->id;
-        }
-    }
-
-    void GraphicsDeviceGL::activateTexture(uint32 index)
-    {
-        glActiveTexture(GL_TEXTURE0 + index);
-    }
-
-    void GraphicsDeviceGL::bindTexture(TEXTURE_TYPE type, const Texture2D *texture)
-    {
-        if (last_bound_unit_texture != texture->id)
-        {
-            uint32 gl_texture_type = convert_texture_type_gl(type);
-            glBindTexture(gl_texture_type, texture->id);
-            last_bound_unit_texture = texture->id;
-        }
-    }
-
-    void GraphicsDeviceGL::bindTexture(TEXTURE_TYPE type, uint32 index)
-    {
-        if (last_bound_unit_texture != index)
-        {
-            uint32 gl_texture_type = convert_texture_type_gl(type);
-            glBindTexture(gl_texture_type, index);
-            last_bound_unit_texture = index;
-        }
-    }
-
-    void GraphicsDeviceGL::bindBuffer(const VertexBuffer *vb)
-    {
-        //Render::pushCommand([this, vb]()
-        //{
-            if (last_bound_unit_vbuffer != vb->id)
-            {
-                glBindBuffer(GL_ARRAY_BUFFER, vb->id);
-                last_bound_unit_vbuffer = vb->id;
-            }
-        //});
-    }
-
-    void GraphicsDeviceGL::bindBuffer(const IndexBuffer *ib)
-    {       
-        //Render::pushCommand([this, ib]()
-        //{
-            if (last_bound_unit_ibuffer != ib->id)
-            {
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-                last_bound_unit_ibuffer = ib->id;
-            }
-        //});
-    }
-
-    void GraphicsDeviceGL::bindShader(const Shader *shd)
-    {
-        //Render::pushCommand([this, shd]()
-        //{
-            if (last_bound_unit_shader != shd->id)
-            {
-                glUseProgram(shd->id);
-                last_bound_unit_shader = shd->id;
-            }
-        //});
-    }
-
-    void GraphicsDeviceGL::bindVertexArray(const VertexArray *va)
-    {
-        //Render::pushCommand([this, va]()
-        //{
-            if (last_bound_unit_vao != va->id)
-            {
-
-                glBindVertexArray(va->id);
-                last_bound_unit_vao = va->id;
-            }
-        //});          
-    }
-
-    void GraphicsDeviceGL::bindFramebuffer(const Framebuffer *fbo)
-    {
-        //Render::pushCommand([=]()
-        //{
-            if (last_bound_unit_fbo != fbo->fbo_id)
-            {
-                glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo_id);
-                last_bound_unit_fbo = fbo->fbo_id;
-            }
-        //});        
-    }
-
-    void GraphicsDeviceGL::bindRenderbuffer(const Framebuffer *fbo)
-    {
-        //Render::pushCommand([fbo]()
-        //{
-            glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb_id);
-        //});
-    }
-
-    void GraphicsDeviceGL::bindForRead(const Framebuffer *fbo)
-    {
-        //Render::pushCommand([fbo]()
-        //{
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->fbo_id);
-        //});
-    }
-
-    void GraphicsDeviceGL::bindForWrite(const Framebuffer *fbo)
-    {
-        //Render::pushCommand([fbo]()
-        //{
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->fbo_id);
-        //});
-    }
-
-    void GraphicsDeviceGL::addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo)
-    {
-        if (color_attachment_id > MAX_COLOR_ATT)
-            return;
-
-        GLuint type_of_tex = GL_COLOR_ATTACHMENT0 + color_attachment_id;
-
-        fbo->color_textures.push_back(texture);
-        Texture2D *color_texture = fbo->color_textures[color_attachment_id];
-
-        setTexture2DFbo(type_of_tex, TEXTURE_TYPE::COLOR, texture);
-        fbo->buffers.push_back(type_of_tex);
-        glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());
-    }
-
-    void GraphicsDeviceGL::addDepthTexture2D(Texture2D *depth, Framebuffer *fbo)
-    {
-        fbo->depth_texture = depth;
-        bindRenderbuffer(fbo);
-        setDepthBufferAttachment(fbo);
-    }
-
-    void GraphicsDeviceGL::addDepthTexture2D(uint32 w, uint32 h, Framebuffer *fbo)
-    {
-        if (!fbo->depth_texture)
-        {
-            fbo->depth_texture = new Texture2D();
-            fbo->depth_texture->desc.width = w;
-            fbo->depth_texture->desc.height = h;
-            fbo->depth_texture->desc.dimension = TEXTURE_2D;
-            fbo->depth_texture->desc.texture_type = DEPTH;
-        
-            createTexture(fbo->depth_texture);
-            bindTexture(TEXTURE_TYPE::DEPTH, fbo->depth_texture);
-            loadTextureGpu(TEXTURE_TYPE::COLOR, w, h, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-            
-            setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
-            setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
-            
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo->depth_texture->id, 0);
-        }
-
-        bindRenderbuffer(fbo);
-        setDepthBufferAttachment(fbo);
-    }
-
-    void GraphicsDeviceGL::setDepthBufferAttachment(const Framebuffer *fbo)
-    {
-        setRenderbuffer(GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
-        setFramebufferRenderbufferAttachment(fbo);
-    }
-
-    void GraphicsDeviceGL::setDepthBufferAttachment(uint32 w, uint32 h, const Framebuffer *fbo)
-    {
-        setRenderbuffer(GL_DEPTH_COMPONENT32, w, h);
-        setFramebufferRenderbufferAttachment(fbo);
-    }
-
-    Texture2D& GraphicsDeviceGL::getTexture(uint32 number, const Framebuffer *fbo)
-    {
-        if (fbo && number >= 0 && number <= MAX_COLOR_ATT)
-        {
-            return *fbo->color_textures[number];
-        }
-        
-        //return Texture2D();
-    }
-
-    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture)
-    {
-        uint32 tex_t = convert_texture_type_gl(tex_type);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t, texture->id, 0);
-    }
-
-    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture)
-    {
-        uint32 tex_t = convert_texture_type_gl(tex_type);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, 0);
-    }
-
-    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture, uint32 mip)
-    {
-        uint32 tex_t = convert_texture_type_gl(tex_type);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, mip);
-    }
-
-    void GraphicsDeviceGL::setRenderbuffer(int depth_component, uint32 width, uint32 height)
-    {
-        glRenderbufferStorage(GL_RENDERBUFFER, depth_component, width, height);
-    }
-
-    void GraphicsDeviceGL::setFramebufferRenderbufferAttachment(const Framebuffer *fbo)
-    {
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
-    }
-
-    void GraphicsDeviceGL::checkFramebuffer()
-    {
-        GLuint error = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-        if (error != GL_FRAMEBUFFER_COMPLETE)
-        {
-            print_error("Framebuffer setup");
-
-            switch (error)
-            {
-            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                print_error("GL_Framebuffer_INCOMPLETE_ATTACHMENT");
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                print_error("GL_Framebuffer_INCOMPLETE_MISSING_ATTACHMENT");
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                print_error("GL_Framebuffer_INCOMPLETE_DRAW_BUFFER");
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-                print_error("GL_Framebuffer_INCOMPLETE_LAYER_TARGETS");
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                print_error("GL_Framebuffer_INCOMPLETE_READ_BUFFER");
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-                print_error("GL_Framebuffer_INCOMPLETE_MULTISAMPLE");
-                break;
-            }
-        }
-    }
-
-    void GraphicsDeviceGL::unbindTexture(TEXTURE_TYPE texture)
-    {
-        uint32 gl_texture_type = convert_texture_type_gl(texture);
-        glBindTexture(gl_texture_type, 0);
-        last_bound_unit_texture = 0;
-    }
-
-    void GraphicsDeviceGL::unbindVertexArray()
-    {
-        //Render::pushCommand([&]()
-        //{
-            glBindVertexArray(0);
-        //});
-        //last_bound_unit_vao = 0;
-    }
-
-    void GraphicsDeviceGL::unbindShader()
-    {
-        //Render::pushCommand([&]()
-        //{
-            glUseProgram(0);
-        //});
-        last_bound_unit_shader = 0;
-    }
-
-    void GraphicsDeviceGL::unbindFramebuffer()
-    {
-        //Render::pushCommand([&]()
-        //{
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        //});
-
-        last_bound_unit_fbo = 0;
-    }
-
-    void GraphicsDeviceGL::setBool(const std::string & name, bool value, Shader *shd)
-    {
-        //Render::pushCommand([name, value, shd]()
-        //{
-            glUniform1i(glGetUniformLocation(shd->id, name.c_str()), (int)value);
-        //});
-    }
-
-    void GraphicsDeviceGL::setInt(const std::string &name, int32 value, Shader* shd)
-    {
-        //Render::pushCommand([name, value, shd]()
-        //{
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniform1i(location, value);
-        //});
-    }
-
-    void GraphicsDeviceGL::setFloat(const std::string &name, real32 value, Shader *shd)
-    {
-        //Render::pushCommand([name, value, shd]()
-        //{
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniform1f(location, value);
-
-        //});
-    }
-
-    void GraphicsDeviceGL::setVec2(const std::string &name, const Vec2& value, Shader *shd)
-    {
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniform2fv(location, 1, value.data);
-    }
-
-    void GraphicsDeviceGL::setVec2(const std::string &name, real32 x, real32 y, Shader *shd)
-    {
-        //Render::pushCommand([name, x, y, shd]()
-        //{
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniform2f(location, x, y);
-        //});
-    }
-
-    void GraphicsDeviceGL::setVec3(const std::string &name, const Vec3& value, Shader *shd)
-    {
-        setVec3(name, value.x, value.y, value.z, shd);
-    }
-
-    void GraphicsDeviceGL::setVec3(const std::string &name, real32 x, real32 y, real32 z, Shader *shd)
-    {
-        //Render::pushCommand([name, x, y, z, shd]()
-        //{
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniform3f(location, x, y, z);
-        //});
-    }
-
-    void GraphicsDeviceGL::setVec4(const std::string &name, const Vec4& value, Shader *shd)
-    {
-        setVec4(name, value.x, value.y, value.z, value.w, shd);
-    }
-
-    void GraphicsDeviceGL::setVec4(const std::string &name, real32 x, real32 y, real32 z, real32 w, Shader *shd)
-    {
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniform4f(location, x, y, z, w);
-    }
-
-    void GraphicsDeviceGL::setMat2(const std::string &name, const Matrix2x2 &mat, Shader *shd)
-    {
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniformMatrix2fv(location, 1, GL_FALSE, mat.data);
-    }
-
-    void GraphicsDeviceGL::setMat3(const std::string &name, const Matrix3x3 &mat, Shader *shd)
-    {
-        int location = glGetUniformLocation(shd->id, name.c_str());
-        glUniformMatrix3fv(location, 1, GL_FALSE, (const real32*)mat.data);
-    }
-
-    void GraphicsDeviceGL::setMat4(const std::string &name, const Matrix4x4 &mat, Shader *shd)
-    {
-        //Render::pushCommand([name, mat, shd]()
-        //{
-            int location = glGetUniformLocation(shd->id, name.c_str());
-            glUniformMatrix4fv(location, 1, GL_FALSE, (const real32*)mat.data);
-        //});
     }
 
     bool32 GraphicsDeviceGL::createTexture(Texture2D *texture)
@@ -842,6 +162,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
         void *image = nullptr;
 
+        GraphicsContext *context = Render::getContext();
+
         switch (type)
         {
         case COLOR:
@@ -892,7 +214,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         else
         {
             createTexture(texture);
-            bindTexture(type, texture);
+            context->bindTexture(type, texture);
 
             switch (type)
             {
@@ -943,7 +265,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
             generateTextureMipmap(type);
         }
 
-        unbindTexture(type);
+        context->unbindTexture(type);
 
         xe_core::deleteData(image);
 
@@ -1135,17 +457,13 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
         vb->data = vertices;
         
-        //Render::pushCommand([vb, size, draw_type]() mutable
-        //{
-            //glCreateBuffers(1, &vb->id);
         glCreateBuffers(1, &vb->id);
         glBindBuffer(GL_ARRAY_BUFFER, vb->id);
 
-            uint32 draw_type_gl = convert_draw_type_to_gl_type(draw_type);
-            //glNamedBufferData(vb->id, size, vb->data, draw_type_gl);
-            glBufferData(GL_ARRAY_BUFFER, size, vb->data, draw_type_gl);
-        //});
-
+        uint32 draw_type_gl = convert_draw_type_to_gl_type(draw_type);
+        //glNamedBufferData(vb->id, size, vb->data, draw_type_gl);
+        glBufferData(GL_ARRAY_BUFFER, size, vb->data, draw_type_gl);
+        
         return vb->data ? true : false;
     }
 
@@ -1304,6 +622,139 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         //});
     }
 
+    void GraphicsDeviceGL::addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo)
+    {
+        if (color_attachment_id > MAX_COLOR_ATT)
+            return;
+
+        GLuint type_of_tex = GL_COLOR_ATTACHMENT0 + color_attachment_id;
+
+        fbo->color_textures.push_back(texture);
+        Texture2D *color_texture = fbo->color_textures[color_attachment_id];
+
+        setTexture2DFbo(type_of_tex, TEXTURE_TYPE::COLOR, texture);
+        fbo->buffers.push_back(type_of_tex);
+        glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());
+    }
+
+    void GraphicsDeviceGL::addDepthTexture2D(Texture2D *depth, Framebuffer *fbo)
+    {
+        GraphicsContext *context = Render::getContext();
+        fbo->depth_texture = depth;
+        context->bindRenderbuffer(fbo);
+        setDepthBufferAttachment(fbo);
+    }
+
+    void GraphicsDeviceGL::addDepthTexture2D(uint32 w, uint32 h, Framebuffer *fbo)
+    {
+        GraphicsContext *context = Render::getContext();
+
+        if (!fbo->depth_texture)
+        {
+            fbo->depth_texture = new Texture2D();
+            fbo->depth_texture->desc.width = w;
+            fbo->depth_texture->desc.height = h;
+            fbo->depth_texture->desc.dimension = TEXTURE_2D;
+            fbo->depth_texture->desc.texture_type = DEPTH;
+                        
+            createTexture(fbo->depth_texture);
+            context->bindTexture(TEXTURE_TYPE::DEPTH, fbo->depth_texture);
+            loadTextureGpu(TEXTURE_TYPE::COLOR, w, h, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+
+            setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+            setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo->depth_texture->id, 0);
+        }
+
+        context->bindRenderbuffer(fbo);
+        setDepthBufferAttachment(fbo);
+    }
+
+    void GraphicsDeviceGL::setDepthBufferAttachment(const Framebuffer *fbo)
+    {
+        GraphicsContext *context = Render::getContext();
+
+        setRenderbuffer(GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
+        setFramebufferRenderbufferAttachment(fbo);
+    }
+
+    void GraphicsDeviceGL::setDepthBufferAttachment(uint32 w, uint32 h, const Framebuffer *fbo)
+    {
+        setRenderbuffer(GL_DEPTH_COMPONENT32, w, h);
+        setFramebufferRenderbufferAttachment(fbo);
+    }
+
+    Texture2D& GraphicsDeviceGL::getTexture(uint32 number, const Framebuffer *fbo)
+    {
+        if (fbo && number >= 0 && number <= MAX_COLOR_ATT)
+        {
+            return *fbo->color_textures[number];
+        }
+
+        //return Texture2D();
+    }
+
+    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture)
+    {
+        uint32 tex_t = convert_texture_type_gl(tex_type);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t, texture->id, 0);
+    }
+
+    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture)
+    {
+        uint32 tex_t = convert_texture_type_gl(tex_type);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, 0);
+    }
+
+    void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture, uint32 mip)
+    {
+        uint32 tex_t = convert_texture_type_gl(tex_type);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, mip);
+    }
+
+    void GraphicsDeviceGL::setRenderbuffer(int depth_component, uint32 width, uint32 height)
+    {
+        glRenderbufferStorage(GL_RENDERBUFFER, depth_component, width, height);
+    }
+
+    void GraphicsDeviceGL::setFramebufferRenderbufferAttachment(const Framebuffer *fbo)
+    {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
+    }
+
+    void GraphicsDeviceGL::checkFramebuffer()
+    {
+        GLuint error = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+        if (error != GL_FRAMEBUFFER_COMPLETE)
+        {
+            print_error("Framebuffer setup");
+
+            switch (error)
+            {
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                print_error("GL_Framebuffer_INCOMPLETE_ATTACHMENT");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                print_error("GL_Framebuffer_INCOMPLETE_MISSING_ATTACHMENT");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+                print_error("GL_Framebuffer_INCOMPLETE_DRAW_BUFFER");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+                print_error("GL_Framebuffer_INCOMPLETE_LAYER_TARGETS");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+                print_error("GL_Framebuffer_INCOMPLETE_READ_BUFFER");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                print_error("GL_Framebuffer_INCOMPLETE_MULTISAMPLE");
+                break;
+            }
+        }
+    }
+
     void GraphicsDeviceGL::destroyTexture2D(Texture2D *tex)
     {
         //Render::pushCommand([tex]() mutable
@@ -1396,23 +847,4 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         print_info(gl_renderer);
         print_info(gl_version);
     }
-
-    void GraphicsDeviceGL::unbindBuffer(BUFFER_TYPE type)
-    {
-        uint32 type_gl = convert_buffer_type_gl(type);
-        glBindBuffer(type_gl, 0);
-    }
-
-    void GraphicsDeviceGL::startExecution()
-    {
-        clearColor(clear_color_v[0], clear_color_v[1], clear_color_v[2], clear_color_v[3]);
-        clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-
-    void GraphicsDeviceGL::endExecution()
-    {     
-        int add = 0;
-        //SwapBuffers(xe_platform::get_dc());
-    }
-
 #endif

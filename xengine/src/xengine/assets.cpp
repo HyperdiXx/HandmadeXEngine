@@ -51,7 +51,7 @@ std::vector<TextureWrapper> loadTexturesFromMaterial(Model *mdl, aiMaterial *mat
         {
             TextureWrapper texture;
 
-            GraphicsDevice *device = getGDevice();
+            GraphicsDevice *device = Render::getDevice();
 
             Texture2D* texture_crt = new Texture2D();
             texture_crt->desc.dimension = TEXTURE_2D;

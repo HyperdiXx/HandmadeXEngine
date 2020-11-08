@@ -34,7 +34,9 @@ enum TEXTURE_TYPE
     LUT,
     CUBEMAP,
     CUBEMAP_POSITIVE,
-    DEPTH
+    DEPTH,
+    STENCIL,
+    DEPTH_STENCIL
 };
 
 enum TEXTURE_WRAPPING
@@ -92,17 +94,73 @@ enum API_TYPE
     DX11
 };
 
+enum PIXEL_FORMAT
+{
+    RGBA8,
+    RGBA16,
+    RGBA8F,
+    RGBA16F,
+    Depth24,
+    Depth32,
+    Stencil24,
+    Stencil32,
+    DepthStencil32
+};
+
+enum PIXEL_TYPE
+{
+    PTUBYTE,
+    PTUSHORT,    
+    PTUINT,    
+    PTFLOAT
+};
+
+enum PIXEL_INTERNAL_FORMAT
+{
+    IFRGB,
+    IFRGBA,
+    IFDEPTH,
+    IFDEPTHSTENCIL,
+    IFRG,
+    IFR
+};
+
+enum RENDER_TARGET_TYPE
+{
+    RTColor0,
+    RTColor1,
+    RTColor2,
+    RTColor3,
+    RTDepth,
+    RTStencil,
+    RTDepthStencil
+};
+
+struct TextureSampler
+{
+    TEXTURE_SAMPLING pxl_sampling_min;
+    TEXTURE_SAMPLING pxl_sampling_mag;
+    
+    TEXTURE_WRAPPING wrapping_s;
+    TEXTURE_WRAPPING wrapping_t;
+    TEXTURE_WRAPPING wrapping_r;
+};
+
 struct TextureDesc
 {
     TEXTURE_DIMENSION dimension;
     TEXTURE_TYPE texture_type;
+    PIXEL_FORMAT pixel_format;
+    PIXEL_INTERNAL_FORMAT internal_pixel_format;
+    PIXEL_TYPE pxl_type;
 
+    TextureSampler sampler;
     int32 width = 0;
     int32 height = 0;
-    uint32 mip_level;
+    uint32 mip_count;
 };
 
-struct rasterizerState
+struct RasterizerState
 {
 
 };

@@ -4,6 +4,7 @@
 #define WINDOW_NAME "XEngine"
 #define DEFAULT_WINDOW_WIDTH 1280
 #define DEFAULT_WINDOW_HEIGHT 720
+#define WIN32FILE
 
 #include <windows.h>
 #include <windowsx.h>
@@ -17,6 +18,8 @@
 #include "xengine\external\wglext.h"
 
 #include "xengine\common.h"
+#include "xengine\input.h"
+#include "xengine\utility.h"
 #include "game\app_state.h"
 
 #include "win32_platform.cpp"
@@ -26,7 +29,9 @@
 #include "win32_opengl.cpp"
 #include "win32_wasapi.cpp"
 #include "win32_daudio.cpp"
-#include "win32_xinput.cpp"
+#include "win32_input.cpp"
+
+#include "xengine\utility.cpp"
 
 #define DEBUG_LOG(data) printf(data)
 
@@ -49,24 +54,6 @@ internal WNDCLASS create_win32window(HINSTANCE &h_instance)
 
     return window_class;
 }
-
-/*internal void printfLetter(char a)
-{
-    printf("%c, \n", a);
-}
-
-internal void 
-parseFile()
-{
-    char *file_content = loadEntireFile("test.txt");
-
-    while (*file_content != '\n')
-    {
-        token cur_token = get_parsed_token(file_content);
-
-        ++file_content;
-    }
-}*/
 
 internal void
 Win32UpdateWindowRect()
@@ -135,7 +122,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
     global_state.FreeMemory = Win32FreeVirtual;
     global_state.ReallocateMemory = Win32Realocate;
     global_state.render_api = PlatformState::RenderApi::OPENGL;
-
+    
     WNDCLASS window_class = create_win32window(instance);
  
     if (!RegisterClass(&window_class))
@@ -151,7 +138,12 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
         0, 0, instance, 0);
 
     global_device_context = GetDC(window_handle);
-    
+
+    InputState is = {};
+    is.init(window_handle);
+
+    global_state.inp_state = &is;
+
     if (!Win32InitGraphicsDevice(&global_device_context, instance))
     {
         DEBUG_LOG("Failed to init OpenGL!");
@@ -176,6 +168,8 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_sh
             TranslateMessage(&message);
             DispatchMessage(&message);
         }
+
+        is.update();
 
         game_code.GameUpdate();
         SwapBuffers(global_device_context);

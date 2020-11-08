@@ -40,6 +40,7 @@ struct GraphicsState
     GraphicsVer gpu_version = {};
 
     std::unordered_map<std::string, Material> materials;
+    std::unordered_map<std::string, RenderPass> render_passes;
 
     Vec3  default_text_color = createVec3(1.0f, 1.0f, 1.0f);
     Vec3  default_cube_color = createVec3(0.0f, 1.0f, 0.0f);
@@ -147,13 +148,14 @@ public:
     global bool32 createQuadBuffer();
 
     global bool32 createRenderPass(const RenderPassData data, RenderPass *rp);
+    global bool32 createRenderPass(const char *name, bool32 clearDepth, bool32 clearColor, Framebuffer *active, RenderPass *rp);
 
     global void drawFullquad();
 
-    global void drawQuad(const Vec2 &pos, const Vec2 &size, const Color4RGBA &color);
-    global void drawQuad(const Vec3 &pos, const Vec2 &size, const Color4RGBA &color);
+    global void drawQuad(const Vec2 &pos, const Vec2 &size, const ColRGBA &color);
+    global void drawQuad(const Vec3 &pos, const Vec2 &size, const ColRGBA &color);
    
-    global void drawQuad(real32 x, real32 y, real32 w, real32 h, const Color4RGBA &color);
+    global void drawQuad(real32 x, real32 y, real32 w, real32 h, const ColRGBA &color);
     global void drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture);
 
     //global void drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform);
@@ -176,11 +178,11 @@ public:
     global void drawLine(real32 x, real32 y, real32 x_end, real32 y_end);
     global void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end);
 
-    global void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, Color4RGBA color);
-    global void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, Color3RGB color);
+    global void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, ColRGBA color);
+    global void drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, ColRGB color);
 
-    global void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, Color4RGBA color);
-    global void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, Color3RGB color);
+    global void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, ColRGBA color);
+    global void drawLine(real32 x, real32 y, real32 x_end, real32 y_end, ColRGB color);
 
     global void drawLines();
     global void drawQuads();
@@ -211,7 +213,7 @@ public:
     global void applyPointLight(Shader *shd, PointLightComponent *directional_light, TransformComponent *transform);
 
     global void beginFrame(bool32 shouldClearScreen = true);
-    global void beginRenderPass(const RenderPass *pass);
+    global void beginRenderPass(const char *name);
 
     global void setupRenderCommand(CommandType type);
     global void executeRenderCommand(CommandType type);
@@ -225,6 +227,7 @@ public:
     global void addTexture(const std::string &ac_name, Texture2D tex);
 
     global void addMaterial(const std::string &mat_name, Material mat);
+    global void addRenderPass(const std::string &mat_name, RenderPass pass);
 
     template<typename T>
     global void pushCommand(T&& func)

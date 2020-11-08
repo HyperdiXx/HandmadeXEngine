@@ -17,6 +17,8 @@ public:
     virtual void setAPI() = 0;
     
     virtual bool32 createTexture(Texture2D *texture) = 0;
+    virtual bool32 createTexture2D(TEXTURE_TYPE type, PIXEL_FORMAT px, PIXEL_INTERNAL_FORMAT ipx, PIXEL_TYPE pxl_type, uint32 width, uint32 height, uint32 mip_count, TextureSampler &sampler, Texture2D *texture) = 0;
+    virtual bool32 createTexture2D(Texture2D *texture) = 0;
     virtual bool32 createTexture(uint32 count, Texture2D *texture) = 0;
     virtual bool32 createTexture2D(const char *path, Texture2D* texture) = 0;
     virtual bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, Texture2D *texture) = 0;
@@ -24,15 +26,14 @@ public:
     virtual bool32 createTexture2D(const char *path, const char* dir, Texture2D* texture) = 0;
     virtual bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D* texture) = 0;
     virtual bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) = 0;
-    virtual bool32 createTexture2D(uint32 width, uint32 height, Texture2D* texture) = 0;
-
+    
     virtual bool32 createShader(const char* vertex, const char* fragment, Shader* Shader) = 0;
     virtual bool32 createShader(const char* shader_path, Shader *Shader) = 0;
     
     virtual uint32 compileShader(SHADER_TYPE type, std::string &shader_source) = 0;
     virtual uint32 createShaderProgram(uint32 id_vs, uint32 id_pixel) = 0;
  
-    virtual bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) = 0;
+    virtual bool32 createFramebuffer(const FramebufferDesc& desc, const FramebufferSpecs& specs, Framebuffer *fbo) = 0;
     virtual bool32 createRenderbuffer(const uint32 count, Framebuffer *fbo) = 0;
 
     virtual bool32 createVertexBuffer(void *vertices, uint32 size, DRAW_TYPE draw_type, VertexBuffer *vb) = 0;
@@ -71,7 +72,7 @@ public:
     virtual void setReadBuffer(uint32 type) = 0;
     virtual void checkError() = 0;
 
-    virtual Texture2D& getTexture(uint32 number, const Framebuffer *fbo) = 0;
+    virtual Texture2D *getTexture(uint32 number, const Framebuffer *fbo) = 0;
     virtual void checkFramebuffer() = 0;
 
     virtual void destroyTexture2D(Texture2D *tex) = 0;

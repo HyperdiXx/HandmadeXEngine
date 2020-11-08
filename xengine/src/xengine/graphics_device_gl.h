@@ -14,11 +14,12 @@ public:
 
     bool32 createTexture(Texture2D *texture) override;
     bool32 createTexture(uint32 count, Texture2D *texture) override;
+    bool32 createTexture2D(TEXTURE_TYPE type, PIXEL_FORMAT px, PIXEL_INTERNAL_FORMAT ipx, PIXEL_TYPE pxl_type, uint32 width, uint32 height, uint32 mip_count, TextureSampler &sampler, Texture2D *texture) override;
+    bool32 createTexture2D(Texture2D *texture) override;
     bool32 createTexture2D(const char *path, Texture2D *texture) override;
     bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, Texture2D *texture) override;
     bool32 createTexture2D(const char *path, TEXTURE_TYPE tex_type, uint32 samples, bool32 gen_mip, Texture2D *texture) override;
     bool32 createTexture2D(const char *path, const char *dir, Texture2D *texture) override;
-    bool32 createTexture2D(uint32 width, uint32 height, Texture2D* texture) override;
     bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D* texture) override;
     bool32 createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture) override;
 
@@ -28,7 +29,7 @@ public:
     uint32 compileShader(SHADER_TYPE type, std::string &shader_source) override;
     uint32 createShaderProgram(uint32 id_vs, uint32 id_pixel) override;
 
-    bool32 createFramebuffer(const uint32 count, Framebuffer *fbo) override;
+    bool32 createFramebuffer(const FramebufferDesc& desc, const FramebufferSpecs& specs,  Framebuffer *fbo) override;
     bool32 createRenderbuffer(const uint32 count, Framebuffer *fbo) override;
 
     bool32 createVertexBuffer(void *vertices, uint32 size, DRAW_TYPE draw_type, VertexBuffer *vb) override;
@@ -66,7 +67,7 @@ public:
     void setReadBuffer(uint32 type) override;
     void checkError() override;
 
-    Texture2D& getTexture(uint32 number, const Framebuffer *fbo) override;
+    Texture2D *getTexture(uint32 number, const Framebuffer *fbo) override;
     void checkFramebuffer() override;
 
     void destroyTexture2D(Texture2D *tex) override;

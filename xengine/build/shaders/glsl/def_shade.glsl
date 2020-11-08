@@ -4,19 +4,21 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aUV;
 
-out vec3 frag_pos;
+out vec4 frag_pos;
 out vec2 uv;
-out vec3 nnormal;
+out vec3 normalout;
 
-uniform mat4 mvp;
+uniform mat4 vp;
+uniform mat4 model;
 
 void main()
 {
 	uv = aUV;
-	frag_pos = vec3(model * vec4(aPos, 1.0));
+	frag_pos = model * vec4(aPos, 1.0);
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
-    	nnormal = normalMatrix * aNormal;
-	gl_Position = mvp * vec4(aPos, 1.0);
+    normalout = normalMatrix * aNormal;
+	
+	gl_Position = vp * frag_pos;
 }
 
 #shader pixel
@@ -27,13 +29,13 @@ layout (location = 2) out vec4 gAlbedoSpec;
 
 in vec2 uv;
 in vec3 frag_pos
-in vec3 nnormal;
+in vec3 normalout;
 
 uniform sampler2D texture_diff1;
 uniform sampler2D texture_spec1;
 
 void main()
-{
+{	
 	gPosition = frag_pos;
 	gNormal = normalize(nnormal);
 	//GNormal = texture(texture_normal1, UV));

@@ -79,13 +79,21 @@ constexpr uint32 convert_texture_type_gl(TEXTURE_TYPE tex_type)
     case COLOR:
     case DEPTH:
     case HDR:
+    {
         res |= GL_TEXTURE_2D;
-        break;
+    } break;
     case CUBEMAP:
+    {
         res |= GL_TEXTURE_CUBE_MAP;
-        break;
+    } break;
     case CUBEMAP_POSITIVE:
+    {
         res |= GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+    } break;
+    case DEPTH_STENCIL:
+    {
+        res |= GL_DEPTH_STENCIL;
+    } break;
     default:
         break;
     }
@@ -190,6 +198,122 @@ constexpr uint32 convert_texture_filter_operation_gl(TEXTURE_FILTER_OPERATION te
     return res;
 }
 
+constexpr uint32 convert_internal_pixel_format_to_gl(PIXEL_INTERNAL_FORMAT pixel)
+{
+    uint32 res = 0;
+
+    switch (pixel)
+    {
+    case IFRGB:
+    {
+        res |= GL_RGB;
+    } break;
+    case IFRGBA:
+    {
+        res |= GL_RGBA;
+    } break;
+    case IFDEPTH:
+    {
+        res |= GL_DEPTH;
+    } break;
+    case IFDEPTHSTENCIL:
+    {
+        res |= GL_DEPTH_STENCIL;
+    } break;
+    case IFRG:
+    {
+        res |= GL_RG;
+    } break;
+    case IFR:
+    {
+        res |= GL_RED;
+    } break;            
+    default:
+        break;
+    }
+
+    return res;
+}
+
+
+constexpr uint32 convert_pixel_type_to_gl(PIXEL_TYPE pixel)
+{
+    uint32 res = 0;
+
+    switch (pixel)
+    {
+    case PTUBYTE:
+    {
+        res |= GL_UNSIGNED_BYTE;
+    } break;
+    case PTUSHORT:
+    {
+        res |= GL_UNSIGNED_SHORT;
+    } break;  
+    case PTUINT:
+    {
+        res |= GL_UNSIGNED_INT;
+    } break;
+    case PTFLOAT:
+    {
+        res |= GL_FLOAT;
+    } break;            
+    default:
+        break;
+    }
+
+    return res;
+}
+
+constexpr uint32 convert_pixel_format_to_gl(PIXEL_FORMAT pixel)
+{
+    uint32 res = 0;
+
+    switch (pixel)
+    {
+    case RGBA8:
+    {
+        res |= GL_RGBA;
+    } break;
+    case RGBA16:
+    {
+        res |= GL_RGBA16;
+    } break;
+    case RGBA8F:
+    {
+        res |= 0;
+    } break;
+    case RGBA16F:
+    {
+        res |= GL_RGBA16F;
+    } break;
+    case Depth24:
+    {
+        res |= GL_DEPTH_COMPONENT;
+    } break;
+    case Depth32:
+    {
+        res |= 1;
+    } break;
+    case Stencil24:
+    {
+        res |= 0;
+    } break;
+    case Stencil32:
+    {
+        res |= 3;
+    } break;
+    case DepthStencil32:
+    {
+        res |= GL_DEPTH_STENCIL;
+    } break;
+    default:
+        break;
+    }
+
+    return res;
+}
+
 void GraphicsContextGL::clear(int flags)
 {
     glClear(flags);
@@ -283,24 +407,26 @@ void GraphicsContextGL::pushDataToBuffer(uint32 index, BUFFER_TYPE type, uint32 
 
 void GraphicsContextGL::activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture)
 {
-    if (last_bound_unit_texture != texture->id)
+    const GPUHandler id = texture->rhi.getID();
+    if (last_bound_unit_texture != id)
     {
         uint32 gl_texture_type = convert_texture_type_gl(type);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(gl_texture_type, texture->id);
-        last_bound_unit_texture = texture->id;
+        glBindTexture(gl_texture_type, id);
+        last_bound_unit_texture = id;
     }
 }
 
 void GraphicsContextGL::activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture)
 {
-    if (last_bound_unit_texture != texture->id)
+    /*const GPUHandler id = texture->rhi.getID();
+    if (last_bound_unit_texture != id)
     {
         uint32 gl_texture_type = convert_texture_type_gl(type);
         glActiveTexture(GL_TEXTURE0 + 0);
-        glBindTexture(gl_texture_type, texture->id);
-        last_bound_unit_texture = texture->id;
-    }
+        glBindTexture(gl_texture_type, id);
+        last_bound_unit_texture = id;
+    }*/
 }
 
 void GraphicsContextGL::activateTexture(uint32 index)
@@ -310,11 +436,12 @@ void GraphicsContextGL::activateTexture(uint32 index)
 
 void GraphicsContextGL::bindTexture(TEXTURE_TYPE type, const Texture2D *texture)
 {
-    if (last_bound_unit_texture != texture->id)
+    const GPUHandler id = texture->rhi.getID();
+    if (last_bound_unit_texture != id)
     {
         uint32 gl_texture_type = convert_texture_type_gl(type);
-        glBindTexture(gl_texture_type, texture->id);
-        last_bound_unit_texture = texture->id;
+        glBindTexture(gl_texture_type, id);
+        last_bound_unit_texture = id;
     }
 }
 
@@ -330,87 +457,69 @@ void GraphicsContextGL::bindTexture(TEXTURE_TYPE type, uint32 index)
 
 void GraphicsContextGL::bindBuffer(const VertexBuffer *vb)
 {
-    //Render::pushCommand([this, vb]()
-    //{
-    if (last_bound_unit_vbuffer != vb->id)
+    const GPUHandler id = vb->rhi.getID();
+    if (last_bound_unit_vbuffer != id)
     {
-        glBindBuffer(GL_ARRAY_BUFFER, vb->id);
-        last_bound_unit_vbuffer = vb->id;
+        glBindBuffer(GL_ARRAY_BUFFER, id);
+        last_bound_unit_vbuffer = id;
     }
-    //});
 }
 
 void GraphicsContextGL::bindBuffer(const IndexBuffer *ib)
 {
-    //Render::pushCommand([this, ib]()
-    //{
-    if (last_bound_unit_ibuffer != ib->id)
+    const GPUHandler id = ib->rhi.getID();
+    if (last_bound_unit_ibuffer != id)
     {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-        last_bound_unit_ibuffer = ib->id;
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+        last_bound_unit_ibuffer = id;
     }
-    //});
 }
 
 void GraphicsContextGL::bindShader(const Shader *shd)
 {
-    //Render::pushCommand([this, shd]()
-    //{
-    if (last_bound_unit_shader != shd->id)
+    const GPUHandler id = shd->rhi.getID();
+    if (last_bound_unit_shader != id)
     {
-        glUseProgram(shd->id);
-        last_bound_unit_shader = shd->id;
+        glUseProgram(id);
+        last_bound_unit_shader = id;
     }
-    //});
 }
 
 void GraphicsContextGL::bindVertexArray(const VertexArray *va)
 {
-    //Render::pushCommand([this, va]()
-    //{
-    if (last_bound_unit_vao != va->id)
+    const GPUHandler id = va->rhi.getID();
+    if (last_bound_unit_vao != id)
     {
-
-        glBindVertexArray(va->id);
-        last_bound_unit_vao = va->id;
+        glBindVertexArray(id);
+        last_bound_unit_vao = id;
     }
-    //});          
 }
 
 void GraphicsContextGL::bindFramebuffer(const Framebuffer *fbo)
 {
-    //Render::pushCommand([=]()
-    //{
-    if (last_bound_unit_fbo != fbo->fbo_id)
+    const GPUHandler id = fbo->rhi.getID();
+    if (last_bound_unit_fbo != id)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo_id);
-        last_bound_unit_fbo = fbo->fbo_id;
-    }
-    //});        
+        glBindFramebuffer(GL_FRAMEBUFFER, id);
+        last_bound_unit_fbo = id;
+    }        
 }
 
 void GraphicsContextGL::bindRenderbuffer(const Framebuffer *fbo)
 {
-    //Render::pushCommand([fbo]()
-    //{
-    glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb_id);
-    //});
+    //glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb.rhi.getID());
 }
 
 void GraphicsContextGL::bindForRead(const Framebuffer *fbo)
 {
-    //Render::pushCommand([fbo]()
-    //{
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo->fbo_id);
-    //});
+    const GPUHandler id = fbo->rhi.getID();
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
 }
 
 void GraphicsContextGL::bindForWrite(const Framebuffer *fbo)
 {
-    //Render::pushCommand([fbo]()
-    //{
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->fbo_id);
-    //});
+    const GPUHandler id = fbo->rhi.getID();
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
 }
 
 void GraphicsContextGL::unbindTexture(TEXTURE_TYPE texture)
@@ -422,29 +531,19 @@ void GraphicsContextGL::unbindTexture(TEXTURE_TYPE texture)
 
 void GraphicsContextGL::unbindVertexArray()
 {
-    //Render::pushCommand([&]()
-    //{
     glBindVertexArray(0);
-    //});
-    //last_bound_unit_vao = 0;
+    last_bound_unit_vao = 0;
 }
 
 void GraphicsContextGL::unbindShader()
 {
-    //Render::pushCommand([&]()
-    //{
     glUseProgram(0);
-    //});
     last_bound_unit_shader = 0;
 }
 
 void GraphicsContextGL::unbindFramebuffer()
 {
-    //Render::pushCommand([&]()
-    //{
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    //});
-
     last_bound_unit_fbo = 0;
 }
 

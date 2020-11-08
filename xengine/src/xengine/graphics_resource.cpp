@@ -53,6 +53,31 @@ Texture2D Texture2D::create(const char *path)
     return result;
 }
 
+Texture2D Texture2D::create(uint32 width, uint32 height, PIXEL_FORMAT type, PIXEL_INTERNAL_FORMAT internal_type)
+{
+    return Texture2D();//create(width, height, type, internal_type, PIXEL_TYPE::PTUBYTE);
+}
+
+Texture2D Texture2D::create(uint32 width, uint32 height, PIXEL_FORMAT type, PIXEL_INTERNAL_FORMAT internal_type, PIXEL_TYPE plx_type, TextureSampler &sampler)
+{
+    return create(width, height, TEXTURE_TYPE::COLOR, type, internal_type, plx_type, 0, sampler);
+}
+
+Texture2D Texture2D::create(uint32 width, uint32 height, TEXTURE_TYPE tex_type, PIXEL_FORMAT type, PIXEL_INTERNAL_FORMAT internal_type, PIXEL_TYPE plx_type, uint32 mip_count, TextureSampler &sampler)
+{
+    Texture2D result = {};
+    GraphicsDevice *device = Render::getDevice();
+
+    bool32 res = device->createTexture2D(tex_type, type, internal_type, plx_type, width, height, mip_count, sampler, &result);
+
+    if (!res)
+    {
+        print_error("Failed to create texture2D!");
+    }
+
+    return result;
+}
+
 VertexBuffer VertexBuffer::create(DRAW_TYPE draw_type, void *vertices, uint32 size)
 {
     VertexBuffer result = {};
@@ -108,13 +133,13 @@ Framebuffer Framebuffer::create()
     return result;
 }
 
-Framebuffer Framebuffer::create(FramebufferSpecs specs)
+Framebuffer Framebuffer::create(const FramebufferDesc &desc, const FramebufferSpecs &specs)
 {
     Framebuffer result = {};
     
     GraphicsDevice *device = Render::getDevice();
 
-    bool32 res = device->createFramebuffer(specs.framebuffer_count, &result);
+    bool32 res = device->createFramebuffer(desc, specs, &result);
 
     if (!res)
     {
@@ -131,7 +156,7 @@ Framebuffer Framebuffer::create(Texture2D *color, Texture2D *depth)
     return result;
 }
 
-Framebuffer Framebuffer::create(Texture2D *color, FramebufferSpecs specs)
+Framebuffer Framebuffer::create(Texture2D *color, const FramebufferSpecs &specs)
 {
     Framebuffer result = {};
 
@@ -188,7 +213,7 @@ void Material::set(const std::string &property_name, ShaderUniformType type, con
         ShaderUniformProperty n_prop = {};
         n_prop.name = property_name;
         n_prop.type = type;        
-        n_prop.location = context->getBufferLocation(shaderRef->id, property_name.c_str());
+        n_prop.location = context->getBufferLocation(shaderRef->rhi.getID(), property_name.c_str());
         
         if (!isTexture)
         {
@@ -221,4 +246,33 @@ MaterialInstance::MaterialInstance(Material *material_ref)
     mat_ptr = material_ref;
 
     mat_ptr->addMaterialInstance(this);
+}
+
+void GPUResourceManager::addResource(VertexBuffer vb)
+{
+    //bool32 isSuits = isCorrectType(vb, GPUResourceType::VertexBuffer);
+
+    //if (isSuits)
+    //{
+        vb_handler.emplace_back(vb);
+    //}
+}
+
+bool32 GPUResourceManager::isCorrectType(GPUResourceType hand, GPUResourceType type)
+{
+    return hand == type;
+}
+
+CountedHandler &GPUResourceManager::getResource(uint32 index, GPUResourceType type)
+{
+   
+    switch (type)
+    {
+    case GPUResourceType::VertexBuffer:
+    {
+        return vb_handler[index];
+    } break;
+    default:
+        break;
+    }
 }

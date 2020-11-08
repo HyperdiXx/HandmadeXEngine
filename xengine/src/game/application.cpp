@@ -8,6 +8,8 @@
 #include "xengine\math.cpp"
 #include "xengine\containers.cpp"
 
+#include "xengine\input.h"
+
 #include "app_state.h"
 #include "game_state.h"
 
@@ -29,9 +31,9 @@
 #include "xengine\string.cpp"
 #include "xengine\parser.cpp"
 
-#include "xengine\win32\win32_platform.cpp"
-
 //#include "xengine\tree.cpp"
+
+#include "xengine\platform.h"
 
 #ifdef GAPI_GL
     #include "xengine\graphics_context_gl.h"
@@ -138,6 +140,8 @@ void Render()
 {
     Render::beginFrame();
 
+    //Render::beginRenderPass("deffered");
+
     Render::setupRenderCommand(CommandType::QUAD_COMMAND);
     Render::setupRenderCommand(CommandType::LINE_COMMAND);
   
@@ -145,7 +149,7 @@ void Render()
     {
         for (uint32 x = 15.0f; x < 1250.0f; x += 25.0f)
         {
-            Render::drawQuad(x, y, 20.0f, 20.0f, Color4RGBA((x + 10) * 0.5f, y + 10, (y * 10) / 20.0f, 1.0f));
+            Render::drawQuad(x, y, 20.0f, 20.0f, ColRGBA((x + 10) * 0.5f, y + 10, (y * 10) / 20.0f, 1.0f));
         }
     }
 
@@ -159,8 +163,6 @@ void Render()
 
     Matrix4x4 modelMat = translateMat(translationCharacter) * scaleMat(scaleCharacter);
 
-    //Render::drawCube(); 
-
     Material *model_material = Render::getMaterial("base");
     Material *cube_material = Render::getMaterial("baseCube");
     
@@ -168,6 +170,10 @@ void Render()
 
     modelMat = translateMat(translationCube) * scaleMat(scaleCube);
     Render::drawModel(cube_model, cube_material, modelMat);
+
+    //Render::endRenderPass();
+    
+    //Render::drawFullquad();
 
     //Render::endFrame();
 }
@@ -177,7 +183,7 @@ APP_LOAD_DATA
     platform_state = ps;
    
     Render::init();
-
+    
     arena = createMemoryArena(0, 1024 * 1024 * 4);
 
     InitGameLayers();
@@ -216,11 +222,6 @@ APP_UPDATE
 
         win_options.resized = false;       
     }
-
-    Camera3D &cam = getCamera3D();
-
-    cam.pos.z += 0.0001f;
-    cam.updateCamera();
 
     UpdateLayers();
     Render();

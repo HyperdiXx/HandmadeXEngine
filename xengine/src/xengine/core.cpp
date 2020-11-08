@@ -8,7 +8,8 @@
 
 namespace xe_core
 {
-    internal XEFile readWholeFile(const char *file_name)
+    internal 
+    XEFile readWholeFile(const char *file_name)
     {
         XEFile res = {};
 
@@ -56,7 +57,7 @@ namespace xe_core
     }
 
     internal 
-    std::string readFileString(const char *file_path)
+    std::string readFileToString(const char *file_path)
     {
         std::ifstream file(file_path);
         if (file.fail() || !file.is_open())
@@ -92,6 +93,7 @@ namespace xe_core
         return image;
     }
 
+    // Used to free stbi textures data
     internal void deleteData(void *data)
     {
         if (data != nullptr)

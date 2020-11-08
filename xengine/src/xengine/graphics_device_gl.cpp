@@ -116,8 +116,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     bool32 GraphicsDeviceGL::createTexture(uint32 count, Texture2D *texture)
     {
         assert(count > 0);
-        glGenTextures(count, &texture->id);
-        texture->is_valid = true;
+        glGenTextures(count, &texture->rhi.getIDRef());
+        
         return true;
     }
 
@@ -141,11 +141,26 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         return createTexture2D(path, dir, TEXTURE_TYPE::COLOR, true, texture);
     }
 
+    internal 
+    std::string concatPath(const char *path, const char *dir)
+    {
+        std::string result(path);
+
+        if (dir)
+        {
+            std::string dirname(dir);
+            result = dirname + '/' + result;
+        }        
+
+        return result;
+    }
+
     bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture)
     {
-        const char *path_res;
+        std::string path_str = concatPath(path, dir);
+        const char *path_res = path_str.c_str();
 
-        std::string filename(path);
+        /*std::string filename(path);
         
         if (dir)
         {
@@ -156,12 +171,12 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         else
         {
             path_res = path;
-        }
-            
+        }*/
+           
         int channels = 0;
 
         void *image = nullptr;
-
+        
         GraphicsContext *context = Render::getContext();
 
         switch (type)
@@ -205,9 +220,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
         if (samples > 1)
         {
-            glGenTextures(1, &texture->id);
-            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture->id);
-            texture->is_valid = true;
+            createTexture(texture);
+            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture->rhi.getIDRef());            
             glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA8, texture->desc.width, texture->desc.height, GL_FALSE);
             glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
         }
@@ -240,14 +254,14 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR_MIPMAP_LINEAR);
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
                 break;
-            case HDR:
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
-
+            case HDR:                
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
 
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
 
                 break;
             case CUBEMAP:
@@ -272,23 +286,54 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         return true;
     }
 
-    bool32 GraphicsDeviceGL::createTexture2D(uint32 width, uint32 height, Texture2D *texture)
+    bool32 GraphicsDeviceGL::createTexture2D(TEXTURE_TYPE type, PIXEL_FORMAT px, PIXEL_INTERNAL_FORMAT ipx, PIXEL_TYPE pxl_type, uint32 width, uint32 height, uint32 mip_count, TextureSampler &sampler, Texture2D *texture)
     {
         texture->desc.width = width;
         texture->desc.height = height;
         texture->desc.dimension = TEXTURE_2D;
+        texture->desc.mip_count = mip_count;
+        texture->desc.texture_type = type;
+        texture->desc.pixel_format = px;
+        texture->desc.internal_pixel_format = ipx;
+        texture->desc.pxl_type = pxl_type;
+        texture->desc.sampler = sampler;
 
-        glGenTextures(1, &texture->id);
-        glBindTexture(GL_TEXTURE_2D, texture->id);
+        uint32 glTextureType = convert_texture_type_gl(type);
+        uint32 glPixelFormat = convert_pixel_format_to_gl(px);
+        uint32 glInternalPixelType = convert_internal_pixel_format_to_gl(ipx);
+        uint32 glPixelType = convert_pixel_type_to_gl(pxl_type);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glGenTextures(1, &texture->rhi.getIDRef());
+        glBindTexture(glTextureType, texture->rhi.getID());
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, sampler.wrapping_s);
+        setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, sampler.wrapping_t);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+        if (type == TEXTURE_TYPE::CUBEMAP)
+        {
+            setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_R, sampler.wrapping_r);
+        }
+
+        setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, sampler.pxl_sampling_min);
+        setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, sampler.pxl_sampling_mag);
+
+        glTexImage2D(glTextureType, 0, glInternalPixelType, width, height, 0, glPixelFormat, glPixelType, 0);
+
+        if (mip_count > 0)
+        {
+            generateTextureMipmap(type);
+        }
+
+        glBindTexture(glTextureType, 0);
 
         return true;
+    }
+
+    bool32 GraphicsDeviceGL::createTexture2D(Texture2D *texture)
+    {
+        TextureDesc& desc = texture->desc;
+
+        return createTexture2D(desc.texture_type, desc.pixel_format, desc.internal_pixel_format, desc.pxl_type, desc.width, desc.height, desc.mip_count, desc.sampler, texture);
     }
 
     bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char *dir, TEXTURE_TYPE type, bool32 generate_mipmap, Texture2D *texture)
@@ -298,8 +343,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     bool32 GraphicsDeviceGL::createShader(const char *vertex_code, const char *fragment_code, Shader *shd)
     {
-        std::string vs_source = xe_core::readFileString(vertex_code);
-        std::string fs_source = xe_core::readFileString(fragment_code);
+        std::string vs_source = xe_core::readFileToString(vertex_code);
+        std::string fs_source = xe_core::readFileToString(fragment_code);
 
         uint32 vertex_id = compileShader(SHADER_TYPE::VS, vs_source);
         uint32 pixel_id = compileShader(SHADER_TYPE::PS, fs_source);
@@ -309,7 +354,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
             return false;
         }
 
-        shd->id = createShaderProgram(vertex_id, pixel_id);
+        shd->rhi.setID(createShaderProgram(vertex_id, pixel_id));
         
         return true;
     }
@@ -354,7 +399,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     bool32 GraphicsDeviceGL::createShader(const char *shader_path, Shader *shd)
     {
-        std::string source = xe_core::readFileString(shader_path);
+        std::string source = xe_core::readFileToString(shader_path);
 
         std::unordered_map<GLenum, std::string> split_shaders = SplitShader(source);
         
@@ -366,7 +411,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
             return false;
         }
 
-        shd->id = createShaderProgram(vertex_id, pixel_id);
+        shd->rhi.setID(createShaderProgram(vertex_id, pixel_id));
 
         return true;
     }
@@ -433,22 +478,73 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         return id;
     }
 
-    bool32 GraphicsDeviceGL::createFramebuffer(uint32 count, Framebuffer *fbo)
+    internal 
+    bool32 attachDepthStencil(const FramebufferDesc& desc, const FramebufferSpecs &specs, Framebuffer *fbo, RENDER_TARGET_TYPE attach)
     {
-        //Render::pushCommand([&]()
-        //{
-            glGenFramebuffers(count, &fbo->fbo_id);
-        //});
+        Texture2D depthStencil = desc.ds;
+        if (!depthStencil.isValidResource())
+        {
+            //depthStencil = Texture2D::create(specs.width, specs.height, TEXTURE_TYPE::DEPTH_STENCIL, PIXEL_FORMAT::DepthStencil32, PIXEL_INTERNAL_FORMAT::IFDEPTHSTENCIL, PIXEL_TYPE::PTFLOAT, 0);
+            return false;
+        }
+
+        fbo->attachments[attach] = &depthStencil;
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL, depthStencil.rhi.getID(), 0);
         
+        return true;
+    }
+
+    internal 
+    bool32 attachColors(const FramebufferDesc& desc, const FramebufferSpecs &specs, Framebuffer *fbo)
+    {
+        for (uint32 i = 0; i < MAX_COLOR_FRAMEBUFFER_ATTACHMENTS - 1; ++i)
+        {
+            Texture2D texHandle = desc.attachments[i];
+
+            if (!texHandle.isValidResource())
+            {
+                //texHandle = Texture2D::create(specs.width, specs.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA8, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTUBYTE, 0);
+                return false;
+            }
+
+            fbo->attachments[i] = &texHandle;
+
+            GLenum attachNum = (GLenum)(GL_COLOR_ATTACHMENT0 + i);
+            glFramebufferTexture(GL_FRAMEBUFFER, attachNum, texHandle.rhi.getID(), 0);
+            fbo->buffers[i] = attachNum;
+            fbo->colorAttachCount++;
+        }
+
+        return true;
+    }
+
+    bool32 GraphicsDeviceGL::createFramebuffer(const FramebufferDesc& desc, const FramebufferSpecs &specs, Framebuffer *fbo)
+    {
+        glGenFramebuffers(1, &fbo->rhi.getIDRef());
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo->rhi.getID());
+
+        bool32 isAttachedColors = attachColors(desc, specs, fbo);
+
+        bool32 isAttachedDS = attachDepthStencil(desc, specs, fbo, RENDER_TARGET_TYPE::RTDepthStencil);
+          
+        glDrawBuffers(fbo->colorAttachCount, fbo->buffers);
+
+        GLenum fbState = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        bool32 isCompleted = GL_FRAMEBUFFER_COMPLETE == fbState;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+        if (!isCompleted)
+        {
+            print_error("Failed to create Framebuffer!");
+        }
+
         return true;
     }
 
     bool32 GraphicsDeviceGL::createRenderbuffer(uint32 count, Framebuffer *fbo)
     {
-        //Render::pushCommand([&]()
-        //{
-            glGenRenderbuffers(count, &fbo->rb_id);
-        //});
+        glGenRenderbuffers(count, &fbo->rb.rhi.getIDRef());
         
         return true;
     }
@@ -457,8 +553,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
         vb->data = vertices;
         
-        glCreateBuffers(1, &vb->id);
-        glBindBuffer(GL_ARRAY_BUFFER, vb->id);
+        glCreateBuffers(1, &vb->rhi.getIDRef());
+        glBindBuffer(GL_ARRAY_BUFFER, vb->rhi.getID());
 
         uint32 draw_type_gl = convert_draw_type_to_gl_type(draw_type);
         //glNamedBufferData(vb->id, size, vb->data, draw_type_gl);
@@ -472,14 +568,10 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         ib->index_data = indices;
         ib->count = size;
 
-        //Render::pushCommand([ib]() mutable
-        //{
-            glCreateBuffers(1, &ib->id);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib->count * sizeof(GLuint), ib->index_data, GL_STATIC_DRAW);
-            //glNamedBufferData(ib->id, ib->count * sizeof(GLuint), ib->index_data, GL_STATIC_DRAW);
-        //});
-
+        glCreateBuffers(1, &ib->rhi.getIDRef());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->rhi.getID());
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib->count * sizeof(GLuint), ib->index_data, GL_STATIC_DRAW);
+        
         return ib->index_data ? true : false;
     }
 
@@ -488,11 +580,9 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         ib->data = indices;
         ib->count = size;
 
-        //Render::pushCommand([ib]() mutable
-        //{
-            glCreateBuffers(1, &ib->id);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib->count * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
+        glCreateBuffers(1, &ib->rhi.getIDRef());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->rhi.getID());
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib->count * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
             //glNamedBufferData(ib->id, ib->count * sizeof(GLuint), ib->data, GL_STATIC_DRAW);
         //});
 
@@ -501,11 +591,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     bool32 GraphicsDeviceGL::createVertexArray(VertexArray *va)
     {
-        //Render::pushCommand([va]() mutable
-        //{
-            glCreateVertexArrays(1, &va->id);
-        //});
-        
+        glCreateVertexArrays(1, &va->rhi.getIDRef());
         return true;
     }
 
@@ -538,7 +624,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
         //Render::pushCommand([va, vb]() mutable
         //{
-            glBindVertexArray(va->id);
+            glBindVertexArray(va->rhi.getID());
             
             const auto& buffer_layout = vb->layout;
 
@@ -562,8 +648,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         
         //Render::pushCommand([va, ib]() mutable
         //{
-            glBindVertexArray(va->id);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id);
+            glBindVertexArray(va->rhi.getID());
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->rhi.getID());
             va->ib = ib;
         //});
 
@@ -615,11 +701,8 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::generateTextureMipmap(TEXTURE_TYPE texture_t)
     {
-        //Render::pushCommand([texture_t]() mutable
-        //{
-            uint32 gl_t = convert_texture_type_gl(texture_t);
-            glGenerateMipmap(gl_t);
-        //});
+        uint32 gl_t = convert_texture_type_gl(texture_t);
+        glGenerateMipmap(gl_t);
     }
 
     void GraphicsDeviceGL::addColorTexture2D(Texture2D *texture, uint32 color_attachment_id, Framebuffer *fbo)
@@ -629,18 +712,19 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
         GLuint type_of_tex = GL_COLOR_ATTACHMENT0 + color_attachment_id;
 
-        fbo->color_textures.push_back(texture);
+        /*fbo->color_textures.push_back(texture);
         Texture2D *color_texture = fbo->color_textures[color_attachment_id];
 
         setTexture2DFbo(type_of_tex, TEXTURE_TYPE::COLOR, texture);
         fbo->buffers.push_back(type_of_tex);
-        glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());
+        glDrawBuffers((GLsizei)fbo->buffers.size(), fbo->buffers.data());*/
+
     }
 
     void GraphicsDeviceGL::addDepthTexture2D(Texture2D *depth, Framebuffer *fbo)
     {
         GraphicsContext *context = Render::getContext();
-        fbo->depth_texture = depth;
+        //fbo->depth_texture = depth;
         context->bindRenderbuffer(fbo);
         setDepthBufferAttachment(fbo);
     }
@@ -649,7 +733,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
         GraphicsContext *context = Render::getContext();
 
-        if (!fbo->depth_texture)
+        /*if (!fbo->depth_texture)
         {
             fbo->depth_texture = new Texture2D();
             fbo->depth_texture->desc.width = w;
@@ -665,7 +749,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
             setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo->depth_texture->id, 0);
-        }
+        }*/
 
         context->bindRenderbuffer(fbo);
         setDepthBufferAttachment(fbo);
@@ -675,7 +759,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
         GraphicsContext *context = Render::getContext();
 
-        setRenderbuffer(GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
+        //setRenderbuffer(GL_DEPTH_COMPONENT32, fbo->depth_texture->desc.width, fbo->depth_texture->desc.height);
         setFramebufferRenderbufferAttachment(fbo);
     }
 
@@ -685,32 +769,32 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         setFramebufferRenderbufferAttachment(fbo);
     }
 
-    Texture2D& GraphicsDeviceGL::getTexture(uint32 number, const Framebuffer *fbo)
+    Texture2D *GraphicsDeviceGL::getTexture(uint32 number, const Framebuffer *fbo)
     {
-        if (fbo && number >= 0 && number <= MAX_COLOR_ATT)
-        {
-            return *fbo->color_textures[number];
-        }
+        //if (fbo && number >= 0 && number <= MAX_COLOR_ATT)
+        //{
+        //    return *fbo->color_textures[number];
+        //}
 
-        //return Texture2D();
+        return nullptr;
     }
 
     void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, Texture2D *texture)
     {
         uint32 tex_t = convert_texture_type_gl(tex_type);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t, texture->id, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t, texture->rhi.getID(), 0);
     }
 
     void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture)
     {
         uint32 tex_t = convert_texture_type_gl(tex_type);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->rhi.getID(), 0);
     }
 
     void GraphicsDeviceGL::setTexture2DFbo(uint32 attach_type, TEXTURE_TYPE tex_type, uint32 i, Texture2D * texture, uint32 mip)
     {
         uint32 tex_t = convert_texture_type_gl(tex_type);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->id, mip);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attach_type, tex_t + i, texture->rhi.getID(), mip);
     }
 
     void GraphicsDeviceGL::setRenderbuffer(int depth_component, uint32 width, uint32 height)
@@ -720,7 +804,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::setFramebufferRenderbufferAttachment(const Framebuffer *fbo)
     {
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb_id);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo->rb.rhi.getID());
     }
 
     void GraphicsDeviceGL::checkFramebuffer()
@@ -757,69 +841,49 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     void GraphicsDeviceGL::destroyTexture2D(Texture2D *tex)
     {
-        //Render::pushCommand([tex]() mutable
-        //{
-            if (tex->is_valid)
-            {
-                glDeleteTextures(1, &tex->id);
-            }
-        // });
+        if (tex->isValid())
+        {
+            uint32 id = tex->rhi.getID();
+            glDeleteTextures(1, &id);
+        }
     }
 
     void GraphicsDeviceGL::destroyFramebuffer(Framebuffer *fbo)
-    {
-        //Render::pushCommand([fbo]() mutable
-        //{
-            glDeleteFramebuffers(1, &fbo->fbo_id);
-        //});
+    {  
+        uint32 id = fbo->rhi.getID();
+        glDeleteFramebuffers(1, &id);       
     }
 
     void GraphicsDeviceGL::destroyShader(uint32 id)
     {
-        //Render::pushCommand([id]() mutable
-        //{
-            glDeleteShader(id);
-        //});
+        glDeleteShader(id);
     }
 
     void GraphicsDeviceGL::destroyBuffer(VertexBuffer *vb)
     {
-        //Render::pushCommand([vb]() mutable
-        //{
-            glDeleteBuffers(1, &vb->id);
-        //});
+        uint32 id = vb->rhi.getID();
+        glDeleteBuffers(1, &id);
     }
 
     void GraphicsDeviceGL::destroyBuffer(IndexBuffer *ib)
     {
-        //Render::pushCommand([ib]() mutable
-       // {
-            glDeleteBuffers(1, &ib->id);
-        //});
+        uint32 id = ib->rhi.getID();
+        glDeleteBuffers(1, &id);
     }
 
     void GraphicsDeviceGL::setDrawBuffer(uint32 type)
     {
-        //Render::pushCommand([type]() mutable
-        //{
-            glDrawBuffer(type);
-        //});
+        glDrawBuffer(type);
     }
 
     void GraphicsDeviceGL::setDrawBuffers(uint32 count, void *pointer)
     {
-        //Render::pushCommand([count, pointer]() mutable
-        //{
-            glDrawBuffers(count, (uint32*)pointer);
-        //});
+        glDrawBuffers(count, (uint32*)pointer);
     }
 
     void GraphicsDeviceGL::setReadBuffer(uint32 type)
     {
-        Render::pushCommand([type]() mutable
-        {
-            glReadBuffer(type);
-        });
+         glReadBuffer(type);
     }
 
     void GraphicsDeviceGL::checkError()

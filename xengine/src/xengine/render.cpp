@@ -7,8 +7,11 @@
 global GraphicsState graphics_state = {};
 global RenderCommandQueue render_queue = {};
 global MeshFactory mesh_factory = {};
-global GPUResourceHandler gpu_data = {};
+global GPUResourceManager gpu_data = {};
  
+global GraphicsDevice *g_device = 0;
+global GraphicsContext *g_context = 0;
+
 GraphicsDevice* Render::getDevice()
 {
     return graphics_state.graphics_device;
@@ -22,11 +25,13 @@ GraphicsContext* Render::getContext()
 void Render::setDevice(GraphicsDevice *device)
 {
     graphics_state.graphics_device = device;
+    g_device = device;
 }
 
 void Render::setContext(GraphicsContext *context)
 {
     graphics_state.graphics_context = context;
+    g_context = context;
 }
 
 void Render::setRenderPass(RenderPass *pass)
@@ -99,9 +104,10 @@ void fillVersions()
 internal
 void initGPUResourceHandler()
 {
-    gpu_data.vb_handler = createDynArray<VertexBuffer>();
-    gpu_data.ib_handler = createDynArray<IndexBuffer>();
-    gpu_data.va_handler = createDynArray<VertexArray>();    
+    gpu_data.vb_handler.reserve(64);
+    gpu_data.ib_handler.reserve(64);
+    gpu_data.va_handler.reserve(64);
+    gpu_data.tex2d_handler.reserve(64);
 }
 
 internal 
@@ -123,19 +129,19 @@ void addVAHandler(const VertexArray va)
 }
 
 internal
-Vec3 convertToVec3(Color3RGB color)
+Vec3 convertToVec3(ColRGB color)
 {
     return createVec3(color.x, color.y, color.z);
 }
 
 internal
-Vec4 convertToVec4(Color4RGBA color)
+Vec4 convertToVec4(ColRGBA color)
 {
     return createVec4(color.x, color.y, color.z, color.a);
 }
 
 internal
-Vec4 convertToVec4(Color3RGB color)
+Vec4 convertToVec4(ColRGB color)
 {
     return createVec4(color.x, color.y, color.z, 1.0f);
 }
@@ -262,6 +268,39 @@ void setupRenderPasses()
 
 }
 
+internal 
+void setupDefferedRender()
+{
+    Viewport &vp = g_context->getViewport();
+
+    FramebufferDesc desc = {};
+    FramebufferSpecs specs = {};
+
+    specs.width = vp.width;
+    specs.height = vp.height;
+
+    TextureSampler samplerColor1 = {};
+
+    samplerColor1.pxl_sampling_min = TEXTURE_SAMPLING::NEAREST;
+    samplerColor1.pxl_sampling_mag = TEXTURE_SAMPLING::NEAREST;
+
+    samplerColor1.wrapping_s = TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP;
+    samplerColor1.wrapping_t = TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP;
+
+    desc.attachments[RENDER_TARGET_TYPE::RTColor0] = Texture2D::create(vp.width, vp.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    desc.attachments[RENDER_TARGET_TYPE::RTColor1] = Texture2D::create(vp.width, vp.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    desc.attachments[RENDER_TARGET_TYPE::RTColor2] = Texture2D::create(vp.width, vp.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+
+    bool32 isSetuped = g_device->createFramebuffer(desc, specs, &graphics_state.deffered_buffer);
+
+    RenderPass deffered = {};
+
+    if (Render::createRenderPass("deffered", true, true, &graphics_state.deffered_buffer, &deffered))
+    {
+        Render::addRenderPass("deffered", deffered);
+    }
+}
+
 void Render::init(API_TYPE type)
 {
     GraphicsDevice *device = getDevice();
@@ -295,6 +334,11 @@ void Render::init(API_TYPE type)
     setupCameras();
     setupBuffers();
     setupRenderPasses();
+    createFullquad();
+
+    setupDefferedRender();
+
+    Texture2D ts = Texture2D::create(512, 512, PIXEL_FORMAT::RGBA8, PIXEL_INTERNAL_FORMAT::IFRGB);
 };
 
 /*bool32 Render::loadFont(const char *path)
@@ -387,7 +431,8 @@ void Render::init(API_TYPE type)
 
 void Render::addShader(const std::string &ac_name, Shader shr)
 {
-    shr.name = ac_name;
+    shr.setName(ac_name);
+
     graphics_state.gpu_resources.shaders[ac_name] = shr;
 }
 
@@ -400,6 +445,11 @@ void Render::addTexture(const std::string &ac_name, Texture2D tex)
 void Render::addMaterial(const std::string &mat_name, Material mat)
 {
     graphics_state.materials[mat_name] = mat;
+}
+
+void Render::addRenderPass(const std::string &pass_name, RenderPass pass)
+{
+    graphics_state.render_passes[pass_name] = pass;
 }
 
 bool32 Render::loadShaders()
@@ -756,14 +806,12 @@ void Render::clearColor(real32 x, real32 y, real32 z, real32 a)
 void Render::shutdown()
 {
     // @Clear destroy free textures
-
-    GraphicsDevice *device = getDevice();
     auto textures = graphics_state.gpu_resources.textures;
 
     std::unordered_map<std::string, Texture2D>::iterator it = textures.begin();
     for (uint32 i = 0; i < textures.size(); ++i)
     {
-        device->destroyTexture2D(&it->second);
+        g_device->destroyTexture2D(&it->second);
     }
 
     //clearContextGui();
@@ -771,9 +819,6 @@ void Render::shutdown()
 
 bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace)
 {
-    GraphicsDevice *device = getDevice();
-    GraphicsContext *context = getContext();
-    
     Vertex *vert = vertex_type;
 
     meh->vao = VertexArray::create();
@@ -806,19 +851,19 @@ bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspac
         };
     }
     
-    context->bindVertexArray(&meh->vao);
+    g_context->bindVertexArray(&meh->vao);
 
-    device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
+    g_device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
 
     // TODO: rework
-    device->createIndexBuffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
+    g_device->createIndexBuffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
 
-    device->createBufferLayout(init_list, &buffer_layout);
-    device->setVertexBufferLayout(meh->vao.buffers[0], &buffer_layout);
-    device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
-    device->setIndexBuffer(&meh->vao, meh->vao.ib);
+    g_device->createBufferLayout(init_list, &buffer_layout);
+    g_device->setVertexBufferLayout(meh->vao.buffers[0], &buffer_layout);
+    g_device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
+    g_device->setIndexBuffer(&meh->vao, meh->vao.ib);
 
-    context->unbindVertexArray();
+    g_context->unbindVertexArray();
     //device->destroyBuffer(meh->vao.buffers[0]);
     //device->destroyBuffer(meh->vao.ib);
 
@@ -872,12 +917,11 @@ bool32 Render::createLineMesh(LineMesh *line_com)
 bool32 Render::createLinesBuffer()
 {
     RenderState &rs = graphics_state.render_state_batch;
-    GraphicsDevice *device = getDevice();
-
+  
     rs.line_vb_base = alloc_mem LineVertexMesh[rs.max_line_vert];
 
-    device->createVertexArray(&rs.line_vertex_array);
-    device->createVertexBuffer(nullptr, rs.max_line_vert * sizeof(LineVertexMesh), DRAW_TYPE::DYNAMIC, &rs.line_vertex_buffer);
+    g_device->createVertexArray(&rs.line_vertex_array);
+    g_device->createVertexBuffer(nullptr, rs.max_line_vert * sizeof(LineVertexMesh), DRAW_TYPE::DYNAMIC, &rs.line_vertex_buffer);
 
     BufferLayout buffer_layout3 = {};
 
@@ -887,9 +931,9 @@ bool32 Render::createLinesBuffer()
         { "aColor",     ElementType::Float4 }
     };
 
-    device->createBufferLayout(init_list3, &buffer_layout3);
-    device->setVertexBufferLayout(&rs.line_vertex_buffer, &buffer_layout3);
-    device->addVertexBuffer(&rs.line_vertex_array, &rs.line_vertex_buffer);
+    g_device->createBufferLayout(init_list3, &buffer_layout3);
+    g_device->setVertexBufferLayout(&rs.line_vertex_buffer, &buffer_layout3);
+    g_device->addVertexBuffer(&rs.line_vertex_array, &rs.line_vertex_buffer);
 
     uint32* line_ind = alloc_mem uint32[rs.max_line_ind];
     for (uint32_t i = 0; i < rs.max_line_ind; i++)
@@ -899,8 +943,8 @@ bool32 Render::createLinesBuffer()
 
     IndexBuffer *ib = alloc_mem IndexBuffer();
 
-    device->createIndexBuffer(line_ind, rs.max_line_ind, ib);
-    device->setIndexBuffer(&rs.line_vertex_array, ib);
+    g_device->createIndexBuffer(line_ind, rs.max_line_ind, ib);
+    g_device->setIndexBuffer(&rs.line_vertex_array, ib);
 
     free_mem[] line_ind;
 
@@ -910,8 +954,7 @@ bool32 Render::createLinesBuffer()
 bool32 Render::createQuadBuffer()
 {
     RenderState &rs = graphics_state.render_state_batch;
-    GraphicsDevice *device = getDevice();
-
+    
     rs.quad_vertex_data[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
     rs.quad_vertex_data[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
     rs.quad_vertex_data[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
@@ -919,8 +962,8 @@ bool32 Render::createQuadBuffer()
 
     rs.quad_vb_base = alloc_mem QuadVertexMesh[rs.max_quad_vert];
 
-    device->createVertexArray(&rs.quad_vertex_array);
-    device->createVertexBuffer(nullptr, rs.max_quad_vert * sizeof(QuadVertexMesh), DRAW_TYPE::DYNAMIC, &rs.quad_vertex_buffer);
+    g_device->createVertexArray(&rs.quad_vertex_array);
+    g_device->createVertexBuffer(nullptr, rs.max_quad_vert * sizeof(QuadVertexMesh), DRAW_TYPE::DYNAMIC, &rs.quad_vertex_buffer);
 
     BufferLayout quad_buffer_layout = {};
 
@@ -930,9 +973,9 @@ bool32 Render::createQuadBuffer()
         { "aColor",     ElementType::Float4 }
     };
 
-    device->createBufferLayout(quad_init_list, &quad_buffer_layout);
-    device->setVertexBufferLayout(&rs.quad_vertex_buffer, &quad_buffer_layout);
-    device->addVertexBuffer(&rs.quad_vertex_array, &rs.quad_vertex_buffer);
+    g_device->createBufferLayout(quad_init_list, &quad_buffer_layout);
+    g_device->setVertexBufferLayout(&rs.quad_vertex_buffer, &quad_buffer_layout);
+    g_device->addVertexBuffer(&rs.quad_vertex_array, &rs.quad_vertex_buffer);
 
     uint32* quad_ind = alloc_mem uint32[rs.max_quad_indices];
     uint32 offset = 0;
@@ -952,8 +995,8 @@ bool32 Render::createQuadBuffer()
 
     IndexBuffer *ib = alloc_mem IndexBuffer();
 
-    device->createIndexBuffer(quad_ind, rs.max_quad_indices, ib);
-    device->setIndexBuffer(&rs.quad_vertex_array, ib);
+    g_device->createIndexBuffer(quad_ind, rs.max_quad_indices, ib);
+    g_device->setIndexBuffer(&rs.quad_vertex_array, ib);
 
     free_mem[] quad_ind;
 
@@ -969,11 +1012,22 @@ bool32 Render::createRenderPass(const RenderPassData data, RenderPass *rp)
     return true;
 }
 
+bool32 Render::createRenderPass(const char *name, bool32 clearDepth, bool32 clearColor, Framebuffer *active, RenderPass *rp)
+{
+    rp->data.name = name;
+    rp->data.clearColor = clearColor;
+    rp->data.clearDepth = clearDepth;
+       
+    rp->active_framebuffer = active;
+
+    return true;
+}
+
 bool32 Render::createCubemap(std::vector<const char*> paths, Cubemap *cube)
 {
     for (uint32 i = 0; i < paths.size(); ++i)
     {
-        //graphics_state.graphics_state.graphics_device->createTexture2D(paths[i], cube->face_textures[i]);
+        g_device->createTexture2D(paths[i], cube->face_textures[i]);
     }
 
     return true;
@@ -981,13 +1035,13 @@ bool32 Render::createCubemap(std::vector<const char*> paths, Cubemap *cube)
 
 bool32 Render::createQuad()
 {
-    /*real32 vertices[] =
+    real32 vertices[] =
     {
         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
         -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
-    };*/
+    };
 
     uint32 indices[] =
     {
@@ -995,17 +1049,17 @@ bool32 Render::createQuad()
         1, 2, 3
     };
 
-    //int vertex_size = sizeof(graphics_state.quad_vertex_data) / sizeof(graphics_state.quad_vertex_data[0]);
-    //int indices_size = sizeof(indices) / sizeof(indices[0]);
+    int vertex_size = sizeof(vertices) / sizeof(vertices[0]);
+    int indices_size = sizeof(indices) / sizeof(indices[0]);
 
-    /*graphics_state.quad_vertex_array.buffers.push_back(alloc_mem VertexBuffer);
-    graphics_state.quad_vertex_array.ib = alloc_mem IndexBuffer;
+    /*render_state_batch.quad_vertex_array.buffers.push_back(alloc_mem VertexBuffer);
+    render_state_batch.quad_vertex_array.ib = alloc_mem IndexBuffer;
 
-    graphics_state.graphics_state.graphics_device->createVertexArray(&graphics_state.quad_vertex_array);
-    graphics_state.graphics_state.graphics_device->bindVertexArray(&graphics_state.quad_vertex_array);
+    g_device->createVertexArray(&render_state_batch.quad_vertex_array);
+    g_device->bindVertexArray(&render_state_batch.quad_vertex_array);
 
-    graphics_state.graphics_state.graphics_device->createVertexBuffer(graphics_state.quad_vertex_data, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, graphics_state.quad_vertex_array.buffers[0]);
-    graphics_state.graphics_state.graphics_device->createIndexBuffer(indices, indices_size, graphics_state.quad_vertex_array.ib);
+    g_device->createVertexBuffer(render_state_batch.quad_vertex_data, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, render_state_batch.quad_vertex_array.buffers[0]);
+    g_device->createIndexBuffer(indices, indices_size, render_state_batch.quad_vertex_array.ib);
 
     using namespace xe_graphics;
 
@@ -1017,24 +1071,24 @@ bool32 Render::createQuad()
         { "aUV",     ElementType::Float2, }
     };
 
-    //graphics_state.graphics_state.graphics_device->createBufferLayout(init_list, &buffer_layout);
-    //graphics_state.graphics_state.graphics_device->setVertexBufferLayout(q->vertex_array->buffers[0], &buffer_layout);        
-    //graphics_state.graphics_state.graphics_device->addVertexBuffer(q->vertex_array, q->vertex_array->buffers[0]);
-    //graphics_state.graphics_state.graphics_device->setIndexBuffer(q->vertex_array, q->vertex_array->ib);
-    */
+    g_device->createBufferLayout(init_list, &buffer_layout);
+    g_device->setVertexBufferLayout(q->vertex_array->buffers[0], &buffer_layout);
+    g_device->addVertexBuffer(q->vertex_array, q->vertex_array->buffers[0]);
+    g_device->setIndexBuffer(q->vertex_array, q->vertex_array->ib);*/
+    
     return true;
 }
 
 bool32 Render::createFullquad()
 {
-    glGenVertexArrays(1, &graphics_state.quad_vao.id);
+    g_device->createVertexArray(&graphics_state.quad_vao);
 
     return true;
 }
 
 bool32 Render::createSkybox(Skybox *sky)
 {
-    /*real32 skybox_vertices[] =
+    real32 skybox_vertices[] =
     {
         -1.0f,  1.0f, -1.0f,
         -1.0f, -1.0f, -1.0f,
@@ -1084,8 +1138,8 @@ bool32 Render::createSkybox(Skybox *sky)
     sky->va = new VertexArray();
     sky->vb = new VertexBuffer();
 
-    graphics_state.graphics_state.graphics_device->createVertexArray(sky->va);
-    graphics_state.graphics_state.graphics_device->createVertexBuffer(skybox_vertices, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, sky->vb);
+    g_device->createVertexArray(sky->va);
+    g_device->createVertexBuffer(skybox_vertices, vertex_size * sizeof(real32), DRAW_TYPE::STATIC, sky->vb);
 
     BufferLayout buffer_layout = {};
 
@@ -1094,25 +1148,25 @@ bool32 Render::createSkybox(Skybox *sky)
         { "aPos",    ElementType::Float3, }
     };
 
-    graphics_state.graphics_state.graphics_device->createBufferLayout(init_list, &buffer_layout);
-    graphics_state.graphics_state.graphics_device->setVertexBufferLayout(sky->vb, &buffer_layout);
-    graphics_state.graphics_state.graphics_device->addVertexBuffer(sky->va, sky->vb);
+    g_device->createBufferLayout(init_list, &buffer_layout);
+    g_device->setVertexBufferLayout(sky->vb, &buffer_layout);
+    g_device->addVertexBuffer(sky->va, sky->vb);
 
     sky->cubemap = alloc_mem Cubemap();
 
     if (!createCubemap(sky->cubemap))
     {
         return false;
-    }*/
+    }
 
     return true;
 }
 
 bool32 Render::createCubemap(Cubemap *cube)
 {
-    /*cube->face_textures.reserve(16);
+    cube->face_textures.reserve(16);
 
-    std::vector<const char*> skybox_faces;
+    std::vector<const char*> skybox_faces = {};
     skybox_faces.push_back("lakes_rt.tga");
     skybox_faces.push_back("lakes_lf.tga");
     skybox_faces.push_back("lakes_up.tga");
@@ -1124,8 +1178,8 @@ bool32 Render::createCubemap(Cubemap *cube)
     cubemap_texture->desc.texture_type = CUBEMAP;
     cubemap_texture->desc.dimension = TEXTURE_2D;
 
-    graphics_state.graphics_state.graphics_device->createTexture(cubemap_texture);
-    graphics_state.graphics_state.graphics_device->bindTexture(TEXTURE_TYPE::CUBEMAP, cubemap_texture);
+    g_device->createTexture(cubemap_texture);
+    g_context->bindTexture(TEXTURE_TYPE::CUBEMAP, cubemap_texture);
 
     for (uint32 i = 0; i < skybox_faces.size(); i++)
     {
@@ -1133,85 +1187,88 @@ bool32 Render::createCubemap(Cubemap *cube)
         std::string final_path = "assets/skybox/" + std::string(skybox_faces[i]);
         void *texture_data = xe_core::loadTextureFromDisc(final_path.c_str(), cubemap_texture->desc.width, cubemap_texture->desc.height, channels, 0, false);
 
-        graphics_state.graphics_state.graphics_device->loadTextureGpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap_texture->desc.width, cubemap_texture->desc.height, GL_RGB, GL_RGB, texture_data);
+        g_device->loadTextureGpu(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap_texture->desc.width, cubemap_texture->desc.height, GL_RGB, GL_RGB, texture_data);
 
         xe_core::deleteData(texture_data);
     }
 
-    graphics_state.graphics_state.graphics_device->setTextureWrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
-    graphics_state.graphics_state.graphics_device->setTextureWrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
-    graphics_state.graphics_state.graphics_device->setTextureWrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_R, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    g_device->setTextureWrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    g_device->setTextureWrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+    g_device->setTextureWrapping(TEXTURE_TYPE::CUBEMAP, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_R, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
 
-    graphics_state.graphics_state.graphics_device->setTextureSampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
-    graphics_state.graphics_state.graphics_device->setTextureSampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+    g_device->setTextureSampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+    g_device->setTextureSampling(TEXTURE_TYPE::CUBEMAP, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
-    cube->id = cubemap_texture->id;
+    cube->rhi.setID(cubemap_texture->rhi.getID());
 
-    Shader *cubemap_shader = &shaders["cubemap"];
-    graphics_state.graphics_state.graphics_device->bindShader(cubemap_shader);
-    graphics_state.graphics_state.graphics_device->setInt("skybox", 0, cubemap_shader);
-    */
+    Shader *cubemap_shader = getShader("cubemap");
+    Material skyBoxMaterial(cubemap_shader);
+
+    skyBoxMaterial.set("skybox", ShaderUniformType::SamplerCube, 0);
+    
+    addMaterial("cubemap", skyBoxMaterial);
+
     return true;
 }
 
 bool32 Render::createShadowMaps(ShadowMap *shadow)
 {
-    const uint32 SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
-    const uint32 WIDTH = 1280, HEIGHT = 720;
+    constexpr uint32 SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+    constexpr uint32 WIDTH = 1280, HEIGHT = 720;
 
     /*shadow->depth_fbo = {};
 
     shadow->width_map = SHADOW_WIDTH;
     shadow->height_map = SHADOW_HEIGHT;
 
-    graphics_state.graphics_state.graphics_device->createFramebuffer(1, &shadow->depth_fbo);
-    graphics_state.graphics_state.graphics_device->addDepthTexture2D(SHADOW_WIDTH, SHADOW_HEIGHT, &shadow->depth_fbo);
+    g_device->createFramebuffer(1, &shadow->depth_fbo);
+    g_device->addDepthTexture2D(SHADOW_WIDTH, SHADOW_HEIGHT, &shadow->depth_fbo);
 
     real32 colorattach[] = { 1.0, 1.0, 1.0, 1.0 };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorattach);
 
-    graphics_state.graphics_state.graphics_device->bindFramebuffer(&shadow->depth_fbo);
-    graphics_state.graphics_state.graphics_device->setTexture2DFbo(GL_DEPTH_ATTACHMENT, TEXTURE_TYPE::DEPTH, shadow->depth_fbo.depth_texture);
-    graphics_state.graphics_state.graphics_device->setDrawBuffer(GL_NONE);
-    graphics_state.graphics_state.graphics_device->setReadBuffer(GL_NONE);
-    graphics_state.graphics_state.graphics_device->unbindFramebuffer();
+    g_device->bindFramebuffer(&shadow->depth_fbo);
+    g_device->setTexture2DFbo(GL_DEPTH_ATTACHMENT, TEXTURE_TYPE::DEPTH, shadow->depth_fbo.depth_texture);
+    g_device->setDrawBuffer(GL_NONE);
+    g_device->setReadBuffer(GL_NONE);
+    g_device->unbindFramebuffer();
 
     Framebuffer hdr = {};
-    graphics_state.graphics_state.graphics_device->createFramebuffer(1, &hdr);
-    graphics_state.graphics_state.graphics_device->bindFramebuffer(&hdr);
+    g_device->createFramebuffer(1, &hdr);
+    g_device->bindFramebuffer(&hdr);
 
     Texture2D color_attach[2];
 
-    graphics_state.graphics_state.graphics_device->createTexture(2, color_attach);
+    g_device->createTexture(2, color_attach);
 
     //unsigned int colorBuffers[2];
     //glGenTextures(2, colorBuffers);
 
     for (uint32 i = 0; i < 2; ++i)
     {
-        graphics_state.graphics_state.graphics_device->bindTexture(TEXTURE_TYPE::COLOR, &color_attach[i]);
-        graphics_state.graphics_state.graphics_device->loadTextureGpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
+        g_device->bindTexture(TEXTURE_TYPE::COLOR, &color_attach[i]);
+        g_device->loadTextureGpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
 
-        graphics_state.graphics_state.graphics_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
-        graphics_state.graphics_state.graphics_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+        g_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+        g_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
 
-        graphics_state.graphics_state.graphics_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
-        graphics_state.graphics_state.graphics_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+        g_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+        g_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
-        graphics_state.graphics_state.graphics_device->setTexture2DFbo(GL_COLOR_ATTACHMENT0 + i, TEXTURE_TYPE::COLOR, &color_attach[i]);
+        g_device->setTexture2DFbo(GL_COLOR_ATTACHMENT0 + i, TEXTURE_TYPE::COLOR, &color_attach[i]);
 
         //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, &color_attach->desc[i], 0);
     }
 
-    graphics_state.graphics_state.graphics_device->createRenderbuffer(1, &shadow->depth_fbo);
+    g_device->createRenderbuffer(1, &shadow->depth_fbo);
 
-    graphics_state.graphics_state.graphics_device->bindRenderbuffer(&shadow->depth_fbo);
+    g_device->bindRenderbuffer(&shadow->depth_fbo);
 
     uint32 attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    graphics_state.graphics_state.graphics_device->setDrawBuffers(2, attachments);
+    g_device->setDrawBuffers(2, attachments);
 
-    graphics_state.graphics_state.graphics_device->checkFramebuffer();
-    graphics_state.graphics_state.graphics_device->unbindFramebuffer();
+    g_device->checkFramebuffer();
+    g_device->unbindFramebuffer();
 
     Framebuffer p_fbo[2];
     Texture2D p_color_buffer[2];
@@ -1221,31 +1278,31 @@ bool32 Render::createShadowMaps(ShadowMap *shadow)
 
     for (uint16 i = 0; i < 2; ++i)
     {
-        graphics_state.graphics_state.graphics_device->createFramebuffer(1, p_fbo + i);
+        g_device->createFramebuffer(1, p_fbo + i);
     }
 
     for (uint16 j = 0; j < 2; ++j)
     {
-        graphics_state.graphics_state.graphics_device->createTexture(1, p_color_buffer + j);
+        g_device->createTexture(1, p_color_buffer + j);
     }
 
     for (uint16 i = 0; i < 2; ++i)
     {
-        graphics_state.graphics_state.graphics_device->bindFramebuffer(p_fbo + i);
-        graphics_state.graphics_state.graphics_device->bindTexture(TEXTURE_TYPE::COLOR, p_color_buffer + i);
+        g_device->bindFramebuffer(p_fbo + i);
+        g_device->bindTexture(TEXTURE_TYPE::COLOR, p_color_buffer + i);
 
         //glBindFramebuffer(GL_FRAMEBUFFER, pingphongFBO[i]);
         //glBindTexture(GL_TEXTURE_2D, pingcolorBuffer[i]);
 
-        graphics_state.graphics_state.graphics_device->loadTextureGpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
+        g_device->loadTextureGpu(TEXTURE_TYPE::COLOR, WIDTH, HEIGHT, GL_RGB16F, GL_RGB, NULL);
 
         //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 
-        graphics_state.graphics_state.graphics_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
-        graphics_state.graphics_state.graphics_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
+        g_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
+        g_device->setTextureSampling(TEXTURE_TYPE::COLOR, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
-        graphics_state.graphics_state.graphics_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
-        graphics_state.graphics_state.graphics_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+        g_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
+        g_device->setTextureWrapping(TEXTURE_TYPE::COLOR, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP);
 
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1256,7 +1313,7 @@ bool32 Render::createShadowMaps(ShadowMap *shadow)
         //graphics_state.graphics_state.graphics_device->addColorTexture2D(p_color_buffer + i, i, p_fbo + i);
         //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingcolorBuffer[i], 0);
 
-        graphics_state.graphics_state.graphics_device->checkFramebuffer();
+        g_device->checkFramebuffer();
     }*/
 
     return true;
@@ -1366,13 +1423,10 @@ bool32 Render::createCube(CubeMesh *cube)
         cube->vertex_array = alloc_mem VertexArray();
         cube->vertex_array->buffers.push_back(alloc_mem VertexBuffer());
 
-        GraphicsDevice *device = getDevice();
-        GraphicsContext *context = getContext();
+        g_device->createVertexArray(cube->vertex_array);
+        g_context->bindVertexArray(cube->vertex_array);
 
-        device->createVertexArray(cube->vertex_array);
-        context->bindVertexArray(cube->vertex_array);
-
-        device->createVertexBuffer(data->begin(), data->size() * sizeof(real32), DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
+        g_device->createVertexBuffer(data->begin(), data->size() * sizeof(real32), DRAW_TYPE::STATIC, cube->vertex_array->buffers[0]);
 
         BufferLayout buffer_layout = {};
 
@@ -1383,9 +1437,9 @@ bool32 Render::createCube(CubeMesh *cube)
             { "aUV",        ElementType::Float2, }
         };
 
-        device->createBufferLayout(init_list, &buffer_layout);
-        device->setVertexBufferLayout(cube->vertex_array->buffers[0], &buffer_layout);
-        device->addVertexBuffer(cube->vertex_array, cube->vertex_array->buffers[0]);
+        g_device->createBufferLayout(init_list, &buffer_layout);
+        g_device->setVertexBufferLayout(cube->vertex_array->buffers[0], &buffer_layout);
+        g_device->addVertexBuffer(cube->vertex_array, cube->vertex_array->buffers[0]);
     //});
     
     return true;
@@ -1424,30 +1478,27 @@ void Render::drawTriangle()
     //Render::pushCommand([=]()
     //{
         Shader *shd = getShader("triangle");
-        GraphicsContext *context = getContext();
         
-        context->bindShader(shd);
+        g_context->bindShader(shd);
         
         glBindVertexArray(graphics_state.VAO);
-        context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 3);
+        g_context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 3);
     //});
 }
 
 void Render::drawFullquad()
-{
-    GraphicsContext *context = getContext();
-
-    context->bindVertexArray(&graphics_state.quad_vao);
-    context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
-    context->unbindVertexArray();
+{    
+    g_context->bindVertexArray(&graphics_state.quad_vao);
+    g_context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
+    g_context->unbindVertexArray();
 }
 
-void Render::drawQuad(const Vec2 &pos, const Vec2 &size, const Color4RGBA &color)
+void Render::drawQuad(const Vec2 &pos, const Vec2 &size, const ColRGBA &color)
 {
     drawQuad({ pos.x, pos.y, 0.0f }, size, color);
 }
 
-void Render::drawQuad(const Vec3 &pos, const Vec2 &size, const Color4RGBA& color)
+void Render::drawQuad(const Vec3 &pos, const Vec2 &size, const ColRGBA& color)
 {
     RenderState &rs = graphics_state.render_state_batch;
 
@@ -1490,7 +1541,7 @@ void Render::drawQuad(const Vec3 &pos, const Vec2 &size, const Color4RGBA& color
     rs.quad_index_count += 6;
 }
 
-void Render::drawQuad(real32 x, real32 y, real32 w, real32 h, const Color4RGBA& color)
+void Render::drawQuad(real32 x, real32 y, real32 w, real32 h, const ColRGBA& color)
 {
     drawQuad({ x, y, 0.0f }, { w, h }, color);
 }
@@ -1655,7 +1706,7 @@ void Render::drawText(const std::string &text, real32 x, real32 y, Vec3 &color, 
     context->activateTexture(0);
 
     VertexArray va = {};
-    va.id = 1;
+    va.rhi.setID(1);
 
     context->bindVertexArray(&va);
 
@@ -1752,10 +1803,8 @@ void Render::drawWaterPlane(Entity *ent)
 
 void Render::drawSkybox()
 {
-    /*GraphicsContext *context = getContext();
-    
-    context->setDepthFunc(GL_LEQUAL);
-    Shader *cubemap_shader = xe_render::getShader("cubemap");
+    g_context->setDepthFunc(GL_LEQUAL);
+    /*Shader *cubemap_shader = xe_render::getShader("cubemap");
 
     graphics_state.graphics_device->bindShader(cubemap_shader);
 
@@ -1902,21 +1951,26 @@ void Render::beginFrame(bool32 shouldClearScreen)
     rs.draw_calls = 0;
 }
 
-void Render::beginRenderPass(const RenderPass *pass)
+void Render::beginRenderPass(const char *name)
 {
-    RenderPass *active_pass = graphics_state.active_render_pass;
+    RenderPass *current = &graphics_state.render_passes[name];
+
+    if (!current)
+    {
+        return;
+    }
+
+    graphics_state.active_render_pass = current;
     GraphicsContext *context = getContext();
     
-    context->bindFramebuffer(pass->active_framebuffer);
+    context->bindFramebuffer(current->active_framebuffer);
 
     uint32 clearFlags = 0;
    
-    pass->data.clearColor > 0 ? clearFlags |= GL_COLOR_BUFFER_BIT : clearFlags &= ~GL_COLOR_BUFFER_BIT;
-    pass->data.clearDepth > 0 ? clearFlags |= GL_DEPTH_BUFFER_BIT : clearFlags &= ~GL_DEPTH_BUFFER_BIT;
+    current->data.clearColor > 0 ? clearFlags |= GL_COLOR_BUFFER_BIT : clearFlags &= ~GL_COLOR_BUFFER_BIT;
+    current->data.clearDepth > 0 ? clearFlags |= GL_DEPTH_BUFFER_BIT : clearFlags &= ~GL_DEPTH_BUFFER_BIT;
 
     Render::clear(clearFlags);
-    
-    active_pass = const_cast<RenderPass*>(pass);
 }
 
 void Render::setupRenderCommand(CommandType type)
@@ -1956,9 +2010,10 @@ void Render::executeRenderCommand(CommandType type)
 
         if (dSize)
         {
+            VertexBuffer &quad_vb = rs.quad_vertex_buffer;
             uint32 offset = 0;
-            context->bindBuffer(&rs.quad_vertex_buffer);
-            context->pushDataToBuffer(rs.quad_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.quad_vb_base);
+            context->bindBuffer(&quad_vb);
+            context->pushDataToBuffer(quad_vb.rhi.getID(), BUFFER_TYPE::VERTEX, offset, dSize, rs.quad_vb_base);
             drawQuads();           
         }
     } break;
@@ -1968,9 +2023,11 @@ void Render::executeRenderCommand(CommandType type)
 
         if (dSize)
         {
+            VertexBuffer &line_vb = rs.line_vertex_buffer;
+
             uint32 offset = 0;
             context->bindBuffer(&rs.line_vertex_buffer);
-            context->pushDataToBuffer(rs.line_vertex_buffer.id, BUFFER_TYPE::VERTEX, offset, dSize, rs.line_vb_base);
+            context->pushDataToBuffer(line_vb.rhi.getID(), BUFFER_TYPE::VERTEX, offset, dSize, rs.line_vb_base);
             drawLines();
         }
     } break;
@@ -2069,17 +2126,17 @@ void Render::drawCube()
 
 void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end)
 {
-    Color3RGB default_color = Color3RGB(1.0f, 0.0f, 0.0f);
+    ColRGB default_color = ColRGB(1.0f, 0.0f, 0.0f);
     drawLine(x, y, x_end, y_end, default_color);
 }
 
 void Render::drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end)
 {
-    Color3RGB default_color = Color3RGB(1.0f, 0.0f, 0.0f);
+    ColRGB default_color = ColRGB(1.0f, 0.0f, 0.0f);
     drawLine(x, y, z, x_end, y_end, z_end, default_color);
 }
 
-void Render::drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, Color4RGBA color)
+void Render::drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, ColRGBA color)
 {
     /*if (graphics_state.line_index_count >= RenderState::max_line_ind)
     {
@@ -2099,12 +2156,12 @@ void Render::drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, 
     graphics_state.line_index_count += 2;*/
 }
 
-void Render::drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, Color3RGB color)
+void Render::drawLine(real32 x, real32 y, real32 z, real32 x_end, real32 y_end, real32 z_end, ColRGB color)
 {
-    drawLine(x, y, z, x_end, y_end, z_end, Color4RGBA(color.x, color.y, color.z, 1.0f));
+    drawLine(x, y, z, x_end, y_end, z_end, ColRGBA(color.x, color.y, color.z, 1.0f));
 }
 
-void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end, Color4RGBA color)
+void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end, ColRGBA color)
 {
     /*if (graphics_state.line_index_count >= RenderState::max_line_ind)
     {
@@ -2124,9 +2181,9 @@ void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end, Color4RGBA
     graphics_state.line_index_count += 2;*/
 }
 
-void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end, Color3RGB color)
+void Render::drawLine(real32 x, real32 y, real32 x_end, real32 y_end, ColRGB color)
 {
-    drawLine(x, y, x_end, y_end, Color4RGBA(color.x, color.y, color.z, 1.0f));
+    drawLine(x, y, x_end, y_end, ColRGBA(color.x, color.y, color.z, 1.0f));
 }
 
 void Render::drawLines()

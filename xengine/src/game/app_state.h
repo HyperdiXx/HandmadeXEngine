@@ -23,14 +23,6 @@ struct AppOptions
     bool32 pump_events;
 };
 
-struct InputState
-{
-    real32 mouse_position_x;
-    real32 mouse_position_y;
-    uint64 event_count;
-    //OS_Event events[4096];
-};
-
 struct AudioPlayer
 {
     real32 *sample_out;
@@ -46,12 +38,16 @@ struct PlatformState
     char* working_directory_path;
 
     AppOptions options;
-    InputState i_state;
+    InputState *inp_state;
 
     void* (*LoadOpenGLProcedure)(char *name);
     void* (*AllocateMemory)(void *ptr, uint64 size);
     void* (*ReallocateMemory)(void *ptr, uint64 size);
     void  (*FreeMemory)(void *ptr);
+    
+    void(*isButtonPressed)(Button but);
+    void(*isButtonDown)(Button but);
+    void(*isButtonUp)(Button but);
 
     enum RenderApi
     {

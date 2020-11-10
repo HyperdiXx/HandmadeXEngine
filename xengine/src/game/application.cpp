@@ -139,10 +139,8 @@ internal
 void Render()
 {
     Render::beginFrame();
-
-    //Render::beginRenderPass("deffered");
-
-    Render::setupRenderCommand(CommandType::QUAD_COMMAND);
+ 
+    /*Render::setupRenderCommand(CommandType::QUAD_COMMAND);
     Render::setupRenderCommand(CommandType::LINE_COMMAND);
   
     for (uint32 y = 15.0f; y < 700.0f; y += 25.0f)
@@ -154,26 +152,43 @@ void Render()
     }
 
     Render::executeRenderCommand(CommandType::QUAD_COMMAND);
-    Render::executeRenderCommand(CommandType::LINE_COMMAND);
-    
+    Render::executeRenderCommand(CommandType::LINE_COMMAND);*/
+ 
+    Render::beginRenderPass("deffered");
+
     Vec3 translationCharacter = createVec3(0.0f, -10.0f, -100.0f);
     Vec3 scaleCharacter = createVec3(2.0f, 2.0f, 2.0f);    
-    Vec3 translationCube = createVec3(-25.0f, -10.0f, -100.0f);
-    Vec3 scaleCube = createVec3(0.3f, 0.3f, 0.3f);
+    Vec3 translationCube = createVec3(0.0f, -20.0f, -100.0f);
+    Vec3 scaleCube = createVec3(10.f, 0.1f, 1.0f);
+
+    Vec3 translationCube2 = createVec3(0.0f, -40.0f, -250.0f);
+    Vec3 scaleCube2 = createVec3(10.f, 5.0f, 0.1f);
 
     Matrix4x4 modelMat = translateMat(translationCharacter) * scaleMat(scaleCharacter);
 
     Material *model_material = Render::getMaterial("base");
     Material *cube_material = Render::getMaterial("baseCube");
-    
+    Material *def = Render::getMaterial("deffered");
+
     Render::drawModel(nano_character, model_material, modelMat);
 
     modelMat = translateMat(translationCube) * scaleMat(scaleCube);
-    Render::drawModel(cube_model, cube_material, modelMat);
+    Render::drawModel(cube_model, model_material, modelMat);
 
-    //Render::endRenderPass();
+    modelMat = translateMat(translationCube2) * scaleMat(scaleCube2);
+    Render::drawModel(cube_model, model_material, modelMat);
+
+    Render::endRenderPass();
     
-    //Render::drawFullquad();
+    Material *pp = Render::getMaterial("post_proc");
+    static bool32 isAdded = false;
+    if (!isAdded)
+    {
+        pp->addTexture2D(Render::getTextureFromRenderPass("deffered", 0));
+        isAdded = true;
+    }
+
+    Render::drawFullquad(pp);
 
     //Render::endFrame();
 }

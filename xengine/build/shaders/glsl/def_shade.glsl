@@ -31,15 +31,15 @@ in vec2 uv;
 in vec3 frag_pos
 in vec3 normalout;
 
-uniform sampler2D texture_diff1;
-uniform sampler2D texture_spec1;
+uniform sampler2D tex_diff1;
+uniform sampler2D tex_spec1;
 
 void main()
 {	
 	gPosition = frag_pos;
-	gNormal = normalize(nnormal);
-	//GNormal = texture(texture_normal1, UV));
+	gNormal = normalize(normalout);
+	//GNormal = texture(texture_normal1, uv));
 	//GNormal = normalize(GNormal * 2.0 - 1.0);
-	gAlbedoSpec.rgb = texture(texture_diffuse1, UV).rgb;
-	gAlbedoSpec.a = texture(texture_specular1, UV).r;
+	gAlbedoSpec.rgb = texture(tex_diff1, uv).rgb;
+	gAlbedoSpec.a = texture(tex_spec1, uv).r;
 }

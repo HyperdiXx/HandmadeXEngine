@@ -68,7 +68,7 @@ struct GraphicsState
     RenderPass *active_render_pass = nullptr;
     Framebuffer *active_framebuffer = nullptr;
 
-    Framebuffer deffered_buffer;
+    FramebufferObject deffered_buffer;
 
     bool32 enable_shadows = false;
     bool32 is_inited_triangle = false;
@@ -150,6 +150,7 @@ public:
     global bool32 createRenderPass(const RenderPassData data, RenderPass *rp);
     global bool32 createRenderPass(const char *name, bool32 clearDepth, bool32 clearColor, Framebuffer *active, RenderPass *rp);
 
+    global void drawFullquad(Material *mat);
     global void drawFullquad();
 
     global void drawQuad(const Vec2 &pos, const Vec2 &size, const ColRGBA &color);
@@ -228,6 +229,8 @@ public:
 
     global void addMaterial(const std::string &mat_name, Material mat);
     global void addRenderPass(const std::string &mat_name, RenderPass pass);
+
+    global Texture2D *getTextureFromRenderPass(const char *name, uint32 index);
 
     template<typename T>
     global void pushCommand(T&& func)

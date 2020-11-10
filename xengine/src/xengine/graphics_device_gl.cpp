@@ -317,7 +317,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, sampler.pxl_sampling_min);
         setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, sampler.pxl_sampling_mag);
 
-        glTexImage2D(glTextureType, 0, glInternalPixelType, width, height, 0, glPixelFormat, glPixelType, 0);
+        glTexImage2D(glTextureType, 0, glPixelFormat, width, height, 0, glInternalPixelType, glPixelType, 0);
 
         if (mip_count > 0)
         {
@@ -478,40 +478,73 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         return id;
     }
 
+    internal GLenum convertToGLAttachment(RENDER_TARGET_TYPE type)
+    {
+        switch (type)
+        {
+        case  RTColor0:
+        {
+            return GL_COLOR_ATTACHMENT0;
+        } break;
+        case RTColor1:
+        {
+            return GL_COLOR_ATTACHMENT1;
+        } break;
+        case RTColor2:
+        {
+            return GL_COLOR_ATTACHMENT2;
+        } break;
+        case RTColor3:
+        {
+            return GL_COLOR_ATTACHMENT3;
+        } break;
+        case RTDepth:
+        {
+            return GL_DEPTH_ATTACHMENT;
+        } break;
+        case RTStencil:
+        {
+            return GL_STENCIL_ATTACHMENT;
+        } break;
+        case RTDepthStencil:
+        {
+            return GL_DEPTH_STENCIL_ATTACHMENT;
+        } break;
+        default:
+            print_error("Specify framebuffer attachment type!!!");
+            return GL_INVALID_ENUM;
+            break;
+        }
+    }
+
     internal 
     bool32 attachDepthStencil(const FramebufferDesc& desc, const FramebufferSpecs &specs, Framebuffer *fbo, RENDER_TARGET_TYPE attach)
     {
-        Texture2D depthStencil = desc.ds;
-        if (!depthStencil.isValidResource())
-        {
-            //depthStencil = Texture2D::create(specs.width, specs.height, TEXTURE_TYPE::DEPTH_STENCIL, PIXEL_FORMAT::DepthStencil32, PIXEL_INTERNAL_FORMAT::IFDEPTHSTENCIL, PIXEL_TYPE::PTFLOAT, 0);
-            return false;
-        }
+        TextureDesc depthStencil = desc.ds;
 
-        fbo->attachments[attach] = &depthStencil;
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL, depthStencil.rhi.getID(), 0);
-        
+        Texture2D depthStencilTex = Texture2D::create(depthStencil.width, depthStencil.height, depthStencil.texture_type, depthStencil.pixel_format, depthStencil.internal_pixel_format, depthStencil.pxl_type, depthStencil.mip_count, depthStencil.sampler);
+
+        fbo->tex_attachments[attach] = depthStencilTex;
+        GLenum attachName = convertToGLAttachment(attach);
+        glFramebufferTexture(GL_FRAMEBUFFER, attachName, depthStencilTex.rhi.getID(), 0);
+       
         return true;
     }
 
     internal 
     bool32 attachColors(const FramebufferDesc& desc, const FramebufferSpecs &specs, Framebuffer *fbo)
     {
-        for (uint32 i = 0; i < MAX_COLOR_FRAMEBUFFER_ATTACHMENTS - 1; ++i)
+        for (uint32 i = 0; i < MAX_COLOR_FRAMEBUFFER_ATTACHMENTS; ++i)
         {
-            Texture2D texHandle = desc.attachments[i];
+            TextureDesc texDesc = desc.attachments[i];
 
-            if (!texHandle.isValidResource())
-            {
-                //texHandle = Texture2D::create(specs.width, specs.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA8, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTUBYTE, 0);
-                return false;
-            }
+            Texture2D textureColor = Texture2D::create(texDesc.width, texDesc.height, texDesc.texture_type, texDesc.pixel_format, texDesc.internal_pixel_format, texDesc.pxl_type, texDesc.mip_count, texDesc.sampler);
+           
+            fbo->tex_attachments[i] = textureColor;
 
-            fbo->attachments[i] = &texHandle;
-
-            GLenum attachNum = (GLenum)(GL_COLOR_ATTACHMENT0 + i);
-            glFramebufferTexture(GL_FRAMEBUFFER, attachNum, texHandle.rhi.getID(), 0);
-            fbo->buffers[i] = attachNum;
+            GLenum attachName = (GLenum)(GL_COLOR_ATTACHMENT0 + i);
+            glFramebufferTexture(GL_FRAMEBUFFER, attachName, textureColor.rhi.getID(), 0);
+            fbo->color_attach[i] = attachName;
             fbo->colorAttachCount++;
         }
 
@@ -520,23 +553,49 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
     bool32 GraphicsDeviceGL::createFramebuffer(const FramebufferDesc& desc, const FramebufferSpecs &specs, Framebuffer *fbo)
     {
-        glGenFramebuffers(1, &fbo->rhi.getIDRef());
+        glGenFramebuffers(specs.framebuffer_count, &fbo->rhi.getIDRef());
         glBindFramebuffer(GL_FRAMEBUFFER, fbo->rhi.getID());
 
-        bool32 isAttachedColors = attachColors(desc, specs, fbo);
+        bool32 isAttachedColors = attachColors(desc, specs, fbo);              
 
-        bool32 isAttachedDS = attachDepthStencil(desc, specs, fbo, RENDER_TARGET_TYPE::RTDepthStencil);
+        bool32 isAttachedDS = attachDepthStencil(desc, specs, fbo, RENDER_TARGET_TYPE::RTDepth);
           
-        glDrawBuffers(fbo->colorAttachCount, fbo->buffers);
+        glDrawBuffers(fbo->colorAttachCount, fbo->color_attach);        
 
         GLenum fbState = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         bool32 isCompleted = GL_FRAMEBUFFER_COMPLETE == fbState;
+        
+        if (!isCompleted)
+        {            
+            switch (fbState)
+            {
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                print_error("GL_Framebuffer_INCOMPLETE_ATTACHMENT");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                print_error("GL_Framebuffer_INCOMPLETE_MISSING_ATTACHMENT");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+                print_error("GL_Framebuffer_INCOMPLETE_DRAW_BUFFER");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+                print_error("GL_Framebuffer_INCOMPLETE_LAYER_TARGETS");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+                print_error("GL_Framebuffer_INCOMPLETE_READ_BUFFER");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                print_error("GL_Framebuffer_INCOMPLETE_MULTISAMPLE");
+                break;
+            }
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         if (!isCompleted)
         {
             print_error("Failed to create Framebuffer!");
+            return false;
         }
 
         return true;

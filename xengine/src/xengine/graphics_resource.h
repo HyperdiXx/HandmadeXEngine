@@ -286,8 +286,8 @@ public:
 
 struct FramebufferDesc
 {    
-    Texture2D attachments[MAX_COLOR_FRAMEBUFFER_ATTACHMENTS - 1];
-    Texture2D ds;
+    TextureDesc attachments[MAX_COLOR_FRAMEBUFFER_ATTACHMENTS];
+    TextureDesc ds;
 };
 
 struct FramebufferSpecs
@@ -313,15 +313,20 @@ public:
     static Framebuffer create(Texture2D *color, Texture2D *depth);
     static Framebuffer create(Texture2D *color, const FramebufferSpecs &specs);
 public:
-    Texture2D *attachments[MAX_FRAMEBUFFER_ATTACHMENTS];
-    GLenum buffers[MAX_FRAMEBUFFER_ATTACHMENTS];
+    Texture2D tex_attachments[MAX_COLOR_FRAMEBUFFER_ATTACHMENTS + 1];
+    GLenum color_attach[MAX_COLOR_FRAMEBUFFER_ATTACHMENTS];
+    uint32 colorAttachCount = 0;
 
     Renderbuffer rb;
-
-    uint32 colorAttachCount = 0;
     FramebufferRHI rhi;
 };
 
+
+struct FramebufferObject
+{
+    Framebuffer fb;
+    FramebufferDesc desc;
+};
 
 struct BufferElement
 {

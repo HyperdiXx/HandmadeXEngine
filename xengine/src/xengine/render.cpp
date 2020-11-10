@@ -229,27 +229,44 @@ internal
 void setupMaterials()
 {
     Shader *model3d = Render::getShader("base3d");
+    Shader *def = Render::getShader("deffered");
+    Shader *pp = Render::getShader("post_proc");
+
     Texture2D *wood_diffuse = Render::getTexture2DResource("wood");
     Texture2D *water = Render::getTexture2DResource("water");
 
+    Material deffered_shading(def);
     Material baseWater(model3d);
     Material baseCube(model3d);
 
+    int sampler0 = 0;
+    int sampler1 = 1;
+
     //base.set("color", ShaderUniformType::Vec4Uniform, &graphics_state.default_line_color);
-    baseWater.set("tex_diff1", ShaderUniformType::Sampler2D, 0);
+    baseWater.set("tex_diff1", ShaderUniformType::Sampler2D, &sampler0);
     baseWater.addMaterialFlag(MaterialFlag::Depth);
     baseWater.addTexture2D(wood_diffuse);
     
-    baseCube.set("tex_diff1", ShaderUniformType::Sampler2D, 0);
+    baseCube.set("tex_diff1", ShaderUniformType::Sampler2D, &sampler0);
     baseCube.addMaterialFlag(MaterialFlag::Depth);
     baseCube.addTexture2D(water);
-    
+       
+    deffered_shading.set("tex_diff1", ShaderUniformType::Sampler2D, &sampler0);
+    deffered_shading.set("tex_spec1", ShaderUniformType::Sampler2D, &sampler1);
+    deffered_shading.addMaterialFlag(MaterialFlag::Depth);
+
     Shader *rend2d = Render::getShader("render2d");
     Material r2d(rend2d);
+
+    Material postProc(pp);
+
+    postProc.set("tex_diff", ShaderUniformType::Sampler2D, &sampler0);
 
     Render::addMaterial("base", baseWater);
     Render::addMaterial("baseCube", baseCube);
     Render::addMaterial("render2d", r2d);
+    Render::addMaterial("deffered", deffered_shading);
+    Render::addMaterial("post_proc", postProc);
 }
 
 internal 
@@ -272,8 +289,10 @@ internal
 void setupDefferedRender()
 {
     Viewport &vp = g_context->getViewport();
+    
+    FramebufferObject &fb_obj = graphics_state.deffered_buffer;
+    Framebuffer &fb = fb_obj.fb;
 
-    FramebufferDesc desc = {};
     FramebufferSpecs specs = {};
 
     specs.width = vp.width;
@@ -284,21 +303,32 @@ void setupDefferedRender()
     samplerColor1.pxl_sampling_min = TEXTURE_SAMPLING::NEAREST;
     samplerColor1.pxl_sampling_mag = TEXTURE_SAMPLING::NEAREST;
 
-    samplerColor1.wrapping_s = TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP;
-    samplerColor1.wrapping_t = TEXTURE_WRAPPING::TEXTURE_ADDRESS_CLAMP;
+    samplerColor1.wrapping_s = TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT;
+    samplerColor1.wrapping_t = TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT;
 
-    desc.attachments[RENDER_TARGET_TYPE::RTColor0] = Texture2D::create(vp.width, vp.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
-    desc.attachments[RENDER_TARGET_TYPE::RTColor1] = Texture2D::create(vp.width, vp.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
-    desc.attachments[RENDER_TARGET_TYPE::RTColor2] = Texture2D::create(vp.width, vp.height, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    TextureDesc color1(vp.width, vp.height, TEXTURE_DIMENSION::TEXTURE_2D, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    TextureDesc color2(vp.width, vp.height, TEXTURE_DIMENSION::TEXTURE_2D, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    TextureDesc color3(vp.width, vp.height, TEXTURE_DIMENSION::TEXTURE_2D, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    TextureDesc color4(vp.width, vp.height, TEXTURE_DIMENSION::TEXTURE_2D, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::RGBA16F, PIXEL_INTERNAL_FORMAT::IFRGBA, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    
+    //depthStencil = Texture2D::create(specs.width, specs.height, TEXTURE_TYPE::DEPTH_STENCIL, PIXEL_FORMAT::DepthStencil32, PIXEL_INTERNAL_FORMAT::IFDEPTHSTENCIL, PIXEL_TYPE::PTFLOAT, 0);
+    TextureDesc depth(vp.width, vp.height, TEXTURE_DIMENSION::TEXTURE_2D, TEXTURE_TYPE::COLOR, PIXEL_FORMAT::Depth32, PIXEL_INTERNAL_FORMAT::IFDEPTH, PIXEL_TYPE::PTFLOAT, 0, samplerColor1);
+    
+    fb_obj.desc.attachments[RENDER_TARGET_TYPE::RTColor0] = color1;
+    fb_obj.desc.attachments[RENDER_TARGET_TYPE::RTColor1] = color2;
+    fb_obj.desc.attachments[RENDER_TARGET_TYPE::RTColor2] = color3;
+    fb_obj.desc.attachments[RENDER_TARGET_TYPE::RTColor3] = color4;
 
-    bool32 isSetuped = g_device->createFramebuffer(desc, specs, &graphics_state.deffered_buffer);
+    fb_obj.desc.ds = depth;
+
+    bool32 isSetuped = g_device->createFramebuffer(fb_obj.desc, specs, &fb);
 
     RenderPass deffered = {};
 
-    if (Render::createRenderPass("deffered", true, true, &graphics_state.deffered_buffer, &deffered))
+    if (Render::createRenderPass("deffered", true, true, &fb, &deffered))
     {
         Render::addRenderPass("deffered", deffered);
-    }
+    }    
 }
 
 void Render::init(API_TYPE type)
@@ -495,7 +525,7 @@ bool32 Render::loadShaders()
     cubemap_shader = Shader::create("shaders/glsl/cube_map.glsl");
     shadow_map_shader = Shader::create("shaders/glsl/shadow_map.glsl");
     shadow_map_depth_shader = Shader::create("shaders/glsl/shadow_map_extract.glsl");
-    post_proc_shader = Shader::create("shaders/glsl/post_proc.glsl");
+    post_proc_shader = Shader::create("shaders/glsl/fullquad.glsl");
 
     pbr = Shader::create("shaders/glsl/pbr/pbr.glsl");
     background_shader = Shader::create("shaders/glsl/pbr/background.glsl");
@@ -508,6 +538,9 @@ bool32 Render::loadShaders()
 
     color_shader = Shader::create("shaders/glsl/color.glsl");
     
+    Shader deffered = Shader::create("shaders/glsl/def_shade.glsl");
+    
+    addShader("deffered", deffered);
     addShader("render2d", d2shader);
     addShader("3dcolor", simple_3dcolor);
     addShader("simple2d", simple_shader);
@@ -790,9 +823,8 @@ void Render::viewport(int32 w, int32 h)
 
 void Render::clear(uint32 flags)
 {
-    GraphicsContext *context = getContext();
-    context->clearColor(graphics_state.target_clear_color);
-    context->clear(flags);
+    g_context->clearColor(graphics_state.target_clear_color);
+    g_context->clear(flags);
 }
 
 void Render::clearColor(real32 x, real32 y, real32 z, real32 a)
@@ -1486,8 +1518,23 @@ void Render::drawTriangle()
     //});
 }
 
-void Render::drawFullquad()
+void Render::drawFullquad(Material *mat)
 {    
+    if (!mat)
+    {
+        return;
+    }
+
+    mat->bind();
+    mat->activate();
+
+    drawFullquad();
+
+    mat->unbind();
+}
+
+void Render::drawFullquad()
+{
     g_context->bindVertexArray(&graphics_state.quad_vao);
     g_context->drawArray(PRIMITIVE_TOPOLOGY::TRIANGLE, 0, 6);
     g_context->unbindVertexArray();
@@ -1961,9 +2008,13 @@ void Render::beginRenderPass(const char *name)
     }
 
     graphics_state.active_render_pass = current;
-    GraphicsContext *context = getContext();
-    
-    context->bindFramebuffer(current->active_framebuffer);
+
+    /*if (current->data.clearDepth > 0)
+    {
+        g_context->enable(GL_DEPTH_TEST);
+    }*/
+
+    g_context->bindFramebuffer(current->active_framebuffer);
 
     uint32 clearFlags = 0;
    
@@ -2052,9 +2103,14 @@ void Render::endFrame()
 void Render::endRenderPass()
 {
     RenderPass *active_pass = graphics_state.active_render_pass;
-    GraphicsContext *context = getContext();
     
-    context->unbindFramebuffer();
+    g_context->unbindFramebuffer();
+
+    /*if (active_pass->data.clearDepth > 0)
+    {
+        g_context->disable(GL_DEPTH_TEST);
+    }*/
+
     active_pass = nullptr;
 }
 
@@ -2429,6 +2485,19 @@ void Render::drawSphere()
     context->bindVertexArray(graphics_state.sphere_vao.vertex_array);
     context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, graphics_state.sphere_vao.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
     context->unbindVertexArray();
+}
+
+Texture2D* Render::getTextureFromRenderPass(const char *name, uint32 index)
+{
+    RenderPass *current = &graphics_state.render_passes[name];
+
+    if (!current)
+    {
+        return nullptr;
+    }
+
+    Texture2D *tex = &current->active_framebuffer->tex_attachments[index];
+    return tex;
 }
 
 RenderCommandQueue::RenderCommandQueue()

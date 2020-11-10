@@ -214,7 +214,7 @@ constexpr uint32 convert_internal_pixel_format_to_gl(PIXEL_INTERNAL_FORMAT pixel
     } break;
     case IFDEPTH:
     {
-        res |= GL_DEPTH;
+        res |= GL_DEPTH_COMPONENT;
     } break;
     case IFDEPTHSTENCIL:
     {
@@ -293,7 +293,7 @@ constexpr uint32 convert_pixel_format_to_gl(PIXEL_FORMAT pixel)
     } break;
     case Depth32:
     {
-        res |= 1;
+        res |= GL_DEPTH_COMPONENT;
     } break;
     case Stencil24:
     {
@@ -301,7 +301,7 @@ constexpr uint32 convert_pixel_format_to_gl(PIXEL_FORMAT pixel)
     } break;
     case Stencil32:
     {
-        res |= 3;
+        res |= 0;
     } break;
     case DepthStencil32:
     {

@@ -148,6 +148,21 @@ struct TextureSampler
 
 struct TextureDesc
 {
+    TextureDesc() {};
+    TextureDesc(int32 w, int32 h, TEXTURE_DIMENSION dimension, TEXTURE_TYPE texture_type, PIXEL_FORMAT pixel_format,
+        PIXEL_INTERNAL_FORMAT internal_pixel_format, PIXEL_TYPE pxl_type, uint32 mip_count, TextureSampler sampler)
+    {
+        this->dimension = dimension;
+        this->texture_type = texture_type;
+        this->pixel_format = pixel_format;
+        this->internal_pixel_format = internal_pixel_format;
+        this->pxl_type = pxl_type;
+        this->sampler = sampler;
+        this->width = w;
+        this->height = h;
+        this->mip_count = mip_count;
+    }
+
     TEXTURE_DIMENSION dimension;
     TEXTURE_TYPE texture_type;
     PIXEL_FORMAT pixel_format;

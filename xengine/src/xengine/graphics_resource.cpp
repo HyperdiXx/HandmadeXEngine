@@ -181,18 +181,23 @@ void Material::activate()
 {
     GraphicsContext *context = Render::getContext();
 
-    auto &definitions = shaderProp.getProperties();
-
-    for (const auto &prop : definitions)
-    {
-        context->setShaderBuffer(&prop);
-    }   
+    auto &samplerProps = samplers.getProperties();
 
     for (uint32 i = 0; i < textures.size(); ++i)
     {
         Texture2D *tex = getTexture(i);
         context->activateTexture(i);
         context->bindTexture(tex->desc.texture_type, tex);
+                
+        auto &prop = samplerProps[i];
+        context->setInt(prop.location, i);
+    }
+
+    auto &definitions = shaderProp.getProperties();
+
+    for (const auto &prop : definitions)
+    {
+        context->setShaderBuffer(&prop);
     }
 }
 
@@ -209,7 +214,7 @@ void Material::set(const std::string &property_name, ShaderUniformType type, con
     else
     {
         auto &definitions = shaderProp.getProperties();
-
+        auto &samplerProps = samplers.getProperties();
         bool32 isTexture = isSamplerType(type);
         
         ShaderUniformProperty n_prop = {};
@@ -220,9 +225,12 @@ void Material::set(const std::string &property_name, ShaderUniformType type, con
         if (!isTexture)
         {
             n_prop.value = data;
-        }        
-
-        definitions.emplace_back(n_prop);
+            definitions.emplace_back(n_prop);
+        }   
+        else
+        {
+            samplerProps.emplace_back(n_prop);
+        }
     }   
 }
 

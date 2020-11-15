@@ -618,6 +618,8 @@ private:
     std::vector<Texture2D*> textures;
     std::unordered_set<MaterialInstance*> instances;
     ShaderProperties shaderProp = {};
+    ShaderProperties samplers = {};
+
     Shader *shaderRef;
     uint32 flags;
 };

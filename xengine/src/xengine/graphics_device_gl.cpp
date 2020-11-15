@@ -416,25 +416,33 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         return true;
     }
 
-    uint32 GraphicsDeviceGL::compileShader(SHADER_TYPE type, std::string &shader_source)
+    internal 
+    uint32 convertShaderToGLType(SHADER_TYPE type)
     {
-        const GLchar *shader_code = (GLchar*)shader_source.c_str();
-
-        uint32 shader_type = 0;
+        uint32 res = 0;
 
         switch (type)
         {
         case SHADER_TYPE::VS:
         {
-            shader_type |= GL_VERTEX_SHADER;
+            res |= GL_VERTEX_SHADER;
         } break;
         case SHADER_TYPE::PS:
         {
-            shader_type |= GL_FRAGMENT_SHADER;
+            res |= GL_FRAGMENT_SHADER;
         } break;
         default:
             break;
         }
+
+        return res;
+    }
+
+    uint32 GraphicsDeviceGL::compileShader(SHADER_TYPE type, std::string &shader_source)
+    {
+        const GLchar *shader_code = (GLchar*)shader_source.c_str();
+
+        uint32 shader_type = convertShaderToGLType(type);
 
         uint32 id = glCreateShader(shader_type);
         glShaderSource(id, 1, &shader_code, NULL);

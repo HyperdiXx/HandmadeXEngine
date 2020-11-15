@@ -867,7 +867,7 @@ inline Matrix4x4 inverseMat(Matrix4x4 &mat)
 inline 
 void invertMat(Matrix4x4 &mat)
 {
-   
+    
 }
 
 inline 

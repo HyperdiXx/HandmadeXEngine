@@ -231,6 +231,7 @@ void setupMaterials()
     Shader *model3d = Render::getShader("base3d");
     Shader *def = Render::getShader("deffered");
     Shader *pp = Render::getShader("post_proc");
+    Shader *light_pass = Render::getShader("lightpass");
 
     Texture2D *wood_diffuse = Render::getTexture2DResource("wood");
     Texture2D *water = Render::getTexture2DResource("water");
@@ -238,11 +239,16 @@ void setupMaterials()
     Material deffered_shading(def);
     Material baseWater(model3d);
     Material baseCube(model3d);
+    Material lightPass(light_pass);
 
     int sampler0 = 0;
     int sampler1 = 1;
+    int sampler2 = 2;
+   
+    lightPass.set("albedoSpec", ShaderUniformType::Sampler2D, &sampler0);
+    lightPass.set("normal_texture", ShaderUniformType::Sampler2D, &sampler1);
+    lightPass.set("depth_texture", ShaderUniformType::Sampler2D, &sampler2);
 
-    //base.set("color", ShaderUniformType::Vec4Uniform, &graphics_state.default_line_color);
     baseWater.set("tex_diff1", ShaderUniformType::Sampler2D, &sampler0);
     baseWater.addMaterialFlag(MaterialFlag::Depth);
     baseWater.addTexture2D(wood_diffuse);
@@ -251,9 +257,11 @@ void setupMaterials()
     baseCube.addMaterialFlag(MaterialFlag::Depth);
     baseCube.addTexture2D(water);
        
-    deffered_shading.set("tex_diff1", ShaderUniformType::Sampler2D, &sampler0);
-    deffered_shading.set("tex_spec1", ShaderUniformType::Sampler2D, &sampler1);
+    deffered_shading.set("tex_diff", ShaderUniformType::Sampler2D, &sampler0);
+    deffered_shading.set("tex_norm", ShaderUniformType::Sampler2D, &sampler1);
+    deffered_shading.set("tex_spec", ShaderUniformType::Sampler2D, &sampler2);
     deffered_shading.addMaterialFlag(MaterialFlag::Depth);
+    deffered_shading.addTexture2D(wood_diffuse);
 
     Shader *rend2d = Render::getShader("render2d");
     Material r2d(rend2d);
@@ -262,6 +270,7 @@ void setupMaterials()
 
     postProc.set("tex_diff", ShaderUniformType::Sampler2D, &sampler0);
 
+    Render::addMaterial("lightP", lightPass);
     Render::addMaterial("base", baseWater);
     Render::addMaterial("baseCube", baseCube);
     Render::addMaterial("render2d", r2d);
@@ -484,63 +493,39 @@ void Render::addRenderPass(const std::string &pass_name, RenderPass pass)
 
 bool32 Render::loadShaders()
 {
-    Shader simple_shader = {};
-    Shader model_shader = {};
-    Shader gamma_correction_shader = {};
-    Shader color_shader = {};
-    Shader text_shader = {};
-    Shader cubemap_shader = {};
-    Shader post_proc_shader = {};
-    Shader shadow_map_shader = {};
-    Shader shadow_map_depth_shader = {};
-    Shader pbr = {};
-    Shader simple_texture = {};
-    Shader background_shader = {};
-    Shader brdf_shader = {};
-    Shader prefilter_shader = {};
-    Shader equirectangular_cubemap = {};
-    Shader irradiance_shader = {};
-    Shader water = {};
-    Shader simple_3dcolor = {};
-    Shader anim_model = {};
-
-    Shader triangle = {};
-    Shader terrain = {};
-    Shader clut_shader = {};
-
-    Shader d2shader = {};
-
     // ???
     std::string resolved_path = "shaders/glsl/";
 
-    simple_3dcolor = Shader::create("shaders/glsl/3dcolor.glsl");
-    anim_model = Shader::create("shaders/glsl/anim_model3d.glsl");
-    model_shader = Shader::create("shaders/glsl/model3d.glsl");
-    d2shader = Shader::create("shaders/glsl/2dshader.glsl");
-    simple_shader = Shader::create("shaders/glsl/simple2d.glsl"); 
-    simple_texture = Shader::create("shaders/glsl/simple_model.glsl");    
-    water = Shader::create("shaders/glsl/water.glsl");
-    gamma_correction_shader = Shader::create("shaders/glsl/gamma_correction.glsl");
-    text_shader = Shader::create("shaders/glsl/text.glsl");
-    cubemap_shader = Shader::create("shaders/glsl/cube_map.glsl");
-    shadow_map_shader = Shader::create("shaders/glsl/shadow_map.glsl");
-    shadow_map_depth_shader = Shader::create("shaders/glsl/shadow_map_extract.glsl");
-    post_proc_shader = Shader::create("shaders/glsl/fullquad.glsl");
+    Shader simple_3dcolor = Shader::create("shaders/glsl/3dcolor.glsl");
+    Shader anim_model = Shader::create("shaders/glsl/anim_model3d.glsl");
+    Shader model_shader = Shader::create("shaders/glsl/model3d.glsl");
+    Shader d2shader = Shader::create("shaders/glsl/2dshader.glsl");
+    Shader simple_shader = Shader::create("shaders/glsl/simple2d.glsl");
+    Shader simple_texture = Shader::create("shaders/glsl/simple_model.glsl");
+    Shader water = Shader::create("shaders/glsl/water.glsl");
+    Shader gamma_correction_shader = Shader::create("shaders/glsl/gamma_correction.glsl");
+    Shader text_shader = Shader::create("shaders/glsl/text.glsl");
+    Shader cubemap_shader = Shader::create("shaders/glsl/cube_map.glsl");
+    Shader shadow_map_shader = Shader::create("shaders/glsl/shadow_map.glsl");
+    Shader shadow_map_depth_shader = Shader::create("shaders/glsl/shadow_map_extract.glsl");
+    Shader post_proc_shader = Shader::create("shaders/glsl/fullquad.glsl");
 
-    pbr = Shader::create("shaders/glsl/pbr/pbr.glsl");
-    background_shader = Shader::create("shaders/glsl/pbr/background.glsl");
-    brdf_shader = Shader::create("shaders/glsl/pbr/brdf.glsl");
-    prefilter_shader = Shader::create("shaders/glsl/pbr/pref.glsl");
-    equirectangular_cubemap = Shader::create("shaders/glsl/pbr/equ_to_cubemap.glsl");
-    irradiance_shader = Shader::create("shaders/glsl/pbr/irradiance.glsl");
-    triangle = Shader::create("shaders/glsl/triangle.glsl");
-    terrain = Shader::create("shaders/glsl/terrain.glsl");
+    Shader pbr = Shader::create("shaders/glsl/pbr/pbr.glsl");
+    Shader background_shader = Shader::create("shaders/glsl/pbr/background.glsl");
+    Shader brdf_shader = Shader::create("shaders/glsl/pbr/brdf.glsl");
+    Shader prefilter_shader = Shader::create("shaders/glsl/pbr/pref.glsl");
+    Shader equirectangular_cubemap = Shader::create("shaders/glsl/pbr/equ_to_cubemap.glsl");
+    Shader irradiance_shader = Shader::create("shaders/glsl/pbr/irradiance.glsl");
+    Shader triangle = Shader::create("shaders/glsl/triangle.glsl");
+    Shader terrain = Shader::create("shaders/glsl/terrain.glsl");
 
-    color_shader = Shader::create("shaders/glsl/color.glsl");
+    Shader color_shader = Shader::create("shaders/glsl/color.glsl");
     
     Shader deffered = Shader::create("shaders/glsl/def_shade.glsl");
-    
+    Shader light_pass = Shader::create("shaders/glsl/light_pass.glsl");
+
     addShader("deffered", deffered);
+    addShader("lightpass", light_pass);
     addShader("render2d", d2shader);
     addShader("3dcolor", simple_3dcolor);
     addShader("simple2d", simple_shader);
@@ -849,7 +834,7 @@ void Render::shutdown()
     //clearContextGui();
 }
 
-bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace)
+bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace = true)
 {
     Vertex *vert = vertex_type;
 
@@ -1674,9 +1659,13 @@ void Render::drawModel(Model *mod, Material *mat, Matrix4x4 &transform)
     Matrix4x4 vp = camera3d.getViewProjectionMatrix();
     Matrix4x4 mvp = vp * transform;
 
+    //glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_ModelMatrix)));
+    
     mat->set("mvp", ShaderUniformType::Mat4x4, &mvp);
-    //mat->set("model", ShaderUniformType::Mat4x4, &transform);
-
+    mat->set("vp", ShaderUniformType::Mat4x4, &vp);
+    mat->set("model", ShaderUniformType::Mat4x4, &transform);
+    //mat->set("normalMatrix", ShaderUniformType::Mat3x3, &normalMat);
+    
     if (mat->isDepth())
     {
         context->enable(GL_DEPTH_TEST);

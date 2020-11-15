@@ -671,15 +671,11 @@ void GraphicsContextGL::setShaderBuffer(const ShaderUniformProperty *prop_type)
         } break;
         case ShaderUniformType::Float:
         {
-            //glUniform1f(prop_type->location, (GLfloat)(prop_type->value));
+            //glUniform1fv(prop_type->location, 1, (GLfloat)(prop_type->value));
         } break;
         case ShaderUniformType::Int:
         {
             //glUniform1iv(prop_type->location, 1, (GLint)(&prop_type->value));
-        } break;
-        case ShaderUniformType::Sampler2D:
-        {
-            glUniform1i(prop_type->location, (GLint)(prop_type->value));
         } break;
         default:
         {

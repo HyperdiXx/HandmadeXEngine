@@ -61,6 +61,7 @@ global DynArray<Rect> rects_to_test;
 global CubeMesh cube;
 global Model *nano_character = nullptr;
 global Model *cube_model = nullptr;
+global Vec3 light_pos = createVec3(-5.0f, -2.0f, 6.0f);
 
 internal 
 void InitGameLayers()
@@ -156,13 +157,10 @@ void Render()
  
     Render::beginRenderPass("deffered");
 
-    Vec3 translationCharacter = createVec3(0.0f, -10.0f, -100.0f);
-    Vec3 scaleCharacter = createVec3(2.0f, 2.0f, 2.0f);    
-    Vec3 translationCube = createVec3(0.0f, -20.0f, -100.0f);
-    Vec3 scaleCube = createVec3(10.f, 0.1f, 1.0f);
-
-    Vec3 translationCube2 = createVec3(0.0f, -40.0f, -250.0f);
-    Vec3 scaleCube2 = createVec3(10.f, 5.0f, 0.1f);
+    Vec3 translationCharacter = createVec3(0.0f, -10.0f, -20.0f);
+    Vec3 scaleCharacter = createVec3(0.5f, 0.5f, 0.5f);    
+    Vec3 translationCube = createVec3(-5.0f, 0.0f, -10.0f);
+    Vec3 scaleCube = createVec3(0.1f, 0.1f, 0.1f);
 
     Matrix4x4 modelMat = translateMat(translationCharacter) * scaleMat(scaleCharacter);
 
@@ -170,23 +168,34 @@ void Render()
     Material *cube_material = Render::getMaterial("baseCube");
     Material *def = Render::getMaterial("deffered");
 
-    Render::drawModel(nano_character, model_material, modelMat);
+    Render::drawModel(nano_character, def, modelMat);
 
     modelMat = translateMat(translationCube) * scaleMat(scaleCube);
-    Render::drawModel(cube_model, model_material, modelMat);
-
-    modelMat = translateMat(translationCube2) * scaleMat(scaleCube2);
-    Render::drawModel(cube_model, model_material, modelMat);
+    Render::drawModel(cube_model, def, modelMat);
 
     Render::endRenderPass();
     
-    Material *pp = Render::getMaterial("post_proc");
+    Material *pp = Render::getMaterial("lightP");
     static bool32 isAdded = false;
     if (!isAdded)
     {
-        pp->addTexture2D(Render::getTextureFromRenderPass("deffered", 0));
+        Texture2D *albedo = Render::getTextureFromRenderPass("deffered", 2);
+        Texture2D *normal = Render::getTextureFromRenderPass("deffered", 1);
+        Texture2D *depth = Render::getTextureFromRenderPass("deffered", 4);
+        
+        pp->addTexture2D(albedo);
+        pp->addTexture2D(normal);
+        pp->addTexture2D(depth);
+
         isAdded = true;
     }
+
+    Camera3D &camera3d = getCamera3D();
+
+    pp->set("viewPos", ShaderUniformType::Vec3Uniform, &camera3d.pos);
+    pp->set("lightPos", ShaderUniformType::Vec3Uniform, &light_pos);
+    pp->set("view", ShaderUniformType::Mat4x4, &camera3d.getViewMatrix());
+    pp->set("projection", ShaderUniformType::Mat4x4, &camera3d.getProjectionMatrix());
 
     Render::drawFullquad(pp);
 
@@ -206,8 +215,8 @@ APP_LOAD_DATA
     //InitQuadTree();
     InitECS();
 
-    nano_character = loadModelFromFile("assets/nano/nanosuit.obj");
-    cube_model = loadModelFromFile("assets/cube.obj");
+    nano_character = loadModelFromFile("assets/nano/nanosuit.obj", false);
+    cube_model = loadModelFromFile("assets/cube.obj", false);
     
     for (uint32 i = 0; i < layersTest.size(); ++i)
     {

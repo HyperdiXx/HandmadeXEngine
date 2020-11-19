@@ -5,7 +5,7 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 //layout (location = 2) in vec3 aTangent;
 //layout (location = 3) in vec3 aBitangent;
-layout (location = 3) in vec2 aUV;
+layout (location = 2) in vec2 aUV;
 
 out vec3 frag_posWS;
 out mat3 tbn;
@@ -14,14 +14,13 @@ out vec3 normalout;
 
 uniform mat4 vp;
 uniform mat4 model;
+uniform mat3 normalMatrix;
 
 void main()
 {
 	uv = aUV;
 	frag_posWS = (model * vec4(aPos, 1.0)).xyz;
 
-	mat3 normalMatrix = transpose(inverse(mat3(model)));
-    
 	//vec3 T = normalize(normalMatrix * aTangent);
 	//vec3 B = normalize(normalMatrix * aBitangent);
 	vec3 N = normalize(normalMatrix * aNormal);

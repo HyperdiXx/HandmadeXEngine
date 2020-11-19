@@ -30,18 +30,22 @@ Matrix4x4 fromAiToGlm(const aiMatrix4x4 &ai_mat)
 
 std::vector<TextureWrapper> loadTexturesFromMaterial(Model *mdl, aiMaterial *material, aiTextureType type, std::string texture_type)
 {
-    std::vector<TextureWrapper> textures;
+    std::vector<TextureWrapper> textures = {};
+
     for (uint32 i = 0; i < material->GetTextureCount(type); i++)
     {
         aiString str;
         material->GetTexture(type, i, &str);
 
         bool skip = false;
-        for (uint16 j = 0; j < mdl->model_textures.size(); j++)
+
+        std::vector<TextureWrapper> &mdl_textures = mdl->asset_data.model_textures;
+
+        for (uint16 j = 0; j < mdl_textures.size(); j++)
         {
-            if (std::strcmp(mdl->model_textures[j].path.data(), str.C_Str()) == 0)
+            if (std::strcmp(mdl_textures[j].path.data(), str.C_Str()) == 0)
             {
-                textures.push_back(mdl->model_textures[j]);
+                textures.push_back(mdl_textures[j]);
                 skip = true;
                 break;
             }
@@ -49,20 +53,20 @@ std::vector<TextureWrapper> loadTexturesFromMaterial(Model *mdl, aiMaterial *mat
 
         if (!skip)
         {
-            TextureWrapper texture;
+            TextureWrapper texture = {};
 
             GraphicsDevice *device = Render::getDevice();
 
             Texture2D* texture_crt = new Texture2D();
             texture_crt->desc.dimension = TEXTURE_2D;
 
-            device->createTexture2D(str.C_Str(), mdl->parent_dir.c_str(), texture_crt);
+            device->createTexture2D(str.C_Str(), mdl->asset_data.parent_dir.c_str(), texture_crt);
 
             texture.texture = texture_crt;
             texture.type = texture_type;
             texture.path = str.C_Str();
             textures.push_back(texture);
-            mdl->model_textures.push_back(texture);
+            mdl_textures.push_back(texture);
         }
     }
 
@@ -127,24 +131,34 @@ void parseMaterials(Model *m, Mesh *mesh, aiMesh *ai_mesh, const aiScene *scene)
 
     std::vector<TextureWrapper> diffuseMaps = loadTexturesFromMaterial(m, material, aiTextureType_DIFFUSE, "tex_diff");
     for (uint16 i = 0; i < diffuseMaps.size(); i++)
+    {
         mesh->mesh_textures.push_back(diffuseMaps[i]);
+    }
 
     std::vector<TextureWrapper> specularMaps = loadTexturesFromMaterial(m, material, aiTextureType_SPECULAR, "tex_spec");
     for (uint16 i = 0; i < specularMaps.size(); i++)
+    {
         mesh->mesh_textures.push_back(specularMaps[i]);
+    }
 
     std::vector<TextureWrapper> normalMaps = loadTexturesFromMaterial(m, material, aiTextureType_NORMALS, "tex_norm");
     for (uint16 i = 0; i < normalMaps.size(); i++)
+    {
         mesh->mesh_textures.push_back(normalMaps[i]);
+    }
 
     std::vector<TextureWrapper> height_tex = loadTexturesFromMaterial(m, material, aiTextureType_HEIGHT, "tex_height");
     for (uint16 i = 0; i < height_tex.size(); i++)
+    {
         mesh->mesh_textures.push_back(height_tex[i]);
+    }
 
     // pbr rough
     std::vector<TextureWrapper> roughness_tex = loadTexturesFromMaterial(m, material, aiTextureType_SHININESS, "tex_roughness");
     for (uint16 i = 0; i < roughness_tex.size(); i++)
+    {
         mesh->mesh_textures.push_back(roughness_tex[i]);
+    }
 }
 
 void memCpyvec(aiVector3D &aivec3, Vec3 &vec3)
@@ -198,7 +212,7 @@ Model *parseStaticModel(const aiScene *scene, const std::string &path)
         mode->vertex_type = new PositionNormalUV();
     }
 
-    mode->parent_dir = path.substr(0, path.find_last_of('/'));
+    mode->asset_data.parent_dir = path.substr(0, path.find_last_of('/'));
     mode->root = parseNode(mode, scene->mRootNode, scene);
 
     //Log::info("Static model " + model->root->name + " loaded!");
@@ -502,8 +516,8 @@ Model::Model(Model && m)
 {
     root = m.root;
     vertex_type = m.vertex_type;
-    parent_dir = std::move(m.parent_dir);
-    model_textures = std::move(m.model_textures);
+    asset_data.parent_dir = std::move(m.asset_data.parent_dir);
+    asset_data.model_textures = std::move(m.asset_data.model_textures);
     nodes = std::move(m.nodes);
 }
 
@@ -511,8 +525,8 @@ Model &Model::operator=(Model && m) noexcept
 {
     root = m.root;
     vertex_type = m.vertex_type;
-    parent_dir = std::move(m.parent_dir);
-    model_textures = std::move(m.model_textures);
+    asset_data.parent_dir = std::move(m.asset_data.parent_dir);
+    asset_data.model_textures = std::move(m.asset_data.model_textures);
     nodes = std::move(m.nodes);
     return *this;
 }
@@ -785,4 +799,44 @@ void AnimModel::updateNodeTransform(aiNode *node, const Matrix4x4 &parent_transf
     {
         updateNodeTransform(node->mChildren[i], transform);
     }
+}
+
+void ModelAsset::serialize()
+{
+
+}
+
+void ModelAsset::deserialize()
+{
+
+}
+
+void AnimModelAsset::serialize()
+{
+
+}
+
+void AnimModelAsset::deserialize()
+{
+
+}
+
+void TextureAsset::serialize()
+{
+
+}
+
+void TextureAsset::deserialize()
+{
+
+}
+
+void Scene::serialize()
+{
+
+}
+
+void Scene::deserialize()
+{
+
 }

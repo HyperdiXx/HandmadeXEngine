@@ -7,25 +7,10 @@
 
 struct MemoryStats
 {
-    uint32 sizeInBytesAllocated;
+    uint32 sinze_bytes_allocated;
+    uint32 allocations_count;
+    uint32 current_allocations_count;
 };
-
-global MemoryStats stats = {};
-
-inline void *operator new(size_t size)
-{
-    stats.sizeInBytesAllocated += size;
-    
-    
-    return malloc(size);
-}
-
-inline void operator delete(void* block)
-{
-    
-
-    free(block);
-}
 
 struct MemoryArena
 {

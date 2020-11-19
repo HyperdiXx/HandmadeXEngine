@@ -92,22 +92,20 @@ uniform vec3 lightPos;
 uniform mat4 viewInverse;
 uniform mat4 projectionInverse;
 
-uniform mat4 view;
-uniform mat4 projection;
-
 vec3 getWPFromDepthTexture()
 {
 	// convert to [-1, 1]
 	float z = 2.0 * texture(depth_texture, uv).r - 1.0; 
 	vec4 clipSpacePos = vec4(uv * 2.0 - 1.0 , z, 1.0);
 
-    mat4 inverseView = inverse(view);
-    mat4 inverseProj = inverse(projection);
+	// ??? 
+    //mat4 inverseView = inverse(view);
+    //mat4 inverseProj = inverse(projection);
 
-	vec4 viewSpacePos = inverseProj * clipSpacePos;
+	vec4 viewSpacePos = projectionInverse * clipSpacePos;
 	viewSpacePos /= viewSpacePos.w; // Perspective division
 
-	vec4 worldSpacePos = inverseView * viewSpacePos;
+	vec4 worldSpacePos = viewInverse * viewSpacePos;
 
 	return worldSpacePos.xyz;
 }

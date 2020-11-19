@@ -146,6 +146,7 @@ struct Camera3D
     Vec3 world_up;
 
     Matrix4x4 projection = createMat4x4();
+    Matrix4x4 projectionInverse = createMat4x4();
 
     Camera3D(Vec3 position = createVec3(0.0f, 0.0f, 10.0f), Vec3 tar = createVec3(0.0f, 0.0f, 1.0f), Vec3 u = createVec3(0.0f, 1.0f, 0.0f))
     {
@@ -165,10 +166,16 @@ struct Camera3D
         if (!is_inited)
         {
             projection = perspectiveRH(fov, aspect_ratio, near_plane, far_plane);
+            projectionInverse = inverseMat(projection);
             is_inited = true;
         }
 
         return projection;
+    }
+
+    Matrix4x4 &getProjectionInverseMatrix()
+    {
+        return projectionInverse;
     }
 
     Matrix4x4 getViewMatrix()
@@ -176,6 +183,12 @@ struct Camera3D
         Vec3 target_vec = createVec3(0.0f, 0.0f, 1.0f);
         Vec3 up_vec = createVec3(0.0f, 1.0f, 0.0f);
         return lookAtRH(pos, Normalize(pos + target_vec), up_vec);
+    }
+
+    Matrix4x4 getViewInverseMatrix()
+    {
+        Matrix4x4 view = getViewMatrix();
+        return inverseMat(view);
     }
 
     Matrix4x4 getViewProjectionMatrix()

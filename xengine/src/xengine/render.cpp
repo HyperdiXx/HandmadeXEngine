@@ -1647,28 +1647,15 @@ void Render::drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture
     graphics_state.graphics_state.graphics_device->unbindShader();
 }*/
 
-void Render::drawModel(Model *mod, Material *mat, Matrix4x4 &transform)
+void Render::drawModel(Model *mod, Material *mat)
 {
-    GraphicsContext *context = getContext();
     ModelNode *root = mod->root;
 
     mat->bind();    
     
-    Camera3D &camera3d = getCamera3D();
-
-    Matrix4x4 vp = camera3d.getViewProjectionMatrix();
-    Matrix4x4 mvp = vp * transform;
-
-    //glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_ModelMatrix)));
-    
-    mat->set("mvp", ShaderUniformType::Mat4x4, &mvp);
-    mat->set("vp", ShaderUniformType::Mat4x4, &vp);
-    mat->set("model", ShaderUniformType::Mat4x4, &transform);
-    //mat->set("normalMatrix", ShaderUniformType::Mat3x3, &normalMat);
-    
     if (mat->isDepth())
     {
-        context->enable(GL_DEPTH_TEST);
+        g_context->enable(GL_DEPTH_TEST);
     }
 
     for (uint32 i = 0; i < root->children.size(); i++)
@@ -1686,7 +1673,7 @@ void Render::drawModel(Model *mod, Material *mat, Matrix4x4 &transform)
     
     if (mat->isDepth())
     {
-        context->disable(GL_DEPTH_TEST);
+        g_context->disable(GL_DEPTH_TEST);
     }
 }
 
@@ -1979,8 +1966,11 @@ void Render::beginFrame(bool32 shouldClearScreen)
 {
     if (shouldClearScreen)
     {
-        clearColor(0.7f, 0.7f, 0.9f, 1.0f);
-        clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        Render::pushCommand([]()
+        {
+            clearColor(0.7f, 0.7f, 0.9f, 1.0f);
+            clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        });
     }
 
     RenderState &rs = graphics_state.render_state_batch;
@@ -1998,19 +1988,17 @@ void Render::beginRenderPass(const char *name)
 
     graphics_state.active_render_pass = current;
 
-    /*if (current->data.clearDepth > 0)
-    {
-        g_context->enable(GL_DEPTH_TEST);
-    }*/
+    Render::pushCommand([current]()
+    {    
+        g_context->bindFramebuffer(current->active_framebuffer);
 
-    g_context->bindFramebuffer(current->active_framebuffer);
+        uint32 clearFlags = 0;
 
-    uint32 clearFlags = 0;
-   
-    current->data.clearColor > 0 ? clearFlags |= GL_COLOR_BUFFER_BIT : clearFlags &= ~GL_COLOR_BUFFER_BIT;
-    current->data.clearDepth > 0 ? clearFlags |= GL_DEPTH_BUFFER_BIT : clearFlags &= ~GL_DEPTH_BUFFER_BIT;
+        current->data.clearColor > 0 ? clearFlags |= GL_COLOR_BUFFER_BIT : clearFlags &= ~GL_COLOR_BUFFER_BIT;
+        current->data.clearDepth > 0 ? clearFlags |= GL_DEPTH_BUFFER_BIT : clearFlags &= ~GL_DEPTH_BUFFER_BIT;
 
-    Render::clear(clearFlags);
+        Render::clear(clearFlags);
+    });
 }
 
 void Render::setupRenderCommand(CommandType type)
@@ -2083,24 +2071,19 @@ void Render::executeCommands()
 
 void Render::endFrame()
 {
-    GraphicsDevice *device = getDevice();
-    
-    device->checkError();
+    g_device->checkError();
     executeCommands();
 }
 
 void Render::endRenderPass()
 {
     RenderPass *active_pass = graphics_state.active_render_pass;
-    
-    g_context->unbindFramebuffer();
-
-    /*if (active_pass->data.clearDepth > 0)
-    {
-        g_context->disable(GL_DEPTH_TEST);
-    }*/
-
     active_pass = nullptr;
+
+    Render::pushCommand([&]()
+    {
+        g_context->unbindFramebuffer();
+    });
 }
 
 /*void Render::drawModel(xe_assets::Model *mod, const glm::mat4 &transform)
@@ -2407,56 +2390,49 @@ void drawEntPrimitive(Entity *ent)
 
 void Render::drawMesh(Mesh *msh, Material *mat)
 {
-    GraphicsContext *context = getContext();
-    
-    const std::vector<Texture2D*> *mat_textures = mat->getTextures2D();
-
-    for (uint32 i = 0; i < mat_textures->size(); ++i)
-    {        
-        mat->set("tex_diff1", ShaderUniformType::Sampler2D, (const void*)i);     
-    }
-
-    //for (uint32 i = 0; i < msh->mesh_textures.size(); i++)
-    //{
-
-        //uint32 diff_texture_num = 1;
-        //uint32 normal_texture_num = 1;
-        //uint32 specular_texture_num = 1;
+    /*for (uint32 i = 0; i < msh->mesh_textures.size(); i++)
+    {
+        uint32 diff_texture_num = 1;
+        uint32 normal_texture_num = 1;
+        uint32 specular_texture_num = 1;
 
         // @Refactor!!!
-        //Texture2D *mesh_texture = mat->getTexture(0);
-        //device->activateTexture(0);
+        Texture2D *mesh_texture = mat->getTexture(i);
+        g_context->activateTexture(i);
 
-        //std::string name = msh->mesh_textures[i].type;
-        //std::string num;
+        std::string name = msh->mesh_textures[i].type;
+        std::string num;
 
-        //if (name == "tex_diff")
-        //{
-        //    num = std::to_string(diff_texture_num++);
-        //}
-        //else if (name == "tex_norm")
-        //    num = std::to_string(normal_texture_num++);
-        //else if (name == "tex_spec")
-        //    num = std::to_string(specular_texture_num++);
+        if (name == "tex_diff")
+        {
+            num = std::to_string(diff_texture_num++);
+        }
+        else if (name == "tex_norm")
+        {
+            num = std::to_string(normal_texture_num++);
+        }
+        else if (name == "tex_spec")
+        {
+            num = std::to_string(specular_texture_num++);
+        }
 
-        //device->setInt((name + num).c_str(), 0, shd);        
-        //mat->set("tex_diff1", ShaderUniformType::Sampler2D, 0);
+        uint32 location = i;
 
-        //device->bindTexture(TEXTURE_TYPE::COLOR, mesh_texture);
-    //}
+        g_context->setInt(location, i);
+        g_context->bindTexture(TEXTURE_TYPE::COLOR, mesh_texture);
+    }*/
      
     mat->activate();
 
-    context->bindVertexArray(&msh->vao);
-    context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
+    g_context->bindVertexArray(&msh->vao);
+    g_context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE, msh->indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Render::drawSphere(Texture2D *texture_diff)
 {
     if (texture_diff)
     {
-        GraphicsContext *context = getContext();
-        context->activateBindTexture(TEXTURE_TYPE::COLOR, texture_diff);
+        g_context->activateBindTexture(TEXTURE_TYPE::COLOR, texture_diff);
     }
     
     drawSphere();
@@ -2469,11 +2445,9 @@ void Render::drawSphere()
         createSphere(&graphics_state.sphere_vao);
     }
 
-    GraphicsContext *context = getContext();
-
-    context->bindVertexArray(graphics_state.sphere_vao.vertex_array);
-    context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, graphics_state.sphere_vao.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
-    context->unbindVertexArray();
+    g_context->bindVertexArray(graphics_state.sphere_vao.vertex_array);
+    g_context->drawIndexed(PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, graphics_state.sphere_vao.vertex_array->ib->count, GL_UNSIGNED_INT, 0);
+    g_context->unbindVertexArray();
 }
 
 Texture2D* Render::getTextureFromRenderPass(const char *name, uint32 index)
@@ -2489,9 +2463,15 @@ Texture2D* Render::getTextureFromRenderPass(const char *name, uint32 index)
     return tex;
 }
 
+RenderPass* Render::getRenderPass(const char *name)
+{
+    RenderPass *result = &graphics_state.render_passes[name];
+    return result;
+}
+
 RenderCommandQueue::RenderCommandQueue()
 {
-    command_buffer_ptr_base = new uint8_t[10 * 1024 * 1024];
+    command_buffer_ptr_base = alloc_mem uint8_t[10 * 1024 * 1024];
     command_buffer_ptr = command_buffer_ptr_base;
     memset(command_buffer_ptr_base, 0, 10 * 1024 * 1024);
 }
@@ -2502,7 +2482,7 @@ RenderCommandQueue::~RenderCommandQueue()
 }
 
 void *RenderCommandQueue::submit(RenderCommand func_ptr, uint32 size)
-{
+{    
     *(RenderCommand*)command_buffer_ptr = func_ptr;
     command_buffer_ptr += sizeof(func_ptr);
 
@@ -2513,6 +2493,7 @@ void *RenderCommandQueue::submit(RenderCommand func_ptr, uint32 size)
     command_buffer_ptr += size;
 
     command_count++;
+
     return memory;
 }
 
@@ -2520,9 +2501,9 @@ void RenderCommandQueue::executeQueue()
 {
     for (uint32 i = 0; i < command_count; ++i)
     {
-        RenderCommand function = *(RenderCommand*)command_buffer_ptr_base;
+        RenderCommand function = *(RenderCommand*)command_buffer_ptr_base;     
         command_buffer_ptr_base += sizeof(RenderCommand);
-
+                     
         uint32_t size = *(uint32*)command_buffer_ptr_base;
         command_buffer_ptr_base += sizeof(uint32);
         function(command_buffer_ptr_base);
@@ -2533,7 +2514,7 @@ void RenderCommandQueue::executeQueue()
     command_count = 0;
 }
 
-RenderCommandQueue& Render::GetRenderCommandQueue()
+RenderCommandQueue& Render::getRenderCommandQueue()
 {
     return render_queue;
 }

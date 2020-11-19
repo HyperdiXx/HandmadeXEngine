@@ -78,7 +78,7 @@ namespace xe_core
     }
 
     internal 
-    unsigned char *loadTextureFromDisc(const char *path, int &width, int &height, int &channels, int flag, bool32 flip)
+    unsigned char *loadTextureFromDisc(const char *path, int32 &width, int32 &height, int32 &channels, int32 flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         stbi_uc* image = stbi_load(path, &width, &height, &channels, flag);
@@ -86,7 +86,7 @@ namespace xe_core
     }
 
     internal 
-    real32 *loadTextureFloatFromDisc(const char * path, int & width, int &height, int & channels, int flag, bool32 flip)
+    real32 *loadTextureFloatFromDisc(const char *path, int32 &width, int32 &height, int32 &channels, int32 flag, bool32 flip)
     {
         stbi_set_flip_vertically_on_load(flip);
         real32 *image = stbi_loadf(path, &width, &height, &channels, flag);

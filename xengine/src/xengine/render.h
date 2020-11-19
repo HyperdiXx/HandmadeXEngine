@@ -16,8 +16,17 @@ struct RenderPassData
     bool32 clearDepth = false;
 };
 
-struct RenderPass
+class RenderPass
 {
+public:
+    RenderPass() {};
+    
+    inline Texture2D *getTexture2D(uint32 index)
+    {
+        return &active_framebuffer->tex_attachments[index];
+    }
+
+public:
     Framebuffer *active_framebuffer;   
     RenderPassData data = {};
 };
@@ -160,8 +169,10 @@ public:
     global void drawQuad(real32 x, real32 t, real32 w, real32 h, Texture2D *texture);
 
     //global void drawModel(Model *mod, Shader *shd, const Matrix4x4 &transform);
-    global void drawModel(Model *mod, Material *mat, Matrix4x4 &transform);
+    global void drawModel(Model *mod, Material *mat);
+   
     //void drawModel(AnimModel *mod, Shader *shd, const glm::mat4 &transform = glm::mat4(1.0f));
+    //global void drawModel(AnimModel *mod, Material *mat, Matrix4x4 &transform);
 
     //void drawModel(Model *mod, const Matrix4x4 &transform = createMat4x4(1.0f));
     //void drawModel(AnimModel *mod, const Matrix4x4 &transform = createMat4x44(1.0f));
@@ -231,6 +242,7 @@ public:
     global void addRenderPass(const std::string &mat_name, RenderPass pass);
 
     global Texture2D *getTextureFromRenderPass(const char *name, uint32 index);
+    global RenderPass *getRenderPass(const char *name);
 
     template<typename T>
     global void pushCommand(T&& func)
@@ -242,12 +254,12 @@ public:
             func_ptr->~T();
         };
 
-        auto storageBuffer = GetRenderCommandQueue().submit(render_cmd, sizeof(func));
+        auto storageBuffer = getRenderCommandQueue().submit(render_cmd, sizeof(func));
         new (storageBuffer) T(std::forward<T>(func));
     }
 
 private:
 
-    global RenderCommandQueue& GetRenderCommandQueue();
+    global RenderCommandQueue& getRenderCommandQueue();
 };
 #endif // !XENGINE_RENDERING_H

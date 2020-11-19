@@ -4,6 +4,79 @@
 #include <assimp/include/assimp/scene.h>
 #include <assimp/include/assimp/postprocess.h>
 
+
+class Asset
+{
+public:
+    virtual ~Asset() {};
+
+    virtual void serialize() = 0;
+    virtual void deserialize() = 0;
+
+    inline uint32 getResID() const { return asset_id; }
+
+protected:
+    //add hash
+    uint32 asset_id;
+};
+
+class TextureAsset : public Asset
+{
+public:
+    TextureAsset() {};
+
+    void serialize() override;
+    void deserialize() override;
+
+public:
+    void *texture_info;
+    int32 width, height;
+    int32 channels;
+};
+
+class ModelAsset : public Asset
+{
+public:
+
+    ModelAsset() {};
+
+    void serialize() override;
+    void deserialize() override;
+
+    std::string parent_dir;
+    std::vector<TextureWrapper> model_textures;
+};
+
+class AnimModelAsset : public Asset
+{
+public:
+
+    AnimModelAsset() {};
+
+    void serialize() override;
+    void deserialize() override;
+
+private:
+
+};
+
+class Scene : public Asset
+{
+public:
+    Scene() {};
+    Scene(const std::string &na) : name(na) {};
+
+    void serialize() override;
+    void deserialize() override;
+
+    inline const std::string &getName() { return name; }
+
+private:
+    std::string name;
+    DynArray<Entity> entities;
+};
+
+
 struct Mesh
 {
     void addVertex(PositionNormalUV vertex);
@@ -21,6 +94,8 @@ struct Mesh
     std::vector<TextureWrapper> mesh_textures;
 
     std::vector<Triangle> triangles;
+
+    Material *material;
 
     VertexArray vao;
     AABB bounding_box;
@@ -46,8 +121,9 @@ public:
 
     ModelNode* root;
     Vertex *vertex_type;
-    std::string parent_dir;
-    std::vector<TextureWrapper> model_textures;
+
+    ModelAsset asset_data;
+
     std::vector<ModelNode*> nodes;
 };
 

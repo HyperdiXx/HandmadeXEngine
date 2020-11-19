@@ -3,14 +3,6 @@
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
-struct Entity;
-
-struct Scene
-{
-    std::string name;
-    DynArray<Entity> entities;
-};
-
 struct ClockState
 {
     real32 delta_time;

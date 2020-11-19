@@ -4,48 +4,58 @@
 #define RENDER_COMMANDS_H
 
 
-struct RenderClearTarget
-{
-    real32 x, y, z, a;
-
-    RenderClearTarget() {};
-    RenderClearTarget(real32 x_x, real32 y_y, real32 z_z, real32 a_a) : x(x_x), y(y_y), z(z_z), a(a_a) {};
-};
-
-struct RenderCommandMesh
-{
-    GeometryMesh *ptr;
-    MaterialInstance *mat_ptr;
-};
-
-struct RenderCommandLine
-{
-
-};
-
-struct RenderCommandQuad
-{
-
-};
-
 enum CommandType
 {
+    CLEAR_COMMAND,
+    VIEWPORT_COMMAND,
+    STATIC_MODEL_MODEL,
+    ANIM_MODEL_COMMAND,
     LINE_COMMAND,
-    QUAD_COMMAND,
-    MESH_COMMAND
+    QUAD_COMMAND
 };
 
-struct RenderCommand
+struct RenderCommandClearTarget
 {
     CommandType type;
+    real32 x, y, z, a;
+};
 
-    union
-    {
-        RenderClearTarget clear_command;
-        RenderCommandMesh mesh_command;
-        RenderCommandQuad quad_command;
-        RenderCommandLine line_command;
-    };
+class RenderCommandStaticModel
+{
+public:
+    RenderCommandStaticModel() { };
+    RenderCommandStaticModel(Transform *transf, Model *mod, Material *mat);
+   
+    ~RenderCommandStaticModel();
+
+    void execute();
+
+private:    
+    Transform *transform_data;
+    Model *static_model_ptr;
+    Material *mat_ptr;
+};
+
+class PostProcPassCommand
+{
+public:
+
+    PostProcPassCommand() {};
+    PostProcPassCommand(Material *mat, RenderPass *pass);
+
+    ~PostProcPassCommand();
+
+    void execute();
+
+private:
+    RenderPass *pass_ptr;
+    Material *mat_ptr;
+};
+
+struct RenderCommandAnimatedModel
+{
+    CommandType type;
+    
 };
 
 class RenderCommandQueue

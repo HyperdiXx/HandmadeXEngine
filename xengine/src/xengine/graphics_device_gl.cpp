@@ -141,43 +141,16 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         return createTexture2D(path, dir, TEXTURE_TYPE::COLOR, true, texture);
     }
 
-    internal 
-    std::string concatPath(const char *path, const char *dir)
-    {
-        std::string result(path);
-
-        if (dir)
-        {
-            std::string dirname(dir);
-            result = dirname + '/' + result;
-        }        
-
-        return result;
-    }
-
     bool32 GraphicsDeviceGL::createTexture2D(const char *path, const char* dir, TEXTURE_TYPE type, uint32 i, uint32 samples, bool32 generate_mipmap, Texture2D* texture)
     {
         std::string path_str = concatPath(path, dir);
         const char *path_res = path_str.c_str();
-
-        /*std::string filename(path);
-        
-        if (dir)
-        {
-            std::string dirname(dir);
-            filename = dirname + '/' + filename;
-            path_res = filename.c_str();
-        }
-        else
-        {
-            path_res = path;
-        }*/
            
         int channels = 0;
+      
+        GraphicsContext *context = Render::getContext();
 
         void *image = nullptr;
-        
-        GraphicsContext *context = Render::getContext();
 
         switch (type)
         {

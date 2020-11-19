@@ -1,4 +1,22 @@
 
+global MemoryStats stats = {};
+
+inline void *operator new(size_t size)
+{
+    stats.sinze_bytes_allocated += size;
+    ++stats.allocations_count;
+    ++stats.current_allocations_count;
+    
+    return malloc(size);
+}
+
+inline void operator delete(void* block)
+{
+    --stats.current_allocations_count;
+
+    free(block);
+}
+
 internal MemoryArena createMemoryArena(void *begin, uint64 size)
 {
     MemoryArena arena = {};
@@ -33,3 +51,6 @@ internal void deallocateMemory(MemoryArena *arena, void *ptr)
 {
     //
 }
+
+// Global assets memory 
+global MemoryArena asset_arena = {};

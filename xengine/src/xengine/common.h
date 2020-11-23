@@ -15,9 +15,16 @@
 #include <vector>
 #include <unordered_set>
 #include <queue>
+#include <deque>
 #include <map>
 #include <unordered_map>
 #include <string>
+
+#include <thread>
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <algorithm>
 
 typedef uint8_t uint8;
 typedef uint16_t uint16;

@@ -187,5 +187,4 @@ template <class T> struct HashTable
 {
     void hash_function(const char* key);
 };
-
 #endif // !CONTAINERS_CPP

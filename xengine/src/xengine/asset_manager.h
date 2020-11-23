@@ -61,25 +61,13 @@ private:
 class AbstractAssetFactory
 {
 public:
+    global Asset* loadAsset(const char *resolved_path, AssetType type);
 
-    enum class AssetType
-    {
-        Texture1D,
-        Texture2D,
-        Texture3D,
-        Model,
-        AnimModel,
-        Audio,
-        Scene
-    };
-
-    global Asset* loadAsset(const char *name, const char *dir, AbstractAssetFactory::AssetType type);
-
-    global Model loadModel(const char *name, const char *dir);
-    global AnimModel loadAnimModel(const char *name, const char *dir);
-    global AudioClip loadAudioClip(const char *name, const char *dir);
-    global TextureAsset *loadTexture2D(const char *name, const char *dir);
-    global Scene *loadScene(const char *name, const char *dir);
+    global StaticModelAsset* loadStaticModel(const char *path);
+    global AnimModelAsset* loadAnimModel(const char *path);
+    global AudioClip* loadAudioClip(const char *path);
+    global TextureAsset *loadTexture(const char *name);
+    global Scene *loadScene(const char *name);
     
     global const TextureLoader *getTextureLoader() 
     { 
@@ -113,16 +101,20 @@ private:
     AbstractAssetFactory(AbstractAssetFactory&&) = delete;
 
     ~AbstractAssetFactory() = delete;
-
-private:
-
- 
+private: 
 };
 
 class AssetManager
 {
 public:
 
+    TextureAsset* getTextureAsset(const char *path);
+    StaticModelAsset* getStaticModelAsset(const char *path);
+    AnimModelAsset* getAnimModelAsset(const char *path);
+
+    void setResourcePath(const std::string &p) { resource_path = p; }
+
+public:
     global AssetManager *getInstance()
     {
         global AssetManager mng = {};
@@ -130,10 +122,46 @@ public:
     }
 
 private:
-    std::vector<Model> models;
-    std::vector<AnimModel> anim_models;
+    std::unordered_map<std::string, StaticModelAsset*> static_models;
+    std::unordered_map<std::string, AnimModelAsset*> anim_models;
+    std::unordered_map<std::string, TextureAsset*> textures;
+
+    std::string resource_path;
 };
 
+class ResourceManager
+{
+public:
+    
+    Model *getModel(const char *path, bool32 calculate_tb = true);
+    AnimModel *getAnimModel(const char *path, bool32 calculate_tb = true);
+    
+public:
+    
+    global ResourceManager *getInstance()
+    {
+        global ResourceManager mng = {};
+        return &mng;
+    }
+
+private:
+
+    ModelNode* parseNode(Model *model, aiNode *ai_node);
+    Model* parseStaticModel(const std::string &path);
+    Model* loadStaticModelFromFile(const std::string &path, bool32 calculate_tb = true);
+
+    AnimModel *loadAnimModelFromFile(const std::string &path, bool32 calculate_tb = true);
+
+private:
+    std::unordered_map<std::string, Model*> static_models;
+    std::unordered_map<std::string, AnimModel*> anim_models;
+    
+    // EnvironmentMaps
+    // Skyboxes
+
+    Assimp::Importer m_importer = {};
+    const aiScene* m_scene;
+};
 
 #endif // !XE_ASSET_MANAGER
 

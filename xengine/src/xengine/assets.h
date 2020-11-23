@@ -4,6 +4,16 @@
 #include <assimp/include/assimp/scene.h>
 #include <assimp/include/assimp/postprocess.h>
 
+enum class AssetType
+{
+    AssetTexture1D,
+    AssetTexture2D,
+    AssetTexture3D,
+    AssetModel,
+    AssetAnimModel,
+    AssetAudio,
+    AssetScene
+};
 
 class Asset
 {
@@ -13,11 +23,15 @@ public:
     virtual void serialize() = 0;
     virtual void deserialize() = 0;
 
-    inline uint32 getResID() const { return asset_id; }
+    void setID(const std::string &name) { asset_id = name; }
+    inline std::string &getResID() { return asset_id; }
 
+    void setAssetType(AssetType t) { type = t; }
+    inline AssetType getAssetType() { return type; }
 protected:
-    //add hash
-    uint32 asset_id;
+    AssetType type;
+    //add hash    
+    std::string asset_id;    
 };
 
 class TextureAsset : public Asset
@@ -34,11 +48,11 @@ public:
     int32 channels;
 };
 
-class ModelAsset : public Asset
+class StaticModelAsset : public Asset
 {
 public:
 
-    ModelAsset() {};
+    StaticModelAsset() {};
 
     void serialize() override;
     void deserialize() override;
@@ -122,7 +136,7 @@ public:
     ModelNode* root;
     Vertex *vertex_type;
 
-    ModelAsset asset_data;
+    StaticModelAsset asset_data;
 
     std::vector<ModelNode*> nodes;
 };
@@ -158,12 +172,12 @@ Model* loadModelFromFile(const std::string &path, bool32 calculate_tb = true);
 struct Animation
 {
     std::string name;
-    float duration = 0.0f;
-    float animation_speed = 0.75f;
-    float animation_time = 0.0f;
-    float ticks_per_second = 0.0f;
+    real32 duration = 0.0f;
+    real32 animation_speed = 0.75f;
+    real32 animation_time = 0.0f;
+    real32 ticks_per_second = 0.0f;
 
-    bool is_playing = true;
+    bool32 is_playing = true;
 };
 
 struct AnimNode

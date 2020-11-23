@@ -473,7 +473,8 @@ inline Matrix4x4 createMat4x4(real32 m00, real32 m01, real32 m02, real32 m03,
     return res;
 }
 
-inline void setMat4(Matrix4x4 &res, real32 m00, real32 m01, real32 m02, real32 m03,
+inline 
+void setMat4(Matrix4x4 &res, real32 m00, real32 m01, real32 m02, real32 m03,
                                     real32 m10, real32 m11, real32 m12, real32 m13,
                                     real32 m20, real32 m21, real32 m22, real32 m23,
                                     real32 m30, real32 m31, real32 m32, real32 m33)
@@ -910,6 +911,37 @@ AABB createAABB(Vec3 min, Vec3 max)
 
     return res;
 }
+
+inline 
+bool32 isEqual(const int32 a, const int32 b)
+{
+    return a == b;
+}
+
+inline 
+bool32 isEqual(const uint32 a, const uint32 b)
+{
+    return a == b;
+}
+
+inline 
+bool32 isEqual(const uint64 a, const uint64 b)
+{
+    return a == b;
+}
+
+inline 
+bool32 isEqual(const real32 a, const real32 b)
+{
+    return fabs(a - b) <= std::numeric_limits<float>::epsilon();
+}
+
+inline 
+bool32 isEqual(const real64 a, const real64 b)
+{
+    return fabs(a - b) <= std::numeric_limits<double>::epsilon();
+}
+
 
 #endif // !MATH_CPP
 

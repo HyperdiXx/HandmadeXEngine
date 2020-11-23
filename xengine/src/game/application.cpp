@@ -6,10 +6,11 @@
 #include "xengine\macro.h"
 
 #include "xengine\math.cpp"
+#include "xengine\string.cpp"
 #include "xengine\containers.cpp"
 
 #include "xengine\input.h"
-
+#include "xengine\threading.h"
 #include "app_state.h"
 
 #include "xengine\utility.h"
@@ -29,7 +30,6 @@
 
 #include "xengine\core.cpp"
 #include "xengine\utility.cpp"
-#include "xengine\string.cpp"
 #include "xengine\parser.cpp"
 
 //#include "xengine\tree.cpp"
@@ -43,6 +43,7 @@
     #include "xengine\graphics_device_gl.cpp"
 #endif
 
+#include "xengine\threading.cpp"
 #include "xengine\render.cpp"
 #include "xengine\graphics_resource.cpp"
 #include "xengine\render_commands.cpp"
@@ -64,6 +65,8 @@ global DynArray<Rect> rects_to_test;
 global CubeMesh cube;
 global Model *nano_character = nullptr;
 global Model *cube_model = nullptr;
+
+ResourceManager *resManager = ResourceManager::getInstance();
 
 internal 
 void InitGameLayers()
@@ -177,25 +180,15 @@ void Render()
     RenderCommandStaticModel cmd(&char_transf, nano_character, def);
     cmd.execute();
     
+    Transform cube_transf = {};
+
+    cube_transf.pos = createVec3(-5.0f, 0.0f, -10.0f);
+    cube_transf.scale = createVec3(0.1f, 0.1f, 0.1f);
+
+    RenderCommandStaticModel drawCube(&cube_transf, cube_model, def);
+    drawCube.execute();
+
     Render::endRenderPass();
-
-    /*
-    Vec3 translationCube = createVec3(-5.0f, 0.0f, -10.0f);
-    Vec3 scaleCube = createVec3(0.1f, 0.1f, 0.1f);
-
-    modelMat = translateMat(translationCube) * scaleMat(scaleCube);
-    mvp = vp * modelMat;
-
-    inverseMMatrix = inverseMat(modelMat);
-    transposeMat4x4(inverseMMatrix);
-    normal_matrix = convertFrom(inverseMMatrix);
-
-    def->set("mvp", ShaderUniformType::Mat4x4, &mvp);
-    def->set("vp", ShaderUniformType::Mat4x4, &vp);
-    def->set("model", ShaderUniformType::Mat4x4, &modelMat);
-    def->set("normalMatrix", ShaderUniformType::Mat3x3, &normal_matrix);
-
-    Render::drawModel(cube_model, def);*/
     
     Material *light_pass_d = Render::getMaterial("lightP");
     RenderPass *deffered = Render::getRenderPass("deffered");
@@ -211,19 +204,31 @@ APP_LOAD_DATA
     platform_state = ps;
    
     asset_arena = createMemoryArena(0, 1024 * 1024 * 4);
+   
+    ThreadPool::init();
 
     Render::init();
+    
+    ThreadPool::addTask([] 
+    { 
+        nano_character = resManager->getModel("assets/nano/nanosuit.obj", false); 
+    });
+    
+    ThreadPool::addTask([] 
+    { 
+        cube_model = resManager->getModel("assets/cube.obj", false); 
+    });
     
     InitGameLayers();
 
     //InitQuadTree();
     InitECS();
 
-    Asset *container_texture = AbstractAssetFactory::loadAsset("assets/container2.png", nullptr, AbstractAssetFactory::AssetType::Texture2D);
+    // Executing already pushed render commands before drawing
+    Render::endFrame();
 
-    nano_character = loadModelFromFile("assets/nano/nanosuit.obj", false);
-    cube_model = loadModelFromFile("assets/cube.obj", false);
-    
+    ThreadPool::wait();    
+
     for (uint32 i = 0; i < layersTest.size(); ++i)
     {
         LayerTest *layer = layersTest.begin() + i;

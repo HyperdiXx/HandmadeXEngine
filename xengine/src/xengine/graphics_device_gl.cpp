@@ -145,47 +145,23 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
     {
         std::string path_str = concatPath(path, dir);
         const char *path_res = path_str.c_str();
-           
-        int channels = 0;
-      
+            
+        TextureAsset *tex_asset = AssetManager::getInstance()->getTextureAsset(path_res);
+        
         GraphicsContext *context = Render::getContext();
 
-        void *image = nullptr;
-
-        switch (type)
-        {
-        case COLOR:
-        case GREYSCALE:
-        case LUT:
-        case CUBEMAP:
-        case DEPTH:
-            image = xe_core::loadTextureFromDisc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
-            break;
-        case HDR:
-            image = xe_core::loadTextureFloatFromDisc(path_res, texture->desc.width, texture->desc.height, channels, 0, true);
-            break;
-        default:
-            break;
-        }
-        
-        if (!image)
-        {
-            //xe_utility::error("Failed to load texture: " + std::string(path));
-            return false;
-        }
-
         GLenum internal_format = 0, data_format = 0;
-        if (channels == 1)
+        if (tex_asset->channels == 1)
         {
             internal_format = GL_R8;
             data_format = GL_RED;
         }
-        else if (channels == 3)
+        else if (tex_asset->channels == 3)
         {
             internal_format = GL_RGB8;
             data_format = GL_RGB;
         }
-        else if (channels == 4)
+        else if (tex_asset->channels == 4)
         {
             internal_format = GL_RGBA8;
             data_format = GL_RGBA;
@@ -208,7 +184,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
             case COLOR:
             case LUT:
                 glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-                loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
+                loadTextureGpu(type, tex_asset->width, tex_asset->height, internal_format, data_format, tex_asset->texture_info);
 
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
@@ -220,7 +196,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
             case GREYSCALE:
                 glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-                loadTextureGpu(type, texture->desc.width, texture->desc.width, internal_format, data_format, image);
+                loadTextureGpu(type, tex_asset->width, tex_asset->height, internal_format, data_format, tex_asset->texture_info);
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_S, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
                 setTextureWrapping(type, TEXTURE_WRAPPING_AXIS::TEXTURE_AXIS_T, TEXTURE_WRAPPING::TEXTURE_ADDRESS_REPEAT);
 
@@ -234,11 +210,11 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MIN, TEXTURE_SAMPLING::LINEAR);
                 setTextureSampling(type, TEXTURE_FILTER_OPERATION::MAG, TEXTURE_SAMPLING::LINEAR);
 
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texture->desc.width, texture->desc.height, 0, data_format, GL_FLOAT, image);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, tex_asset->width, tex_asset->height, 0, data_format, GL_FLOAT, tex_asset->texture_info);
 
                 break;
             case CUBEMAP:
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, texture->desc.width, texture->desc.height, 0, data_format, GL_UNSIGNED_BYTE, image);
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, tex_asset->width, tex_asset->height, 0, data_format, GL_UNSIGNED_BYTE, tex_asset->texture_info);
                 break;
             case DEPTH:
                 break;
@@ -254,7 +230,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
 
         context->unbindTexture(type);
 
-        xe_core::deleteData(image);
+        xe_core::deleteData(tex_asset->texture_info);
 
         return true;
     }
@@ -322,7 +298,7 @@ GraphicsDeviceGL::GraphicsDeviceGL(HWND window_handle, bool32 vsync, bool32 full
         uint32 vertex_id = compileShader(SHADER_TYPE::VS, vs_source);
         uint32 pixel_id = compileShader(SHADER_TYPE::PS, fs_source);
 
-        if (vertex_id == -1 || pixel_id == -1)
+        if (vertex_id == INVALID_ID || pixel_id == INVALID_ID)
         {
             return false;
         }

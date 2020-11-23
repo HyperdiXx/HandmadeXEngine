@@ -388,21 +388,14 @@ void GraphicsContextGL::drawArray(PRIMITIVE_TOPOLOGY mode, uint32 first, uint32 
 
 void GraphicsContextGL::drawIndexed(PRIMITIVE_TOPOLOGY mode, uint32 count, int type, void *ind)
 {
-    //Render::pushCommand([mode, count, type, ind]()
-    //{
     uint32 gl_primitive_type = convert_primitive_type(mode);
     glDrawElements(gl_primitive_type, count, type, ind);
-    //});
 }
 
 void GraphicsContextGL::pushDataToBuffer(uint32 index, BUFFER_TYPE type, uint32 offset, uint64 size, void *data)
 {
-    //Render::pushCommand([=]()
-    //{
     uint32 buf_type = convert_buffer_type_gl(type);
     glBufferSubData(buf_type, offset, size, data);
-    //glNamedBufferSubData(index, offset, size, data);
-//});
 }
 
 void GraphicsContextGL::activateBindTexture(TEXTURE_TYPE type, const Texture2D *texture)
@@ -419,14 +412,14 @@ void GraphicsContextGL::activateBindTexture(TEXTURE_TYPE type, const Texture2D *
 
 void GraphicsContextGL::activateBindTexture(TEXTURE_TYPE type, const Cubemap *texture)
 {
-    /*const GPUHandler id = texture->rhi.getID();
+    const GPUHandler id = texture->rhi.getID();
     if (last_bound_unit_texture != id)
     {
         uint32 gl_texture_type = convert_texture_type_gl(type);
         glActiveTexture(GL_TEXTURE0 + 0);
         glBindTexture(gl_texture_type, id);
         last_bound_unit_texture = id;
-    }*/
+    }
 }
 
 void GraphicsContextGL::activateTexture(uint32 index)
@@ -507,7 +500,7 @@ void GraphicsContextGL::bindFramebuffer(const Framebuffer *fbo)
 
 void GraphicsContextGL::bindRenderbuffer(const Framebuffer *fbo)
 {
-    //glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb.rhi.getID());
+    glBindRenderbuffer(GL_RENDERBUFFER, fbo->rb.rhi.getID());
 }
 
 void GraphicsContextGL::bindForRead(const Framebuffer *fbo)
@@ -556,45 +549,27 @@ void GraphicsContextGL::unbindBuffer(BUFFER_TYPE type)
 
 void GraphicsContextGL::setBool(const uint32 loc, bool value)
 {
-    //Render::pushCommand([name, value, shd]()
-    //{
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniform1i(loc, (int)value);
-    //});
 }
 
 void GraphicsContextGL::setInt(const uint32 loc, int32 value)
 {
-    //Render::pushCommand([name, value, shd]()
-    //{
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniform1i(loc, value);
-    //});
 }
 
 void GraphicsContextGL::setFloat(const uint32 loc, real32 value)
 {
-    //Render::pushCommand([name, value, shd]()
-    //{
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniform1f(loc, value);
-
-    //});
 }
 
 void GraphicsContextGL::setVec2(const uint32 loc, const Vec2& value)
 {
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniform2fv(loc, 1, value.data);
 }
 
 void GraphicsContextGL::setVec2(const uint32 loc, real32 x, real32 y)
 {
-    //Render::pushCommand([name, x, y, shd]()
-    //{
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniform2f(loc, x, y);
-    //});
 }
 
 void GraphicsContextGL::setVec3(const uint32 loc, const Vec3& value)
@@ -604,11 +579,7 @@ void GraphicsContextGL::setVec3(const uint32 loc, const Vec3& value)
 
 void GraphicsContextGL::setVec3(const uint32 loc, real32 x, real32 y, real32 z)
 {
-    //Render::pushCommand([name, x, y, z, shd]()
-    //{
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniform3f(loc, x, y, z);
-    //});
 }
 
 void GraphicsContextGL::setVec4(const uint32 loc, const Vec4& value)
@@ -618,13 +589,11 @@ void GraphicsContextGL::setVec4(const uint32 loc, const Vec4& value)
 
 void GraphicsContextGL::setVec4(const uint32 loc, real32 x, real32 y, real32 z, real32 w)
 {
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniform4f(loc, x, y, z, w);
 }
 
 void GraphicsContextGL::setMat2(const uint32 loc, const Matrix2x2 &mat)
 {
-    //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniformMatrix2fv(loc, 1, GL_FALSE, mat.data);
 }
 
@@ -636,11 +605,7 @@ void GraphicsContextGL::setMat3(const uint32 loc, const Matrix3x3 &mat)
 
 void GraphicsContextGL::setMat4(const uint32 loc, const Matrix4x4 &mat)
 {
-    //Render::pushCommand([name, mat, shd]()
-    //{
-        //int location = glGetUniformLocation(shd->id, name.c_str());
     glUniformMatrix4fv(loc, 1, GL_FALSE, (const real32*)mat.data);
-    //});
 }
 
 int GraphicsContextGL::getBufferLocation(uint32 id, const char *name)
@@ -693,6 +658,5 @@ void GraphicsContextGL::startExecution()
 
 void GraphicsContextGL::endExecution()
 {
-    int add = 0;
     //SwapBuffers(xe_platform::get_dc());
 }

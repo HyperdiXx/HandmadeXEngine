@@ -1,4 +1,3 @@
-#include "render_commands.h"
 
 RenderCommandStaticModel::RenderCommandStaticModel(Transform *transf, Model *mod, Material *mat) : transform_data(transf), static_model_ptr(mod), mat_ptr(mat)
 {

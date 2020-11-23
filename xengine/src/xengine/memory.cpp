@@ -33,6 +33,7 @@ internal MemoryArena createMemoryArena(void *begin, uint64 size)
     return arena;
 }
 
+// TODO : add align
 internal void* allocateMemory(MemoryArena *arena, uint64 new_size)
 {
     if (!arena)

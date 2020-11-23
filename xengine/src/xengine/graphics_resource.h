@@ -652,15 +652,15 @@ private:
 
 struct RenderState
 {
-    static constexpr uint32 max_quads_count = 20000;
-    static constexpr uint32 max_quad_vert = max_quads_count * 4;
-    static constexpr uint32 max_quad_indices = max_quads_count * 6;
+    global constexpr uint32 max_quads_count = 20000;
+    global constexpr uint32 max_quad_vert = max_quads_count * 4;
+    global constexpr uint32 max_quad_indices = max_quads_count * 6;
 
-    static constexpr uint32 max_texture_slots = 32;
+    global constexpr uint32 max_texture_slots = 32;
 
-    static constexpr uint32 max_line_count = 10000;
-    static constexpr uint32 max_line_vert = max_line_count * 2;
-    static constexpr uint32 max_line_ind = max_line_count * 6;
+    global constexpr uint32 max_line_count = 10000;
+    global constexpr uint32 max_line_vert = max_line_count * 2;
+    global constexpr uint32 max_line_ind = max_line_count * 6;
 
     uint32 draw_calls;
     uint32 quads_count;

@@ -9,159 +9,157 @@
 
 #include <glm/glm.hpp>
 
-namespace xe_graphics
+
+struct PositionNormalUVBW;
+ 
+enum AnimKeyType
 {
-    struct PositionNormalUVBW;
-} 
+    Position,
+    Rotation,
+    Scale
+};
 
-namespace xe_animation
+
+struct AnimVectorKey
 {
-    enum AnimKeyType
-    {
-        Position, 
-        Rotation,
-        Scale
-    };
+    real64 time;
+    glm::vec3 value;
+};
 
-    struct AnimVectorKey
-    {
-        real64 time;
-        glm::vec3 value;
-    };
+struct AnimQuaternionKey
+{
+    real64 time;
+    glm::quat value;
+};
 
-    struct AnimQuaternionKey
-    {
-        real64 time;
-        glm::quat value;
-    };
+struct AnimNode
+{
+public:
+    std::string node_name;
+    uint32_t start_vertex;
+    uint32_t start_index;
+    uint32_t index_count;
+    uint32_t material_index;
 
-    struct AnimNode
-    {
-    public:
-        std::string node_name;
-        uint32_t start_vertex;
-        uint32_t start_index;
-        uint32_t index_count;
-        uint32_t material_index;
+    glm::mat4 transform;
 
-        glm::mat4 transform;
+    std::vector<AnimVectorKey> positionKeys;
+    std::vector<AnimQuaternionKey> rotationKeys;
+    std::vector<AnimVectorKey> scaleKeys;
+};
 
-        std::vector<AnimVectorKey> positionKeys;
-        std::vector<AnimQuaternionKey> rotationKeys;
-        std::vector<AnimVectorKey> scaleKeys;
-    };
+struct Node
+{
+    std::string name;
+    glm::mat4 transform;
+    Node *parent;
+    Node *chidren;
+};
 
-    struct Node
-    {
-        std::string name;
-        glm::mat4 transform;
-        Node *parent;
-        Node *chidren;
-    };
+struct Bone
+{
+    glm::mat4 transform;
+    glm::mat4 offset;
+};
 
-    struct Bone
-    {
-        glm::mat4 transform;
-        glm::mat4 offset;
-    };
+class Skeleton
+{
+public:
+    Skeleton();
+    ~Skeleton();
 
-    class Skeleton
-    {
-    public:        
-        Skeleton();
-        ~Skeleton();
+    Bone* getBone(uint32 index) {};
+    Bone* getBone(std::string& name) {};
 
-        Bone* getBone(uint32 index) {};
-        Bone* getBone(std::string& name) {};
+    std::vector<Bone>& getBones() { return bones_info; }
+    std::vector<glm::mat4>& getBonesTransform() { return bone_transformation; }
+    std::unordered_map<std::string, uint32_t>& getBonesMap() { return bones_map; }
+public:
+    int32 bones_count = 0;
+private:
+    std::vector<Bone> bones_info;
+    std::unordered_map<std::string, uint32_t> bones_map;
+    std::vector<glm::mat4> bone_transformation;
+};
 
-        std::vector<Bone>& getBones() { return bones_info; }
-        std::vector<glm::mat4>& getBonesTransform() { return bone_transformation; }
-        std::unordered_map<std::string, uint32_t>& getBonesMap() { return bones_map; }
-    public:
-        int32 bones_count = 0;
-    private:
-        std::vector<Bone> bones_info;
-        std::unordered_map<std::string, uint32_t> bones_map;
-        std::vector<glm::mat4> bone_transformation;
-    };
+struct AnimationInfo
+{
+    std::string name;
+    float duration = 0.0f;
+    float animation_speed = 0.75f;
+    float animation_time = 0.0f;
+    float ticks_per_second = 0.0f;
 
-    struct AnimationInfo
-    {
-        std::string name;
-        float duration = 0.0f;
-        float animation_speed = 0.75f;
-        float animation_time = 0.0f;
-        float ticks_per_second = 0.0f;
+    bool is_playing = true;
+};
 
-        bool is_playing = true;
-    };
+class Animation
+{
+public:
+    Animation() {}
+    ~Animation() {}
 
-    class Animation
-    {
-    public:
-        Animation() {}
-        ~Animation() {}
+    inline const uint32 getAnimTracksCount() const { return anim_tracks.size(); }
 
-        inline const uint32 getAnimTracksCount() const { return anim_tracks.size(); }
+public:
+    std::vector<AnimNode*> anim_tracks;
+private:
+    AnimationInfo info;
+};
 
-    public:
-        std::vector<AnimNode*> anim_tracks;
-    private:
-        AnimationInfo info;        
-    };
+class AnimModel
+{
+public:
+    AnimModel() = default;
+    AnimModel(const std::string &path);
 
-    class AnimModel
-    {
-    public:
-        AnimModel() = default;
-        AnimModel(const std::string &path);
+    AnimModel(const AnimModel &m) = default;
+    AnimModel(AnimModel && m);
 
-        AnimModel(const AnimModel &m) = default;
-        AnimModel(AnimModel && m);
+    AnimModel &operator=(AnimModel && m) noexcept;
 
-        AnimModel &operator=(AnimModel && m) noexcept;
+    //std::unique_ptr<Assimp::Importer> assimp_importer;
+    //const aiScene* scene;
 
-        //std::unique_ptr<Assimp::Importer> assimp_importer;
-        //const aiScene* scene;
+    glm::mat4 global_inverse_transform;
+    std::vector<AnimNode> anim_meshes;
+    std::vector<xe_graphics::PositionNormalUVBW> anim_vertices;
+    std::vector<uint32> anim_indices;
 
-        glm::mat4 global_inverse_transform;
-        std::vector<AnimNode> anim_meshes;
-        std::vector<xe_graphics::PositionNormalUVBW> anim_vertices;
-        std::vector<uint32> anim_indices;
-       
-        //aiAnimation* activeAnimation;
-        //VertexArray va;
+    //aiAnimation* activeAnimation;
+    //VertexArray va;
 
-        void setActiveAnimation(uint32 anim_index);       
+    void setActiveAnimation(uint32 anim_index);
 
-    private:
-        const AnimNode *findAnimNodeByName(const Animation* animation, const std::string &node_name);
+private:
+    const AnimNode *findAnimNodeByName(const Animation* animation, const std::string &node_name);
 
-        uint32 getIndexForNode(AnimKeyType type, real32 anim_time, const AnimNode* node_anim);
+    uint32 getIndexForNode(AnimKeyType type, real32 anim_time, const AnimNode* node_anim);
 
-        glm::vec3 getTranslationBetweenFrames(real32 dt, const AnimNode *na);
-        glm::quat getRotationBetweenFrames(real32 dt, const AnimNode *na);
-        glm::vec3 getScaleBetweenFrames(real32 dt, const AnimNode *na);
-        
-        void readNodeHierarchy(real32 anim_time, const aiNode* ptr_node, const glm::mat4& parent_transform);
-        void transformBones(real32 dt);
-        void updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform = glm::mat4(1.0f));
-    
-    private:
+    glm::vec3 getTranslationBetweenFrames(real32 dt, const AnimNode *na);
+    glm::quat getRotationBetweenFrames(real32 dt, const AnimNode *na);
+    glm::vec3 getScaleBetweenFrames(real32 dt, const AnimNode *na);
 
-        Animation* active_animation;
-        std::vector<Animation*> animation_list;        
-        Skeleton skelet;
-    };
+    void readNodeHierarchy(real32 anim_time, const aiNode* ptr_node, const glm::mat4& parent_transform);
+    void transformBones(real32 dt);
+    void updateNodeTransform(aiNode *node, const glm::mat4 &parent_transform = glm::mat4(1.0f));
 
-    class AnimationPlayer
-    {
-    public:
+private:
 
-    private:
-        Animation *active_animation;
-        AnimModel *anim_model;
-    };
+    Animation* active_animation;
+    std::vector<Animation*> animation_list;
+    Skeleton skelet;
+};
+
+class AnimationPlayer
+{
+public:
+
+private:
+    Animation *active_animation;
+    AnimModel *anim_model;
+};
+
 }
 
 #endif

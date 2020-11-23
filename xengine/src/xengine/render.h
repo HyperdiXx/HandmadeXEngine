@@ -148,7 +148,7 @@ public:
     global bool32 createSphere(SphereMesh *sphre);
     global bool32 createCube(CubeMesh *cube);
     
-    global bool32 createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace);
+    global bool32 createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace = true);
 
     global bool32 createLineMesh(const Vec3 &start, const Vec3 &end, LineMesh *line_com);
     global bool32 createLineMesh(LineMesh *line_com);

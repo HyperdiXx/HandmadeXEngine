@@ -367,8 +367,10 @@ void Render::init(API_TYPE type)
     viewport(1280.0f, 720.0f);
 
     fillVersions();
+    
     loadShaders();
     loadFreeTextures();
+    
     setupMaterials();
     setupCameras();
     setupBuffers();
@@ -834,55 +836,58 @@ void Render::shutdown()
     //clearContextGui();
 }
 
-bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace = true)
+bool32 Render::createMesh(Mesh *meh, Vertex *vertex_type, bool32 calculate_tspace)
 {
-    Vertex *vert = vertex_type;
-
-    meh->vao = VertexArray::create();
-
-    meh->vao.buffers.push_back(new VertexBuffer());
-    meh->vao.ib = new IndexBuffer();
-
-    BufferLayout buffer_layout = {};
-
-    std::initializer_list<BufferElement> init_list;
-
-    if (calculate_tspace)
+    pushCommand([meh, vertex_type, calculate_tspace]()
     {
-        init_list =
+        Vertex *vert = vertex_type;
+
+        meh->vao = VertexArray::create();
+
+        meh->vao.buffers.push_back(new VertexBuffer());
+        meh->vao.ib = new IndexBuffer();
+
+        BufferLayout buffer_layout = {};
+
+        std::initializer_list<BufferElement> init_list;
+
+        if (calculate_tspace)
         {
-            { "aPos",       ElementType::Float3, },
-            { "aNormal",    ElementType::Float3, },
-            { "aTangent",   ElementType::Float3, },
-            { "aBitangent", ElementType::Float3, },
-            { "aUV",        ElementType::Float2, }
-        };
-    }
-    else
-    {
-        init_list =
+            init_list =
+            {
+                { "aPos",       ElementType::Float3, },
+                { "aNormal",    ElementType::Float3, },
+                { "aTangent",   ElementType::Float3, },
+                { "aBitangent", ElementType::Float3, },
+                { "aUV",        ElementType::Float2, }
+            };
+        }
+        else
         {
-            { "aPos",       ElementType::Float3, },
-            { "aNormal",    ElementType::Float3, },
-            { "aUV",        ElementType::Float2, }
-        };
-    }
-    
-    g_context->bindVertexArray(&meh->vao);
+            init_list =
+            {
+                { "aPos",       ElementType::Float3, },
+                { "aNormal",    ElementType::Float3, },
+                { "aUV",        ElementType::Float2, }
+            };
+        }
 
-    g_device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
+        g_context->bindVertexArray(&meh->vao);
 
-    // TODO: rework
-    g_device->createIndexBuffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
+        g_device->createVertexBuffer(&meh->vertices_fl[0], meh->vertices_fl.size() * sizeof(real32), DRAW_TYPE::STATIC, meh->vao.buffers[0]);
 
-    g_device->createBufferLayout(init_list, &buffer_layout);
-    g_device->setVertexBufferLayout(meh->vao.buffers[0], &buffer_layout);
-    g_device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
-    g_device->setIndexBuffer(&meh->vao, meh->vao.ib);
+        // TODO: rework
+        g_device->createIndexBuffer(&meh->indices[0], meh->indices.size(), meh->vao.ib);
 
-    g_context->unbindVertexArray();
-    //device->destroyBuffer(meh->vao.buffers[0]);
-    //device->destroyBuffer(meh->vao.ib);
+        g_device->createBufferLayout(init_list, &buffer_layout);
+        g_device->setVertexBufferLayout(meh->vao.buffers[0], &buffer_layout);
+        g_device->addVertexBuffer(&meh->vao, meh->vao.buffers[0]);
+        g_device->setIndexBuffer(&meh->vao, meh->vao.ib);
+
+        g_context->unbindVertexArray();
+        //device->destroyBuffer(meh->vao.buffers[0]);
+        //device->destroyBuffer(meh->vao.ib);
+    });
 
     return true;
 }

@@ -801,12 +801,12 @@ void AnimModel::updateNodeTransform(aiNode *node, const Matrix4x4 &parent_transf
     }
 }
 
-void ModelAsset::serialize()
+void StaticModelAsset::serialize()
 {
 
 }
 
-void ModelAsset::deserialize()
+void StaticModelAsset::deserialize()
 {
 
 }

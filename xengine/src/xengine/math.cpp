@@ -7,7 +7,8 @@
 #define PI 					3.1415926535897932f	
 #define SMALL_NUMBER		1.e-8f
 #define DELTA			    0.00001f
-#define EPSILON             0.00000001f
+#define FEPSILON            std::numeric_limits<real32>::epsilon()
+#define DEPSILON            std::numeric_limits<real64>::epsilon() 
 
 #define RadiansToDegrees(angle) angle * (180.0f / PI)
 #define DegreesToRadians(angle) angle * (PI / 180.0f)
@@ -933,13 +934,13 @@ bool32 isEqual(const uint64 a, const uint64 b)
 inline 
 bool32 isEqual(const real32 a, const real32 b)
 {
-    return fabs(a - b) <= std::numeric_limits<float>::epsilon();
+    return fabs(a - b) <= FEPSILON;
 }
 
 inline 
 bool32 isEqual(const real64 a, const real64 b)
 {
-    return fabs(a - b) <= std::numeric_limits<double>::epsilon();
+    return fabs(a - b) <= DEPSILON;
 }
 
 inline 

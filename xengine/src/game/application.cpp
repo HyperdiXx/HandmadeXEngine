@@ -205,10 +205,29 @@ APP_LOAD_DATA
    
     asset_arena = createMemoryArena(0, 1024 * 1024 * 4);
    
+    Vec4 red_colr = createVec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+    uint32 intClr = colorFromVec4(red_colr);
+
+    Vec4 backClr = colorFromInt(intClr);
+
+
     ThreadPool::init();
 
     Render::init();
     
+    std::vector<uint32> result = {};
+
+    result.reserve(1024);
+
+    ThreadPool::addTask([&result]
+    {
+        for (uint32 i = 0; i < 999; ++i)
+        {
+            result.push_back(i);
+        }
+    });
+
     ThreadPool::addTask([] 
     { 
         nano_character = resManager->getModel("assets/nano/nanosuit.obj", false); 
@@ -227,7 +246,7 @@ APP_LOAD_DATA
     // Executing already pushed render commands before drawing
     Render::endFrame();
 
-    ThreadPool::wait();    
+    ThreadPool::wait();      
 
     for (uint32 i = 0; i < layersTest.size(); ++i)
     {

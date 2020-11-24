@@ -942,6 +942,46 @@ bool32 isEqual(const real64 a, const real64 b)
     return fabs(a - b) <= std::numeric_limits<double>::epsilon();
 }
 
+inline 
+uint32 colorFromVec4(Vec4 &color)
+{
+    uint32 res = 0;
+
+    res = 
+        (uint32) (color.x * 255.0f)        |
+        ((uint32)(color.y * 255.0f) << 8)  |
+        ((uint32)(color.z * 255.0f) << 16) |
+        ((uint32)(color.w * 255.0f) << 24);
+
+    return res;
+}
+
+inline 
+Vec4 colorFromInt(uint32 value)
+{
+#define O_D_255 0.00392156862f
+
+    Vec4 result = createVec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    result.x = (value >> 24) & 255;
+    result.y = (value >> 16) & 255;
+    result.z = (value >> 8) & 255;
+    result.w = value & 255;
+
+    // Convert to normalize
+    //result.x *= O_D_255;
+    //result.y *= O_D_255;
+    //result.z *= O_D_255;
+    //result.w *= O_D_255;
+
+    result.x /= 255.0f;
+    result.y /= 255.0f;
+    result.z /= 255.0f;
+    result.w /= 255.0f;
+
+
+    return result;
+}
 
 #endif // !MATH_CPP
 
